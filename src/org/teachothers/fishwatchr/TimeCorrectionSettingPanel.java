@@ -78,7 +78,6 @@ public class TimeCorrectionSettingPanel extends JPanel {
 		for(String setName : commentList.getSetNames()){
 			Object data[] = new Object[columnNames.length];
 			JRadioButton jRadioButtonBase = new JRadioButton();
-//			JTextField jTextFieldTimeOffset = new JTextField();
 			JCheckBox jCheckBoxSyncByTag = new JCheckBox();
 			JComboBox<String> jComboMethod = new JComboBox<String>(methods);
 			jComboMethod.setBorder(BorderFactory.createEmptyBorder());
@@ -86,7 +85,6 @@ public class TimeCorrectionSettingPanel extends JPanel {
 			if(i==0){
 				jRadioButtonBase.setSelected(true);
 			}
-//			data[0] = false;
 			data[0] = jRadioButtonBase;
 			data[1] = setName;
 			data[2] = jCheckBoxSyncByTag;
@@ -94,7 +92,6 @@ public class TimeCorrectionSettingPanel extends JPanel {
 			data[4] = jComboMethod;
 			settings[i] = data;
 			buttonGroup.add(jRadioButtonBase);
-//			mapField.put(setName, jTextFieldTimeOffset);
 			i++;
 		}
 		JTable settingTable = new JTable(tableModel);
@@ -106,14 +103,8 @@ public class TimeCorrectionSettingPanel extends JPanel {
 		settingTable.getColumn(COLUMN_NAME_BASE_SET).setPreferredWidth(50);
 		settingTable.getColumn(COLUMN_NAME_METHOD).setCellEditor(new ComboEditor());
 		settingTable.getColumn(COLUMN_NAME_METHOD).setCellRenderer(new SettingTableCellRenderer());
-//		settingTable.getColumn(COLUMN_NAME_METHOD).setCellEditor(new DefaultCellEditor(new JComboBox<String>(methods)));
-//		settingTable.getColumn("データ名").setPreferredWidth(5000);
-//		settingTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
-//		COLUMN_NAME_METHOD
 		
 		settingTable.setCellSelectionEnabled(true);
-//		add(scrollPane, BorderLayout.CENTER);
-
 	}
 
 	
@@ -125,12 +116,10 @@ public class TimeCorrectionSettingPanel extends JPanel {
 	
 	
 	private class MySettingTableModel extends DefaultTableModel {
-//	private class MySettingTableModel extends AbstractTableModel {
 
 		private static final long serialVersionUID = 1L;
 
 		public Class<? extends Object> getColumnClass(int column) {
-//			System.err.println("j: " + getValueAt(0, column).getClass().toString());
 			return getValueAt(0, column).getClass();
 		}
 		

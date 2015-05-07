@@ -234,7 +234,6 @@ public class CommentTable extends JTable {
 
 	
 	public void indicateCurrentComment(long msec){
-		int aaaaa; //filter user1 1:38
 		CommentList commentList = ctm.getCommentList();
 		ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
 

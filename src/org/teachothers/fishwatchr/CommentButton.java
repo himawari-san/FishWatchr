@@ -28,7 +28,6 @@ import javax.swing.JOptionPane;
 
 public class CommentButton extends JButton implements ActionListener {
 	private static final long serialVersionUID = 1L;
-//	private static final String BUTTION_LABEL_CANCEL = "キャンセル";
 	// 話者優先
 	public static final int BUTTON_TYPE_DISCUSSER = 0;
 	// コメント優先
@@ -43,7 +42,7 @@ public class CommentButton extends JButton implements ActionListener {
 	private CommentType commentType = null;
 	private int buttonType = BUTTON_TYPE_DISCUSSER;
 	private boolean isMultiAnnotation = false;
-	private String setName = "";
+//	private String setName = "";
 	
 	// コメント優先
 	public CommentButton(CommentTableModel ctm, SoundPlayer soundPlayer, boolean isMultiAnnotation, CommentType commentType, ArrayList<User> discussers, User commenter) {
@@ -83,24 +82,6 @@ public class CommentButton extends JButton implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		Date now = new Date(); // 現在日時
 		int currentTime = soundPlayer.getElapsedTime(); // 開始からの経過時間（msec）
-
-//		// 以下の部分は，このインスタンスを作るときにやるべきなのだが，targetFilename が動的に変わるので，ママ
-////		String setName = new File(soundPlayer.getTargetFilename()).getName();
-////		ctm.getCommentList().get
-//		System.err.println("sn:" + setName);
-//		if(setName.isEmpty()){
-//			return;
-//		} else if(setName.endsWith(CommentList.FILE_SUFFIX) || SoundPlayer.isPlayable(setName)){
-//			// 末尾の拡張子を削除
-//			setName = setName.replaceFirst("\\.[^\\.]+$", "");
-//		}
-//		if(!setName.endsWith("_" + commenter.getName())){
-//			// 末尾にユーザ名がついていなければ，追加
-//			setName += "_" + commenter.getName();
-//		}
-//		// ファイル名冒頭のシステム名を削除
-//		setName = setName.replaceFirst("^" + FishWatchr.SYSTEM_NAME.toLowerCase(), "");
-
 		
 		if(buttonType == BUTTON_TYPE_COMMENT){
 			ArrayList<Object> items = new ArrayList<Object>();
@@ -110,7 +91,6 @@ public class CommentButton extends JButton implements ActionListener {
 				}
 			}
 			User selectedDiscusser = new User("");
-////			if (commentType.getEnableDiscusserSelection()) {
 			if (isMultiAnnotation) {
 				int selectedValue = JOptionPane.showOptionDialog(this, "キャンセルする場合は，ESC",
 						"対象者の選択", JOptionPane.YES_NO_CANCEL_OPTION,

@@ -544,7 +544,6 @@ public class MainFrame extends JFrame {
 
 	
 	private boolean setTargetFile() {
-		int aa;
 		try {
 			saveCommentList();
 		} catch (IOException e) {
@@ -1103,8 +1102,6 @@ public class MainFrame extends JFrame {
 			jMenuItemFileOpen
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							int aa;
-//							System.err.println("st:" + soundPlayer.getPlayerState());
 							soundPlayer.myStop();
 							if(!setTargetFile()){
 								return;
@@ -1119,12 +1116,9 @@ public class MainFrame extends JFrame {
 		return jMenuItemFileOpen;
 	}
 
-//	private String chooseFile(String description, int fileType, String... filter) {
 	private String chooseFile(FileFilter filter, int fileType, boolean isSaveDialog) {
 		JFileChooser jfc = new JFileChooser();
 		jfc.setFileSelectionMode(fileType);
-//		FileFilter filter = new FileNameExtensionFilter("JPEGファイル(*.jpg)", "jpg", "jpeg");
-//		fileChooser.addChoosableFileFilter(filter);
 
 		if (filter != null) {
 			
@@ -1158,11 +1152,6 @@ public class MainFrame extends JFrame {
 		FileFilter fishWatchrFilter = new FishWatchrFileFilter("注記・音声・動画ファイル", FishWatchrFileFilter.TYPE_ALL);
 		FileFilter mediaFilter = new FishWatchrFileFilter("音声・動画ファイル", FishWatchrFileFilter.TYPE_MEDIA);
 		FileFilter xmlFilter = new FishWatchrFileFilter("注記ファイル", FishWatchrFileFilter.TYPE_XML);
-//		FileFilter mediaFilter = new FishWatchrFileFilter("音声・動画ファイル", SoundPlayer.getPlayableFileExtensions());
-//		FileFilter xmlFilter = new FileNameExtensionFilter("注記ファイル(XML)", "xml");	
-//		FileFilter mediaFilter = new FileNameExtensionFilter("音声・動画ファイル", SoundPlayer.getPlayableFileExtensions());
-//		FileFilter fwFilter = new FileNameExtensionFilter("注記・音声・動画ファイル", allSuffix);
-//		FileFilter mediaFilter = new FishWatchrFileFilter("音声・動画ファイル", SoundPlayer.getPlayableFileExtensions());
 		jfc.setAcceptAllFileFilterUsed(false);
 		jfc.addChoosableFileFilter(fishWatchrFilter);
 		jfc.addChoosableFileFilter(xmlFilter);
@@ -1179,47 +1168,6 @@ public class MainFrame extends JFrame {
 		}
 		return "";
 	}
-
-
-//	class MediaFileFilter extends FileFilter {
-//
-//		private String description;
-//		
-//		public MediaFileFilter(String description){
-//			this.description = description;
-//		}
-//		
-//		public boolean accept(File f) {
-//			if (f.isDirectory()) {
-//				return true;
-//			}
-//			
-//			String filename = f.getName();
-//			
-//			if(filename.endsWith(SoundPlayer.SOUNDFILE_EXTENSION)){
-//				// 生成元のメディアファイルがないか調べる
-//				String candidate = filename.replaceFirst(SoundPlayer.SOUNDFILE_EXTENSION + "$",  "");
-//				if(SoundPlayer.isPlayable(candidate)){
-//					for(String child: new File(f.getParent()).list()){
-//						// 生成元の wav ファイルがある場合は，リストに表示しない
-//						if(child.equals(candidate)){
-//							return false;
-//						}
-//					}
-//				}
-//				return true;
-//			} else if(SoundPlayer.isPlayable(filename)){
-//				return true;
-//			} else {
-//				return false;
-//			}
-//		}
-//
-//		public String getDescription() {
-//			return description;
-//		}
-//	}
-
 	
 
 	class FishWatchrFileFilter extends FileFilter {
@@ -1373,7 +1321,6 @@ public class MainFrame extends JFrame {
 	
 	
 	private JMenuItem getJMenuItemFileMerge() {
-		int aaa;
 		if (jMenuItemFileMerge == null) {
 			jMenuItemFileMerge = new JMenuItem("注釈ファイルを合併");
 			jMenuItemFileMerge.setAccelerator(KeyStroke.getKeyStroke('M',
@@ -2020,7 +1967,7 @@ public class MainFrame extends JFrame {
 
 	
 	
-	
+	// 仕様が確定してから使用する
 	private JMenuItem getJMenuItemAnnotationTimeCorrection() {
 		if (jMenuItemAnnotationTimeCorrection == null) {
 			jMenuItemAnnotationTimeCorrection = new JMenuItem("注釈ファイル同期補正");
