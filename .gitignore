@@ -1,0 +1,9 @@
+Package/
+bin/
+old/
+util/
+*.log
+*.wav
+*.xml
+*.jar
+*~
