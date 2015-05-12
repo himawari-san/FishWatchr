@@ -23,10 +23,13 @@ import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
+import com.sun.jna.NativeLibrary;
+
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 //import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 //
 //import com.sun.jna.NativeLibrary;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 
 
@@ -39,12 +42,13 @@ public class FishWatchr {
 	
 	
 	public static void main(final String[] arg){
-		new NativeDiscovery().discover();
-//		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
-////		NativeLibrary.addSearchPath("vlc", "vlc");
-//		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
-//		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
-//		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
+		boolean isDiscovered = new NativeDiscovery().discover();
+		if(!isDiscovered){
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
+		}
 		
 //		try {
 ////			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
