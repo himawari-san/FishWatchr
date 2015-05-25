@@ -57,6 +57,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
@@ -970,20 +971,28 @@ public class MainFrame extends JFrame {
 		return buttonPanel;
 	}
 
+
 	private JPanel getDisplayPanel() {
 		if (displayPanel == null) {
 			displayPanel = new JPanel();
+			JTabbedPane timeLineTabbedPane = new JTabbedPane();
+			JPanel tabPanel1 = new JPanel();
+			timeLineTabbedPane.add(tabPanel1);
 			displayPanel.setLayout(new BorderLayout());
 			displayPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 			timeLinePanel = getTimeLinePanel();
 			timeLinePanel.setPreferredSize(new Dimension(512, 360));
 			moviePanel = getMoviePanel();
-			displayPanel.add(timeLinePanel, BorderLayout.WEST);
+			tabPanel1.add(timeLinePanel, BorderLayout.WEST);
+			tabPanel1.add(moviePanel, BorderLayout.CENTER);
+			displayPanel.add(timeLineTabbedPane, BorderLayout.WEST);
+//			displayPanel.add(timeLinePanel, BorderLayout.WEST);
 			displayPanel.add(moviePanel, BorderLayout.CENTER);
 		}
 		return displayPanel;
 	}
 
+	
 	private JPanel getMoviePanel() {
 		if (moviePanel == null) {
 			moviePanel = new JPanel();
