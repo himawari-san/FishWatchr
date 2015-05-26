@@ -30,7 +30,7 @@ import javax.swing.border.EtchedBorder;
 public class DiscussersPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private static final String USER_NOT_SPECIFIED = "(未指定)";
+	private static final String USER_NOT_UNDEFINED = "(未指定)";
 	private static final int DISCUSSION_PANEL_MAX_HEIGHT = 35;
 	private static final int USERNAME_LABEL_MAX_WIDTH = 80;
 	
@@ -64,7 +64,7 @@ public class DiscussersPanel extends JPanel {
 				userNameLabels[i].setText(discussers.get(i).getName());
 				markPanels[i].setUserName(discussers.get(i).getName());
 			} else {
-				userNameLabels[i].setText("");
+				userNameLabels[i].setText(USER_NOT_UNDEFINED);
 				markPanels[i].setUserName("");
 				
 			}
@@ -78,7 +78,8 @@ public class DiscussersPanel extends JPanel {
 			JPanel discusserPanel = new JPanel();
 			discusserPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, DISCUSSION_PANEL_MAX_HEIGHT));
 			discusserPanel.setLayout(new BorderLayout());
-			String discusserName = i < discussers.size() ? discussers.get(i).getName() : USER_NOT_SPECIFIED;
+			String discusserName = (i < discussers.size() && !discussers.get(i).getName().isEmpty())
+					? discussers.get(i).getName() : USER_NOT_UNDEFINED;
 			userNameLabels[i] = new JLabel(discusserName);
 			// why min_value?
 			userNameLabels[i].setPreferredSize(new Dimension(USERNAME_LABEL_MAX_WIDTH, Integer.MIN_VALUE));

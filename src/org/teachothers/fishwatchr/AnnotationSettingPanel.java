@@ -35,7 +35,7 @@ import javax.swing.JTextField;
 public class AnnotationSettingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int MAX_COMMENT_TYPE = 12;
-	public static final String NOT_SPECIFIED = "(未指定)";
+	public static final String USER_NOT_DEFINED = "";
 	
 	private List<CommentType> commentTypes;
 	private JTextField annotationNames[];
@@ -72,7 +72,7 @@ public class AnnotationSettingPanel extends JPanel {
 				markColors[i].setOpaque(true);
 				markColors[i].setBorderPainted(false);
 			} else {
-				annotationNames[i].setText(NOT_SPECIFIED);
+				annotationNames[i].setText(USER_NOT_DEFINED);
 			}
 			
 			add(annotationNames[i]);
@@ -81,19 +81,13 @@ public class AnnotationSettingPanel extends JPanel {
 	}
 	
 	public void updateNewValue() {
-		int nCommentTypes = 0;
-
 		for (int i = 0; i < MAX_COMMENT_TYPE; i++) {
-			if (!annotationNames[i].getText().equals(NOT_SPECIFIED)) {
-				nCommentTypes++;
-				if (nCommentTypes > commentTypes.size()) {
-					commentTypes.add(new CommentType(annotationNames[i]
-							.getText(), markColors[i].getBackground()));
-				} else {
-//					System.err.println("hey!3" + markColors[i].getBackground());
-					commentTypes.get(i).set(annotationNames[i].getText(),
-							markColors[i].getBackground());
-				}
+			if (i < commentTypes.size()) {
+				commentTypes.get(i).set(annotationNames[i].getText(),
+						markColors[i].getBackground());
+			} else {
+				commentTypes.add(new CommentType(annotationNames[i]
+						.getText(), markColors[i].getBackground()));
 			}
 		}
 	}
@@ -114,6 +108,4 @@ public class AnnotationSettingPanel extends JPanel {
 			});
 		}
 	}
-	
-	
 }
