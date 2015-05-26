@@ -27,7 +27,6 @@ import javax.swing.JTextField;
 public class DiscusserSettingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public static final String USER_NOT_DEFINED = "";
-	public static final String USER_NOT_SPECIFIED = "(未指定)";
 
 	private List<User> discussers;
 	private String newDiscussers[];
@@ -65,12 +64,14 @@ public class DiscusserSettingPanel extends JPanel {
 		
 		for(int i = 0; i < discusserNames.length; i++){
 			if(discusserNames[i].getText().equals(USER_NOT_DEFINED)){
-				deleteItems.add(i);
+				if(discussers.size() > i){
+					deleteItems.add(i);
+				}
 			} else {
-				if(i > discussers.size()){
-					discussers.add(new User(discusserNames[i].getText()));
-				} else {
+				if(i < discussers.size()){
 					discussers.get(i).setName(discusserNames[i].getText());
+				} else {
+					discussers.add(new User(discusserNames[i].getText()));
 				}
 			} 
 		}

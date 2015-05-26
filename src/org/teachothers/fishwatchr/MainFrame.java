@@ -218,6 +218,9 @@ public class MainFrame extends JFrame {
 		discussers.add(new User("話者４"));
 		discussers.add(new User("不特定"));
 		discussers.add(new User("誤り"));
+//		if(discussers.size() <= MAX_DISCUSSERS){
+//			discussers.add(new User(DiscusserSettingPanel.USER_NOT_DEFINED));
+//		}
 	}
 
 	
