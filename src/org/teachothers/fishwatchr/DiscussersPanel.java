@@ -24,13 +24,16 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
 public class DiscussersPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private static final String USER_NOT_SPECIFIED = "(未指定)";
-
+	private static final int DISCUSSION_PANEL_MAX_HEIGHT = 35;
+	private static final int USERNAME_LABEL_MAX_WIDTH = 80;
+	
 	private List<User> discussers;
 	private int maxDiscussers;
 	private JLabel[] userNameLabels;
@@ -66,21 +69,20 @@ public class DiscussersPanel extends JPanel {
 				
 			}
 		}
-//		for (int i = 0; i < discussers.size(); i++) {
-//			userNameLabels[i].setText(discussers.get(i).getName());
-//			markPanels[i].setUserName(discussers.get(i).getName());
-//		}
 	}
+
 	
 	private void ginit(){
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		for (int i = 0; i < discussers.size() || i < maxDiscussers; i++) {
 			JPanel discusserPanel = new JPanel();
+			discusserPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, DISCUSSION_PANEL_MAX_HEIGHT));
 			discusserPanel.setLayout(new BorderLayout());
 			String discusserName = i < discussers.size() ? discussers.get(i).getName() : USER_NOT_SPECIFIED;
 			userNameLabels[i] = new JLabel(discusserName);
-			userNameLabels[i].setPreferredSize(new Dimension(80, 20));
-			userNameLabels[i].setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+			// why min_value?
+			userNameLabels[i].setPreferredSize(new Dimension(USERNAME_LABEL_MAX_WIDTH, Integer.MIN_VALUE));
+			userNameLabels[i].setBorder(new EtchedBorder(BevelBorder.RAISED));
 			userNameLabels[i].setHorizontalAlignment(JLabel.CENTER);
 			discusserPanel.add(userNameLabels[i], BorderLayout.WEST);
 			discusserPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));

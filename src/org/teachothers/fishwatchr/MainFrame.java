@@ -78,7 +78,7 @@ public class MainFrame extends JFrame {
 	private static final int TASK_INTERVAL = 250;
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
 	public static final String USER_NOT_SPECIFIED = "noname";
-	public static int MAX_DISCUSSERS = 6;
+	public static int MAX_DISCUSSERS = 8;
 	public static int COMMENT_PANEL_HEIGHT = 250;
 
 	private SoundPlayer soundPlayer;
@@ -975,18 +975,20 @@ public class MainFrame extends JFrame {
 	private JPanel getDisplayPanel() {
 		if (displayPanel == null) {
 			displayPanel = new JPanel();
-			JTabbedPane timeLineTabbedPane = new JTabbedPane();
-			JPanel tabPanel1 = new JPanel();
-			timeLineTabbedPane.add(tabPanel1);
 			displayPanel.setLayout(new BorderLayout());
 			displayPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+
 			timeLinePanel = getTimeLinePanel();
-			timeLinePanel.setPreferredSize(new Dimension(512, 360));
 			moviePanel = getMoviePanel();
-			tabPanel1.add(timeLinePanel, BorderLayout.WEST);
-			tabPanel1.add(moviePanel, BorderLayout.CENTER);
+			moviePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+
+			JTabbedPane timeLineTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+			timeLineTabbedPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+			timeLineTabbedPane.addTab("経過", timeLinePanel);
+			timeLineTabbedPane.addTab("全体", new JPanel());
+			timeLineTabbedPane.setPreferredSize(new Dimension(512, 360));
+
 			displayPanel.add(timeLineTabbedPane, BorderLayout.WEST);
-//			displayPanel.add(timeLinePanel, BorderLayout.WEST);
 			displayPanel.add(moviePanel, BorderLayout.CENTER);
 		}
 		return displayPanel;
@@ -1031,7 +1033,11 @@ public class MainFrame extends JFrame {
 
 		}
 		return timeLinePanel;
-	}
+	}//		for (int i = 0; i < discussers.size(); i++) {
+//	userNameLabels[i].setText(discussers.get(i).getName());
+//	markPanels[i].setUserName(discussers.get(i).getName());
+//}
+
 
 	private SoundPanel getSoundPanel() {
 		if (soundPanel == null) {
@@ -1039,10 +1045,10 @@ public class MainFrame extends JFrame {
 			soundPanel
 					.setPreferredSize(new Dimension(
 							FishWatchr.WINDOW_WIDTH,
-							FishWatchr.VIEWER_HEIGHT));
+							FishWatchr.VIEWER_HEIGHT-50));
 			soundPanel
 					.setMaximumSize(new Dimension(FishWatchr.WINDOW_WIDTH,
-							FishWatchr.VIEWER_HEIGHT));
+							FishWatchr.VIEWER_HEIGHT-50));
 			soundPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		}
 		return soundPanel;
