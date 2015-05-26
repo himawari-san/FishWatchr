@@ -35,10 +35,9 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class FishWatchr {
 	public final static String SYSTEM_NAME = "FishWatchr";
-	public final static int VIEWER_HEIGHT = 180;
+	public final static int SOUND_VIEWER_HEIGHT = 80;
 	public final static int WINDOW_WIDTH = 1024;
-	public final static int OTHER_WINDOW_HEIGHT = 270;
-	public static int nUsers = 2;
+	public final static int WINDOW_HEIGHT = 630;
 	
 	
 	public static void main(final String[] arg){
@@ -50,24 +49,6 @@ public class FishWatchr {
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
 		}
 		
-//		try {
-////			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-////			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-//			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-////			UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InstantiationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (UnsupportedLookAndFeelException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		UIManager.put("Button.font",new Font(Font.DIALOG, Font.PLAIN, 12));
 		UIManager.put("Label.font",new Font(Font.DIALOG, Font.PLAIN, 12));
 		UIManager.put("List.font",new Font(Font.DIALOG, Font.PLAIN, 12));
@@ -79,8 +60,7 @@ public class FishWatchr {
 		UIManager.put("RadioButtonMenuItem.acceleratorFont",new Font(Font.DIALOG, Font.PLAIN, 12));
 		
 		MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
-		mainFrame.setSize(WINDOW_WIDTH, VIEWER_HEIGHT * nUsers + OTHER_WINDOW_HEIGHT);
-		mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, VIEWER_HEIGHT * nUsers + OTHER_WINDOW_HEIGHT));
+		mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 		mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
 		mainFrame.setVisible(true);
 		mainFrame.revalidate();

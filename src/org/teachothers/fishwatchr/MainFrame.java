@@ -260,8 +260,6 @@ public class MainFrame extends JFrame {
 		
 		jMenuBar = getJMenuBar();
 		setJMenuBar(jMenuBar);
-		setSize(FishWatchr.WINDOW_WIDTH, FishWatchr.VIEWER_HEIGHT
-				* MAX_DISCUSSERS + FishWatchr.OTHER_WINDOW_HEIGHT);
 		changeStateStop();
 
 		jMenuItemOptionRecorderMode.setSelected(isRecorderMode);
@@ -1016,6 +1014,7 @@ public class MainFrame extends JFrame {
 		return moviePanel;
 	}
 
+	
 	private JPanel getTimeLinePanel() {
 		if (timeLinePanel == null) {
 			timeLinePanel = new JPanel();
@@ -1033,10 +1032,7 @@ public class MainFrame extends JFrame {
 
 		}
 		return timeLinePanel;
-	}//		for (int i = 0; i < discussers.size(); i++) {
-//	userNameLabels[i].setText(discussers.get(i).getName());
-//	markPanels[i].setUserName(discussers.get(i).getName());
-//}
+	}
 
 
 	private SoundPanel getSoundPanel() {
@@ -1045,10 +1041,10 @@ public class MainFrame extends JFrame {
 			soundPanel
 					.setPreferredSize(new Dimension(
 							FishWatchr.WINDOW_WIDTH,
-							FishWatchr.VIEWER_HEIGHT-50));
+							FishWatchr.SOUND_VIEWER_HEIGHT));
 			soundPanel
 					.setMaximumSize(new Dimension(FishWatchr.WINDOW_WIDTH,
-							FishWatchr.VIEWER_HEIGHT-50));
+							FishWatchr.SOUND_VIEWER_HEIGHT));
 			soundPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		}
 		return soundPanel;

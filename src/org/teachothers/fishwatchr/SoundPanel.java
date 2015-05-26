@@ -24,8 +24,9 @@ import javax.swing.JPanel;
 
 public class SoundPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-	public static final int BAR_WIDTH = 2; // グラフの棒の幅(dot)
-	private static int Y_ORIGIN = 75; // y原点(y=75のとき原点になる)
+	public static final int BAR_WIDTH = 2; // width of bars of the graph (dot)
+	private static final int Y_ORIGIN = 75; // y of the y origin point in Panel coordinate system
+	private static final int TICK_MARK_SIZE = 4;
 	
 	private SoundPlayer soundPlayer;
 	private short[] soundBuf;
@@ -42,16 +43,14 @@ public class SoundPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-//		int width = getSize().width; // window 幅
-		int x0 = getSize().width / 2; // 原点座標
-		int r = x0 / BAR_WIDTH; // 原点左右の描画数
+		int x0 = getSize().width / 2; // x origin point
+		int xMax = x0 / BAR_WIDTH;
 		p = soundPlayer.getCurrentFrame();
-		int pStart = p - r;
-		int pEnd = p + r;
+		int pStart = p - xMax;
+		int pEnd = p + xMax;
 		
-		// 原点の目盛り
-		g.drawLine(0, Y_ORIGIN+4, x0*2, Y_ORIGIN+4);
-		g.fillRect(x0, Y_ORIGIN, BAR_WIDTH, 4);
+		// tick mark of the origin
+		g.fillRect(x0, Y_ORIGIN, BAR_WIDTH, TICK_MARK_SIZE);
 
 
 		int v;
