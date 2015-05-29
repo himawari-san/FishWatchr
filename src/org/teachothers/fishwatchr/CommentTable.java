@@ -83,12 +83,12 @@ public class CommentTable extends JTable {
 //		getColumn("話者").setCellEditor(new DefaultCellEditor(jcb));
 		
 		
-		JMenuItem menuItemDelete = new JMenuItem("列の削除");
+		JMenuItem menuItemDelete = new JMenuItem("行の削除");
 		menuItemDelete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				int selectedRow = CommentTable.this.getSelectedRow();
-				int selectedValue = JOptionPane.showConfirmDialog(null, "列を削除してもよいですか？", "削除の確認", JOptionPane.OK_CANCEL_OPTION);
+				int selectedValue = JOptionPane.showConfirmDialog(null, "行を削除してもよいですか？", "削除の確認", JOptionPane.OK_CANCEL_OPTION);
 				if(selectedValue == JOptionPane.OK_OPTION){
 					deleteComment(selectedRow);
 				}
