@@ -20,6 +20,7 @@ package org.teachothers.fishwatchr;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
@@ -44,17 +45,20 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -78,14 +82,19 @@ public class MainFrame extends JFrame {
 	private static final int TASK_INTERVAL = 250;
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
 	public static final String USER_NOT_SPECIFIED = "noname";
-	public static int MAX_DISCUSSERS = 8;
-	public static int COMMENT_PANEL_HEIGHT = 250;
+	public static final int MAX_DISCUSSERS = 8;
+	public static final int COMMENT_PANEL_HEIGHT = 250;
+	public static final int TIMELINE_PANEL_WIDTH = 512;
+	public static final int TIMELINE_PANEL_HEIGHT = 360;
 
 	private SoundPlayer soundPlayer;
 	private SoundPanel soundPanel;
 
 	private JPanel displayPanel;
 	private JPanel timeLinePanel;
+	private JPanel annotationGlobalViewPanel;
+	private JPanel globalViewDisplayPanel;
+	private JPanel globalViewOperationPanel;
 	private JPanel moviePanel;
 	private JPanel commentPanel;
 	private JPanel buttonPanel;
@@ -622,6 +631,10 @@ public class MainFrame extends JFrame {
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
 
+//			aa
+			annotationGlobalViewPanel.repaint();
+//			timeLinePanel.repaint();
+			
 			if(mf.isEmpty()){
 				return false;
 			}
@@ -977,14 +990,17 @@ public class MainFrame extends JFrame {
 			displayPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
 			timeLinePanel = getTimeLinePanel();
+			annotationGlobalViewPanel = getAnnotationGlobalViewPanel();
 			moviePanel = getMoviePanel();
 			moviePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-
+			
 			JTabbedPane timeLineTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 			timeLineTabbedPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-			timeLineTabbedPane.addTab("経過", timeLinePanel);
-			timeLineTabbedPane.addTab("全体", new JPanel());
-			timeLineTabbedPane.setPreferredSize(new Dimension(512, 360));
+			
+			
+			timeLineTabbedPane.addTab("全体", annotationGlobalViewPanel);
+			timeLineTabbedPane.addTab("詳細", timeLinePanel);
+			timeLineTabbedPane.setPreferredSize(new Dimension(TIMELINE_PANEL_WIDTH, TIMELINE_PANEL_HEIGHT));
 
 			displayPanel.add(timeLineTabbedPane, BorderLayout.WEST);
 			displayPanel.add(moviePanel, BorderLayout.CENTER);
@@ -992,6 +1008,43 @@ public class MainFrame extends JFrame {
 		return displayPanel;
 	}
 
+	
+	private JPanel getAnnotationGlobalViewPanel(){
+		if (annotationGlobalViewPanel == null) {
+			annotationGlobalViewPanel = new JPanel();
+			annotationGlobalViewPanel.setLayout(new BorderLayout());
+			globalViewOperationPanel = getGlobalViewOperationPanel();
+			globalViewOperationPanel.setBorder(new EtchedBorder());
+			AnnotationGlobalViewer av = new AnnotationGlobalViewer(commentList, soundPlayer.getCurrentRecordingTime());
+			av.setBorder(new EtchedBorder());
+
+			annotationGlobalViewPanel.add(av, BorderLayout.CENTER);
+			annotationGlobalViewPanel.add(globalViewOperationPanel, BorderLayout.SOUTH);
+		}
+		
+		return annotationGlobalViewPanel;
+	}
+
+	private JPanel getGlobalViewDisplayPanel(){
+		if(globalViewDisplayPanel == null){
+			globalViewDisplayPanel = new JPanel();
+			globalViewDisplayPanel.setLayout(new BorderLayout());
+			
+//			globalViewOperationPanel.add(new JButton("test"));
+		}
+		return globalViewDisplayPanel;
+	}
+
+	
+	private JPanel getGlobalViewOperationPanel(){
+		if(globalViewOperationPanel == null){
+			globalViewOperationPanel = new JPanel();
+			globalViewOperationPanel.add(new JButton("test"));
+		}
+		return globalViewOperationPanel;
+	}
+
+	
 	
 	private JPanel getMoviePanel() {
 		if (moviePanel == null) {
@@ -2056,6 +2109,8 @@ public class MainFrame extends JFrame {
 			timeCurrent.setTime(time / 1000);
 			timeSlider.setValue(time / 1000);
 			commentTable.indicateCurrentComment(time);
+//			annotationGlobalViewPanel.repaint();
+//			annotationGlobalViewPanel.drawTime(time);
 			if(jMenuItemOptionViewSyncMode.isSelected()){
 				commentTable.setViewCenter(time);
 			}
