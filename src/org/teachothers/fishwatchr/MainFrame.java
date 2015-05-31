@@ -89,8 +89,6 @@ public class MainFrame extends JFrame {
 	private JPanel displayPanel;
 	private JPanel timeLinePanel;
 	private AnnotationGlobalViewer annotationGlobalViewPanel;
-	private JPanel globalViewDisplayPanel;
-	private JPanel globalViewOperationPanel;
 	private JPanel moviePanel;
 	private JPanel commentPanel;
 	private JPanel buttonPanel;
@@ -627,9 +625,6 @@ public class MainFrame extends JFrame {
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
 
-			annotationGlobalViewPanel.updatePanel();
-//			timeLinePanel.repaint();
-			
 			if(mf.isEmpty()){
 				return false;
 			}
@@ -652,7 +647,7 @@ public class MainFrame extends JFrame {
 		timeSlider.setMaximum((int) soundPlayer.getSoundLength());
 		timeSlider.setEnabled(true);
 		timeEnd.setTime((int) soundPlayer.getSoundLength());
-		
+		annotationGlobalViewPanel.updatePanel();
 		return true;
 	}
 
@@ -996,7 +991,7 @@ public class MainFrame extends JFrame {
 			timeLineTabbedPane.addTab("全体", annotationGlobalViewPanel);
 			timeLineTabbedPane.addTab("詳細", timeLinePanel);
 			timeLineTabbedPane.setPreferredSize(new Dimension(TIMELINE_PANEL_WIDTH, TIMELINE_PANEL_HEIGHT));
-
+			timeLineTabbedPane.setSelectedIndex(1); // デフォルトは詳細
 			displayPanel.add(timeLineTabbedPane, BorderLayout.WEST);
 			displayPanel.add(moviePanel, BorderLayout.CENTER);
 		}

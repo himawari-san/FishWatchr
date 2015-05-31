@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
 public class AnnotationGlobalViewer extends JPanel {
 	private static final long serialVersionUID = 1L;
+	private final int SCALE_FACTOR_DEFAULT = 4;
 	private final int x0NamePanel = 4; // x origin of namePanel
 	private final int y0NamePanel = 4; // y origin of namePanel
 	private final int widthNamePanel = 50;
@@ -31,10 +33,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	private int markWidth = 2;
 	private int markHeight = 20;
 	
-	private int scaleFactor = 4; // x scaleFactor
+	private int scaleFactor = SCALE_FACTOR_DEFAULT; // x scaleFactor (1/x)
 	
-	private int currentTime = 0;
-
 	private JPanel namePanel;
 	private JPanel displayPanel;
 	private JPanel annotationViewerPanel;
@@ -80,7 +80,12 @@ public class AnnotationGlobalViewer extends JPanel {
 		annotationViewerPanel.setBorder(new EtchedBorder());
 		
 		targetSelector = new JComboBox<String>(targets);
+		p2.add(new JLabel("対象"));
 		p2.add(targetSelector);
+//		p2.add(new JLabel("　ページ"));
+//		p2.add(new JSpinner());
+//		p2.add(new JLabel("　倍率(1/n)"));
+//		p2.add(new JTextField("4"));
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
 //		displayPanel.add(timeBar, BorderLayout.SOUTH);
@@ -96,7 +101,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		if(annotationViewerPanel == null){
 			annotationViewerPanel = new JPanel(){
 				private static final long serialVersionUID = 1L;
-
+				
 				@Override
 				protected void paintComponent(Graphics g) {
 					super.paintComponent(g);
@@ -126,8 +131,8 @@ public class AnnotationGlobalViewer extends JPanel {
 						}
 					}
 					int xTime = x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000;
-					g.setColor(Color.LIGHT_GRAY);
-					g.drawLine(xTime, 0, xTime, 300);
+					g.setColor(Color.BLACK);
+					g.drawLine(xTime, 0, xTime, getSize().height);
 				}
 			};
 			
@@ -220,6 +225,15 @@ public class AnnotationGlobalViewer extends JPanel {
 			}
 		}
 		Collections.sort(commenterNames);
+
+		// 1800 = 30min 
+		int t = (int) Math.ceil(soundPlayer.getSoundLength() / 1800f);
+		if(t > 1){
+			scaleFactor = SCALE_FACTOR_DEFAULT * t;
+		} else {
+			scaleFactor = SCALE_FACTOR_DEFAULT;
+		}
+		
 		repaint();
 	}
 	
