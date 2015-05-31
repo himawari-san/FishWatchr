@@ -20,7 +20,6 @@ package org.teachothers.fishwatchr;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
@@ -45,20 +44,17 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -92,7 +88,7 @@ public class MainFrame extends JFrame {
 
 	private JPanel displayPanel;
 	private JPanel timeLinePanel;
-	private JPanel annotationGlobalViewPanel;
+	private AnnotationGlobalViewer annotationGlobalViewPanel;
 	private JPanel globalViewDisplayPanel;
 	private JPanel globalViewOperationPanel;
 	private JPanel moviePanel;
@@ -631,8 +627,7 @@ public class MainFrame extends JFrame {
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
 
-//			aa
-			annotationGlobalViewPanel.repaint();
+			annotationGlobalViewPanel.updatePanel();
 //			timeLinePanel.repaint();
 			
 			if(mf.isEmpty()){
@@ -990,7 +985,7 @@ public class MainFrame extends JFrame {
 			displayPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
 			timeLinePanel = getTimeLinePanel();
-			annotationGlobalViewPanel = getAnnotationGlobalViewPanel();
+			annotationGlobalViewPanel = new AnnotationGlobalViewer(commentList, soundPlayer, discussers, commentTypes);
 			moviePanel = getMoviePanel();
 			moviePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 			
@@ -1008,43 +1003,6 @@ public class MainFrame extends JFrame {
 		return displayPanel;
 	}
 
-	
-	private JPanel getAnnotationGlobalViewPanel(){
-		if (annotationGlobalViewPanel == null) {
-			annotationGlobalViewPanel = new JPanel();
-			annotationGlobalViewPanel.setLayout(new BorderLayout());
-			globalViewOperationPanel = getGlobalViewOperationPanel();
-			globalViewOperationPanel.setBorder(new EtchedBorder());
-			AnnotationGlobalViewer av = new AnnotationGlobalViewer(commentList, soundPlayer.getCurrentRecordingTime());
-			av.setBorder(new EtchedBorder());
-
-			annotationGlobalViewPanel.add(av, BorderLayout.CENTER);
-			annotationGlobalViewPanel.add(globalViewOperationPanel, BorderLayout.SOUTH);
-		}
-		
-		return annotationGlobalViewPanel;
-	}
-
-	private JPanel getGlobalViewDisplayPanel(){
-		if(globalViewDisplayPanel == null){
-			globalViewDisplayPanel = new JPanel();
-			globalViewDisplayPanel.setLayout(new BorderLayout());
-			
-//			globalViewOperationPanel.add(new JButton("test"));
-		}
-		return globalViewDisplayPanel;
-	}
-
-	
-	private JPanel getGlobalViewOperationPanel(){
-		if(globalViewOperationPanel == null){
-			globalViewOperationPanel = new JPanel();
-			globalViewOperationPanel.add(new JButton("test"));
-		}
-		return globalViewOperationPanel;
-	}
-
-	
 	
 	private JPanel getMoviePanel() {
 		if (moviePanel == null) {
@@ -2109,7 +2067,7 @@ public class MainFrame extends JFrame {
 			timeCurrent.setTime(time / 1000);
 			timeSlider.setValue(time / 1000);
 			commentTable.indicateCurrentComment(time);
-//			annotationGlobalViewPanel.repaint();
+			annotationGlobalViewPanel.repaint();
 //			annotationGlobalViewPanel.drawTime(time);
 			if(jMenuItemOptionViewSyncMode.isSelected()){
 				commentTable.setViewCenter(time);
