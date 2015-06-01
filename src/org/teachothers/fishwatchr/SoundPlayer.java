@@ -141,7 +141,7 @@ public class SoundPlayer extends Thread {
 
         if(playerType == PLAYER_TYPE_DEFAULT){
     		mainFrame.changeState(state);
-        	System.err.println("hey return: " + state);
+        	System.err.println("return: " + state);
 			return;
 		}
 		

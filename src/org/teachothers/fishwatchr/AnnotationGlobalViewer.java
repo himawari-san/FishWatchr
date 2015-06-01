@@ -80,7 +80,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		annotationViewerPanel.setBorder(new EtchedBorder());
 		
 		targetSelector = new JComboBox<String>(targets);
-		p2.add(new JLabel("対象"));
+		p2.add(new JLabel("分類"));
 		p2.add(targetSelector);
 //		p2.add(new JLabel("　ページ"));
 //		p2.add(new JSpinner());
