@@ -1,1 +1,1 @@
-jre\bin\java  -jar fishwatchr.jar
+jre\bin\java -Dfile.encoding=UTF-8 -jar fishwatchr.jar
