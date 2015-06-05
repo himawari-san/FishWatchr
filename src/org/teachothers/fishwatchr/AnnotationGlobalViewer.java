@@ -18,13 +18,18 @@ import javax.swing.border.EtchedBorder;
 
 public class AnnotationGlobalViewer extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private final int SCALE_FACTOR_DEFAULT = 4;
+	private static final int SCALE_FACTOR_DEFAULT = 4;
+	private static final int VIEW_TYPE_SPEAKER = 0; 
+	private static final int VIEW_TYPE_LABEL = 1; 
+	private static final int VIEW_TYPE_COMMENTER = 2; 
 	private final int x0NamePanel = 4; // x origin of namePanel
 	private final int y0NamePanel = 4; // y origin of namePanel
 	private final int widthNamePanel = 50;
 
 	private final int x0AnnotationViewerPanel = 2;
 	private final int y0AnnotationViewerPanel = 4;	
+
+	private final int xTimeMaxTickHeight = 5;	
 	
 	private CommentList commentList;
 
@@ -48,6 +53,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	private ArrayList<String> commenterNames = new ArrayList<String>();
 	
 	private SoundPlayer soundPlayer;
+	private float totalTime = 0; // sec
+	private int xTimeMax = 0;
 	
 	public AnnotationGlobalViewer(CommentList commentList, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
 //		super();
@@ -116,15 +123,15 @@ public class AnnotationGlobalViewer extends JPanel {
 						g.setColor(comment.getCommentType().getColor());
 
 						switch (targetSelector.getSelectedIndex()){
-						case 0:
+						case VIEW_TYPE_SPEAKER:
 							discusserName = comment.getDiscusser().getName();
 							g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight , markWidth, markHeight);
 							break;
-						case 1:
+						case VIEW_TYPE_LABEL:
 							commentType = comment.getCommentType().getType();
 							g.fillRect(x, y0AnnotationViewerPanel + types.indexOf(commentType)*itemHeight , markWidth, markHeight);
 							break;
-						case 2:
+						case VIEW_TYPE_COMMENTER:
 							commenterName = comment.getCommenter().getName();
 							g.fillRect(x, y0AnnotationViewerPanel + commenterNames.indexOf(commenterName)*itemHeight , markWidth, markHeight);
 							break;
@@ -133,6 +140,7 @@ public class AnnotationGlobalViewer extends JPanel {
 					int xTime = x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000;
 					g.setColor(Color.BLACK);
 					g.drawLine(xTime, 0, xTime, getSize().height);
+					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
 				}
 			};
 			
@@ -144,7 +152,10 @@ public class AnnotationGlobalViewer extends JPanel {
 						return;
 					}
 					Point point = e.getPoint();
-					soundPlayer.setPlayPoint((long)(point.x * scaleFactor * 1000));
+					float newTime = point.x * scaleFactor;
+					if(newTime < totalTime){
+						soundPlayer.setPlayPoint((long)(newTime * 1000));
+					}
 				}
 			});
 		}
@@ -161,21 +172,21 @@ public class AnnotationGlobalViewer extends JPanel {
 				public void paintComponent(Graphics g) {
 					int i = 0;
 					switch (targetSelector.getSelectedIndex()){
-					case 0:
+					case VIEW_TYPE_SPEAKER:
 						for(String name: discusserNames){
 							g.setColor(Color.black);
 							g.drawString(name, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
 							i++;
 						}
 						break;
-					case 1:
+					case VIEW_TYPE_LABEL:
 						for(String type: types){
 							g.setColor(Color.black);
 							g.drawString(type, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
 							i++;
 						}
 						break;
-					case 2:
+					case VIEW_TYPE_COMMENTER:
 						for(String commenterName: commenterNames){
 							g.setColor(Color.black);
 							g.drawString(commenterName, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
@@ -226,14 +237,19 @@ public class AnnotationGlobalViewer extends JPanel {
 		}
 		Collections.sort(commenterNames);
 
+		
+		totalTime = soundPlayer.getSoundLength();
+		
 		// 1800 = 30min 
-		int t = (int) Math.ceil(soundPlayer.getSoundLength() / 1800f);
+		int t = (int) Math.ceil(totalTime / 1800f);
 		if(t > 1){
 			scaleFactor = SCALE_FACTOR_DEFAULT * t;
 		} else {
 			scaleFactor = SCALE_FACTOR_DEFAULT;
 		}
 		
+		xTimeMax = x0AnnotationViewerPanel + (int)totalTime / scaleFactor;
+
 		repaint();
 	}
 	
