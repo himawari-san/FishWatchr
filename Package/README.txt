@@ -1,4 +1,4 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.8.1 (2015-05-11)
+ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9 (2015-06-06)
 Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
@@ -40,12 +40,19 @@ Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
     ‚ÌŽx‰‡‚ðŽó‚¯‚Ü‚µ‚½BŠÖŒWŽÒ‚Ì•ûX‚É[‚­Š´ŽÓ‚¢‚½‚µ‚Ü‚·B
 
     -- VLC media player (http://www.videolan.org/)
-    -- vlcj ver.3.6 (http://capricasoftware.co.uk/#/projects/vlcj)
+    -- vlcj ver.3.7 (http://capricasoftware.co.uk/#/projects/vlcj)
     -- JSPS‰ÈŒ¤”ïi26560135Cu‘¦Žž«‚Æ‹³ˆçŒø‰Ê‚ðl—¶‚µ‚½‹¦’²ŠwK‰ß’ö‚Ì
        \‘¢‰»Žè–@‚ÉŠÖ‚·‚éŒ¤‹†vj
 
 
 ‚SD—š—ð
+  2015-06-06: wFishWatchrxver.0.9 ŒöŠJ
+    - ƒfƒBƒXƒJƒbƒVƒ‡ƒ“‘S‘Ì‚©‚ç’‹L‚Ã‚¯Œ‹‰Ê‚ð‰{——‚·‚é‹@”\‚ð’Ç‰Á
+    - ]—ˆ‚Ì’‹L‚Ã‚¯Œ‹‰Ê‚Æƒpƒ[•\Ž¦‚ÍCÚ×•\Ž¦‚Æ‚µ‚ÄCƒfƒBƒXƒJƒbƒVƒ‡
+      ƒ“‚Ì‘S‘Ì•\Ž¦‚Æƒ^ƒu‚ÅØ‚è‘Ö‚¦‚ç‚ê‚é‚æ‚¤‚É‚µ‚½
+    - Windows ŠÂ‹«‚É‚¨‚¢‚ÄCƒƒfƒBƒAƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹–¼‚âƒpƒX‚É‘SŠp•¶
+      Žš‚ðŠÜ‚Þ‚ÆÄ¶‚Å‚«‚È‚¢•s‹ï‡‚ðC³
+
   2015-05-11: wFishWatchrxver.0.8.1 ŒöŠJ
     - Windows ŠÂ‹«‚Å VLC ƒ‰ƒCƒuƒ‰ƒŠ‚ðŽ©“®ŒŸo‚Å‚«‚È‚¢•s‹ï‡‚ðC³
 
