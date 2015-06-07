@@ -77,15 +77,21 @@ public class MainFrame extends JFrame {
 	private static final String COPYRIGHT = "Copyright(c) 2014-2015 Masaya YAMAGUCHI";
 	private static final int TASK_INTERVAL = 250;
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
+	private static final int TAB_STATUS_GLOBAL_VIEW = 0;
+	private static final int TAB_STATUS_DETAIL_VIEW = 1;
+	
 	public static final String USER_NOT_SPECIFIED = "noname";
 	public static final int MAX_DISCUSSERS = 8;
 	public static final int COMMENT_PANEL_HEIGHT = 250;
 	public static final int TIMELINE_PANEL_WIDTH = 512;
 	public static final int TIMELINE_PANEL_HEIGHT = 360;
-
+	
+	
+	
 	private SoundPlayer soundPlayer;
 	private SoundPanel soundPanel;
 
+	private JTabbedPane timeLineTabbedPane;
 	private JPanel displayPanel;
 	private JPanel timeLinePanel;
 	private AnnotationGlobalViewer annotationGlobalViewPanel;
@@ -984,14 +990,14 @@ public class MainFrame extends JFrame {
 			moviePanel = getMoviePanel();
 			moviePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 			
-			JTabbedPane timeLineTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+			timeLineTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 			timeLineTabbedPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 			
 			
 			timeLineTabbedPane.addTab("全体", annotationGlobalViewPanel);
 			timeLineTabbedPane.addTab("詳細", timeLinePanel);
 			timeLineTabbedPane.setPreferredSize(new Dimension(TIMELINE_PANEL_WIDTH, TIMELINE_PANEL_HEIGHT));
-			timeLineTabbedPane.setSelectedIndex(1); // デフォルトは詳細
+			timeLineTabbedPane.setSelectedIndex(TAB_STATUS_DETAIL_VIEW); // デフォルトは詳細
 			displayPanel.add(timeLineTabbedPane, BorderLayout.WEST);
 			displayPanel.add(moviePanel, BorderLayout.CENTER);
 		}
@@ -2051,8 +2057,12 @@ public class MainFrame extends JFrame {
 		int time;
 
 		public void run() {
-			soundPanel.repaint();
-			discussersPanel.repaintComponents();
+			if(timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW){
+				soundPanel.repaint();
+				discussersPanel.repaintComponents();
+			} else {
+				annotationGlobalViewPanel.repaint();
+			}
 			soundPlayer.updateVlcInfo();
 			if (jMenuItemOptionRecorderMode.isSelected()) {
 				time = soundPlayer.getElapsedTime();
@@ -2062,8 +2072,6 @@ public class MainFrame extends JFrame {
 			timeCurrent.setTime(time / 1000);
 			timeSlider.setValue(time / 1000);
 			commentTable.indicateCurrentComment(time);
-			annotationGlobalViewPanel.repaint();
-//			annotationGlobalViewPanel.drawTime(time);
 			if(jMenuItemOptionViewSyncMode.isSelected()){
 				commentTable.setViewCenter(time);
 			}
