@@ -49,7 +49,7 @@ Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
   2015-06-08: wFishWatchrxver.0.9 ŒöŠJ
     - ƒfƒBƒXƒJƒbƒVƒ‡ƒ“‘S‘Ì‚©‚ç’‹L‚Ã‚¯Œ‹‰Ê‚ð‰{——‚·‚é‹@”\‚ð’Ç‰Á
     - ]—ˆ‚Ì’‹L‚Ã‚¯Œ‹‰Ê‚Æƒpƒ[•\Ž¦‚ÍCÚ×•\Ž¦‚Æ‚µ‚ÄCƒfƒBƒXƒJƒbƒVƒ‡
-      ƒ“‚Ì‘S‘Ì•\Ž¦‚Æƒ^ƒu‚ÅØ‚è‘Ö‚¦‚ç‚ê‚é‚æ‚¤‚É‚µ‚½
+      ƒ“‚Ì‘S‘Ì•\Ž¦‚Æƒ^ƒu‚ÅØ‚è‘Ö‚¦‚ç‚ê‚é‚æ‚¤•ÏX
     - Windows ŠÂ‹«‚É‚¨‚¢‚ÄCƒƒfƒBƒAƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹–¼‚âƒpƒX‚É‘SŠp•¶
       Žš‚ðŠÜ‚Þ‚ÆÄ¶‚Å‚«‚È‚¢•s‹ï‡‚ðC³
 
