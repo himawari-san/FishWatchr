@@ -346,9 +346,10 @@ public class MainFrame extends JFrame {
 								return;
 							}
 							soundPlayer.setFile(mf);
-//							soundPlayer.init();
+
+							timeSlider.setEnabled(true);
+
 							changeStatePlay();
-//							soundPlayer.setTargetFilename(targetFilename);
 							soundPlayer.setPlayPoint(commentTime);
 							soundPlayer.myPlay();
 							timerStart();
