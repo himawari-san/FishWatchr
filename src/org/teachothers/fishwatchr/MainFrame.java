@@ -471,9 +471,9 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent arg0) {
 							int playerState = soundPlayer.getPlayerState();
 //							System.err.println("flag:"  + soundPlayer.getPlayerState());
-							if (playerState == SoundPlayer.PLAYER_STATE_PAUSE) {
-								soundPlayer.myResume();
-							}
+//							if (playerState == SoundPlayer.PLAYER_STATE_PAUSE) {
+//								soundPlayer.myResume();
+//							}
 							soundPlayer.myStop();
 							timer.cancel();
 							if(playerState == SoundPlayer.PLAYER_STATE_RECORD && !jMenuItemOptionRecorderMode.isSelected()){

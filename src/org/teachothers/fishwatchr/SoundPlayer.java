@@ -544,10 +544,9 @@ public class SoundPlayer extends Thread {
 	}
 
 	public void stopVlc(){
-		if(mp != null && mp.isPlaying()){
+		if(mp != null && mp.isPlayable()){
 	        mp.stop();
 			mediaPlayerComponent.clearDisplay();
-//	        mp.release();
 		}
 	}
 
