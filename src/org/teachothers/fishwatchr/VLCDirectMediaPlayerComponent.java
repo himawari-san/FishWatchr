@@ -23,9 +23,13 @@ import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import javax.swing.JPanel;
 
+import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
@@ -51,10 +55,13 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     private DirectMediaPlayer mediaPlayer;
     
     public VLCDirectMediaPlayerComponent() throws InterruptedException, InvocationTargetException {
+        factory = new MediaPlayerFactory();
     	init();
     }
+
     
     public void init(){
+    	System.err.println("imageWidth, imageHeight: " + imageWidth + "," + imageHeight);
     	image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(imageWidth, imageHeight);
         image.setAccelerationPriority(1.0f);
         imageWidth = image.getWidth();
@@ -64,10 +71,24 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         componentHeight = getHeight();
 
 //    	factory2 = new MediaPlayerFactory("--no-video");
-    	if(mediaPlayer != null) mediaPlayer.release();
-        factory = new MediaPlayerFactory();
+    	if(mediaPlayer != null)	mediaPlayer.release();
+        
     	
         mediaPlayer = factory.newDirectMediaPlayer(new VLCBufferFormatCallback(), new VLCRenderCallback());
+        mediaPlayer.addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+            @Override
+            public void buffering(MediaPlayer mediaPlayer, float newCache) {
+                System.out.println("Buffering " + newCache);
+            }
+
+            @Override
+            public void mediaSubItemAdded(MediaPlayer mediaPlayer, libvlc_media_t subItem) {
+                List<String> items = mediaPlayer.subItems();
+                System.out.println(items);
+            }
+        });
+
+        mediaPlayer.setPlaySubItems(true); // <--- This is very important for YouTube
 //        audioPlayer = factory2.newDirectAudioPlayer("S16N", 16000, 2, new VLCAudioCallbackAdapter());        
         clearDisplay();
     }
@@ -93,7 +114,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     	int componentHeight = getHeight();
 
     	float componentRatio = (float)componentWidth / (float)componentHeight;
-//		System.err.println("r: " + componentRatio + ", " + videoAspectRatio);
+//		System.err.println("r: " + componentRatio + ", " + videoAspectRatio + ", " + componentHeight + ", " + componentWidth);
     	
     	if(componentRatio < videoAspectRatio){
     		imageWidth = componentWidth;
@@ -118,25 +139,12 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 
     
     class VLCRenderCallback extends RenderCallbackAdapter {
-
-    	
         public VLCRenderCallback() {
             super(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
         }
 
         @Override
         public void onDisplay(DirectMediaPlayer mediaPlayer, int[] data) {
-            // The image data could be manipulated here...
-
-            /* RGB to GRAYScale conversion example */
-//            for(int i=0; i < data.length; i++){
-//                int argb = data[i];
-//                int b = (argb & 0xFF);
-//                int g = ((argb >> 8 ) & 0xFF);
-//                int r = ((argb >> 16 ) & 0xFF);
-//                int grey = (r + g + b + g) >> 2 ; //performance optimized - not real grey!
-//                data[i] = (grey << 16) + (grey << 8) + grey;
-//            }
             VLCDirectMediaPlayerComponent.this.repaint();
         }
     }
@@ -146,17 +154,5 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
             return new RV32BufferFormat(imageWidth, imageHeight);
         }
-
     }
-
-//    class VLCAudioCallbackAdapter extends DefaultAudioCallbackAdapter {
-//
-//        public VLCAudioCallbackAdapter() {
-//            super(2);
-//        }
-//
-//        @Override
-//        protected void onPlay(DirectAudioPlayer mediaPlayer, byte[] data, int sampleCount, long pts) {
-//        }
-//    }
 }

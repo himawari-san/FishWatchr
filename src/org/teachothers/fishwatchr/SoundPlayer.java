@@ -115,10 +115,8 @@ public class SoundPlayer extends Thread {
 		try {
 			mediaPlayerComponent = new VLCDirectMediaPlayerComponent();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		init();
@@ -130,9 +128,6 @@ public class SoundPlayer extends Thread {
 		int currentState = getPlayerState();
 		if(mp != null){
 			now = mp.getTime();
-//			mp.stop();
-//			mp.release();
-//			System.err.println("release!!");
 		}
 		mediaPlayerComponent.setSize(new Dimension(width, height));
 
@@ -223,40 +218,31 @@ public class SoundPlayer extends Thread {
 //			soundGraphBuf.setFrameLength(frameLength);
 			readWav(targetFilename, buf);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
-			System.err.println(targetFilename);
+			int aaaaa;
+			System.err.println("a:" + targetFilename);
 			playerType = PLAYER_TYPE_VLC;
 			setDefaultRecordingParameters();
-	        mp.addMediaPlayerEventListener(mpEventListener);
+			System.err.println("b:" + maxDataSize);
+			buf = new byte[maxDataSize*100];
 			mp.startMedia(targetFilename);
-			return;
-//			System.exit(0);
-//			mp.setPlaySubItems(true);
-//	        soundGraphBuf.setPosition(0);
-//			buf = new byte[maxDataSize];
-////			soundGraphBuf.setFrameLength(frameLength);
-//			Dimension videoDimension = null;
-//			for(int i = 0; i < 100; i++){
-//				videoDimension = mp.getVideoDimension();
-//				System.err.println(videoDimension);
-//				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
-//					mp.release();
-//					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
-//			        mp.addMediaPlayerEventListener(mpEventListener);
-////					mp.setPlaySubItems(true);
-////					mp.startMedia(targetFilename);
-//					break;
-//				} else {
-//					try {
-//						Thread.sleep(50);
-//					} catch (InterruptedException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//			if(videoDimension == null) {
-//				mp.stop();
-//			}
-			
+			Dimension videoDimension = null;
+			for(int i = 0; i < 100; i++){
+				videoDimension = mp.getVideoDimension();
+				System.err.println("videoDimension:" + videoDimension);
+				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
+					soundLength = (float)(mp.getLength()/1000);
+					mp.release();
+					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+					mp.startMedia(targetFilename);
+					break;
+				} else {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		} else {
 			playerType = PLAYER_TYPE_VLC;
 
@@ -297,7 +283,6 @@ public class SoundPlayer extends Thread {
 			try {
 				join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

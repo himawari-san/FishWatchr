@@ -648,6 +648,8 @@ public class MainFrame extends JFrame {
 		commentList.setSetName(xf, commenter);
 
 		setWindowTitle(xf);
+		mf = "https://www.youtube.com/watch?v=gl2shhJKBF8";
+		int aaaaa;
 		soundPlayer.setFile(mf);
 		timerStart();
 		timeSlider.setMinimum(0);
@@ -1130,7 +1132,7 @@ public class MainFrame extends JFrame {
 							if(!setTargetFile()){
 								return;
 							}
-
+							int aaa;
 							changeStatePlay();
 							soundPlayer.myPlay();
 							timerStart();
