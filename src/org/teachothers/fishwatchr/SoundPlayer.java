@@ -109,6 +109,8 @@ public class SoundPlayer extends Thread {
 //	private float videoAspectRate = 4f/3f;
 	private float videoAspectRate = 16f/9f;
 	
+	private boolean isStreaming = false;
+	
 	public SoundPlayer(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 		soundGraphBuf = new SoundGraphBuffer((int) Math.ceil(LIMIT_RECODING_TIME / frameLength));
@@ -131,6 +133,8 @@ public class SoundPlayer extends Thread {
 		}
 		mediaPlayerComponent.setSize(new Dimension(width, height));
 
+		if(mp != null) mp.release();
+		
 		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
         mp.addMediaPlayerEventListener(mpEventListener);
 
@@ -148,10 +152,22 @@ public class SoundPlayer extends Thread {
 			mp.pause();
 		} else if(currentState == PLAYER_STATE_PLAY){
 			mp.startMedia(targetFilename);
+			if (isStreaming) {
+				for (int i = 0; i < 100; i++) {
+					if (mp.isSeekable()) {
+						break;
+					} else {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
 			mp.setTime(now);
 		}
 		mainFrame.changeState(state);
-		
 	}
 
 	
@@ -175,7 +191,7 @@ public class SoundPlayer extends Thread {
 		soundGraphBuf.clear();
 		soundLength = -1;
 		saveFlag = false;
-//		if(mp!=null)mp.release();
+//		if(mp != null) mp.release();
 		mp = mediaPlayerComponent.getMediaPlayer();
 		mediaPlayerComponent.clearDisplay();
 		mpEventListener = new MyMediaPlayerEventListener();
@@ -207,6 +223,7 @@ public class SoundPlayer extends Thread {
 	
 	public void setFile(String filename){
 		init();
+		isStreaming = false; // default
 		targetFilename = filename;
 		if(targetFilename.toLowerCase().endsWith(".xml")){
 			// ファイル名だけセットするということでいいか？
@@ -219,6 +236,7 @@ public class SoundPlayer extends Thread {
 			readWav(targetFilename, buf);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
 			int aaaaa;
+			isStreaming = true;
 			System.err.println("a:" + targetFilename);
 			playerType = PLAYER_TYPE_VLC;
 			setDefaultRecordingParameters();
@@ -233,6 +251,7 @@ public class SoundPlayer extends Thread {
 					soundLength = (float)(mp.getLength()/1000);
 					mp.release();
 					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+			        mp.addMediaPlayerEventListener(mpEventListener);
 					mp.startMedia(targetFilename);
 					break;
 				} else {
@@ -286,6 +305,7 @@ public class SoundPlayer extends Thread {
 				e.printStackTrace();
 			}
 
+			System.err.println("pass!!" + targetFilename);
 			mp.startMedia(targetFilename);
 			Dimension videoDimension = null;
 			for(int i = 0; i < 100; i++){
@@ -738,12 +758,12 @@ public class SoundPlayer extends Thread {
 
 	
     private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
-        public void finished(MediaPlayer mediaPlayer) {
-        	if(playerType == PLAYER_TYPE_VLC){
-        		System.err.println("vlc finish!");
-        		initCallback();
-        	}
-        }
+//        public void finished(MediaPlayer mediaPlayer) {
+//        	if(playerType == PLAYER_TYPE_VLC){
+//        		System.err.println("vlc finish!");
+//        		initCallback();
+//        	}
+//        }
         
         public void stopped(MediaPlayer mediaPlayer){
         	if(playerType == PLAYER_TYPE_VLC){
@@ -751,6 +771,5 @@ public class SoundPlayer extends Thread {
         		initCallback();
         	}
         }
-        
     }
 }	

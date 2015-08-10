@@ -138,6 +138,7 @@ public class CommentList extends LinkedList<Comment> {
 			ArrayList<CommentType> commentTypes, ArrayList<User> discussers)
 			throws IOException {
 
+		System.err.println("kk:" + xmlFilename);
 //		String listFilename2 = targetFilename;
 		if (!xmlFilename.endsWith(FILE_SUFFIX)) {
 			return xmlFilename + "は拡張子が .xml ではないため，保存の処理を中止します。";

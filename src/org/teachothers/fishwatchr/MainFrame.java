@@ -24,6 +24,7 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
@@ -122,6 +123,7 @@ public class MainFrame extends JFrame {
 	private JMenuBar jMenuBar;
 	private JMenu jMenuFile;
 	private JMenuItem jMenuItemFileOpen;
+	private JMenuItem jMenuItemURLOpen;
 	private JMenuItem jMenuItemFileSave;
 	private JMenuItem jMenuItemFileMerge;
 	private JMenuItem jMenuItemFileExport;
@@ -429,9 +431,7 @@ public class MainFrame extends JFrame {
 								e.printStackTrace();
 							}
 							
-//							SimpleDateFormat today = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
-//							String basename = getUniqueFilename("fw" + today.format(new Date()) + "_" + commenter);
 							String basename = "fw" + today.format(new Date()) + "_" + commenter;
 														
 							if (jMenuItemOptionRecorderMode.isSelected()) {
@@ -487,7 +487,10 @@ public class MainFrame extends JFrame {
 			soundPlayButton
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
-							if(!mf.isEmpty() && !SoundPlayer.isPlayable(mf)){
+							if(!mf.isEmpty()
+									&& !SoundPlayer.isPlayable(mf)
+									&& !mf.startsWith("https://")
+									&& !mf.startsWith("http://")){
 								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。");
 								return;
 							}
@@ -502,7 +505,7 @@ public class MainFrame extends JFrame {
 								return;
 							} else {
 								if (mf.isEmpty() && xf.isEmpty()) {
-									if(!setTargetFile()){
+									if(!setTargetFile(true)){
 										return;
 									}
 								}
@@ -552,7 +555,7 @@ public class MainFrame extends JFrame {
 	}
 
 	
-	private boolean setTargetFile() {
+	private boolean setTargetFile(boolean isFile) {
 		try {
 			saveCommentList();
 		} catch (IOException e) {
@@ -568,9 +571,25 @@ public class MainFrame extends JFrame {
 //		xf = "";
 		commentTable.resetPosition();
 		setWindowTitle(xf);
+		int aaa;
+		String selectedFilename;
+		if(isFile){
+			selectedFilename = chooseTargetFile();
+		} else {
+			selectedFilename = JOptionPane.showInputDialog("test");
+			if(selectedFilename == null) return false;
+			mf = selectedFilename;
+			xf = getUniqueFilename("fw" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "_" + commenter + CommentList.FILE_SUFFIX);
+			commentList.clear();
+			commentList.setStartTime(new Date());
+			commentList.setMediaFilename(mf);
+			ctm.refreshFilter();
+			setDefaultButton();
+			updateButtonPanel(buttonType);
+			ctm.fireTableDataChanged();
+		}
 
-		String selectedFilename = chooseTargetFile();
-
+		
 		// 読み込んだファイルがメディアファイルの場合
 		if(SoundPlayer.isPlayable(selectedFilename)){
 			String oldMf = mf;
@@ -639,7 +658,7 @@ public class MainFrame extends JFrame {
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
 			return false;
-		} else if (!SoundPlayer.isPlayable(selectedFilename)) {
+		} else if (isFile && !SoundPlayer.isPlayable(selectedFilename)) {
 			// 注釈ファイルも存在しない場合。する場合は，ここをスルーするはず
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
@@ -648,7 +667,6 @@ public class MainFrame extends JFrame {
 		commentList.setSetName(xf, commenter);
 
 		setWindowTitle(xf);
-		mf = "https://www.youtube.com/watch?v=gl2shhJKBF8";
 		int aaaaa;
 		soundPlayer.setFile(mf);
 		timerStart();
@@ -728,15 +746,12 @@ public class MainFrame extends JFrame {
 			commentTable.getCellEditor().cancelCellEditing();
 		}
 
-//		System.err.println("saveCommentList hey!!!!!!!!!!!!!!!!!!");
-//		if (commentList.isModified()) {
 		if (commentList.isModified() || (!xf.isEmpty() && !(new File(xf).exists()))) {
 			if(xf.isEmpty()){
 				xf = "fw_noname.xml";
 				System.err.println("Warning(MainFrame): ファイル名がつけられていません。\n" + xf + "として保存します。");
 			}
 			
-//			System.err.println("save!!!!!!!!!!!!!!!!!!");
 			String message = commentList.save(xf, commentTypes, discussers);
 			JOptionPane.showMessageDialog(this, message);
 			return;
@@ -821,6 +836,7 @@ public class MainFrame extends JFrame {
 		soundForwardButton.setEnabled(false);
 		soundBackwardButton.setEnabled(false);
 		jMenuItemFileOpen.setEnabled(false);
+		jMenuItemURLOpen.setEnabled(false);
 		jMenuItemFileSave.setEnabled(false);
 		jMenuItemFileMerge.setEnabled(false);
 		timeSlider.setEnabled(false);
@@ -848,6 +864,7 @@ public class MainFrame extends JFrame {
 		soundBackwardButton.setEnabled(false);
 		soundPlayButton.setText("▶");
 		jMenuItemFileOpen.setEnabled(true);
+		jMenuItemURLOpen.setEnabled(true);
 		jMenuItemFileSave.setEnabled(true);
 		jMenuItemFileMerge.setEnabled(true);
 		jMenuItemControlSkipBackward.setEnabled(false);
@@ -874,6 +891,7 @@ public class MainFrame extends JFrame {
 		soundBackwardButton.setEnabled(true);
 		soundPlayButton.setText("〓");
 		jMenuItemFileOpen.setEnabled(false);
+		jMenuItemURLOpen.setEnabled(false);
 		jMenuItemFileSave.setEnabled(true);
 		jMenuItemFileMerge.setEnabled(false);
 		jMenuItemControlSkipBackward.setEnabled(true);
@@ -894,6 +912,7 @@ public class MainFrame extends JFrame {
 		soundBackwardButton.setEnabled(true);
 		soundPlayButton.setText("▶");
 		jMenuItemFileOpen.setEnabled(false);
+		jMenuItemURLOpen.setEnabled(false);
 		jMenuItemFileSave.setEnabled(true);
 		jMenuItemControlSkipBackward.setEnabled(false);
 		jMenuItemControlSkipForward.setEnabled(false);
@@ -1008,6 +1027,7 @@ public class MainFrame extends JFrame {
 	}
 
 	
+	Timer t;
 	private JPanel getMoviePanel() {
 		if (moviePanel == null) {
 			moviePanel = new JPanel();
@@ -1015,14 +1035,20 @@ public class MainFrame extends JFrame {
 			moviePanel.add(soundPlayer.getMediaplayerComponent());
 			soundPlayer.getMediaplayerComponent().setOpaque(false); // これがないと背景がおかしくなる
 			moviePanel.addComponentListener(new ComponentAdapter() {
-				public void componentResized(ComponentEvent ev) {
-					Dimension size = ev.getComponent().getSize();
-					if(timer != null){
-						timer.cancel();
-					}
-					soundPlayer.resizeMediaPlayer(size.width, size.height);
-					timerStart();
-					System.err.println(ev.getComponent().getSize());
+				public void componentResized(final ComponentEvent ev) {
+					if(t != null) t.cancel();
+					t = new Timer();
+					t.schedule(new TimerTask() {
+						public void run() {
+							Dimension size = ev.getComponent().getSize();
+							if(timer != null){
+								timer.cancel();
+							}
+							soundPlayer.resizeMediaPlayer(size.width, size.height);
+							timerStart();
+							System.err.println(ev.getComponent().getSize());
+						}
+					}, 200);
 				}
 			});
 		}
@@ -1112,6 +1138,7 @@ public class MainFrame extends JFrame {
 			jMenuFile = new JMenu();
 			jMenuFile.setText("ファイル");
 			jMenuFile.add(getJMenuItemFileOpen());
+			jMenuFile.add(getJMenuItemURLOpen());
 			jMenuFile.add(getJMenuItemFileSave());
 			jMenuFile.add(getJMenuItemFileExport());
 			jMenuFile.add(getJMenuItemFileMerge());
@@ -1129,7 +1156,7 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							soundPlayer.myStop();
-							if(!setTargetFile()){
+							if(!setTargetFile(true)){
 								return;
 							}
 							int aaa;
@@ -1140,6 +1167,28 @@ public class MainFrame extends JFrame {
 					});
 		}
 		return jMenuItemFileOpen;
+	}
+
+	private JMenuItem getJMenuItemURLOpen() {
+		if (jMenuItemURLOpen == null) {
+			jMenuItemURLOpen = new JMenuItem("URLを開く");
+			jMenuItemURLOpen.setAccelerator(KeyStroke.getKeyStroke('U',
+					KeyEvent.CTRL_MASK, false));
+			jMenuItemURLOpen
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							soundPlayer.myStop();
+							if(!setTargetFile(false)){
+								return;
+							}
+							int aaa;
+							changeStatePlay();
+							soundPlayer.myPlay();
+							timerStart();
+						}
+					});
+		}
+		return jMenuItemURLOpen;
 	}
 
 	private String chooseFile(FileFilter filter, int fileType, boolean isSaveDialog) {
