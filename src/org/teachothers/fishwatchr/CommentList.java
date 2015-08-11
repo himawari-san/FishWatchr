@@ -138,11 +138,8 @@ public class CommentList extends LinkedList<Comment> {
 			ArrayList<CommentType> commentTypes, ArrayList<User> discussers)
 			throws IOException {
 
-		System.err.println("kk:" + xmlFilename);
-//		String listFilename2 = targetFilename;
 		if (!xmlFilename.endsWith(FILE_SUFFIX)) {
 			return xmlFilename + "は拡張子が .xml ではないため，保存の処理を中止します。";
-//			listFilename += FILE_SUFFIX;
 		}
 		String startTimeStr = startTime != null ? dateFormat.format(startTime)
 				: NOT_DEFINED;
@@ -163,8 +160,7 @@ public class CommentList extends LinkedList<Comment> {
 
 		// header
 		ow.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + 
-					new File(mediaFilename).getName() + "\">\n");
+		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + mediaFilename + "\">\n");
 
 		// commentTypes settings
 		ow.write("  <comment_types>\n");
@@ -284,6 +280,8 @@ public class CommentList extends LinkedList<Comment> {
 		if(mediaFilename == null){
 			System.err.println("warning:(MainFrame.java): " + targetFilename + " には，/comment_list/@media_file がありません。");
 			mediaFilename = "";
+		} else if(mediaFilename.matches("^https?://.+")){
+//			mediaFilename = targetFilename;
 		} else if(!mediaFilename.isEmpty()){
 			mediaFilename = new File(targetFilename).getParent() + "/" + mediaFilename;
 		}
@@ -439,33 +437,6 @@ public class CommentList extends LinkedList<Comment> {
 			}
 		}
 		mediaFilename = candMediafilename;
-//		for (File file : files) {
-//			String filename = file.getCanonicalPath();
-//			
-//			if (filename.endsWith(CommentList.FILE_SUFFIX)) {
-//				String currentMediaFilename = load(filename, commentTypes, discussers, flagAdd);
-//
-//			    if(currentMediaFilename.isEmpty()){
-//			    	continue;
-//			    } else if(mediaFilename.isEmpty()){
-//					mediaFilename = file.getParent() + "/" + currentMediaFilename;
-//					xmlFilename = filename;
-//				} else if(mediaFilename.equals(currentMediaFilename)){
-//					throw new IllegalStateException("複数のメディアファイル（"
-//							+ new File(mediaFilename).getName()
-////							+ " / " + xmlFilename 
-//							+ ",\n"
-//							+ new File(filename).getName()
-////							+ " / " + filename
-//							+ "）があります。\nフォルダに含めるメディアファイルは一つにしてください。");
-//				}
-//				
-//				// 初回だけ，false にする
-//				if (!flagAdd) {
-//					flagAdd = true;
-//				}
-//			}
-//		}
 
 		return mediaFilename;
 	}
@@ -572,8 +543,13 @@ public class CommentList extends LinkedList<Comment> {
 		
 
 	public void setMediaFilename(String filename){
-		mediaFilename = filename;
+		if(filename.matches("^https?://.+")){
+			mediaFilename = filename;
+		} else {
+			mediaFilename = new File(filename).getName();
+		}
 	}
+
 	
 	public String getMediaFilename(){
 		return mediaFilename;

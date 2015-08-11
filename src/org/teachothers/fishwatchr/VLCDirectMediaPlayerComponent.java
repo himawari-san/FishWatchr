@@ -70,26 +70,10 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         componentWidth = getWidth();
         componentHeight = getHeight();
 
-//    	factory2 = new MediaPlayerFactory("--no-video");
     	if(mediaPlayer != null)	mediaPlayer.release();
-        
     	
         mediaPlayer = factory.newDirectMediaPlayer(new VLCBufferFormatCallback(), new VLCRenderCallback());
-//        mediaPlayer.addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
-//            @Override
-//            public void buffering(MediaPlayer mediaPlayer, float newCache) {
-//                System.out.println("Buffering " + newCache);
-//            }
-//
-//            @Override
-//            public void mediaSubItemAdded(MediaPlayer mediaPlayer, libvlc_media_t subItem) {
-//                List<String> items = mediaPlayer.subItems();
-//                System.out.println(items);
-//            }
-//        });
-
         mediaPlayer.setPlaySubItems(true); // <--- This is very important for YouTube
-//        audioPlayer = factory2.newDirectAudioPlayer("S16N", 16000, 2, new VLCAudioCallbackAdapter());        
         clearDisplay();
     }
 

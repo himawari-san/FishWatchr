@@ -223,6 +223,7 @@ public class SoundPlayer extends Thread {
 	
 	public void setFile(String filename){
 		init();
+		System.err.println("a:" + filename);
 		isStreaming = false; // default
 		targetFilename = filename;
 		if(targetFilename.toLowerCase().endsWith(".xml")){
@@ -545,7 +546,24 @@ public class SoundPlayer extends Thread {
 	}
 	
 	public void playVlc(){
-		mp.start();
+		System.err.println("sub:" + mp.subItemCount() + ", " + mp.subItemIndex());
+		if(isStreaming){
+			mp.playSubItem(0, "");
+			for (int i = 0; i < 100; i++) {
+				if (mp.isSeekable()) {
+					break;
+				} else {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		} else {
+			mp.play();
+//			mp.start();
+		}
 	}
 
 	public void stopVlc(){
@@ -721,19 +739,17 @@ public class SoundPlayer extends Thread {
 	}
 	
 	public void setPlayPoint(long msec){
-		skippedFrame = (int)(msec/frameLength/1000) - soundGraphBuf.getPosition();
 		if(playerType == PLAYER_TYPE_VLC){
-			if(!mp.isPlayable()){
-				mp.startMedia(targetFilename);
-			}
-			mp.skip((int)(skippedFrame*frameLength*1000));
+			mp.setTime(msec);
+		} else {
+			skippedFrame = (int)(msec/frameLength/1000) - soundGraphBuf.getPosition();
 		}
 	}
 	
 	
 	public void setPlayRate(float rate){
 		if(playerType == PLAYER_TYPE_VLC && mp.isPlaying()){
-				mp.setRate(rate);
+			mp.setRate(rate);
 		}
 	}
 	
@@ -758,12 +774,14 @@ public class SoundPlayer extends Thread {
 
 	
     private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
-//        public void finished(MediaPlayer mediaPlayer) {
-//        	if(playerType == PLAYER_TYPE_VLC){
-//        		System.err.println("vlc finish!");
-//        		initCallback();
-//        	}
-//        }
+        public void finished(MediaPlayer mediaPlayer) {
+        	if(playerType == PLAYER_TYPE_VLC){
+        		System.err.println("vlc finish!");
+        		if(mp.isSeekable()){
+            		initCallback();
+        		}
+        	}
+        }
         
         public void stopped(MediaPlayer mediaPlayer){
         	if(playerType == PLAYER_TYPE_VLC){

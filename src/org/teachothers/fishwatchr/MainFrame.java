@@ -343,8 +343,8 @@ public class MainFrame extends JFrame {
 								+ adjustmentTimeAtJump; // msec
 
 						if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
-							if(mf.isEmpty() || !SoundPlayer.isPlayable(mf)){
-								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。");
+							if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){
+								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。\n" + mf);
 								return;
 							}
 							soundPlayer.setFile(mf);
@@ -352,13 +352,13 @@ public class MainFrame extends JFrame {
 							timeSlider.setEnabled(true);
 
 							changeStatePlay();
-							soundPlayer.setPlayPoint(commentTime);
 							soundPlayer.myPlay();
+							soundPlayer.setPlayPoint(commentTime);
 							timerStart();
 						} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
 							changeStatePlay();
-							soundPlayer.setPlayPoint(commentTime);
 							soundPlayer.myPlay();
+							soundPlayer.setPlayPoint(commentTime);
 						} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
 							soundPlayer.setPlayPoint(commentTime);
 						}
@@ -489,8 +489,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent arg0) {
 							if(!mf.isEmpty()
 									&& !SoundPlayer.isPlayable(mf)
-									&& !mf.startsWith("https://")
-									&& !mf.startsWith("http://")){
+									&& !mf.matches("^https?://.+")){
 								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。");
 								return;
 							}
@@ -848,14 +847,6 @@ public class MainFrame extends JFrame {
 			commentTable.getCellEditor().stopCellEditing();
 		}
 		
-//		// 保存
-//		try {
-//			saveCommentList();
-//		} catch (IOException e) {
-//			JOptionPane.showMessageDialog(MainFrame.this, "データの保存時にエラーが発生しました。");
-//			e.printStackTrace();
-//		}
-
 		// saveAndClearCommentList();
 		soundStopButton.setEnabled(false);
 		soundRecordButton.setEnabled(true);
