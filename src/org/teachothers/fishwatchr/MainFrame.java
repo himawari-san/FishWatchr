@@ -24,7 +24,6 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
@@ -566,8 +565,6 @@ public class MainFrame extends JFrame {
 		playRate = 1.0f;
 		iVideoAspectRate = 0;
 
-//		mf = "";
-//		xf = "";
 		commentTable.resetPosition();
 		setWindowTitle(xf);
 		int aaa;
@@ -766,9 +763,7 @@ public class MainFrame extends JFrame {
 		case SoundPlayer.PLAYER_STATE_PAUSE:
 				soundPlayer.myResume();
 		case SoundPlayer.PLAYER_STATE_PLAY:
-//	    	System.err.println("pb: before stop");
 			soundPlayer.myStop();
-//	    	System.err.println("pb: after stop");
 			break;
 		default:
 		}
@@ -782,34 +777,6 @@ public class MainFrame extends JFrame {
 		}
 
 		System.exit(0);
-		//		if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD){
-//			JOptionPane.showMessageDialog(this, "データ記録中です。\n終了ボタンを押して，記録を終了させください。");
-//			return;
-//		}
-//		
-//		if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-//			soundPlayer.myResume();
-//		}
-//		
-//		if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY){
-//			soundPlayer.myStop();
-//		}
-//
-//		
-//		try {
-//			saveCommentList();
-//		} catch (IOException e) {
-//			JOptionPane.showMessageDialog(this, "データ保存時に問題が発生したため，強制終了します。\n" + xf + " の内容を確認してください。\n問題があれば，バックアップファイルを参照してください。\n" + e.getMessage());
-//			e.printStackTrace();
-//			System.exit(0);
-//		}
-//		
-//		
-//		if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-//			soundPlayer.myResume();
-//		}
-//		
-//		System.exit(0);
 	}
 
 
