@@ -79,6 +79,15 @@ public class CommentButton extends JButton implements ActionListener {
 	}
 	
 
+	public void showMnemonic(){
+		String label = getText();
+		char mnemonic = (char) getMnemonic();
+		if(mnemonic != 0 && mnemonic - '0' < 10){
+			setText("<html>" + label + "<br />[" + Integer.toString(mnemonic -'0') + "]</html>");
+		}
+	}
+	
+	
 	public void actionPerformed(ActionEvent arg0) {
 		Date now = new Date(); // 現在日時
 		int currentTime = soundPlayer.getElapsedTime(); // 開始からの経過時間（msec）

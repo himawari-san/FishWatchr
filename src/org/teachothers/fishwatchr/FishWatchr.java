@@ -37,7 +37,7 @@ public class FishWatchr {
 	public final static String SYSTEM_NAME = "FishWatchr";
 	public final static int SOUND_VIEWER_HEIGHT = 80;
 	public final static int WINDOW_WIDTH = 1024;
-	public final static int WINDOW_HEIGHT = 630;
+	public final static int WINDOW_HEIGHT = 650;
 	
 	
 	public static void main(final String[] arg){

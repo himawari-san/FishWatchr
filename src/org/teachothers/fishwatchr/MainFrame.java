@@ -82,7 +82,8 @@ public class MainFrame extends JFrame {
 	
 	public static final String USER_NOT_SPECIFIED = "noname";
 	public static final int MAX_DISCUSSERS = 8;
-	public static final int COMMENT_PANEL_HEIGHT = 250;
+	public static final int COMMENT_PANEL_HEIGHT = 270;
+	public static final int BUTTON_PANEL_HEIGHT = 50;
 	public static final int TIMELINE_PANEL_WIDTH = 512;
 	public static final int TIMELINE_PANEL_HEIGHT = 360;
 	
@@ -263,19 +264,20 @@ public class MainFrame extends JFrame {
 	public void ginit() {
 		jMenuBar = getJMenuBar();
 		setJMenuBar(jMenuBar);
+		jMenuItemOptionRecorderMode.setSelected(isRecorderMode);
+		jMenuItemOptionViewSyncMode.setSelected(isViewSyncMode);
+
 		displayPanel = getDisplayPanel();
 		commentPanel = getCommentPanel(); // get after getJMenuBar();
 		commentPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE,
 				COMMENT_PANEL_HEIGHT));
 		getContentPane().add(displayPanel, BorderLayout.CENTER);
 		getContentPane().add(commentPanel, BorderLayout.SOUTH);
+		soundRecordButton.setForeground(Color.red);
 		
 		changeStateStop();
 
-		jMenuItemOptionRecorderMode.setSelected(isRecorderMode);
-		soundRecordButton.setForeground(Color.red);
 
-		jMenuItemOptionViewSyncMode.setSelected(isViewSyncMode);
 
 		// 閉じるボタンでいきなり閉じるのを抑制する
 		addWindowListener(new WindowAdapter() {
@@ -325,6 +327,8 @@ public class MainFrame extends JFrame {
 			commentPanel.setLayout(new BorderLayout());
 			operationPanel = getOperationPanel();
 			buttonPanel = getButtonPanel();
+			int bbbbb;
+			buttonPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, BUTTON_PANEL_HEIGHT));
 			commentPanel.add(operationPanel, BorderLayout.NORTH);
 			commentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -937,23 +941,6 @@ public class MainFrame extends JFrame {
 			commentButtons = new ArrayList<CommentButton>();
 
 			updateButtonPanel(buttonType);
-//			if (buttonType == CommentButton.BUTTON_TYPE_COMMENT) {
-//				for (int i = 0; i < commentTypes.size(); i++) {
-//					CommentButton commentButton = new CommentButton(ctm,
-//							soundPlayer, false, commentTypes.get(i),
-//							discussers, commenter);
-//					commentButtons.add(commentButton);
-//					buttonPanel.add(commentButton);
-//				}
-//			} else if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
-//				for (int i = 0; i < discussers.size(); i++) {
-//					CommentButton commentButton = new CommentButton(ctm,
-//							soundPlayer, false, discussers.get(i),
-//							commentTypes, commenter);
-//					commentButtons.add(commentButton);
-//					buttonPanel.add(commentButton);
-//				}
-//			}
 		}
 		return buttonPanel;
 	}
@@ -1737,6 +1724,7 @@ public class MainFrame extends JFrame {
 							soundPlayer, isAnnotationMulti,
 							discusser, commentTypes, commenter);
 					newCommentButton.setMnemonic('1' + i++);
+					newCommentButton.showMnemonic();
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
 				}
@@ -1748,6 +1736,7 @@ public class MainFrame extends JFrame {
 							soundPlayer, isAnnotationMulti,
 							commentType, discussers, commenter);
 					newCommentButton.setMnemonic('1' + i++);
+					newCommentButton.showMnemonic();
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
 				}
