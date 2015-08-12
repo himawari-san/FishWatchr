@@ -261,15 +261,15 @@ public class MainFrame extends JFrame {
 	}
 
 	public void ginit() {
+		jMenuBar = getJMenuBar();
+		setJMenuBar(jMenuBar);
 		displayPanel = getDisplayPanel();
-		commentPanel = getCommentPanel();
+		commentPanel = getCommentPanel(); // get after getJMenuBar();
 		commentPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE,
 				COMMENT_PANEL_HEIGHT));
 		getContentPane().add(displayPanel, BorderLayout.CENTER);
 		getContentPane().add(commentPanel, BorderLayout.SOUTH);
 		
-		jMenuBar = getJMenuBar();
-		setJMenuBar(jMenuBar);
 		changeStateStop();
 
 		jMenuItemOptionRecorderMode.setSelected(isRecorderMode);
@@ -663,7 +663,6 @@ public class MainFrame extends JFrame {
 		commentList.setSetName(xf, commenter);
 
 		setWindowTitle(xf);
-		int aaaaa;
 		soundPlayer.setFile(mf);
 		timerStart();
 		timeSlider.setMinimum(0);
@@ -937,23 +936,24 @@ public class MainFrame extends JFrame {
 			buttonPanel = new JPanel();
 			commentButtons = new ArrayList<CommentButton>();
 
-			if (buttonType == CommentButton.BUTTON_TYPE_COMMENT) {
-				for (int i = 0; i < commentTypes.size(); i++) {
-					CommentButton commentButton = new CommentButton(ctm,
-							soundPlayer, false, commentTypes.get(i),
-							discussers, commenter);
-					commentButtons.add(commentButton);
-					buttonPanel.add(commentButton);
-				}
-			} else if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
-				for (int i = 0; i < discussers.size(); i++) {
-					CommentButton commentButton = new CommentButton(ctm,
-							soundPlayer, false, discussers.get(i),
-							commentTypes, commenter);
-					commentButtons.add(commentButton);
-					buttonPanel.add(commentButton);
-				}
-			}
+			updateButtonPanel(buttonType);
+//			if (buttonType == CommentButton.BUTTON_TYPE_COMMENT) {
+//				for (int i = 0; i < commentTypes.size(); i++) {
+//					CommentButton commentButton = new CommentButton(ctm,
+//							soundPlayer, false, commentTypes.get(i),
+//							discussers, commenter);
+//					commentButtons.add(commentButton);
+//					buttonPanel.add(commentButton);
+//				}
+//			} else if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
+//				for (int i = 0; i < discussers.size(); i++) {
+//					CommentButton commentButton = new CommentButton(ctm,
+//							soundPlayer, false, discussers.get(i),
+//							commentTypes, commenter);
+//					commentButtons.add(commentButton);
+//					buttonPanel.add(commentButton);
+//				}
+//			}
 		}
 		return buttonPanel;
 	}
@@ -1723,13 +1723,20 @@ public class MainFrame extends JFrame {
 		buttonType = newButtonType;
 		buttonPanel.removeAll();
 		commentButtons.clear();
+		boolean isAnnotationMulti = false;
+		
+		if(jMenuItemAnnotationMulti != null){
+			isAnnotationMulti = jMenuItemAnnotationMulti.isSelected();
+		}
 
+		int i = 0;
 		if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
 			for (User discusser : discussers) {
 				if (!discusser.getName().isEmpty()) {
 					CommentButton newCommentButton = new CommentButton(ctm,
-							soundPlayer, jMenuItemAnnotationMulti.isSelected(),
+							soundPlayer, isAnnotationMulti,
 							discusser, commentTypes, commenter);
+					newCommentButton.setMnemonic('1' + i++);
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
 				}
@@ -1738,8 +1745,9 @@ public class MainFrame extends JFrame {
 			for (CommentType commentType : commentTypes) {
 				if (!commentType.getType().isEmpty()) {
 					CommentButton newCommentButton = new CommentButton(ctm,
-							soundPlayer, jMenuItemAnnotationMulti.isSelected(),
+							soundPlayer, isAnnotationMulti,
 							commentType, discussers, commenter);
+					newCommentButton.setMnemonic('1' + i++);
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
 				}
