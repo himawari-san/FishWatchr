@@ -36,22 +36,10 @@ public class SoundGraphBuffer {
 		for(int i = 0; i < b.length-1 && pc < buf.length && i < length-1; i += step){
 			p = (short)(((b[i+1] & 0xFF) << 8) | (b[i] & 0xFF));
 			sum += Math.abs(p*p);
-//			short p2 = (short)((b[i+1] << 8) | b[i]);
-//			short p3 = (short)(((b[i+1]) << 8)  + (b[i] & 0xff));
-//			if(p != p2 || p != p3){
-//				System.err.println("p, p2, p3: " + p + "," + p2 + "," + p3);
-//			}
-//
-			//			p = (short)(((b[i+1]) << 8)  | (b[i] & 0xff));
-//			p = (short)(((b[i+1]) << 8)  + (b[i] & 0xff));
 			c++;
 		}
-//		System.err.println("c: " + c);
 		short res = (short)(Math.log10(sum/c) * 10);
-//		short res = (short)(Math.log10(sum / c) * 10);
-//		short res = (short)(sum / c);
 		buf[pc++] = res;
-//		System.err.println("pc: " + pc + ", " + res);
 		
 		return res;
 	}
