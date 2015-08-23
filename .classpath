@@ -2,9 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="/home/masaya/Dropbox/Current/FishWatchr/lib/vlcj-ss.jar"/>
-	<classpathentry kind="lib" path="/home/masaya/Dropbox/Current/FishWatchr/lib/jna-3.5.2.jar"/>
-	<classpathentry kind="lib" path="/home/masaya/Dropbox/Current/FishWatchr/lib/platform-3.5.2.jar"/>
-	<classpathentry kind="lib" path="/home/masaya/Dropbox/Current/FishWatchr/lib/slf4j-api-1.7.10.jar"/>
+	<classpathentry kind="lib" path="/home/masaya/Dropbox/Current/FishWatchr/lib/vlcj-3.9.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

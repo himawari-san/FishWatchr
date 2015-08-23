@@ -18,6 +18,7 @@
 package org.teachothers.fishwatchr;
 
 import java.awt.Color;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 public class CommentButton extends JButton implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -83,7 +87,8 @@ public class CommentButton extends JButton implements ActionListener {
 		String label = getText();
 		char mnemonic = (char) getMnemonic();
 		if(mnemonic != 0 && mnemonic - '0' < 10){
-			setText("<html>" + label + "<br />[" + Integer.toString(mnemonic -'0') + "]</html>");
+			setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(mnemonic -'0') + "]</div></html>");
+//			setText("<html><p style=\"margin:0px; padding:0px; text-align:center\">" + label + "</p><p style=\"margin:0px; padding: 0px; text-align:center\">[" + Integer.toString(mnemonic -'0') + "]</p></html>");
 		}
 	}
 	

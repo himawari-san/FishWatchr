@@ -1725,6 +1725,7 @@ public class MainFrame extends JFrame {
 							discusser, commentTypes, commenter);
 					newCommentButton.setMnemonic('1' + i++);
 					newCommentButton.showMnemonic();
+					newCommentButton.setPreferredSize(new Dimension(90, 40));
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
 				}
@@ -1737,6 +1738,7 @@ public class MainFrame extends JFrame {
 							commentType, discussers, commenter);
 					newCommentButton.setMnemonic('1' + i++);
 					newCommentButton.showMnemonic();
+					newCommentButton.setPreferredSize(new Dimension(90, 40));
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
 				}

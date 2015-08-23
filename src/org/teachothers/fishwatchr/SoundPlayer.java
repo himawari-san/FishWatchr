@@ -46,6 +46,7 @@ public class SoundPlayer extends Thread {
 	public static String SOUNDFILE_EXTENSION = ".wav";
 	private static String[] videoAspectRates = {"16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"};
 	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"};
+	private final static int MAX_RETRY_REFERRING_DATA = 100;  
 	
 	public final static int PLAYER_STATE_STOP = 0;
 	public final static int PLAYER_STATE_RECORD = 1;
@@ -153,7 +154,7 @@ public class SoundPlayer extends Thread {
 		} else if(currentState == PLAYER_STATE_PLAY){
 			mp.startMedia(targetFilename);
 			if (isStreaming) {
-				for (int i = 0; i < 100; i++) {
+				for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
 					if (mp.isSeekable()) {
 						break;
 					} else {
@@ -223,7 +224,7 @@ public class SoundPlayer extends Thread {
 	
 	public void setFile(String filename){
 		init();
-		System.err.println("a:" + filename);
+
 		isStreaming = false; // default
 		targetFilename = filename;
 		if(targetFilename.toLowerCase().endsWith(".xml")){
@@ -238,16 +239,15 @@ public class SoundPlayer extends Thread {
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
 			int aaaaa;
 			isStreaming = true;
-			System.err.println("a:" + targetFilename);
+//			System.err.println("a:" + targetFilename);
 			playerType = PLAYER_TYPE_VLC;
 			setDefaultRecordingParameters();
-			System.err.println("b:" + maxDataSize);
 			buf = new byte[maxDataSize*100];
 			mp.startMedia(targetFilename);
 			Dimension videoDimension = null;
-			for(int i = 0; i < 100; i++){
+			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
 				videoDimension = mp.getVideoDimension();
-				System.err.println("videoDimension:" + videoDimension);
+//				System.err.println("videoDimension:" + videoDimension);
 				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
 					soundLength = (float)(mp.getLength()/1000);
 					mp.release();
@@ -309,7 +309,7 @@ public class SoundPlayer extends Thread {
 			System.err.println("pass!!" + targetFilename);
 			mp.startMedia(targetFilename);
 			Dimension videoDimension = null;
-			for(int i = 0; i < 100; i++){
+			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
 				videoDimension = mp.getVideoDimension();
 				System.err.println("videoDimension:" + videoDimension);
 				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
