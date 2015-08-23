@@ -3,17 +3,17 @@ FishWatchr
 FishWatchr is a discussion observation support system which allows users to annotate video/sound files during discussion. Target users of this system are learners of discussion in the Fishbowl method.
 
 # Requirements
-* [vlcj (ver.3.6 or later)](https://github.com/caprica/vlcj)
-* [VLC (ver.2.1.5 or later)](http://www.videolan.org/vlc/)
+* [vlcj (ver.3.9 or later)](https://github.com/caprica/vlcj)
+* [VLC (ver.2.2.1 or later)](http://www.videolan.org/vlc/)
 * [Java (7 or later)](http://java.com/)
 
 # Install
 ## Build
 1. Clone
 2. Copy the following files to the "lib" directory. jna.jar, platform.jar, slf4j-api-1.7.10.jar will be referred by vlcj.
-  * [vlcj-3.7.0.jar](http://search.maven.org/remotecontent?filepath=uk/co/caprica/vlcj/3.7.0/vlcj-3.7.0.jar)
-  * [jna-3.5.1.jar](https://maven.java.net/content/repositories/releases/net/java/dev/jna/jna/3.5.1/jna-3.5.1.jar)
-  * [platform-3.5.1.jar](https://maven.java.net/content/repositories/releases/net/java/dev/jna/platform/3.5.1/platform-3.5.1.jar)
+  * [vlcj-3.9.0.jar](http://search.maven.org/remotecontent?filepath=uk/co/caprica/vlcj/3.9.0/vlcj-3.9.0.jar)
+  * [jna-3.5.2.jar](https://maven.java.net/content/repositories/releases/net/java/dev/jna/jna/3.5.2/jna-3.5.2.jar)
+  * [platform-3.5.2.jar](https://maven.java.net/content/repositories/releases/net/java/dev/jna/platform/3.5.2/platform-3.5.2.jar)
   * [slf4j-api-1.7.10.jar] (http://www.slf4j.org/dist/slf4j-1.7.10.zip)
 3. Install [VLC](http://www.videolan.org/vlc/). Note that 64bit VLC should be installed if you use 64bit Java.
 
