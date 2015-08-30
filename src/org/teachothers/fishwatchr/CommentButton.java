@@ -17,18 +17,21 @@
 
 package org.teachothers.fishwatchr;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Insets;
+import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class CommentButton extends JButton implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -98,42 +101,119 @@ public class CommentButton extends JButton implements ActionListener {
 		int currentTime = soundPlayer.getElapsedTime(); // 開始からの経過時間（msec）
 		
 		if(buttonType == BUTTON_TYPE_COMMENT){
-			ArrayList<Object> items = new ArrayList<Object>();
-			for(User d : discussers){
-				if(!d.getName().isEmpty()){
-					items.add(d);
-				}
-			}
 			User selectedDiscusser = new User("");
 			if (isMultiAnnotation) {
-				int selectedValue = JOptionPane.showOptionDialog(this, "キャンセルする場合は，ESC",
-						"対象者の選択", JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.PLAIN_MESSAGE, null, items.toArray(), items.get(0));
-				if (selectedValue == JOptionPane.CLOSED_OPTION) {
+				ButtonDialog dialog = new ButtonDialog("ラベルの選択(" + commentType.getType() + ")", discussers);
+				dialog.setModal(true);
+				dialog.setLocationRelativeTo(this);
+				dialog.setVisible(true);
+				int iSelectedValue = dialog.getSelectedValue();
+				if (iSelectedValue == -1) {
 					return;
 				}
-				selectedDiscusser = discussers.get(selectedValue);
+				selectedDiscusser = discussers.get(iSelectedValue);
 			}
 			ctm.addComment("", commentType, commenter, selectedDiscusser, now, currentTime);
 		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
 			CommentType commentType = new CommentType("", Color.BLACK);
 			if (isMultiAnnotation) {
-				ArrayList<Object> items = new ArrayList<Object>();
-				for(CommentType ct : commentTypes){
-					if(!ct.getType().isEmpty()){
-						items.add(ct);
-					}
-				}
-				int selectedValue = JOptionPane.showOptionDialog(this, "キャンセルする場合は，ESC",
-						"ラベルの選択", JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.PLAIN_MESSAGE, null, items.toArray(),
-						items.get(0));
-				if (selectedValue == JOptionPane.CLOSED_OPTION) {
+				ButtonDialog dialog = new ButtonDialog("ラベルの選択(" + discusser.getName() + ")", commentTypes);
+				dialog.setModal(true);
+				dialog.setLocationRelativeTo(this);
+				dialog.setVisible(true);
+				int iSelectedValue = dialog.getSelectedValue();
+				if (iSelectedValue == -1) {
 					return;
 				}
-				commentType = commentTypes.get(selectedValue);
+				commentType = commentTypes.get(iSelectedValue);
 			}
 			ctm.addComment("", commentType, commenter, discusser, now, currentTime);
 		}
+	}
+
+
+	class ButtonDialog extends JDialog {
+		private static final long serialVersionUID = 1L;
+		ArrayList<?> objects;
+		int iSelectedItem = -1;
+		
+		public ButtonDialog(String title, ArrayList<?> objects){
+			super();
+			setTitle(title);
+			this.objects = objects;
+			ginit();
+		}
+		
+		
+		void ginit(){
+			Container pane = getContentPane();
+			JPanel messagePanel = new JPanel();
+			JPanel buttonPanel = new JPanel();
+
+			pane.setLayout(new BorderLayout());
+			pane.add(messagePanel, BorderLayout.NORTH);
+			pane.add(buttonPanel, BorderLayout.CENTER);
+			buttonPanel.setLayout(new FlowLayout());
+			messagePanel.setLayout(new BorderLayout());
+			
+			messagePanel.add(new JLabel(" キャンセルする場合は，ESC"), BorderLayout.WEST);
+			
+			
+			int c = 0;
+			for(Object object: objects){
+				final String label = object.toString();
+				if(label.isEmpty()){
+					continue;
+				}
+				final MyJButton button = new MyJButton(c++, label);
+				button.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						ButtonDialog.this.setVisible(false);
+						iSelectedItem = button.getNumber();
+					}
+				});
+				
+				button.addKeyListener(new KeyListener() {
+					@Override
+					public void keyPressed(KeyEvent e) {
+						if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+							ButtonDialog.this.setVisible(false);
+							iSelectedItem = -1;
+						}
+					}
+
+					@Override
+					public void keyTyped(KeyEvent e) {}
+
+					@Override
+					public void keyReleased(KeyEvent e) {}
+				});
+
+				buttonPanel.add(button);
+			}
+			pack();
+		}
+
+		public int getSelectedValue(){
+			return iSelectedItem;
+		}
+	}
+
+	
+	class MyJButton extends JButton {
+		private static final long serialVersionUID = 1L;
+		int no = 0;
+		
+		public MyJButton(int no, String label){
+			super("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(no+1) + "]</div></html>");
+			this.no = no;
+			setMnemonic('0' + no + 1);
+		}
+		
+		public int getNumber(){
+			return no;
+		}
+		
 	}
 }
