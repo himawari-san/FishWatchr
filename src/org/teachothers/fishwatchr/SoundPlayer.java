@@ -47,6 +47,7 @@ public class SoundPlayer extends Thread {
 	private static String[] videoAspectRates = {"16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"};
 	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"};
 	private final static int MAX_RETRY_REFERRING_DATA = 100;  
+	private final static int RETRY_INTERVAL = 100; // msec  
 	
 	public final static int PLAYER_STATE_STOP = 0;
 	public final static int PLAYER_STATE_RECORD = 1;
@@ -159,7 +160,7 @@ public class SoundPlayer extends Thread {
 						break;
 					} else {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(RETRY_INTERVAL);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -247,7 +248,6 @@ public class SoundPlayer extends Thread {
 			Dimension videoDimension = null;
 			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
 				videoDimension = mp.getVideoDimension();
-//				System.err.println("videoDimension:" + videoDimension);
 				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
 					soundLength = (float)(mp.getLength()/1000);
 					mp.release();
@@ -257,7 +257,7 @@ public class SoundPlayer extends Thread {
 					break;
 				} else {
 					try {
-						Thread.sleep(50);
+						Thread.sleep(RETRY_INTERVAL);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -282,7 +282,7 @@ public class SoundPlayer extends Thread {
 						break;
 					}
 					try {
-						Thread.sleep(100);
+						Thread.sleep(RETRY_INTERVAL);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -320,7 +320,7 @@ public class SoundPlayer extends Thread {
 					break;
 				} else {
 					try {
-						Thread.sleep(50);
+						Thread.sleep(RETRY_INTERVAL);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -549,12 +549,12 @@ public class SoundPlayer extends Thread {
 		System.err.println("sub:" + mp.subItemCount() + ", " + mp.subItemIndex());
 		if(isStreaming){
 			mp.playSubItem(0, "");
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
 				if (mp.isSeekable()) {
 					break;
 				} else {
 					try {
-						Thread.sleep(100);
+						Thread.sleep(RETRY_INTERVAL);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -623,7 +623,7 @@ public class SoundPlayer extends Thread {
 		while(state == PLAYER_STATE_STOPPING){
 			System.err.println("stopping");
 			try {
-				Thread.sleep(100);
+				Thread.sleep(RETRY_INTERVAL);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
