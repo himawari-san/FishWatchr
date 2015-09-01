@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.ParseException;
@@ -34,6 +35,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -285,8 +288,8 @@ public class CommentList extends LinkedList<Comment> {
 		if(mediaFilename == null){
 			System.err.println("warning:(MainFrame.java): " + targetFilename + " には，/comment_list/@media_file がありません。");
 			mediaFilename = "";
-		} else if(mediaFilename.matches("^https?://.+")){
-//			mediaFilename = targetFilename;
+		} else if(URLDecoder.decode(mediaFilename, "utf-8").matches("^https?://.+")){
+			mediaFilename = URLDecoder.decode(mediaFilename, "utf-8");
 		} else if(!mediaFilename.isEmpty()){
 			mediaFilename = new File(targetFilename).getParent() + "/" + mediaFilename;
 		}
