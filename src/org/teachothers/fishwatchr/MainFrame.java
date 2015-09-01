@@ -48,6 +48,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -576,8 +577,17 @@ public class MainFrame extends JFrame {
 		if(isFile){
 			selectedFilename = chooseTargetFile();
 		} else {
-			selectedFilename = JOptionPane.showInputDialog("test");
-			if(selectedFilename == null) return false;
+			JOptionPane pane = new JOptionPane("例： https://www.youtube.com/watch?v=your_input", JOptionPane.PLAIN_MESSAGE);
+			pane.setWantsInput(true);
+			pane.setInputValue("");
+			pane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
+			JDialog dialog = pane.createDialog(this, "URLの入力");
+			dialog.setSize(350, 150);
+			dialog.setVisible(true);
+			selectedFilename = (String) pane.getInputValue();
+			if(pane.getValue() == null || selectedFilename.isEmpty()){
+				return false;
+			}
 			mf = selectedFilename;
 			xf = getUniqueFilename("fw" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "_" + commenter + CommentList.FILE_SUFFIX);
 			commentList.clear();
