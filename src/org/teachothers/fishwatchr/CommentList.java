@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -160,7 +161,11 @@ public class CommentList extends LinkedList<Comment> {
 
 		// header
 		ow.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + mediaFilename + "\">\n");
+		String newMediaFilename = mediaFilename;
+		if(mediaFilename.matches("^https?://.+")){
+			newMediaFilename = URLEncoder.encode(mediaFilename, "utf-8");
+		}
+		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + newMediaFilename + "\">\n");
 
 		// commentTypes settings
 		ow.write("  <comment_types>\n");
