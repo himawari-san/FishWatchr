@@ -167,6 +167,8 @@ public class CommentList extends LinkedList<Comment> {
 		String newMediaFilename = mediaFilename;
 		if(mediaFilename.matches("^https?://.+")){
 			newMediaFilename = URLEncoder.encode(mediaFilename, "utf-8");
+		} else {
+			newMediaFilename = new File(mediaFilename).getName();
 		}
 		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + newMediaFilename + "\">\n");
 
