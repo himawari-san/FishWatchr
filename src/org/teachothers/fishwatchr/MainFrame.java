@@ -195,7 +195,7 @@ public class MainFrame extends JFrame {
 	// テーブル表示同期
 	private boolean isViewSyncMode = false;
 
-	
+	private boolean isSoundPanelEnable = false;
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -356,6 +356,7 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません１。\n" + mf);
 								return;
 							}
+							isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
 
 							timeSlider.setEnabled(true);
 
@@ -679,6 +680,8 @@ public class MainFrame extends JFrame {
 			xf = "";
 			return false;
 		}
+		isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
+
 		
 		commentList.setSetName(xf, commenter);
 
@@ -1406,6 +1409,8 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
 								return;
 							}
+							isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
+
 							setWindowTitle(xf);
 							commentList.setSetName(xf, commenter);
 //							soundPlayer.setFile(mf);
@@ -2086,7 +2091,9 @@ public class MainFrame extends JFrame {
 
 		public void run() {
 			if(timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW){
-				soundPanel.repaint();
+				if(isSoundPanelEnable){
+					soundPanel.repaint();
+				}
 				discussersPanel.repaintComponents();
 			} else {
 				annotationGlobalViewPanel.repaint();

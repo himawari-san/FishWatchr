@@ -77,7 +77,7 @@ public class SoundPlayer extends Thread {
 	
 //	public static int playerType = PLAYER_TYPE_VLC;
 	public static int playerType = PLAYER_TYPE_DEFAULT;
-	
+	public static boolean isSoundBufferEnable = false;
 	
 	private AudioFormat linearFormat;
 	private DataLine.Info info;
@@ -227,6 +227,7 @@ public class SoundPlayer extends Thread {
 		init();
 
 		isStreaming = false; // default
+		setSoundBufferEnable(false);
 		targetFilename = filename;
 		if(targetFilename.toLowerCase().endsWith(".xml")){
 			// ファイル名だけセットするということでいいか？
@@ -237,13 +238,14 @@ public class SoundPlayer extends Thread {
 			buf = new byte[maxDataSize]; 
 //			soundGraphBuf.setFrameLength(frameLength);
 			readWav(targetFilename, buf);
+			setSoundBufferEnable(true);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
 			int aaaaa;
 			isStreaming = true;
 //			System.err.println("a:" + targetFilename);
 			playerType = PLAYER_TYPE_VLC;
-			setDefaultRecordingParameters();
-			buf = new byte[maxDataSize*100];
+//			setDefaultRecordingParameters();
+//			buf = new byte[maxDataSize*100];
 			mp.startMedia(targetFilename);
 			Dimension videoDimension = null;
 			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
@@ -276,38 +278,46 @@ public class SoundPlayer extends Thread {
 				buf = new byte[maxDataSize];
 //				soundGraphBuf.setFrameLength(frameLength);
 				readWav(wavFilename, buf);
+				setSoundBufferEnable(true);
 			} else {
-				JOptionPane.showMessageDialog(mainFrame, "wav ファイル（" + wavFilename  + "）を生成します。\n生成には数分かかる場合があります。");
-				mp.removeMediaPlayerEventListener(mpEventListener);
-				mp.startMedia(targetFilename, ":sout=#transcode{acodec=s16l,channels=2,samplerate=44100,ab=128}:standard{access=file,mux=wav,dst=" + wavFilename + "}");
-				while(true){
-					if(!mp.isPlaying()){
-						break;
+				int selectedValue = JOptionPane.showConfirmDialog(mainFrame, "音声波形の表示を行うために，wavファイルを生成しますか？");
+				if(selectedValue == JOptionPane.CANCEL_OPTION){
+					return false;
+				} else if(selectedValue == JOptionPane.YES_OPTION){
+					JOptionPane.showMessageDialog(mainFrame, "wav ファイル（" + wavFilename  + "）を生成します。\n生成には数分かかる場合があります。");
+					mp.removeMediaPlayerEventListener(mpEventListener);
+					mp.startMedia(targetFilename, ":sout=#transcode{acodec=s16l,channels=2,samplerate=44100,ab=128}:standard{access=file,mux=wav,dst=" + wavFilename + "}");
+					while(true){
+						if(!mp.isPlaying()){
+							break;
+						}
+						try {
+							Thread.sleep(RETRY_INTERVAL);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
+					JOptionPane.showMessageDialog(mainFrame, wavFilename + "が生成されました。");
 					try {
-						Thread.sleep(RETRY_INTERVAL);
+						Thread.sleep(2000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-				}
-				JOptionPane.showMessageDialog(mainFrame, wavFilename + "が生成されました。");
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 
-		        soundGraphBuf.setPosition(0);
-				readWavInfo(wavFilename);
-				buf = new byte[maxDataSize];
-//				soundGraphBuf.setFrameLength(frameLength);
-				readWav(wavFilename, buf);
+			        soundGraphBuf.setPosition(0);
+					readWavInfo(wavFilename);
+					buf = new byte[maxDataSize];
+//					soundGraphBuf.setFrameLength(frameLength);
+					readWav(wavFilename, buf);
+					setSoundBufferEnable(true);
+				}
 			}
-			try {
-				join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			
+//			try {
+//				join();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 
 			mp.startMedia(targetFilename);
 			Dimension videoDimension = null;
@@ -359,6 +369,17 @@ public class SoundPlayer extends Thread {
 		}
 		return maxDataSize;
 	}
+
+
+	
+	public void setSoundBufferEnable(boolean flag){
+		isSoundBufferEnable = flag;
+	}
+
+	public boolean getSoundBufferEnable(){
+		return isSoundBufferEnable;
+	}
+	
 	
 	public void readWav(String filename, byte[] buf){
 		try {
