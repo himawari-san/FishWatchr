@@ -195,8 +195,9 @@ public class TimeCorrectionSettingPanel extends JPanel {
 
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column) {
-			if (value == null)
+			if (value == null){
 				return null;
+			}
 			box = (JComboBox<String>) value;
 			box.addItemListener(this);
 			return (Component) value;

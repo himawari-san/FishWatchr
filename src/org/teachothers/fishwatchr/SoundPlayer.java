@@ -306,12 +306,10 @@ public class SoundPlayer extends Thread {
 				e.printStackTrace();
 			}
 
-			System.err.println("pass!!" + targetFilename);
 			mp.startMedia(targetFilename);
 			Dimension videoDimension = null;
 			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
 				videoDimension = mp.getVideoDimension();
-				System.err.println("videoDimension:" + videoDimension);
 				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
 					mp.release();
 					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
@@ -429,7 +427,6 @@ public class SoundPlayer extends Thread {
 				nRead = audioStream.read(buf, 0, buf.length);
 				fos.write(buf, 0, nRead);
 				soundGraphBuf.add(buf, nRead, channels);
-//				System.err.println("sum:" + sumRead);
 				sumRead += nRead;
 			}
 
@@ -470,7 +467,6 @@ public class SoundPlayer extends Thread {
 	public synchronized void play(){
 
 		try {
-//			System.err.println("aaa:" + targetFilename);
 	        AudioInputStream ais = AudioSystem.getAudioInputStream(new File(targetFilename));
 	        
 			// ターゲットデータラインを取得する
@@ -546,7 +542,7 @@ public class SoundPlayer extends Thread {
 	}
 	
 	public void playVlc(){
-		System.err.println("sub:" + mp.subItemCount() + ", " + mp.subItemIndex());
+//		System.err.println("sub:" + mp.subItemCount() + ", " + mp.subItemIndex());
 		if(isStreaming){
 			mp.playSubItem(0, "");
 			for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
@@ -617,7 +613,6 @@ public class SoundPlayer extends Thread {
 			state = PLAYER_STATE_STOP;
 		}
 
-//		System.err.println("wait start:" + state);
 		// STOP になるまで待つ
 		int c = 0;
 		while(state == PLAYER_STATE_STOPPING){
@@ -629,7 +624,6 @@ public class SoundPlayer extends Thread {
 			}
 			if(c++ > 30) break; // 永久ループ防止（3sec）
 		}
-//		System.err.println("wait end");
 	}
 
 	public void myPause(){

@@ -474,17 +474,11 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							int playerState = soundPlayer.getPlayerState();
-//							System.err.println("flag:"  + soundPlayer.getPlayerState());
-//							if (playerState == SoundPlayer.PLAYER_STATE_PAUSE) {
-//								soundPlayer.myResume();
-//							}
 							soundPlayer.myStop();
 							timer.cancel();
 							if(playerState == SoundPlayer.PLAYER_STATE_RECORD && !jMenuItemOptionRecorderMode.isSelected()){
 								changeStateStop();
 							}
-//							System.err.println("flag:"  + soundPlayer.getPlayerState());
-//							changeStateStop();
 						}
 					});
 
@@ -1598,7 +1592,6 @@ public class MainFrame extends JFrame {
 							} else {
 								if(currentCommentIndex == CommentTable.UNDEFINED){
 									currentCommentIndex = commentTable.getNearCommentPosition(soundPlayer.getElapsedTime(), false);
-//									System.err.println("j:" + currentCommentIndex);
 									if(currentCommentIndex == CommentTable.UNDEFINED){
 										prevSkipTime = now;	
 										return;
@@ -1647,7 +1640,6 @@ public class MainFrame extends JFrame {
 							} else {
 								if(currentCommentIndex == CommentTable.UNDEFINED){
 									currentCommentIndex = commentTable.getNearCommentPosition(soundPlayer.getElapsedTime(), true);
-//									System.err.println("j:" + currentCommentIndex);
 									if(currentCommentIndex == CommentTable.UNDEFINED){
 										prevSkipTime = now;	
 										return;
