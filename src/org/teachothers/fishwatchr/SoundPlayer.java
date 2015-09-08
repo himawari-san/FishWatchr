@@ -47,7 +47,7 @@ public class SoundPlayer extends Thread {
 	private static String[] videoAspectRates = {"16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"};
 	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"};
 	private final static int MAX_RETRY_REFERRING_DATA = 100;  
-	private final static int RETRY_INTERVAL = 100; // msec  
+	private final static int RETRY_INTERVAL = 50; // msec  
 	
 	public final static int PLAYER_STATE_STOP = 0;
 	public final static int PLAYER_STATE_RECORD = 1;
@@ -223,14 +223,14 @@ public class SoundPlayer extends Thread {
 //		soundGraphBuf.setFrameLength(frameLength);
 	}
 	
-	public void setFile(String filename){
+	public boolean setFile(String filename){
 		init();
 
 		isStreaming = false; // default
 		targetFilename = filename;
 		if(targetFilename.toLowerCase().endsWith(".xml")){
 			// ファイル名だけセットするということでいいか？
-			return;
+			return true;
 		} else if(targetFilename.toLowerCase().endsWith(".wav")){
 			playerType = PLAYER_TYPE_DEFAULT;
 			readWavInfo(targetFilename);
@@ -262,6 +262,9 @@ public class SoundPlayer extends Thread {
 						e.printStackTrace();
 					}
 				}
+			}
+			if(videoDimension == null){
+				return false;
 			}
 		} else {
 			playerType = PLAYER_TYPE_VLC;
@@ -326,10 +329,12 @@ public class SoundPlayer extends Thread {
 			}
 			if(videoDimension == null) {
 				mp.stop();
+				return false;
 			}
 
 		}
 		soundGraphBuf.setPosition(0);
+		return true;
 	}
 
 	public int readWavInfo(String filename){

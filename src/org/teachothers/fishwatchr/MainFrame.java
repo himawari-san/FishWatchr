@@ -351,7 +351,11 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。\n" + mf);
 								return;
 							}
-							soundPlayer.setFile(mf);
+
+							if(!soundPlayer.setFile(mf)){
+								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません１。\n" + mf);
+								return;
+							}
 
 							timeSlider.setEnabled(true);
 
@@ -668,10 +672,17 @@ public class MainFrame extends JFrame {
 			timeSlider.setEnabled(false);
 			return false;
 		}
+		
+		if(!soundPlayer.setFile(mf)){
+			JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
+			mf = "";
+			xf = "";
+			return false;
+		}
+		
 		commentList.setSetName(xf, commenter);
 
 		setWindowTitle(xf);
-		soundPlayer.setFile(mf);
 		timerStart();
 		timeSlider.setMinimum(0);
 		timeSlider.setMaximum((int) soundPlayer.getSoundLength());
@@ -1389,9 +1400,15 @@ public class MainFrame extends JFrame {
 							updateButtonPanel(buttonType);
 							ctm.fireTableDataChanged();
 
+							if(!soundPlayer.setFile(mf)){
+								int aaa;
+								// ボタンなどをセットする前に実行したほうがよい
+								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
+								return;
+							}
 							setWindowTitle(xf);
 							commentList.setSetName(xf, commenter);
-							soundPlayer.setFile(mf);
+//							soundPlayer.setFile(mf);
 							timerStart();
 							timeSlider.setMinimum(0);
 							timeSlider.setMaximum((int) soundPlayer.getSoundLength());
