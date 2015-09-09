@@ -80,7 +80,7 @@ public class MainFrame extends JFrame {
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
 	private static final int TAB_STATUS_GLOBAL_VIEW = 0;
 	private static final int TAB_STATUS_DETAIL_VIEW = 1;
-	private static final String FILE_SUFFIX = "fw";
+	private static final String FILE_PREFIX = "fw";
 	
 	public static final String USER_NOT_SPECIFIED = "noname";
 	public static final int MAX_DISCUSSERS = 8;
@@ -454,7 +454,7 @@ public class MainFrame extends JFrame {
 							
 							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
 							String basename = userHomeDir + File.separator 
-									+ FILE_SUFFIX + today.format(new Date()) + "_" + commenter;
+									+ FILE_PREFIX + today.format(new Date()) + "_" + commenter;
 
 							if (jMenuItemOptionRecorderMode.isSelected()) {
 								mf = getUniqueFilename(basename + SoundPlayer.SOUNDFILE_EXTENSION);
@@ -603,7 +603,7 @@ public class MainFrame extends JFrame {
 			}
 			mf = selectedFilename;
 			xf = getUniqueFilename(userHomeDir + File.separator
-					+ FILE_SUFFIX + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "_" + commenter + CommentList.FILE_SUFFIX);
+					+ FILE_PREFIX + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "_" + commenter + CommentList.FILE_SUFFIX);
 			commentList.clear();
 			commentList.setStartTime(new Date());
 			commentList.setMediaFilename(mf);
