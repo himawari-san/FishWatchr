@@ -295,6 +295,7 @@ public class SoundPlayer extends Thread {
 							Thread.sleep(RETRY_INTERVAL);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
+							return false;
 						}
 					}
 					JOptionPane.showMessageDialog(mainFrame, wavFilename + "が生成されました。");

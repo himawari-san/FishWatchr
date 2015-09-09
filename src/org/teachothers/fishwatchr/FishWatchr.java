@@ -25,6 +25,7 @@ import javax.swing.UIManager;
 
 import com.sun.jna.NativeLibrary;
 
+import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 //import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 //
@@ -44,6 +45,7 @@ public class FishWatchr {
 		boolean isDiscovered = new NativeDiscovery().discover();
 		if(!isDiscovered){
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "VLC.app/Contents/MacOS/lib");
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");

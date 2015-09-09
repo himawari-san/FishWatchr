@@ -232,7 +232,7 @@ public class CommentList extends LinkedList<Comment> {
 		ow.write("</comment_list>\n");
 		ow.close();
 		setModified(false);
-		message += "\n" + xmlFile.toPath().getFileName() + " に結果を保存しました。";
+		message += "\n" + xmlFile.getCanonicalPath() + " に結果を保存しました。";
 
 		return message;
 	}

@@ -80,6 +80,7 @@ public class MainFrame extends JFrame {
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
 	private static final int TAB_STATUS_GLOBAL_VIEW = 0;
 	private static final int TAB_STATUS_DETAIL_VIEW = 1;
+	private static final String FILE_SUFFIX = "fw";
 	
 	public static final String USER_NOT_SPECIFIED = "noname";
 	public static final int MAX_DISCUSSERS = 8;
@@ -197,6 +198,9 @@ public class MainFrame extends JFrame {
 
 	private boolean isSoundPanelEnable = false;
 	
+	private String userHomeDir = "";
+	
+	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
 
@@ -218,6 +222,14 @@ public class MainFrame extends JFrame {
 		soundPlayer = new SoundPlayer(this);
 
 		ctm = new CommentTableModel(commentList, discussers, commentTypes);
+		
+		userHomeDir = System.getProperty("user.home");
+		if(userHomeDir == null) {
+			userHomeDir = "";
+			System.err.println("Warning(MainFrame): Can not get the user homedir.");
+		}
+		
+		
 		ginit();
 	}
 
@@ -353,7 +365,7 @@ public class MainFrame extends JFrame {
 							}
 
 							if(!soundPlayer.setFile(mf)){
-								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません１。\n" + mf);
+//								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
 								return;
 							}
 							isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
@@ -441,11 +453,13 @@ public class MainFrame extends JFrame {
 							}
 							
 							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
-							String basename = "fw" + today.format(new Date()) + "_" + commenter;
-														
+							String basename = userHomeDir + File.separator 
+									+ FILE_SUFFIX + today.format(new Date()) + "_" + commenter;
+
 							if (jMenuItemOptionRecorderMode.isSelected()) {
 								mf = getUniqueFilename(basename + SoundPlayer.SOUNDFILE_EXTENSION);
 								xf = mf + CommentList.FILE_SUFFIX;
+								isSoundPanelEnable = true;
 							} else {
 								mf = "";
 								xf = getUniqueFilename(basename + CommentList.FILE_SUFFIX);
@@ -581,14 +595,15 @@ public class MainFrame extends JFrame {
 			pane.setInputValue("");
 			pane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
 			JDialog dialog = pane.createDialog(this, "URLの入力");
-			dialog.setSize(350, 150);
+			dialog.setSize(500, 150);
 			dialog.setVisible(true);
 			selectedFilename = (String) pane.getInputValue();
 			if(pane.getValue() == null || selectedFilename.isEmpty()){
 				return false;
 			}
 			mf = selectedFilename;
-			xf = getUniqueFilename("fw" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "_" + commenter + CommentList.FILE_SUFFIX);
+			xf = getUniqueFilename(userHomeDir + File.separator
+					+ FILE_SUFFIX + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "_" + commenter + CommentList.FILE_SUFFIX);
 			commentList.clear();
 			commentList.setStartTime(new Date());
 			commentList.setMediaFilename(mf);
@@ -765,6 +780,10 @@ public class MainFrame extends JFrame {
 
 		if (commentList.isModified() || (!xf.isEmpty() && !(new File(xf).exists()))) {
 			if(xf.isEmpty()){
+				JFileChooser jfc = new JFileChooser();
+				jfc.showSaveDialog(MainFrame.this);
+
+//				jfc.setFileSelectionMode(fileType);
 				xf = "fw_noname.xml";
 				System.err.println("Warning(MainFrame): ファイル名がつけられていません。\n" + xf + "として保存します。");
 			}

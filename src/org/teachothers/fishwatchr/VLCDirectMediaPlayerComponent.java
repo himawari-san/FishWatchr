@@ -51,7 +51,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     private DirectMediaPlayer mediaPlayer;
     
     public VLCDirectMediaPlayerComponent() throws InterruptedException, InvocationTargetException {
-        factory = new MediaPlayerFactory();
+    	factory = new MediaPlayerFactory();
     	init();
     }
 
