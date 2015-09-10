@@ -319,11 +319,13 @@ public class SoundPlayer extends Thread {
 			Dimension videoDimension = null;
 			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
 				videoDimension = mp.getVideoDimension();
+				System.err.println("i:" + i);
 				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
 					mp.release();
 					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
 			        mp.addMediaPlayerEventListener(mpEventListener);
 					mp.startMedia(targetFilename);
+					soundLength = (float)(mp.getLength()/1000);
 					break;
 				} else {
 					try {
