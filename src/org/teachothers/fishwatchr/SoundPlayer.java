@@ -236,16 +236,12 @@ public class SoundPlayer extends Thread {
 			playerType = PLAYER_TYPE_DEFAULT;
 			readWavInfo(targetFilename);
 			buf = new byte[maxDataSize]; 
-//			soundGraphBuf.setFrameLength(frameLength);
 			readWav(targetFilename, buf);
 			setSoundBufferEnable(true);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
 			int aaaaa;
 			isStreaming = true;
-//			System.err.println("a:" + targetFilename);
 			playerType = PLAYER_TYPE_VLC;
-//			setDefaultRecordingParameters();
-//			buf = new byte[maxDataSize*100];
 			mp.startMedia(targetFilename);
 			Dimension videoDimension = null;
 			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
@@ -266,6 +262,7 @@ public class SoundPlayer extends Thread {
 				}
 			}
 			if(videoDimension == null){
+				mp.stop();
 				return false;
 			}
 		} else {
@@ -276,7 +273,6 @@ public class SoundPlayer extends Thread {
 			if(new File(wavFilename).exists()){
 				readWavInfo(wavFilename);
 				buf = new byte[maxDataSize];
-//				soundGraphBuf.setFrameLength(frameLength);
 				readWav(wavFilename, buf);
 				setSoundBufferEnable(true);
 			} else {
@@ -308,7 +304,6 @@ public class SoundPlayer extends Thread {
 			        soundGraphBuf.setPosition(0);
 					readWavInfo(wavFilename);
 					buf = new byte[maxDataSize];
-//					soundGraphBuf.setFrameLength(frameLength);
 					readWav(wavFilename, buf);
 					setSoundBufferEnable(true);
 				}
