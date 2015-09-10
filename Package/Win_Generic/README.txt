@@ -1,11 +1,11 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9 (2015-06-08)
+ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.1 (2015-09-xx)
 Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
   - vlc/            ... VLC ƒ‰ƒCƒuƒ‰ƒŠC‚¨‚æ‚ÑCƒvƒ‰ƒOƒCƒ“
                         (ver.2.2.1, Windows 32bit”Å)
-  - jre/            ... JRE ver.1.8.0_45 (Windows 32bit”Å)
-  - fishwatchr.bat  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Windows ê—p)
+  - jre/            ... JRE ver.1.8.0_60 (Windows 32bit”Å)
+  - fishwatchr.exe  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Windows ê—p)
   - fishwatchr.jar  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Mac, Linux, Windows ‹¤—p)
   - README.txt      ... ‚±‚Ìƒtƒ@ƒCƒ‹
   - COPYING.txt     ... GPL 3.0 ƒ‰ƒCƒZƒ“ƒX•¶‘
@@ -40,12 +40,23 @@ Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
     ‚ÌŽx‰‡‚ðŽó‚¯‚Ü‚µ‚½BŠÖŒWŽÒ‚Ì•ûX‚É[‚­Š´ŽÓ‚¢‚½‚µ‚Ü‚·B
 
     -- VLC media player (http://www.videolan.org/)
-    -- vlcj ver.3.7 (http://capricasoftware.co.uk/#/projects/vlcj)
+    -- vlcj (https://github.com/caprica/vlcj)
     -- JSPS‰ÈŒ¤”ïi26560135Cu‘¦Žž«‚Æ‹³ˆçŒø‰Ê‚ðl—¶‚µ‚½‹¦’²ŠwK‰ß’ö‚Ì
        \‘¢‰»Žè–@‚ÉŠÖ‚·‚éŒ¤‹†vj
 
 
 ‚SD—š—ð
+  2015-09-xx: wFishWatchrxver.0.9.1 ŒöŠJ
+    - ƒlƒbƒgƒ[ƒNã‚ÌƒƒfƒBƒAƒf[ƒ^iYouTube ‚È‚Ç‚àŠÜ‚Þj‚É‘Î‚µ‚Ä’‹L
+      •t‚¯‚Å‚«‚é‚æ‚¤‚É‹@”\‚ðŠg’£
+    - ƒL[ƒ{[ƒh‚©‚çƒAƒmƒe[ƒVƒ‡ƒ“ƒ{ƒ^ƒ“‚ð‰Ÿ‚¹‚é‚æ‚¤‚É‹@”\‚ðŠg’£
+    - ƒpƒbƒP[ƒW‚É jre ‚ð“¯«BMac OS X —pƒpƒbƒP[ƒW‚ð“Æ—§
+    - ‰¹º‚Ìƒpƒ[•\Ž¦‚ð WAV ƒtƒ@ƒCƒ‹‚Ì˜^‰¹EÄ¶Žž‚¾‚¯•\Ž¦‚·‚é‚æ‚¤•ÏX
+    - ’‹L•t‚¯Œ‹‰Ê‚ÌÄ¶Žž‚ÉŽžŠÔÝ’è‚ÌƒXƒ‰ƒCƒ_‚ª“®ì‚µ‚È‚¢•s‹ï‡‚ðC³
+    - Ctrl-p ‚ÅÄ¶‚ðˆêŽž’âŽ~‚µ‚½ŽžC’âŽ~ƒ{ƒ^ƒ“‚ÅÄ¶‚µ‚Ä‚µ‚Ü‚¤•s‹ï‡‚ð
+      C³
+    - ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ð•ÏX‚µ‚½Žž‚É“®ì‚ª•sˆÀ’è‚É‚È‚é•s‹ï‡‚ðC³
+
   2015-06-08: wFishWatchrxver.0.9 ŒöŠJ
     - ƒfƒBƒXƒJƒbƒVƒ‡ƒ“‘S‘Ì‚©‚ç’‹L‚Ã‚¯Œ‹‰Ê‚ð‰{——‚·‚é‹@”\‚ð’Ç‰Á
     - ]—ˆ‚Ì’‹L‚Ã‚¯Œ‹‰Ê‚Æƒpƒ[•\Ž¦‚ÍCÚ×•\Ž¦‚Æ‚µ‚ÄCƒfƒBƒXƒJƒbƒVƒ‡
