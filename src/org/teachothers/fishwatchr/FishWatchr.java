@@ -40,8 +40,6 @@ public class FishWatchr {
 	public static void main(final String[] arg){
 		String libVlcDir = System.getProperty("libvlcdir");
 		if(libVlcDir == null || libVlcDir.isEmpty()){
-			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), libVlcDir);
-		} else {
 			boolean isDiscovered = new NativeDiscovery().discover();
 			if(!isDiscovered){
 				NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
@@ -50,6 +48,8 @@ public class FishWatchr {
 				NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
 				NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
 			}
+		} else {
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), libVlcDir);
 		}
 		
 		UIManager.put("Button.font",new Font(Font.DIALOG, Font.PLAIN, 12));
