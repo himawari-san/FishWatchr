@@ -780,7 +780,7 @@ public class MainFrame extends JFrame {
 
 		if (commentList.isModified() || (!xf.isEmpty() && !(new File(xf).exists()))) {
 			if(xf.isEmpty()){
-				xf = "fw_noname.xml";
+				xf = userHomeDir + File.separator + "fw_noname.xml";
 				System.err.println("Warning(MainFrame): ファイル名がつけられていません。\n" + xf + "として保存します。");
 			}
 			
