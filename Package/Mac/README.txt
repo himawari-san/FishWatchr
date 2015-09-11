@@ -1,4 +1,4 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.1 (2015-09-xx)
+ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.1 (2015-09-11)
 Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
@@ -40,15 +40,15 @@ Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
 
 
 ‚SD—š—ð
-  2015-09-xx: wFishWatchrxver.0.9.1 ŒöŠJ
+  2015-09-11: wFishWatchrxver.0.9.1 ŒöŠJ
     - ƒlƒbƒgƒ[ƒNã‚ÌƒƒfƒBƒAƒf[ƒ^iYouTube ‚È‚Ç‚àŠÜ‚Þj‚É‘Î‚µ‚Ä’‹L
       •t‚¯‚Å‚«‚é‚æ‚¤‚É‹@”\‚ðŠg’£
     - ƒL[ƒ{[ƒh‚©‚çƒAƒmƒe[ƒVƒ‡ƒ“ƒ{ƒ^ƒ“‚ð‰Ÿ‚¹‚é‚æ‚¤‚É‹@”\‚ðŠg’£
     - ƒpƒbƒP[ƒW‚É jre ‚ð“¯«BMac OS X —pƒpƒbƒP[ƒW‚ð“Æ—§
     - ‰¹º‚Ìƒpƒ[•\Ž¦‚ð WAV ƒtƒ@ƒCƒ‹‚Ì˜^‰¹EÄ¶Žž‚¾‚¯•\Ž¦‚·‚é‚æ‚¤•ÏX
     - ’‹L•t‚¯Œ‹‰Ê‚ÌÄ¶Žž‚ÉŽžŠÔÝ’è‚ÌƒXƒ‰ƒCƒ_‚ª“®ì‚µ‚È‚¢•s‹ï‡‚ðC³
-    - Ctrl-p ‚ÅÄ¶‚ðˆêŽž’âŽ~‚µ‚½ŽžC’âŽ~ƒ{ƒ^ƒ“‚ÅÄ¶‚µ‚Ä‚µ‚Ü‚¤•s‹ï‡‚ð
-      C³
+    - Ctrl-p ‚ÅÄ¶‚ðˆêŽž’âŽ~‚µ‚½’¼ŒãC’âŽ~ƒ{ƒ^ƒ“‚ð‰Ÿ‚·‚ÆCÄ¶‚ªŠJŽn‚³
+      ‚ê‚Ä‚µ‚Ü‚¤•s‹ï‡‚ðC³
     - ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ð•ÏX‚µ‚½Žž‚É“®ì‚ª•sˆÀ’è‚É‚È‚é•s‹ï‡‚ðC³
 
   2015-06-08: wFishWatchrxver.0.9 ŒöŠJ
