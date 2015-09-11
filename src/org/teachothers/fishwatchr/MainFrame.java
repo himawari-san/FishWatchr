@@ -780,10 +780,6 @@ public class MainFrame extends JFrame {
 
 		if (commentList.isModified() || (!xf.isEmpty() && !(new File(xf).exists()))) {
 			if(xf.isEmpty()){
-				JFileChooser jfc = new JFileChooser();
-				jfc.showSaveDialog(MainFrame.this);
-
-//				jfc.setFileSelectionMode(fileType);
 				xf = "fw_noname.xml";
 				System.err.println("Warning(MainFrame): ファイル名がつけられていません。\n" + xf + "として保存します。");
 			}
