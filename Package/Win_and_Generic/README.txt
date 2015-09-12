@@ -5,7 +5,7 @@ Copyright 2014-2015 RŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
   - vlc/            ... VLC ƒ‰ƒCƒuƒ‰ƒŠC‚¨‚æ‚ÑCƒvƒ‰ƒOƒCƒ“
                         (ver.2.2.1, Windows 32bit”Å)
   - jre/            ... JRE ver.1.8.0_60 (Windows 32bit”Å)
-  - fishwatchr.exe  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Windows ê—p)
+  - FishWatchr.exe  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Windows ê—p)
   - fishwatchr.jar  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Mac, Linux, Windows ‹¤—p)
   - README.txt      ... ‚±‚Ìƒtƒ@ƒCƒ‹
   - COPYING.txt     ... GPL 3.0 ƒ‰ƒCƒZƒ“ƒX•¶‘
