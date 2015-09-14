@@ -35,6 +35,8 @@ import javax.swing.JPanel;
 
 public class CommentButton extends JButton implements ActionListener {
 	private static final long serialVersionUID = 1L;
+	private static boolean isWorking = false;
+	
 	// 話者優先
 	public static final int BUTTON_TYPE_DISCUSSER = 0;
 	// コメント優先
@@ -97,6 +99,12 @@ public class CommentButton extends JButton implements ActionListener {
 	
 	
 	public void actionPerformed(ActionEvent arg0) {
+		if(isWorking){
+			return;
+		} else {
+			isWorking = true; // 同時に複数の処理が行われるのを防止
+		}
+		
 		Date now = new Date(); // 現在日時
 		int currentTime = soundPlayer.getElapsedTime(); // 開始からの経過時間（msec）
 		
@@ -109,6 +117,7 @@ public class CommentButton extends JButton implements ActionListener {
 				dialog.setVisible(true);
 				int iSelectedValue = dialog.getSelectedValue();
 				if (iSelectedValue == -1) {
+					isWorking = false;
 					return;
 				}
 				selectedDiscusser = discussers.get(iSelectedValue);
@@ -123,12 +132,14 @@ public class CommentButton extends JButton implements ActionListener {
 				dialog.setVisible(true);
 				int iSelectedValue = dialog.getSelectedValue();
 				if (iSelectedValue == -1) {
+					isWorking = false;
 					return;
 				}
 				commentType = commentTypes.get(iSelectedValue);
 			}
 			ctm.addComment("", commentType, commenter, discusser, now, currentTime);
 		}
+		isWorking = false;
 	}
 
 
