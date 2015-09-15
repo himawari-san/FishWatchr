@@ -331,16 +331,6 @@ public class MainFrame extends JFrame {
 						return false;
 					}
 				});
-		
-//		AbstractAction act = new AbstractAction() {
-//			  @Override
-//			  public void actionPerformed(ActionEvent e) {
-//				  System.err.println("afsd");
-//			  }
-//		};
-//        InputMap imap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-//        imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0, 0), "hey");
-//        getRootPane().getActionMap().put("hey", act);
 	}
 
 	private JPanel getCommentPanel() {
@@ -1773,8 +1763,6 @@ public class MainFrame extends JFrame {
 							soundPlayer, isAnnotationMulti,
 							discusser, commentTypes, commenter);
 					newCommentButton.setActionKey(i++);
-//					newCommentButton.setMnemonic('1' + i++);
-//					newCommentButton.showMnemonic();
 					newCommentButton.setPreferredSize(new Dimension(90, 40));
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
@@ -1787,8 +1775,6 @@ public class MainFrame extends JFrame {
 							soundPlayer, isAnnotationMulti,
 							commentType, discussers, commenter);
 					newCommentButton.setActionKey(i++);
-//					newCommentButton.setMnemonic('1' + i++);
-//					newCommentButton.showMnemonic();
 					newCommentButton.setPreferredSize(new Dimension(90, 40));
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
