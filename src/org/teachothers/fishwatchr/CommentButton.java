@@ -28,10 +28,14 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.AbstractAction;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
 public class CommentButton extends JButton implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -52,7 +56,23 @@ public class CommentButton extends JButton implements ActionListener {
 	private int buttonType = BUTTON_TYPE_DISCUSSER;
 	private boolean isMultiAnnotation = false;
 //	private String setName = "";
-	
+	AbstractAction actNormal = new AbstractAction() {
+		private static final long serialVersionUID = 1L;
+		@Override
+		  public void actionPerformed(ActionEvent e) {
+			  doClick();
+		  }
+	};
+	AbstractAction actReverse = new AbstractAction() {
+		private static final long serialVersionUID = 1L;
+		  @Override
+		  public void actionPerformed(ActionEvent e) {
+			  isMultiAnnotation = isMultiAnnotation == true ? false : true; 
+			  doClick();
+			  isMultiAnnotation = isMultiAnnotation == true ? false : true; 
+		  }
+	};
+
 	// コメント優先
 	public CommentButton(CommentTableModel ctm, SoundPlayer soundPlayer, boolean isMultiAnnotation, CommentType commentType, ArrayList<User> discussers, User commenter) {
 		super(commentType.getType());
@@ -81,6 +101,25 @@ public class CommentButton extends JButton implements ActionListener {
 		buttonType = BUTTON_TYPE_DISCUSSER;
 		addActionListener(this);
 	}
+	
+	
+	public void setActionKey(int c){
+		String label = getText();
+//		char mnemonic = (char) getMnemonic();
+		if(c < 0 || c > 9){
+			return;
+		} else if(c == 9){
+			c = 0;
+		} else {
+			c++;
+		}
+		setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>");
+		InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "normal");
+		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "reverse");
+		getActionMap().put("normal", actNormal);
+		getActionMap().put("reverse", actReverse);
+	}
 
 
 	public void setMultiAnnotation(boolean flag){
@@ -88,16 +127,6 @@ public class CommentButton extends JButton implements ActionListener {
 	}
 	
 
-	public void showMnemonic(){
-		String label = getText();
-		char mnemonic = (char) getMnemonic();
-		if(mnemonic != 0 && mnemonic - '0' < 10){
-			setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(mnemonic -'0') + "]</div></html>");
-//			setText("<html><p style=\"margin:0px; padding:0px; text-align:center\">" + label + "</p><p style=\"margin:0px; padding: 0px; text-align:center\">[" + Integer.toString(mnemonic -'0') + "]</p></html>");
-		}
-	}
-	
-	
 	public void actionPerformed(ActionEvent arg0) {
 		if(isWorking){
 			return;
@@ -215,16 +244,34 @@ public class CommentButton extends JButton implements ActionListener {
 	class MyJButton extends JButton {
 		private static final long serialVersionUID = 1L;
 		int no = 0;
+		AbstractAction act = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doClick();
+			}
+		};
 		
 		public MyJButton(int no, String label){
-			super("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(no+1) + "]</div></html>");
 			this.no = no;
-			setMnemonic('0' + no + 1);
+			int c = no;
+			if(c == 9){
+				c = 0;
+			} else {
+				c++;
+			}
+			setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>");
+			InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, 0), "key0");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "keyALT");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "keyCTRL");
+			getActionMap().put("key0", act);
+			getActionMap().put("keyALT", act);
+			getActionMap().put("keyCTRL", act);
 		}
 		
 		public int getNumber(){
 			return no;
 		}
-		
 	}
 }
