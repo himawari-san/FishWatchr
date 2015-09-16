@@ -134,12 +134,19 @@ public class CommentButton extends JButton implements ActionListener {
 			isWorking = true; // 同時に複数の処理が行われるのを防止
 		}
 		
+		boolean isTempMultiAnnotation = isMultiAnnotation;
+		
 		Date now = new Date(); // 現在日時
 		int currentTime = soundPlayer.getElapsedTime(); // 開始からの経過時間（msec）
 		
+		// shift キーを押してクリックした場合，isMultiAnnotation を反転
+		if((arg0.getModifiers() & ActionEvent.SHIFT_MASK) != 0){
+			isTempMultiAnnotation ^= true; // reverse
+		}
+		
 		if(buttonType == BUTTON_TYPE_COMMENT){
 			User selectedDiscusser = new User("");
-			if (isMultiAnnotation) {
+			if (isTempMultiAnnotation) {
 				ButtonDialog dialog = new ButtonDialog("ラベルの選択(" + commentType.getType() + ")", discussers);
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
@@ -154,7 +161,7 @@ public class CommentButton extends JButton implements ActionListener {
 			ctm.addComment("", commentType, commenter, selectedDiscusser, now, currentTime);
 		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
 			CommentType commentType = new CommentType("", Color.BLACK);
-			if (isMultiAnnotation) {
+			if (isTempMultiAnnotation) {
 				ButtonDialog dialog = new ButtonDialog("ラベルの選択(" + discusser.getName() + ")", commentTypes);
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
