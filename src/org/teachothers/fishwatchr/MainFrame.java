@@ -1549,7 +1549,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemControlStop == null) {
 			jMenuItemControlStop = new JMenuItem("停止（■）");
 			jMenuItemControlStop.setAccelerator(KeyStroke.getKeyStroke(
-					KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK, false));
+					KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK|InputEvent.SHIFT_DOWN_MASK, false));
 			jMenuItemControlStop
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
