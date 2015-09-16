@@ -255,11 +255,12 @@ public class CommentButton extends JButton implements ActionListener {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				doClick();
+				doClick(100);
 			}
 		};
 		
 		public MyJButton(int no, String label){
+			super();
 			this.no = no;
 			int c = no;
 			if(c == 9){

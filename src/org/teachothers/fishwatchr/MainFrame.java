@@ -74,7 +74,7 @@ import org.xml.sax.SAXException;
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final String VERSION = "Ver.0.9.1 [20150911]";
+	private static final String VERSION = "Ver.0.9.2exp [20150916]";
 	private static final String COPYRIGHT = "Copyright(c) 2014-2015 Masaya YAMAGUCHI";
 	private static final int TASK_INTERVAL = 250;
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
@@ -185,7 +185,8 @@ public class MainFrame extends JFrame {
 	private float playRate = 1.0f; // 再生速度
 	private int iVideoAspectRate = 0;
 
-	private int buttonType = CommentButton.BUTTON_TYPE_DISCUSSER; // ボタンタイプの初期値（討論者優先）
+//	private int buttonType = CommentButton.BUTTON_TYPE_DISCUSSER; // ボタンタイプの初期値（討論者優先）
+	private int buttonType = CommentButton.BUTTON_TYPE_COMMENT; // ボタンタイプの初期値（ラベル優先）
 
 	// コメントテーブルの幅
 	private int columnWidth[] = { 35, 150, 150, 150, 150, 2048 };
@@ -236,24 +237,24 @@ public class MainFrame extends JFrame {
 	
 	public void addDefaultDiscussers(){
 		discussers.clear();
-		discussers.add(new User("話者１"));
-		discussers.add(new User("話者２"));
-		discussers.add(new User("話者３"));
-		discussers.add(new User("話者４"));
-		discussers.add(new User("不特定"));
-		discussers.add(new User("誤り"));
+		discussers.add(new User("S1"));
+		discussers.add(new User("S2"));
+		discussers.add(new User("S3"));
+		discussers.add(new User("その他"));
+		discussers.add(new User("誤入力"));
+//		discussers.add(new User("話者４"));
 	}
 
 	
 	public void addDefaultCommentTypes(){
 		commentTypes.clear();
-		commentTypes.add(new CommentType("意見", Color.red));
-		commentTypes.add(new CommentType("質問", Color.ORANGE));
-		commentTypes.add(new CommentType("管理", Color.blue));
-		commentTypes.add(new CommentType("相づち", Color.green));
-		commentTypes.add(new CommentType("確認", Color.cyan));
-		commentTypes.add(new CommentType("その他", Color.yellow));
-		commentTypes.add(new CommentType("誤り", Color.magenta));
+		commentTypes.add(new CommentType("良い", Color.red));
+		commentTypes.add(new CommentType("悪い", Color.ORANGE));
+		commentTypes.add(new CommentType("その他", Color.blue));
+		commentTypes.add(new CommentType("誤入力", Color.green));
+		commentTypes.add(new CommentType("", Color.cyan));
+		commentTypes.add(new CommentType("", Color.yellow));
+		commentTypes.add(new CommentType("", Color.magenta));
 		commentTypes.add(new CommentType("", new Color(10,10,10)));
 		commentTypes.add(new CommentType("", new Color(60,60,60)));
 		commentTypes.add(new CommentType("", new Color(110,110,110)));

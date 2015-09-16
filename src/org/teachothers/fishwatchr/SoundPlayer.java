@@ -276,7 +276,8 @@ public class SoundPlayer extends Thread {
 				readWav(wavFilename, buf);
 				setSoundBufferEnable(true);
 			} else {
-				int selectedValue = JOptionPane.showConfirmDialog(mainFrame, "音声波形の表示を行うために，wavファイルを生成しますか？");
+//				int selectedValue = JOptionPane.showConfirmDialog(mainFrame, "音声波形の表示を行うために，wavファイルを生成しますか？");
+				int selectedValue = JOptionPane.NO_OPTION;
 				if(selectedValue == JOptionPane.CANCEL_OPTION){
 					return false;
 				} else if(selectedValue == JOptionPane.YES_OPTION){
