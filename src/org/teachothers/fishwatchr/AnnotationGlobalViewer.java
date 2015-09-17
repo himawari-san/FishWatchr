@@ -170,6 +170,7 @@ public class AnnotationGlobalViewer extends JPanel {
 				private final int fontHeight = getFontMetrics(getFont()).getHeight();
 
 				public void paintComponent(Graphics g) {
+					super.paintComponent(g);
 					int i = 0;
 					switch (targetSelector.getSelectedIndex()){
 					case VIEW_TYPE_SPEAKER:
