@@ -255,7 +255,7 @@ public class CommentButton extends JButton implements ActionListener {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				doClick();
+				doClick(250);
 			}
 		};
 		
