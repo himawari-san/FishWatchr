@@ -70,7 +70,7 @@ public class CommentTable extends JTable {
 	}
 	
 	public void ginit(){
-//		setOpaque(false);
+		setOpaque(false);
 		setColumnSelectionAllowed(true);
 		getColumn("番号").setCellRenderer(new CellRenderer());
 		getColumn("話者").setCellEditor(new ListCellEditor<User>(ctm.discussers));
