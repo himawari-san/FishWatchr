@@ -1763,7 +1763,7 @@ public class MainFrame extends JFrame {
 							soundPlayer, isAnnotationMulti,
 							discusser, commentTypes, commenter);
 					newCommentButton.setActionKey(i++);
-					newCommentButton.setPreferredSize(new Dimension(90, 40));
+					newCommentButton.setPreferredSize(new Dimension(80, 40));
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
 				}
@@ -1775,7 +1775,7 @@ public class MainFrame extends JFrame {
 							soundPlayer, isAnnotationMulti,
 							commentType, discussers, commenter);
 					newCommentButton.setActionKey(i++);
-					newCommentButton.setPreferredSize(new Dimension(90, 40));
+					newCommentButton.setPreferredSize(new Dimension(80, 40));
 					commentButtons.add(newCommentButton);
 					buttonPanel.add(newCommentButton);
 				}

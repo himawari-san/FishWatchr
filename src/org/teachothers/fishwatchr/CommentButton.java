@@ -275,6 +275,7 @@ public class CommentButton extends JButton implements ActionListener {
 			getActionMap().put("key0", act);
 			getActionMap().put("keyALT", act);
 			getActionMap().put("keyCTRL", act);
+			setPreferredSize(CommentButton.this.getPreferredSize());
 		}
 		
 		public int getNumber(){
