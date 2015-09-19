@@ -1,4 +1,4 @@
-Package/vlc
+Package/Win_and_Generic/vlc
 bin/
 old/
 util/
@@ -6,4 +6,5 @@ util/
 *.wav
 *.xml
 *.jar
+*.exe
 *~
