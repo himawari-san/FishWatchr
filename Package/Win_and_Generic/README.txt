@@ -1,4 +1,4 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.1 (2015-09-11)
+ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.2 (2015-09-19)
 Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
@@ -46,6 +46,15 @@ Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
 
 
 ‚SD—š—ð
+  2015-09-19: wFishWatchrxver.0.9.2 ŒöŠJ
+    - ƒAƒmƒe[ƒVƒ‡ƒ“—p‚ÌƒL[ƒ{[ƒhEƒVƒ‡[ƒgƒJƒbƒg‚ð‹­‰»
+    - “¯Žž’Žßƒ‚[ƒh‚ÅCƒL[ƒ{[ƒhEƒVƒ‡[ƒgƒJƒbƒg‚ðŽg‚Á‚Ä‚·‚Î‚â‚­ƒAƒm
+      ƒe[ƒVƒ‡ƒ“‚·‚é‚ÆCƒ{ƒ^ƒ““ü—Í—p‚ÌƒEƒBƒ“ƒhƒE‚ª•¡”•\Ž¦‚³‚ê•s‹ï‡‚ð
+      C³
+    - ƒAƒmƒe[ƒVƒ‡ƒ“‚Ì‘S‘Ì•\Ž¦‚ÉƒSƒ~‚ª¬“ü‚·‚é•s‹ï‡‚ðC³
+    - V‹K‚ÌƒAƒmƒe[ƒVƒ‡ƒ“‚ðs‚¤ê‡C“Ç‚Ýž‚ÝÏ‚Ý‚ÌƒAƒmƒe[ƒVƒ‡ƒ“ƒ{ƒ^
+      ƒ“‚ÌÝ’è‚ªŽc‚Á‚Ä‚µ‚Ü‚¤•s‹ï‡‚ðC³
+
   2015-09-11: wFishWatchrxver.0.9.1 ŒöŠJ
     - ƒlƒbƒgƒ[ƒNã‚ÌƒƒfƒBƒAƒf[ƒ^iYouTube ‚È‚Ç‚àŠÜ‚Þj‚É‘Î‚µ‚Ä’‹L
       •t‚¯‚Å‚«‚é‚æ‚¤‚É‹@”\‚ðŠg’£
