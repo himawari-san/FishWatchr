@@ -672,7 +672,7 @@ public class MainFrame extends JFrame {
 				return false;
 			}
 			ctm.refreshFilter();
-			setDefaultButton();
+			addDefaultButton();
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
 
@@ -743,6 +743,12 @@ public class MainFrame extends JFrame {
 
 	
 	private void setDefaultButton(){
+		addDefaultCommentTypes();
+		addDefaultDiscussers();
+	}
+
+	
+	private void addDefaultButton(){
 		boolean flagCommentTypesExist = false;
 		boolean flagDiscussersExist = false;
 		
@@ -1415,7 +1421,7 @@ public class MainFrame extends JFrame {
 							commentTable.resetPosition();
 
 							ctm.refreshFilter();
-							setDefaultButton();
+							addDefaultButton();
 							updateButtonPanel(buttonType);
 							ctm.fireTableDataChanged();
 
