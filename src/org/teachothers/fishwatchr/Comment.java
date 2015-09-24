@@ -62,7 +62,7 @@ public class Comment {
 			Date commentDate, int commentTime, String setName){
 		// for testing
 		if(discusser.getName().isEmpty()){
-			discusser.setName("不特定");
+			discusser.setName("未入力");
 		}
 		data[F_COMMENTER] = commenter;
 		data[F_COMMENT] = contentBody;

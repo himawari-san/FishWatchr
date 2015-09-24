@@ -240,6 +240,7 @@ public class MainFrame extends JFrame {
 		discussers.add(new User("S1"));
 		discussers.add(new User("S2"));
 		discussers.add(new User("S3"));
+		discussers.add(new User("S4"));
 		discussers.add(new User("その他"));
 		discussers.add(new User("誤入力"));
 //		discussers.add(new User("話者４"));
@@ -250,8 +251,8 @@ public class MainFrame extends JFrame {
 		commentTypes.clear();
 		commentTypes.add(new CommentType("良い", Color.red));
 		commentTypes.add(new CommentType("悪い", Color.ORANGE));
-		commentTypes.add(new CommentType("その他", Color.blue));
-		commentTypes.add(new CommentType("誤入力", Color.green));
+		commentTypes.add(new CommentType("", Color.blue));
+		commentTypes.add(new CommentType("", Color.green));
 		commentTypes.add(new CommentType("", Color.cyan));
 		commentTypes.add(new CommentType("", Color.yellow));
 		commentTypes.add(new CommentType("", Color.magenta));
