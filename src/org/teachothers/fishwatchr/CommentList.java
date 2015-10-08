@@ -45,6 +45,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -202,7 +203,9 @@ public class CommentList extends LinkedList<Comment> {
 					+ comment.getCommentType().getType() + "\""
 					+ " comment_time=\"" + comment.getCommentTime() + "\""
 					+ " comment_time_end=\"" + comment.getCommentTimeEnd()
-					+ "\"" + ">" + comment.getContentBody() + "</comment>\n");
+					+ "\"" + ">"
+					+ StringEscapeUtils.escapeXml11(comment.getContentBody())
+					+ "</comment>\n");
 		}
 
 		for (Map.Entry<String, String> item : setStr.entrySet()) {
