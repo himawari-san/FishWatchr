@@ -1849,7 +1849,11 @@ public class MainFrame extends JFrame {
 									MainFrame.this, "現在の設定値: "
 											+ currentCommenterName, "注釈者名",
 									JOptionPane.PLAIN_MESSAGE);
-							if (inputValue != null) {
+							if(inputValue == null || inputValue.isEmpty()){
+								JOptionPane.showMessageDialog(null, "注釈者名が空です。");
+							} else if(inputValue.matches(".*[\\s<>&'\"].*")){
+								JOptionPane.showMessageDialog(null, inputValue + "\nには，使用できない文字（<>\"\'& および空白）が含まれているため，設定値を反映しませんでした。");
+							} else {
 								commenter.setName(inputValue);
 							}
 						}
@@ -1872,7 +1876,10 @@ public class MainFrame extends JFrame {
 							if (selectedValue == JOptionPane.CANCEL_OPTION) {
 								return;
 							}
-							discusserSettingPanel.updateNewValue();
+							String invalidItems = discusserSettingPanel.updateNewValue();
+							if(!invalidItems.isEmpty()){
+								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（<>\"\'&）が含まれているため，設定値を反映しませんでした。");
+							}
 							discussersPanel.updateCompoments();
 							if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
 								updateButtonPanel(buttonType);
@@ -1898,7 +1905,10 @@ public class MainFrame extends JFrame {
 							if (selectedValue == JOptionPane.CANCEL_OPTION) {
 								return;
 							}
-							annotationSettingPanel.updateNewValue();
+							String invalidItems = annotationSettingPanel.updateNewValue();
+							if(!invalidItems.isEmpty()){
+								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（<>\"\'&）が含まれているため，設定値を反映しませんでした。");
+							}
 							discussersPanel.updateCompoments();
 							if (buttonType == CommentButton.BUTTON_TYPE_COMMENT) {
 								updateButtonPanel(buttonType);

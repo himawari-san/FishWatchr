@@ -24,6 +24,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class DiscusserSettingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public static final String USER_NOT_DEFINED = "";
@@ -59,11 +61,17 @@ public class DiscusserSettingPanel extends JPanel {
 		}
 	}
 	
-	public void updateNewValue(){
+	public String updateNewValue(){
 		ArrayList<Integer> deleteItems = new ArrayList<Integer>();
+		ArrayList<String> invalidItems = new ArrayList<String>();
 		
 		for(int i = 0; i < discusserNames.length; i++){
-			if(discusserNames[i].getText().equals(USER_NOT_DEFINED)){
+			if(discusserNames[i].getText().matches(".*[<>&'\"].*")){
+				invalidItems.add(discusserNames[i].getText());
+				continue;
+			} else if(discusserNames[i].getText().matches(".*\\s.*")){
+				continue;
+			} else if(discusserNames[i].getText().equals(USER_NOT_DEFINED)){
 				if(discussers.size() > i){
 					deleteItems.add(i);
 				}
@@ -79,5 +87,7 @@ public class DiscusserSettingPanel extends JPanel {
 		for(int i : deleteItems){
 			discussers.remove(i);
 		}
+		
+		return StringUtils.join(invalidItems, ", ");
 	}
 }

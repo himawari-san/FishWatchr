@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -31,6 +32,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class AnnotationSettingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -80,9 +83,16 @@ public class AnnotationSettingPanel extends JPanel {
 		}
 	}
 	
-	public void updateNewValue() {
+	public String updateNewValue() {
+		ArrayList<String> invalidItems = new ArrayList<String>();
+		
 		for (int i = 0; i < MAX_COMMENT_TYPE; i++) {
-			if (i < commentTypes.size()) {
+			if(annotationNames[i].getText().matches(".*[<>&'\"].*")){
+				invalidItems.add(annotationNames[i].getText());
+				continue;
+			} else if(annotationNames[i].getText().matches(".*\\s.*")){
+				continue;
+			} else if (i < commentTypes.size()) {
 				commentTypes.get(i).set(annotationNames[i].getText(),
 						markColors[i].getBackground());
 			} else {
@@ -90,6 +100,8 @@ public class AnnotationSettingPanel extends JPanel {
 						.getText(), markColors[i].getBackground()));
 			}
 		}
+		
+		return StringUtils.join(invalidItems, ", ");
 	}
 	
 	
