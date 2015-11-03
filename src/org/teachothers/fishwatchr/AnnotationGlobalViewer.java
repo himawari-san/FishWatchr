@@ -31,7 +31,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 	private final int xTimeMaxTickHeight = 5;	
 	
-	private CommentList commentList;
+//	private CommentList commentList;
 
 	private int itemHeight = 25;
 	
@@ -52,13 +52,15 @@ public class AnnotationGlobalViewer extends JPanel {
 	private ArrayList<String> types = new ArrayList<String>();
 	private ArrayList<String> commenterNames = new ArrayList<String>();
 	
+	private CommentTableModel ctm;
 	private SoundPlayer soundPlayer;
 	private float totalTime = 0; // sec
 	private int xTimeMax = 0;
 	
-	public AnnotationGlobalViewer(CommentList commentList, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
+	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
 //		super();
-		this.commentList = commentList;
+		this.ctm = ctm;
+//		this.commentList = commentList;
 		this.discussers = discussers;
 		this.commentTypes = commentTypes;
 		this.soundPlayer = soundPlayer;
@@ -116,8 +118,10 @@ public class AnnotationGlobalViewer extends JPanel {
 					String discusserName;
 					String commenterName;
 					String commentType;
+					ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
+					CommentList commentList = ctm.getCommentList();
 					
-					for(Comment comment : commentList){
+					for(Comment comment : filteredCommentList){
 						x = x0AnnotationViewerPanel +
 								commentList.unifiedCommentTime(comment) / 1000 / scaleFactor;
 						g.setColor(comment.getCommentType().getColor());
@@ -229,8 +233,9 @@ public class AnnotationGlobalViewer extends JPanel {
 		}
 //		Collections.sort(types);
 		
+		ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
 		commenterNames.clear();
-		for(Comment comment : commentList){
+		for(Comment comment : filteredCommentList){
 			String name = comment.getCommenter().getName();
 			if(!commenterNames.contains(name)){
 				commenterNames.add(comment.getCommenter().getName());

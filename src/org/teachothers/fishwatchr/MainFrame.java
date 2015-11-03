@@ -992,7 +992,7 @@ public class MainFrame extends JFrame {
 			displayPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
 			timeLinePanel = getTimeLinePanel();
-			annotationGlobalViewPanel = new AnnotationGlobalViewer(commentList, soundPlayer, discussers, commentTypes);
+			annotationGlobalViewPanel = new AnnotationGlobalViewer(ctm, soundPlayer, discussers, commentTypes);
 			moviePanel = getMoviePanel();
 			moviePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 			
