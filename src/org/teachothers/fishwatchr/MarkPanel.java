@@ -27,17 +27,14 @@ public class MarkPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private CommentTableModel ctm;
-//	private CommentList commentList;
 	private SoundPlayer soundPlayer;
 	private String userName;
 	
 	public MarkPanel(CommentTableModel ctm, String userName, SoundPlayer soundPlayer){
 		super();
 		this.ctm = ctm;
-//		this.commentList = commentList;
 		this.userName = userName;
 		this.soundPlayer = soundPlayer;
-//		setPreferredSize(new Dimension(1024,20));
 	}
 
 	

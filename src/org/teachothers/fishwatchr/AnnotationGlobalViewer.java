@@ -31,8 +31,6 @@ public class AnnotationGlobalViewer extends JPanel {
 
 	private final int xTimeMaxTickHeight = 5;	
 	
-//	private CommentList commentList;
-
 	private int itemHeight = 25;
 	
 	private int markWidth = 2;
@@ -58,9 +56,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private int xTimeMax = 0;
 	
 	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
-//		super();
 		this.ctm = ctm;
-//		this.commentList = commentList;
 		this.discussers = discussers;
 		this.commentTypes = commentTypes;
 		this.soundPlayer = soundPlayer;
@@ -97,7 +93,6 @@ public class AnnotationGlobalViewer extends JPanel {
 //		p2.add(new JTextField("4"));
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
-//		displayPanel.add(timeBar, BorderLayout.SOUTH);
 		
 		p1.add(namePanel, BorderLayout.LINE_START);
 		p1.add(displayPanel, BorderLayout.CENTER);
@@ -222,7 +217,6 @@ public class AnnotationGlobalViewer extends JPanel {
 				discusserNames.add(name);
 			}
 		}
-//		Collections.sort(discusserNames);
 
 		types.clear();
 		for(CommentType commentType: commentTypes){
@@ -231,7 +225,6 @@ public class AnnotationGlobalViewer extends JPanel {
 				types.add(type);
 			}
 		}
-//		Collections.sort(types);
 		
 		ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
 		commenterNames.clear();

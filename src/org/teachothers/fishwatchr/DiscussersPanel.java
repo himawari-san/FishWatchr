@@ -38,7 +38,6 @@ public class DiscussersPanel extends JPanel {
 	private int maxDiscussers;
 	private JLabel[] userNameLabels;
 	private MarkPanel[] markPanels;
-//	private CommentList commentList;
 	private CommentTableModel ctm;
 	private SoundPlayer soundPlayer;
 	
@@ -46,7 +45,6 @@ public class DiscussersPanel extends JPanel {
 		this.discussers = discussers;
 		this.maxDiscussers = maxDiscussers;
 		this.ctm = ctm;
-//		this.commentList = commentList;
 		this.soundPlayer = soundPlayer;
 		markPanels = new MarkPanel[maxDiscussers];
 		userNameLabels = new JLabel[maxDiscussers];

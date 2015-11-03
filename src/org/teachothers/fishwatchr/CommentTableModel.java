@@ -34,8 +34,6 @@ public class CommentTableModel extends AbstractTableModel {
 	public ArrayList<CommentType> commentTypes;
 	private ArrayList<Comment> filteredCommentList = new ArrayList<Comment>();
 	private HashMap<String, String> filters = new HashMap<String, String>();
-
-//	private double frameLength;
 	
 	
 	public CommentTableModel(CommentList commentList, ArrayList<User> discussers, ArrayList<CommentType> commentTypes){
@@ -43,7 +41,6 @@ public class CommentTableModel extends AbstractTableModel {
 		this.discussers = discussers;
 		this.commentTypes = commentTypes;
 		refreshFilter();
-//		commentList.
 	}
 	
 	
