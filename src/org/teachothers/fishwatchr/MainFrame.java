@@ -1052,7 +1052,7 @@ public class MainFrame extends JFrame {
 			soundPanel = getSoundPanel();
 //			soundPanel.setOpaque(false);
 			timeLinePanel.add(soundPanel);
-			discussersPanel = new DiscussersPanel(discussers, MAX_DISCUSSERS, commentList, soundPlayer);
+			discussersPanel = new DiscussersPanel(discussers, MAX_DISCUSSERS, ctm, soundPlayer);
 			timeLinePanel.add(discussersPanel);
 
 		}

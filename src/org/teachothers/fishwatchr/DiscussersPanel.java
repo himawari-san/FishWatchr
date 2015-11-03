@@ -38,13 +38,15 @@ public class DiscussersPanel extends JPanel {
 	private int maxDiscussers;
 	private JLabel[] userNameLabels;
 	private MarkPanel[] markPanels;
-	private CommentList commentList;
+//	private CommentList commentList;
+	private CommentTableModel ctm;
 	private SoundPlayer soundPlayer;
 	
-	public DiscussersPanel(List<User> discussers, int maxDiscussers, CommentList commentList, SoundPlayer soundPlayer){
+	public DiscussersPanel(List<User> discussers, int maxDiscussers, CommentTableModel ctm, SoundPlayer soundPlayer){
 		this.discussers = discussers;
 		this.maxDiscussers = maxDiscussers;
-		this.commentList = commentList;
+		this.ctm = ctm;
+//		this.commentList = commentList;
 		this.soundPlayer = soundPlayer;
 		markPanels = new MarkPanel[maxDiscussers];
 		userNameLabels = new JLabel[maxDiscussers];
@@ -87,7 +89,7 @@ public class DiscussersPanel extends JPanel {
 			userNameLabels[i].setHorizontalAlignment(JLabel.CENTER);
 			discusserPanel.add(userNameLabels[i], BorderLayout.WEST);
 			discusserPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-			markPanels[i] = new MarkPanel(commentList, discusserName, soundPlayer);
+			markPanels[i] = new MarkPanel(ctm, discusserName, soundPlayer);
 			discusserPanel.add(markPanels[i], BorderLayout.CENTER);
 			add(discusserPanel);
 		}

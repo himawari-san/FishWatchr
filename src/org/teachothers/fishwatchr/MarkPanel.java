@@ -18,6 +18,7 @@
 package org.teachothers.fishwatchr;
 
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -25,13 +26,15 @@ import javax.swing.JPanel;
 public class MarkPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
-	private CommentList commentList;
+	private CommentTableModel ctm;
+//	private CommentList commentList;
 	private SoundPlayer soundPlayer;
 	private String userName;
 	
-	public MarkPanel(CommentList commentList, String userName, SoundPlayer soundPlayer){
+	public MarkPanel(CommentTableModel ctm, String userName, SoundPlayer soundPlayer){
 		super();
-		this.commentList = commentList;
+		this.ctm = ctm;
+//		this.commentList = commentList;
 		this.userName = userName;
 		this.soundPlayer = soundPlayer;
 //		setPreferredSize(new Dimension(1024,20));
@@ -45,16 +48,19 @@ public class MarkPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
+		ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
+		CommentList commentList = ctm.getCommentList();
+
 		int pwidth = getParent().getSize().width;
 		int maxX = getSize().width;
 		int d = pwidth - maxX;
 		int y0 = getSize().height / 2;
-		int p = commentList.size();
+		int p = filteredCommentList.size();
 		int bp = soundPlayer.getCurrentFrame();
 		double frameLength = soundPlayer.getFrameLength() * 1000;
 
 		while (p > 0) {
-			Comment comment = commentList.get(--p);
+			Comment comment = filteredCommentList.get(--p);
 			User discusser = comment.getDiscusser();
 			CommentType commentType = comment.getCommentType();
 			if (discusser == null || !userName.equals(comment.getDiscusser().getName())) {
