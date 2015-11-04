@@ -657,9 +657,8 @@ public class MainFrame extends JFrame {
 				ctm.fireTableDataChanged();
 			}
 		}
-		
 		// 読み込んだファイルが注釈ファイル(XML)の場合
-		if(selectedFilename.endsWith(CommentList.FILE_SUFFIX)){
+		else if(selectedFilename.endsWith(CommentList.FILE_SUFFIX)){
 			xf = selectedFilename;
 			try {
 				mf = commentList.load(selectedFilename, commentTypes, discussers, false);
@@ -1388,6 +1387,16 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							soundPlayer.myStop();
+
+							try {
+								saveCommentList();
+							} catch (IOException e1) {
+								JOptionPane.showMessageDialog(MainFrame.this, "コメントデータのバックアップ保存時にエラーが発生しました。\n" +
+										"処理を中断します。\n" + e1);
+								e1.printStackTrace();
+								return;
+							}
+
 							String targetDir = chooseFile(null, JFileChooser.DIRECTORIES_ONLY, false); // String[0] は空の配列
 							if (targetDir.isEmpty()) {
 								JOptionPane.showMessageDialog(MainFrame.this,
@@ -1406,40 +1415,29 @@ public class MainFrame extends JFrame {
 								return;
 							}
 
-							try {
-								saveCommentList();
-							} catch (IOException e1) {
-								JOptionPane.showMessageDialog(MainFrame.this, "コメントデータのバックアップ保存時にエラーが発生しました。\n" + e1);
-								e1.printStackTrace();
-								return;
-							}
-
-							playRate = 1.0f;
-							iVideoAspectRate = 0;
-
-							commentTable.resetPosition();
-
 							ctm.refreshFilter();
 							addDefaultButton();
 							updateButtonPanel(buttonType);
 							ctm.fireTableDataChanged();
 
 							if(!soundPlayer.setFile(mf)){
-								int aaa;
-								// ボタンなどをセットする前に実行したほうがよい
 								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
+								mf = "";
+								xf = "";
 								return;
 							}
 							isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
+							commentList.setSetName(xf, commenter);
 
 							setWindowTitle(xf);
-							commentList.setSetName(xf, commenter);
-//							soundPlayer.setFile(mf);
 							timerStart();
 							timeSlider.setMinimum(0);
 							timeSlider.setMaximum((int) soundPlayer.getSoundLength());
 							timeSlider.setEnabled(true);
 							timeEnd.setTime((int) soundPlayer.getSoundLength());
+							annotationGlobalViewPanel.updatePanel();
+
+							changeStatePlay();
 						}
 					});
 		}
