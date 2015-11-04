@@ -2111,13 +2111,16 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemHelpVersion() {
 		if (jMenuItemHelpVersion == null) {
-			jMenuItemHelpVersion = new JMenuItem("Version");
+			jMenuItemHelpVersion = new JMenuItem(systemName + "について");
 			jMenuItemHelpVersion
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							JOptionPane.showMessageDialog(MainFrame.this,
 									systemName + " " + VERSION + "\n"
-											+ COPYRIGHT, systemName + "について",
+											+ System.getProperty("java.vm.name")
+											 + ", ver." + System.getProperty("java.version")  + "\n"
+												+ COPYRIGHT,
+											systemName + "について",
 									JOptionPane.INFORMATION_MESSAGE);
 						}
 					});
