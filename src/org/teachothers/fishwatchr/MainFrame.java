@@ -157,6 +157,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionVideoRatio;
 	private JMenuItem jMenuItemOptionRecorderMode;
 	private JMenuItem jMenuItemOptionViewSyncMode;
+	private JMenuItem jMenuItemOptionWaveform;
 	private JMenu jMenuHelp;
 	private JMenuItem jMenuItemHelpVersion;
 
@@ -195,6 +196,8 @@ public class MainFrame extends JFrame {
 
 	// テーブル表示同期
 	private boolean isViewSyncMode = false;
+
+	private boolean flagWaveform = false;
 
 	private boolean isSoundPanelEnable = false;
 	
@@ -279,6 +282,7 @@ public class MainFrame extends JFrame {
 		setJMenuBar(jMenuBar);
 		jMenuItemOptionRecorderMode.setSelected(isRecorderMode);
 		jMenuItemOptionViewSyncMode.setSelected(isViewSyncMode);
+		jMenuItemOptionWaveform.setSelected(flagWaveform);
 
 		displayPanel = getDisplayPanel();
 		commentPanel = getCommentPanel(); // get after getJMenuBar();
@@ -364,7 +368,7 @@ public class MainFrame extends JFrame {
 								return;
 							}
 
-							if(!soundPlayer.setFile(mf)){
+							if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 //								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
 								return;
 							}
@@ -688,7 +692,7 @@ public class MainFrame extends JFrame {
 			return false;
 		}
 		
-		if(!soundPlayer.setFile(mf)){
+		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 			JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
 			mf = "";
 			xf = "";
@@ -1420,7 +1424,7 @@ public class MainFrame extends JFrame {
 							updateButtonPanel(buttonType);
 							ctm.fireTableDataChanged();
 
-							if(!soundPlayer.setFile(mf)){
+							if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
 								mf = "";
 								xf = "";
@@ -1929,6 +1933,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.addSeparator();
 			jMenuOption.add(getJMenuItemOptionRecorderMode());
 			jMenuOption.add(getJMenuItemOptionViewSyncMode());
+			jMenuOption.add(getJMenuItemOptionWaveform());
 		}
 		return jMenuOption;
 	}
@@ -2046,6 +2051,20 @@ public class MainFrame extends JFrame {
 					});
 		}
 		return jMenuItemOptionViewSyncMode;
+	}
+
+
+	private JMenuItem getJMenuItemOptionWaveform() {
+		if (jMenuItemOptionWaveform == null) {
+			jMenuItemOptionWaveform = new JCheckBoxMenuItem("波形表示");
+			jMenuItemOptionWaveform
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							JOptionPane.showMessageDialog(null,  "このオプションは次回ファイル読み込み時から有効になります。");
+						}
+					});
+		}
+		return jMenuItemOptionWaveform;
 	}
 
 	
