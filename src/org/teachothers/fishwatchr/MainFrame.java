@@ -2118,7 +2118,7 @@ public class MainFrame extends JFrame {
 							JOptionPane.showMessageDialog(MainFrame.this,
 									systemName + " " + VERSION + "\n"
 											+ System.getProperty("java.vm.name")
-											 + ", ver." + System.getProperty("java.version")  + "\n"
+											 + ", Ver." + System.getProperty("java.version")  + "\n"
 												+ COPYRIGHT,
 											systemName + "について",
 									JOptionPane.INFORMATION_MESSAGE);
