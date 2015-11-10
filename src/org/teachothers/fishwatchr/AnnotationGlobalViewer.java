@@ -14,6 +14,7 @@ import java.util.Collections;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 public class AnnotationGlobalViewer extends JPanel {
@@ -42,8 +43,11 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JPanel displayPanel;
 	private JPanel annotationViewerPanel;
 	private JComboBox<String> targetSelector;
+	private JComboBox<String> displayTypeSelector;
+	private JTextField intervalField;
 	private String[] targets = {"話者", "ラベル", "注釈者"};
-	
+	private String[] displayTypes = {"通常", "エントロピー"};
+	private float interval = 15; // sec
 	private ArrayList<User> discussers;
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<String> discusserNames = new ArrayList<String>();
@@ -85,12 +89,15 @@ public class AnnotationGlobalViewer extends JPanel {
 		annotationViewerPanel.setBorder(new EtchedBorder());
 		
 		targetSelector = new JComboBox<String>(targets);
+		displayTypeSelector = new JComboBox<String>(displayTypes);
+		intervalField = new JTextField(String.valueOf(interval));
+		intervalField.setPreferredSize(new Dimension(60, 25));
 		p2.add(new JLabel("分類"));
 		p2.add(targetSelector);
-//		p2.add(new JLabel("　ページ"));
-//		p2.add(new JSpinner());
-//		p2.add(new JLabel("　倍率(1/n)"));
-//		p2.add(new JTextField("4"));
+		p2.add(new JLabel("表示"));
+		p2.add(displayTypeSelector);
+		p2.add(new JLabel("間隔"));
+		p2.add(intervalField);
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
 		
