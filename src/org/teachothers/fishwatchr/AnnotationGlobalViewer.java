@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -23,6 +24,10 @@ public class AnnotationGlobalViewer extends JPanel {
 	private static final int VIEW_TYPE_SPEAKER = 0; 
 	private static final int VIEW_TYPE_LABEL = 1; 
 	private static final int VIEW_TYPE_COMMENTER = 2; 
+
+	private static final int DISPLAY_TYPE_NORMAL = 0; 
+	private static final int DISPLAY_TYPE_ENTROPY = 1;
+	
 	private final int x0NamePanel = 4; // x origin of namePanel
 	private final int y0NamePanel = 4; // y origin of namePanel
 	private final int widthNamePanel = 50;
@@ -112,16 +117,31 @@ public class AnnotationGlobalViewer extends JPanel {
 		if(annotationViewerPanel == null){
 			annotationViewerPanel = new JPanel(){
 				private static final long serialVersionUID = 1L;
+				@SuppressWarnings("unchecked")
+				private HashMap<String, Integer>[] results = (HashMap<String, Integer>[]) new HashMap[2000];
 				
 				@Override
 				protected void paintComponent(Graphics g) {
 					super.paintComponent(g);
+					
+					ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
+					CommentList commentList = ctm.getCommentList();
+							
+					switch (displayTypeSelector.getSelectedIndex()){
+					case DISPLAY_TYPE_NORMAL:
+						displayTypeNormal(g, filteredCommentList, commentList);
+						break;
+					case DISPLAY_TYPE_ENTROPY:
+						displayTypeEntropy(g, filteredCommentList, commentList);
+						break;
+					}
+				}
+				
+				protected void displayTypeNormal(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
 					int x;
 					String discusserName;
 					String commenterName;
 					String commentType;
-					ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
-					CommentList commentList = ctm.getCommentList();
 					
 					for(Comment comment : filteredCommentList){
 						x = x0AnnotationViewerPanel +
@@ -148,7 +168,127 @@ public class AnnotationGlobalViewer extends JPanel {
 					g.drawLine(xTime, 0, xTime, getSize().height);
 					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
 				}
+				
+				protected void displayTypeEntropy(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
+					int x;
+					String discusserName;
+					String commenterName;
+					String commentType;
+					
+					for(int i = 0; i < results.length; i++){
+						results[i] = null;
+					}
+
+					String key;
+					for(Comment comment : filteredCommentList){
+						int i = commentList.unifiedCommentTime(comment) / 1000 / 15;
+						HashMap<String, Integer> data = results[i];
+						if(results[i] == null){
+							data = new HashMap<String, Integer>();
+							results[i] = data;
+						}
+
+						switch (targetSelector.getSelectedIndex()){
+						case VIEW_TYPE_SPEAKER:
+							key = comment.getDiscusser().getName();
+							break;
+						case VIEW_TYPE_LABEL:
+							key = comment.getCommentType().getType();
+							break;
+						case VIEW_TYPE_COMMENTER:
+							key = comment.getCommenter().getName();
+							break;
+						default:
+							key = "";
+						}
+
+						if(data.containsKey(key)){
+							data.put(key, data.get(key) + 1);
+						} else {
+							data.put(key, 1);
+						}
+					}
+
+					for(int i = 0; i < results.length; i++){
+						if(results[i] == null) continue;
+						x = x0AnnotationViewerPanel + i * 15 / scaleFactor;
+						int entropy = (int)(calEntropy(results[i])*180);
+						if(entropy > 255) entropy = 255;
+						System.err.println("ent: " + entropy);
+						g.setColor(new Color(entropy, 0, 0));
+						g.fillRect(x, y0AnnotationViewerPanel, markWidth*(15 / scaleFactor), markHeight);
+					}
+					
+					int xTime = x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000;
+					g.setColor(Color.BLACK);
+					g.drawLine(xTime, 0, xTime, getSize().height);
+					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
+				}
+				
+				protected void displayTypeRate(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
+					int x;
+					String discusserName;
+					String commenterName;
+					String commentType;
+					ArrayList<ArrayList<Comment>> results = new ArrayList<ArrayList<Comment>>();
+					
+					
+					for(Comment comment : filteredCommentList){
+						int i = commentList.unifiedCommentTime(comment) / 1000;
+						ArrayList<Comment> data = results.get(i);
+						if(data == null){
+							data = new ArrayList<Comment>();
+						}
+						data.add(comment);
+					}
+
+					for(ArrayList<Comment> data: results){
+
+						switch (targetSelector.getSelectedIndex()){
+						case VIEW_TYPE_SPEAKER:
+							for(Comment comment : data){
+								
+							}
+//							discusserName = comment.getDiscusser().getName();
+//							g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight , markWidth, markHeight);
+							break;
+						case VIEW_TYPE_LABEL:
+//							commentType = comment.getCommentType().getType();
+//							g.fillRect(x, y0AnnotationViewerPanel + types.indexOf(commentType)*itemHeight , markWidth, markHeight);
+							break;
+						case VIEW_TYPE_COMMENTER:
+//							commenterName = comment.getCommenter().getName();
+//							g.fillRect(x, y0AnnotationViewerPanel + commenterNames.indexOf(commenterName)*itemHeight , markWidth, markHeight);
+							break;
+						}
+					}
+					
+					int xTime = x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000;
+					g.setColor(Color.BLACK);
+					g.drawLine(xTime, 0, xTime, getSize().height);
+					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
+				}
+				
+				
+				protected double calEntropy(HashMap<String, Integer> data){
+					int freqSum = 0;
+					double res = 0;
+					
+					for(int v : data.values()){
+						freqSum += v;
+					}
+
+					for(int v : data.values()){
+						res += (double)v * Math.log10((double)v / freqSum);
+//						System.err.println("v: " + v + ", " +  freqSum + ", " + res);
+					}
+					res = -1 * res / freqSum / Math.log10(2);
+					System.err.println("res: " + res);
+//					System.exit(0);
+					return res;
+				}
 			};
+
 			
 			annotationViewerPanel.addMouseListener(new MouseAdapter() {
 				@Override
