@@ -247,69 +247,8 @@ public class CommentTable extends JTable {
 			}
 		}
 		if(iCurrentComment != -1){
-//			revalidate();
 			repaint();
 		}
-		
-//			} else if(candidate != UNDEFINED){
-//				if(candidate == currentCommentID){
-//					return;
-//				} else {
-//					int currentSelectedRow = getSelectedRow();
-//					currentCommentID = candidate;
-//					if(prevCommentID != UNDEFINED && prevCommentID < getRowCount()){
-//						// 一つ前の再生位置のマークを消去
-//						setRowSelectionInterval(prevCommentID, prevCommentID);
-//					}
-//
-////					System.err.println("k300:" + prevCommentID + ", " + candidate);
-//					// 現在の再生位置のマークを描画
-//					setRowSelectionInterval(currentCommentID, currentCommentID);
-//					// カーソルを選択中の位置に戻す
-//					if(currentSelectedRow != UNDEFINED){
-//						setRowSelectionInterval(currentSelectedRow, currentSelectedRow);
-//					} else {
-//						setRowSelectionInterval(0, 0);
-//					}
-//					prevCommentID = currentCommentID;
-//					revalidate();
-//					repaint();
-//					return;
-//				}
-//			}
-//		}
-//		
-//		if(candidate == UNDEFINED){
-//			if(prevCommentID != UNDEFINED && getRowCount() > 0 && prevCommentID < getRowCount()){
-////				System.err.println("k3a:" + prevCommentID + ", " + candidate);
-//				currentCommentID = UNDEFINED;
-//				// 一つ前の再生位置のマークを消去
-//				setRowSelectionInterval(prevCommentID, prevCommentID);
-//				revalidate();
-//				repaint();
-//				
-//				prevCommentID = UNDEFINED;
-//			}
-//		} else if(candidate == currentCommentID){
-//			return;
-//		} else if(candidate != UNDEFINED){
-//			currentCommentID = candidate;
-//			// 行を削除した場合の対策
-//			if(ctm.getRowCount() <= prevCommentID){
-//				prevCommentID = 0;
-//				candidate = UNDEFINED;
-//				return;
-//			}
-//
-//			if(prevCommentID != UNDEFINED && prevCommentID < getRowCount()){
-//				setRowSelectionInterval(prevCommentID, prevCommentID);
-//			}
-//			setRowSelectionInterval(currentCommentID, currentCommentID);
-//			prevCommentID = currentCommentID;
-////			System.err.println("k2:" + prevCommentID + ", " + candidate);
-//			revalidate();
-//			repaint();
-//		}
 	}
 	
 	
