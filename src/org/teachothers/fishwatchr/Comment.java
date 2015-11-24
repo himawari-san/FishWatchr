@@ -41,6 +41,7 @@ public class Comment {
 	private boolean isModified = false;
 	private int id;
 	private static HashMap<String, Integer> headerMap = new HashMap<String, Integer>();
+	private boolean isExcluded = false;
 	
 	
 	public Comment(){
@@ -168,7 +169,15 @@ public class Comment {
 		
 		return data[headerMap.get(headerName)];
 	}
+
+
+	public boolean isExcluded(){
+		return isExcluded;
+	}
 	
-	
-	
+	public boolean setExcluded(boolean flag){
+		isExcluded = flag;
+		return isExcluded;
+	}
+
 }

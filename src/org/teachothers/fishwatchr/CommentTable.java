@@ -38,11 +38,14 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 
 
 public class CommentTable extends JTable {
+
 	private static final long serialVersionUID = 1L;
 	private static final String LABEL_FILTER_CANCEL = "[フィルタの解除]";
 	private static final String LABEL_KEY_SET = "[検索文字列の指定]";
@@ -54,6 +57,7 @@ public class CommentTable extends JTable {
 	private JPopupMenu popupMenu = new JPopupMenu();
 	private int currentCommentID = -1; // 未指定 -1
 	private int prevCommentID = 0; // 未指定 -1
+	private int iCurrentComment = -1;
 
 
 	public CommentTable(CommentTableModel ctm){
@@ -72,15 +76,10 @@ public class CommentTable extends JTable {
 	public void ginit(){
 		setOpaque(false);
 		setColumnSelectionAllowed(true);
-		getColumn("番号").setCellRenderer(new CellRenderer());
+		setDefaultRenderer(Object.class, new CellRenderer());
+		setDefaultRenderer(Number.class, new CellRenderer(SwingConstants.RIGHT));
 		getColumn("話者").setCellEditor(new ListCellEditor<User>(ctm.discussers));
 		getColumn("ラベル").setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
-		
-//		getColumn("話者").setCellEditor(new JComboBoxCellEditor(ctm.discussers));
-//		getColumn("ラベル").setCellEditor(new JComboBox(ctm.commentTypes));
-//		ListCellEditor a = new ListCellEditor<User>(ctm.discussers);
-//		JComboBox jcb = new JComboBox(ctm.discussers.toArray(new User[0]));
-//		getColumn("話者").setCellEditor(new DefaultCellEditor(jcb));
 		
 		
 		JMenuItem menuItemDelete = new JMenuItem("行の削除");
@@ -145,6 +144,7 @@ public class CommentTable extends JTable {
 		});
 	}
 	
+		
 	void invokeDialogForFiltering(String headerName, Component component,
 			int x, int y) {
 		JPopupMenu popupMenu = new JPopupMenu();
@@ -237,80 +237,79 @@ public class CommentTable extends JTable {
 		CommentList commentList = ctm.getCommentList();
 		ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
 
-		int candidate = UNDEFINED; // 初期値は候補なし
+		iCurrentComment = -1;
 		
 		for(int i = 0; i < filteredCommentList.size(); i++){
 			Comment comment = filteredCommentList.get(i);
 			int commentTime = commentList.unifiedCommentTime(comment);
-			int p = ctm.findComment(comment);
-			int commentTime2 = Integer.MAX_VALUE; // フィルタ時のnext comment
-			if(commentList.size() > p+1){
-				Comment comment2 = commentList.get(p+1);
-				commentTime2 = commentList.unifiedCommentTime(comment2);
-			}
-//			System.err.println("time:" + commentTime + ", " + commentTime2 + ", " + msec);
-			if(commentTime <= msec && commentTime2 > msec){
-				candidate = i;
-//				System.err.println("cand:" + prevCommentID + ", " + candidate);
-			} else if(candidate != UNDEFINED){
-				if(candidate == currentCommentID){
-					return;
-				} else {
-					int currentSelectedRow = getSelectedRow();
-					currentCommentID = candidate;
-					if(prevCommentID != UNDEFINED && prevCommentID < getRowCount()){
-						// 一つ前の再生位置のマークを消去
-						setRowSelectionInterval(prevCommentID, prevCommentID);
-					}
-
-//					System.err.println("k300:" + prevCommentID + ", " + candidate);
-					// 現在の再生位置のマークを描画
-					setRowSelectionInterval(currentCommentID, currentCommentID);
-					// カーソルを選択中の位置に戻す
-					if(currentSelectedRow != UNDEFINED){
-						setRowSelectionInterval(currentSelectedRow, currentSelectedRow);
-					} else {
-						setRowSelectionInterval(0, 0);
-					}
-					prevCommentID = currentCommentID;
-					revalidate();
-					repaint();
-					return;
-				}
+			if(commentTime <= msec){
+				iCurrentComment = i;
 			}
 		}
-		
-		if(candidate == UNDEFINED){
-			if(prevCommentID != UNDEFINED && getRowCount() > 0 && prevCommentID < getRowCount()){
-//				System.err.println("k3a:" + prevCommentID + ", " + candidate);
-				currentCommentID = UNDEFINED;
-				// 一つ前の再生位置のマークを消去
-				setRowSelectionInterval(prevCommentID, prevCommentID);
-				revalidate();
-				repaint();
-				
-				prevCommentID = UNDEFINED;
-			}
-		} else if(candidate == currentCommentID){
-			return;
-		} else if(candidate != UNDEFINED){
-			currentCommentID = candidate;
-			// 行を削除した場合の対策
-			if(ctm.getRowCount() <= prevCommentID){
-				prevCommentID = 0;
-				candidate = UNDEFINED;
-				return;
-			}
-
-			if(prevCommentID != UNDEFINED && prevCommentID < getRowCount()){
-				setRowSelectionInterval(prevCommentID, prevCommentID);
-			}
-			setRowSelectionInterval(currentCommentID, currentCommentID);
-			prevCommentID = currentCommentID;
-//			System.err.println("k2:" + prevCommentID + ", " + candidate);
-			revalidate();
+		if(iCurrentComment != -1){
+//			revalidate();
 			repaint();
 		}
+		
+//			} else if(candidate != UNDEFINED){
+//				if(candidate == currentCommentID){
+//					return;
+//				} else {
+//					int currentSelectedRow = getSelectedRow();
+//					currentCommentID = candidate;
+//					if(prevCommentID != UNDEFINED && prevCommentID < getRowCount()){
+//						// 一つ前の再生位置のマークを消去
+//						setRowSelectionInterval(prevCommentID, prevCommentID);
+//					}
+//
+////					System.err.println("k300:" + prevCommentID + ", " + candidate);
+//					// 現在の再生位置のマークを描画
+//					setRowSelectionInterval(currentCommentID, currentCommentID);
+//					// カーソルを選択中の位置に戻す
+//					if(currentSelectedRow != UNDEFINED){
+//						setRowSelectionInterval(currentSelectedRow, currentSelectedRow);
+//					} else {
+//						setRowSelectionInterval(0, 0);
+//					}
+//					prevCommentID = currentCommentID;
+//					revalidate();
+//					repaint();
+//					return;
+//				}
+//			}
+//		}
+//		
+//		if(candidate == UNDEFINED){
+//			if(prevCommentID != UNDEFINED && getRowCount() > 0 && prevCommentID < getRowCount()){
+////				System.err.println("k3a:" + prevCommentID + ", " + candidate);
+//				currentCommentID = UNDEFINED;
+//				// 一つ前の再生位置のマークを消去
+//				setRowSelectionInterval(prevCommentID, prevCommentID);
+//				revalidate();
+//				repaint();
+//				
+//				prevCommentID = UNDEFINED;
+//			}
+//		} else if(candidate == currentCommentID){
+//			return;
+//		} else if(candidate != UNDEFINED){
+//			currentCommentID = candidate;
+//			// 行を削除した場合の対策
+//			if(ctm.getRowCount() <= prevCommentID){
+//				prevCommentID = 0;
+//				candidate = UNDEFINED;
+//				return;
+//			}
+//
+//			if(prevCommentID != UNDEFINED && prevCommentID < getRowCount()){
+//				setRowSelectionInterval(prevCommentID, prevCommentID);
+//			}
+//			setRowSelectionInterval(currentCommentID, currentCommentID);
+//			prevCommentID = currentCommentID;
+////			System.err.println("k2:" + prevCommentID + ", " + candidate);
+//			revalidate();
+//			repaint();
+//		}
 	}
 	
 	
@@ -375,26 +374,26 @@ public class CommentTable extends JTable {
 		public CellRenderer(){
 			super();
 			setBorder(BorderFactory.createEmptyBorder());
-			setHorizontalAlignment(RIGHT);
+		}
+
+		public CellRenderer(int align){
+			super();
+			setBorder(BorderFactory.createEmptyBorder());
+			setHorizontalAlignment(align);
 		}
 
 		
 		public Component getTableCellRendererComponent(JTable table, Object value,
 	            boolean isSelected, boolean hasFocus, int row, int column) {
 
-			setText(value.toString());
-	        if (isSelected) {
-	        	setBackground(table.getSelectionBackground());
-	        } else {
-	            setBackground(Color.white);
-	        }
+			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-	        if(row == currentCommentID){
-	            setBackground(Color.LIGHT_GRAY);
-	        } else {
-	            setBackground(Color.white);
-	        }
-	        
+			if(row == iCurrentComment){
+				setBackground(Color.lightGray);
+			} else {
+				setBackground(CommentTable.this.getBackground());
+			}
+
 	        return this;
 		}
 	}

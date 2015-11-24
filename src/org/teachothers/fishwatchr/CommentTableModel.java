@@ -221,6 +221,9 @@ public class CommentTableModel extends AbstractTableModel {
 			
 			if(flag){
 				filteredCommentList.add(comment);
+				comment.setExcluded(false);
+			} else {
+				comment.setExcluded(true);
 			}
 		}
 		fireTableDataChanged();

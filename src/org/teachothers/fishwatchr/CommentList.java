@@ -65,7 +65,8 @@ public class CommentList extends LinkedList<Comment> {
 	private HashMap<String, String> mapStartTime = new HashMap<String, String>();
 	private String mediaFilename = "";
 	private String setName = "";
-	
+	private int current = -1;
+
 	
 	@Override
 	public boolean add(Comment comment){
@@ -565,7 +566,7 @@ public class CommentList extends LinkedList<Comment> {
 	public String getMediaFilename(){
 		return mediaFilename;
 	}
-	
+		
 	
 	class UserComparator implements Comparator<User> {
 
@@ -584,5 +585,4 @@ public class CommentList extends LinkedList<Comment> {
 	    	return a.getType().compareTo(b.getType());
 	    }
 	}
-
 }
