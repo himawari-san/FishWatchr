@@ -42,6 +42,7 @@ public class Comment {
 	private int id;
 	private static HashMap<String, Integer> headerMap = new HashMap<String, Integer>();
 	private boolean isExcluded = false;
+	private boolean isFocused = false;
 	
 	
 	public Comment(){
@@ -180,4 +181,13 @@ public class Comment {
 		return isExcluded;
 	}
 
+	public boolean isFocused(){
+		return isFocused;
+	}
+
+	public boolean setFocused(boolean flag){
+		isFocused = flag;
+		return isFocused;
+	}
+	
 }

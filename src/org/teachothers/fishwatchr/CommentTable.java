@@ -227,20 +227,40 @@ public class CommentTable extends JTable {
 	}
 
 	
-	public void indicateCurrentComment(long msec){
+	public void indicateCurrentComment(long msec, long range){
 		CommentList commentList = ctm.getCommentList();
 		ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
-
+		int commentTime = 0;
+		
 		iCurrentComment = UNDEFINED;
+		int aa;
 		
 		for(int i = 0; i < filteredCommentList.size(); i++){
 			Comment comment = filteredCommentList.get(i);
-			int commentTime = commentList.unifiedCommentTime(comment);
+			commentTime = commentList.unifiedCommentTime(comment);
+			comment.setFocused(false);
 			if(commentTime <= msec){
 				iCurrentComment = i;
 			}
 		}
 		if(iCurrentComment != UNDEFINED){
+			int currentCommentTime = commentList.unifiedCommentTime(filteredCommentList.get(iCurrentComment));
+			for(int i = iCurrentComment+1; i < filteredCommentList.size(); i++){
+				Comment comment = filteredCommentList.get(i);
+				if(commentList.unifiedCommentTime(comment) - currentCommentTime < range){
+					comment.setFocused(true);
+				} else {
+					break;
+				}
+			}
+			for(int i = iCurrentComment-1; i >= 0; i--){
+				Comment comment = filteredCommentList.get(i);
+				if(currentCommentTime - commentList.unifiedCommentTime(comment) < range){
+					comment.setFocused(true);
+				} else {
+					break;
+				}
+			}
 			repaint();
 		}
 	}
@@ -303,7 +323,9 @@ public class CommentTable extends JTable {
 	public class CellRenderer extends DefaultTableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
-
+		private final Color colorCurrent = new Color(0xE0, 0xE0, 0xFF);
+		private final Color colorNeighbors = new Color(0xFF, 0xF8, 0xDC);
+		
 		public CellRenderer(){
 			super();
 			setBorder(BorderFactory.createEmptyBorder());
@@ -322,11 +344,17 @@ public class CommentTable extends JTable {
 			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 			if(row == iCurrentComment){
-				setBackground(Color.lightGray);
+				setBackground(colorCurrent);
 			} else {
-				setBackground(CommentTable.this.getBackground());
+				int a;
+				Comment comment = ctm.getFilteredCommentList().get(row);
+				if(comment.isFocused()){
+					setBackground(colorNeighbors);
+				} else {
+					setBackground(CommentTable.this.getBackground());
+				}
 			}
-
+			
 	        return this;
 		}
 	}

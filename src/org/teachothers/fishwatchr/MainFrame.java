@@ -2155,7 +2155,7 @@ public class MainFrame extends JFrame {
 			}
 			timeCurrent.setTime(time / 1000);
 			timeSlider.setValue(time / 1000);
-			commentTable.indicateCurrentComment(time);
+			commentTable.indicateCurrentComment(time, 10000);
 			if(jMenuItemOptionViewSyncMode.isSelected()){
 				commentTable.setViewCenter(time);
 			}
