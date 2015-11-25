@@ -233,7 +233,6 @@ public class CommentTable extends JTable {
 		int commentTime = 0;
 		
 		iCurrentComment = UNDEFINED;
-		int aa;
 		
 		for(int i = 0; i < filteredCommentList.size(); i++){
 			Comment comment = filteredCommentList.get(i);
@@ -346,7 +345,6 @@ public class CommentTable extends JTable {
 			if(row == iCurrentComment){
 				setBackground(colorCurrent);
 			} else {
-				int a;
 				Comment comment = ctm.getFilteredCommentList().get(row);
 				if(comment.isFocused()){
 					setBackground(colorNeighbors);

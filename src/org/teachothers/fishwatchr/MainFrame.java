@@ -155,6 +155,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionSkipTime;
 	private JMenuItem jMenuItemOptionJumpAdjustment;
 	private JMenuItem jMenuItemOptionVideoRatio;
+	private JMenuItem jMenuItemOptionIndicatorRange;
 	private JMenuItem jMenuItemOptionRecorderMode;
 	private JMenuItem jMenuItemOptionViewSyncMode;
 	private JMenuItem jMenuItemOptionWaveform;
@@ -203,6 +204,8 @@ public class MainFrame extends JFrame {
 	
 	private String userHomeDir = "";
 	
+	// 強調表示の範囲（現在再生中のコメントから前後 x msec）
+	private int indicatorRange = 10000; // msec
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -1930,6 +1933,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.add(getJMenuItemOptionJumpAdjustment());
 //			jMenuOption.add(getJMenuItemAnnotationTimeCorrection());
 			jMenuOption.add(getJMenuItemOptionVideoRatio());
+			jMenuOption.add(getJMenuItemOptionIndicatorRange());
 			jMenuOption.addSeparator();
 			jMenuOption.add(getJMenuItemOptionRecorderMode());
 			jMenuOption.add(getJMenuItemOptionViewSyncMode());
@@ -2018,6 +2022,28 @@ public class MainFrame extends JFrame {
 		return jMenuItemOptionJumpAdjustment;
 	}
 
+	
+	private JMenuItem getJMenuItemOptionIndicatorRange() {
+		if (jMenuItemOptionIndicatorRange == null) {
+			jMenuItemOptionIndicatorRange = new JMenuItem("強調表示範囲");
+			jMenuItemOptionIndicatorRange
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							String inputValue = JOptionPane.showInputDialog(
+									MainFrame.this, "現在の設定値: 前後 " + indicatorRange / 1000
+											+ " (sec)", "強調表示範囲",
+									JOptionPane.PLAIN_MESSAGE);
+							if (inputValue != null) {
+								indicatorRange = Integer.parseInt(inputValue) * 1000;
+							}
+						}
+					});
+		}
+		return jMenuItemOptionIndicatorRange;
+	}
+
+	
+	
 	private JMenuItem getJMenuItemOptionRecorderMode() {
 		if (jMenuItemOptionRecorderMode == null) {
 			jMenuItemOptionRecorderMode = new JCheckBoxMenuItem("録音モード");
@@ -2155,7 +2181,7 @@ public class MainFrame extends JFrame {
 			}
 			timeCurrent.setTime(time / 1000);
 			timeSlider.setValue(time / 1000);
-			commentTable.indicateCurrentComment(time, 10000);
+			commentTable.indicateCurrentComment(time, indicatorRange);
 			if(jMenuItemOptionViewSyncMode.isSelected()){
 				commentTable.setViewCenter(time);
 			}
