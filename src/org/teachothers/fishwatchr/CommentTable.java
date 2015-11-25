@@ -41,7 +41,6 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 
 
 public class CommentTable extends JTable {
@@ -55,9 +54,7 @@ public class CommentTable extends JTable {
 
 	public CommentTableModel ctm;
 	private JPopupMenu popupMenu = new JPopupMenu();
-	private int currentCommentID = -1; // 未指定 -1
-	private int prevCommentID = 0; // 未指定 -1
-	private int iCurrentComment = -1;
+	private int iCurrentComment = UNDEFINED;
 
 
 	public CommentTable(CommentTableModel ctm){
@@ -69,8 +66,7 @@ public class CommentTable extends JTable {
 	
 
 	public void initState(){
-		currentCommentID = UNDEFINED;
-		prevCommentID = 0;
+		iCurrentComment = UNDEFINED;
 	}
 	
 	public void ginit(){
@@ -171,12 +167,11 @@ public class CommentTable extends JTable {
 			fromIndexForSorting++;
 		}
 
-//		// item のソート
+		// item のソート
 		Object[] itemObjects = itemList.toArray();
 		Arrays.sort(itemObjects, fromIndexForSorting, itemObjects.length);
 
 		String selectedValue = null;
-//		System.err.println("ka:" + itemObjects.length);
 		if (itemObjects.length <= MAX_POPUP_ITEMS) {
 			// ポップアップメニューの場合
 			for (int i = 0; i < itemList.size(); i++) {
@@ -228,8 +223,7 @@ public class CommentTable extends JTable {
 	
 	
 	public void resetPosition(){
-		currentCommentID = UNDEFINED;
-		prevCommentID = 0;
+		iCurrentComment = UNDEFINED;
 	}
 
 	
@@ -237,7 +231,7 @@ public class CommentTable extends JTable {
 		CommentList commentList = ctm.getCommentList();
 		ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
 
-		iCurrentComment = -1;
+		iCurrentComment = UNDEFINED;
 		
 		for(int i = 0; i < filteredCommentList.size(); i++){
 			Comment comment = filteredCommentList.get(i);
@@ -246,7 +240,7 @@ public class CommentTable extends JTable {
 				iCurrentComment = i;
 			}
 		}
-		if(iCurrentComment != -1){
+		if(iCurrentComment != UNDEFINED){
 			repaint();
 		}
 	}
@@ -254,7 +248,7 @@ public class CommentTable extends JTable {
 	
 	
 	public int getCurrentCommentPosition(){
-		return currentCommentID;
+		return iCurrentComment;
 	}
 
 	
@@ -498,10 +492,8 @@ public class CommentTable extends JTable {
 				ctm.addFilter(headerName, selectedValue);
 			}
 			
-//			setRowSelectionInterval(prevCommentID, prevCommentID);
 			resetPosition();
 			ctm.refreshFilter();
-//			System.err.println("sv" + selectedValue);
 		}
 	}
 
