@@ -15,7 +15,6 @@ import java.util.HashMap;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 public class AnnotationGlobalViewer extends JPanel {
@@ -49,10 +48,11 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JPanel annotationViewerPanel;
 	private JComboBox<String> targetSelector;
 	private JComboBox<String> displayTypeSelector;
-	private JTextField intervalField;
+//	private JTextField intervalField;
 	private String[] targets = {"話者", "ラベル", "注釈者"};
 	private String[] displayTypes = {"通常", "エントロピー"};
-	private float interval = 15; // sec
+	private int interval = 30; // sec
+	private int maxLength = 2 * 60 * 60; // 7200sec = 2 hours
 	private ArrayList<User> discussers;
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<String> discusserNames = new ArrayList<String>();
@@ -63,6 +63,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private SoundPlayer soundPlayer;
 	private float totalTime = 0; // sec
 	private int xTimeMax = 0;
+	private int freq[];
 	
 	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
 		this.ctm = ctm;
@@ -76,6 +77,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 	private void init(){
 		updatePanel();
+		freq = new int[maxLength/interval];
 	}
 	
 
@@ -95,14 +97,14 @@ public class AnnotationGlobalViewer extends JPanel {
 		
 		targetSelector = new JComboBox<String>(targets);
 		displayTypeSelector = new JComboBox<String>(displayTypes);
-		intervalField = new JTextField(String.valueOf(interval));
-		intervalField.setPreferredSize(new Dimension(60, 25));
+//		intervalField = new JTextField(String.valueOf(interval));
+//		intervalField.setPreferredSize(new Dimension(60, 25));
 		p2.add(new JLabel("分類"));
 		p2.add(targetSelector);
 		p2.add(new JLabel("表示"));
 		p2.add(displayTypeSelector);
-		p2.add(new JLabel("間隔"));
-		p2.add(intervalField);
+//		p2.add(new JLabel("間隔"));
+//		p2.add(intervalField);
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
 		
@@ -130,10 +132,59 @@ public class AnnotationGlobalViewer extends JPanel {
 					switch (displayTypeSelector.getSelectedIndex()){
 					case DISPLAY_TYPE_NORMAL:
 						displayTypeNormal(g, filteredCommentList, commentList);
+						drawHistogram(g, filteredCommentList, commentList);
 						break;
 					case DISPLAY_TYPE_ENTROPY:
 						displayTypeEntropy(g, filteredCommentList, commentList);
 						break;
+					}
+				}
+
+
+				private void drawHistogram(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
+					int n = filteredCommentList.size();
+					int freq;
+					int range = 10000;
+					Comment comment;
+					
+					for(int i = 0; i < n; i++){
+						Comment targetComment = filteredCommentList.get(i);
+						int targetCommentTime = commentList.unifiedCommentTime(targetComment);
+						freq = 0;
+
+						for(int j = i+1; j < n; j++){
+							comment = filteredCommentList.get(j);
+							if(commentList.unifiedCommentTime(comment) - targetCommentTime < range){
+								freq++;
+							} else {
+								break;
+							}
+						}
+						for(int j = i-1; j >= 0; j--){
+							comment = filteredCommentList.get(j);
+							if(targetCommentTime - commentList.unifiedCommentTime(comment) < range){
+								freq++;
+							} else {
+								break;
+							}
+						}
+						int x = x0AnnotationViewerPanel +
+								commentList.unifiedCommentTime(targetComment) / 1000 / scaleFactor;
+//						g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight , markWidth, markHeight);
+						g.fillRect(x, y0AnnotationViewerPanel+200-freq*5, markWidth, freq*5);
+//						System.err.println("f:" + freq);
+					}
+				}
+
+				private void drawHistgramxx(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
+					for(Comment comment : filteredCommentList){
+						int index = commentList.unifiedCommentTime(comment) / 1000 / interval;
+						freq[index]++;
+					}
+
+					for(int i = 0; i < freq.length; i++){
+						g.fillRect(i*interval/ scaleFactor, y0AnnotationViewerPanel+200-freq[i]*5, interval/ scaleFactor, freq[i]*5);
+//						g.fillRect(i*interval, displayPanel.getHeight() - freq[i], interval, freq[i]);
 					}
 				}
 				
