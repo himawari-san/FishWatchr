@@ -951,6 +951,8 @@ public class MainFrame extends JFrame {
 				int value = 0;
 
 				public void stateChanged(ChangeEvent e) {
+					int currentState = soundPlayer.getPlayerState();
+					
 					// ドラッグしている時
 					if (timeSlider.getValueIsAdjusting()) {
 						soundPlayer.myPause();
@@ -959,7 +961,9 @@ public class MainFrame extends JFrame {
 						isDragged = true;
 						// ドラッグし終わった時
 					} else if (isDragged && !timeSlider.getValueIsAdjusting()) {
-						soundPlayer.myResume();
+						if(currentState != SoundPlayer.PLAYER_STATE_PAUSE){
+							soundPlayer.myResume();
+						}
 						soundPlayer.setPlayPoint(value * 1000);
 						isDragged = false;
 						// スライダーが一瞬元に戻るのを防ぐため，次の soundGraphBuffer が更新されるのを待つ
