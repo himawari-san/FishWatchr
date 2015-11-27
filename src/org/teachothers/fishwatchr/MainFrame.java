@@ -554,10 +554,10 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent arg0) {
 							System.err.println("forward!");
 							soundPlayer.forward(skipTime); // msec
-							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-								timerStart();
-								soundPlayer.myResume();
-							}
+//							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
+//								timerStart();
+//								soundPlayer.myResume();
+//							}
 						}
 					});
 
@@ -566,10 +566,10 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent arg0) {
 							System.err.println("backward!");
 							soundPlayer.backward(skipTime); // msec
-							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-								timerStart();
-								soundPlayer.myResume();
-							}
+//							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
+//								timerStart();
+//								soundPlayer.myResume();
+//							}
 						}
 					});
 		}
@@ -1660,7 +1660,10 @@ public class MainFrame extends JFrame {
 							nextComment = filteredCommentList.get(currentCommentIndex);
 							soundPlayer.setPlayPoint(commentList.unifiedCommentTime(nextComment) + adjustmentTimeAtJump);
 							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-								soundPlayer.myResume();
+								// 300msec くらいにしないと数秒戻ってしまう
+								soundPlayer.setPlayPoint(commentList.unifiedCommentTime(nextComment)+300);
+							} else {
+								soundPlayer.setPlayPoint(commentList.unifiedCommentTime(nextComment) + adjustmentTimeAtJump);
 							}
 						}
 					});
@@ -1707,9 +1710,11 @@ public class MainFrame extends JFrame {
 							prevSkipTime = now;	
 							Comment nextComment;
 							nextComment = filteredCommentList.get(currentCommentIndex);
-							soundPlayer.setPlayPoint(commentList.unifiedCommentTime(nextComment) + adjustmentTimeAtJump);
 							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-								soundPlayer.myResume();
+								// 300msec くらいにしないと数秒戻ってしまう
+								soundPlayer.setPlayPoint(commentList.unifiedCommentTime(nextComment)+300);
+							} else {
+								soundPlayer.setPlayPoint(commentList.unifiedCommentTime(nextComment) + adjustmentTimeAtJump);
 							}
 						}
 					});
