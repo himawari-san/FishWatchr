@@ -920,8 +920,8 @@ public class MainFrame extends JFrame {
 		jMenuItemFileOpen.setEnabled(false);
 		jMenuItemURLOpen.setEnabled(false);
 		jMenuItemFileSave.setEnabled(true);
-		jMenuItemControlSkipBackward.setEnabled(false);
-		jMenuItemControlSkipForward.setEnabled(false);
+		jMenuItemControlSkipBackward.setEnabled(true);
+		jMenuItemControlSkipForward.setEnabled(true);
 		jMenuItemControlPlayPause.setEnabled(true);
 		jMenuItemControlRecord.setEnabled(false);
 		jMenuItemControlStop.setEnabled(true);
