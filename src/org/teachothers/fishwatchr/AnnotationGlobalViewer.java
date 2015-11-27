@@ -24,8 +24,12 @@ public class AnnotationGlobalViewer extends JPanel {
 	private static final int VIEW_TYPE_LABEL = 1; 
 	private static final int VIEW_TYPE_COMMENTER = 2; 
 
-	private static final int DISPLAY_TYPE_NORMAL = 0; 
-	private static final int DISPLAY_TYPE_ENTROPY = 1;
+	private static final int COMPARISON_NOTHING = 0; 
+	private static final int COMPARISON_COMMENTER = 1; 
+	private static final int COMPARISON_LABEL = 2; 
+	private static final int COMPARISON_DISCUSSER = 3; 
+
+	private static final int scaleFactorHistogram = 4;
 	
 	private final int x0NamePanel = 4; // x origin of namePanel
 	private final int y0NamePanel = 4; // y origin of namePanel
@@ -35,6 +39,9 @@ public class AnnotationGlobalViewer extends JPanel {
 	private final int y0AnnotationViewerPanel = 4;	
 
 	private final int xTimeMaxTickHeight = 5;	
+
+	private final int y0MarginHistogram = 2;
+	private int y0Histogram = 0;
 	
 	private int itemHeight = 25;
 	
@@ -48,11 +55,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JPanel annotationViewerPanel;
 	private JComboBox<String> targetSelector;
 	private JComboBox<String> displayTypeSelector;
-//	private JTextField intervalField;
 	private String[] targets = {"話者", "ラベル", "注釈者"};
-	private String[] displayTypes = {"通常", "エントロピー"};
-	private int interval = 30; // sec
-	private int maxLength = 2 * 60 * 60; // 7200sec = 2 hours
+	private String[] displayTypes = {"なし", "注釈者", "ラベル", "話者"};
 	private ArrayList<User> discussers;
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<String> discusserNames = new ArrayList<String>();
@@ -63,7 +67,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private SoundPlayer soundPlayer;
 	private float totalTime = 0; // sec
 	private int xTimeMax = 0;
-	private int freq[];
+	private int focusedRange = 10000;
 	
 	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
 		this.ctm = ctm;
@@ -77,7 +81,6 @@ public class AnnotationGlobalViewer extends JPanel {
 
 	private void init(){
 		updatePanel();
-		freq = new int[maxLength/interval];
 	}
 	
 
@@ -97,14 +100,10 @@ public class AnnotationGlobalViewer extends JPanel {
 		
 		targetSelector = new JComboBox<String>(targets);
 		displayTypeSelector = new JComboBox<String>(displayTypes);
-//		intervalField = new JTextField(String.valueOf(interval));
-//		intervalField.setPreferredSize(new Dimension(60, 25));
-		p2.add(new JLabel("分類"));
-		p2.add(targetSelector);
 		p2.add(new JLabel("表示"));
+		p2.add(targetSelector);
+		p2.add(new JLabel("比較"));
 		p2.add(displayTypeSelector);
-//		p2.add(new JLabel("間隔"));
-//		p2.add(intervalField);
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
 		
@@ -128,67 +127,101 @@ public class AnnotationGlobalViewer extends JPanel {
 					
 					ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
 					CommentList commentList = ctm.getCommentList();
-							
-					switch (displayTypeSelector.getSelectedIndex()){
-					case DISPLAY_TYPE_NORMAL:
-						displayTypeNormal(g, filteredCommentList, commentList);
-						drawHistogram(g, filteredCommentList, commentList);
-						break;
-					case DISPLAY_TYPE_ENTROPY:
-						displayTypeEntropy(g, filteredCommentList, commentList);
-						break;
-					}
+
+					plotData(g, filteredCommentList, commentList);
+					drawHistogram(g, filteredCommentList, commentList);
 				}
 
-
+				
 				private void drawHistogram(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
 					int n = filteredCommentList.size();
 					int freq;
-					int range = 10000;
 					Comment comment;
+					String targetCond = null;
+					String cond = null;
+					int selector = displayTypeSelector.getSelectedIndex();
 					
+					g.setColor(Color.darkGray);
 					for(int i = 0; i < n; i++){
 						Comment targetComment = filteredCommentList.get(i);
 						int targetCommentTime = commentList.unifiedCommentTime(targetComment);
 						freq = 0;
+						
+						switch(selector){
+						case COMPARISON_NOTHING:
+							targetCond = null;
+							break;
+						case COMPARISON_COMMENTER:
+							targetCond = targetComment.getCommenter().getName();
+							break;
+						case COMPARISON_LABEL:
+							targetCond = targetComment.getCommentType().getType();
+							break;
+						case COMPARISON_DISCUSSER:
+							targetCond = targetComment.getDiscusser().getName();
+						}
+
 
 						for(int j = i+1; j < n; j++){
 							comment = filteredCommentList.get(j);
-							if(commentList.unifiedCommentTime(comment) - targetCommentTime < range){
-								freq++;
+
+							switch(selector){
+							case COMPARISON_NOTHING:
+								cond = null;
+								break;
+							case COMPARISON_COMMENTER:
+								cond = comment.getCommenter().getName();
+								break;
+							case COMPARISON_LABEL:
+								cond = comment.getCommentType().getType();
+								break;
+							case COMPARISON_DISCUSSER:
+								cond = comment.getDiscusser().getName();
+							}
+
+							if(commentList.unifiedCommentTime(comment) - targetCommentTime < focusedRange){
+								if(targetCond == null || !targetCond.equals(cond)){
+									freq++;
+								}
 							} else {
 								break;
 							}
 						}
 						for(int j = i-1; j >= 0; j--){
 							comment = filteredCommentList.get(j);
-							if(targetCommentTime - commentList.unifiedCommentTime(comment) < range){
-								freq++;
+
+							switch(selector){
+							case COMPARISON_NOTHING:
+								cond = null;
+								break;
+							case COMPARISON_COMMENTER:
+								cond = comment.getCommenter().getName();
+								break;
+							case COMPARISON_LABEL:
+								cond = comment.getCommentType().getType();
+								break;
+							case COMPARISON_DISCUSSER:
+								cond = comment.getDiscusser().getName();
+							}
+
+							if(targetCommentTime - commentList.unifiedCommentTime(comment) < focusedRange){
+								if(targetCond == null || !targetCond.equals(cond)){
+									freq++;
+								}
 							} else {
 								break;
 							}
 						}
 						int x = x0AnnotationViewerPanel +
 								commentList.unifiedCommentTime(targetComment) / 1000 / scaleFactor;
-//						g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight , markWidth, markHeight);
-						g.fillRect(x, y0AnnotationViewerPanel+200-freq*5, markWidth, freq*5);
-//						System.err.println("f:" + freq);
+//						g.fillRect(x, y0Histogram-(50), markWidth, 50);
+						g.fillRect(x, y0Histogram-(freq*scaleFactorHistogram), markWidth, freq*scaleFactorHistogram);
+						this.getHeight();
 					}
 				}
 
-				private void drawHistgramxx(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
-					for(Comment comment : filteredCommentList){
-						int index = commentList.unifiedCommentTime(comment) / 1000 / interval;
-						freq[index]++;
-					}
-
-					for(int i = 0; i < freq.length; i++){
-						g.fillRect(i*interval/ scaleFactor, y0AnnotationViewerPanel+200-freq[i]*5, interval/ scaleFactor, freq[i]*5);
-//						g.fillRect(i*interval, displayPanel.getHeight() - freq[i], interval, freq[i]);
-					}
-				}
 				
-				protected void displayTypeNormal(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
+				protected void plotData(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
 					int x;
 					String discusserName;
 					String commenterName;
@@ -276,49 +309,6 @@ public class AnnotationGlobalViewer extends JPanel {
 					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
 				}
 				
-				protected void displayTypeRate(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
-					int x;
-					String discusserName;
-					String commenterName;
-					String commentType;
-					ArrayList<ArrayList<Comment>> results = new ArrayList<ArrayList<Comment>>();
-					
-					
-					for(Comment comment : filteredCommentList){
-						int i = commentList.unifiedCommentTime(comment) / 1000;
-						ArrayList<Comment> data = results.get(i);
-						if(data == null){
-							data = new ArrayList<Comment>();
-						}
-						data.add(comment);
-					}
-
-					for(ArrayList<Comment> data: results){
-
-						switch (targetSelector.getSelectedIndex()){
-						case VIEW_TYPE_SPEAKER:
-							for(Comment comment : data){
-								
-							}
-//							discusserName = comment.getDiscusser().getName();
-//							g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight , markWidth, markHeight);
-							break;
-						case VIEW_TYPE_LABEL:
-//							commentType = comment.getCommentType().getType();
-//							g.fillRect(x, y0AnnotationViewerPanel + types.indexOf(commentType)*itemHeight , markWidth, markHeight);
-							break;
-						case VIEW_TYPE_COMMENTER:
-//							commenterName = comment.getCommenter().getName();
-//							g.fillRect(x, y0AnnotationViewerPanel + commenterNames.indexOf(commenterName)*itemHeight , markWidth, markHeight);
-							break;
-						}
-					}
-					
-					int xTime = x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000;
-					g.setColor(Color.BLACK);
-					g.drawLine(xTime, 0, xTime, getSize().height);
-					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
-				}
 				
 				
 				protected double calEntropy(HashMap<String, Integer> data){
@@ -448,6 +438,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		xTimeMax = x0AnnotationViewerPanel + (int)totalTime / scaleFactor;
 
 		repaint();
+		y0Histogram = annotationViewerPanel.getHeight() - y0MarginHistogram;
 	}
 	
 
@@ -455,5 +446,10 @@ public class AnnotationGlobalViewer extends JPanel {
 		super.paintComponent(g);
 		displayPanel.repaint();
 		namePanel.repaint();
+	}
+	
+	
+	public void setFocusRange(int msec){
+		focusedRange = msec;
 	}
 }

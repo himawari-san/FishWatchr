@@ -155,7 +155,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionSkipTime;
 	private JMenuItem jMenuItemOptionJumpAdjustment;
 	private JMenuItem jMenuItemOptionVideoRatio;
-	private JMenuItem jMenuItemOptionIndicatorRange;
+	private JMenuItem jMenuItemOptionFocusRange;
 	private JMenuItem jMenuItemOptionRecorderMode;
 	private JMenuItem jMenuItemOptionViewSyncMode;
 	private JMenuItem jMenuItemOptionWaveform;
@@ -205,7 +205,7 @@ public class MainFrame extends JFrame {
 	private String userHomeDir = "";
 	
 	// 強調表示の範囲（現在再生中のコメントから前後 x msec）
-	private int indicatorRange = 10000; // msec
+	private int focusRange = 10000; // msec
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -999,6 +999,8 @@ public class MainFrame extends JFrame {
 
 			timeLinePanel = getTimeLinePanel();
 			annotationGlobalViewPanel = new AnnotationGlobalViewer(ctm, soundPlayer, discussers, commentTypes);
+			annotationGlobalViewPanel.setFocusRange(focusRange);
+
 			moviePanel = getMoviePanel();
 			moviePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 			
@@ -1035,6 +1037,7 @@ public class MainFrame extends JFrame {
 								timer.cancel();
 							}
 							soundPlayer.resizeMediaPlayer(size.width, size.height);
+							annotationGlobalViewPanel.updatePanel();
 							timerStart();
 							System.err.println(ev.getComponent().getSize());
 						}
@@ -1933,7 +1936,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.add(getJMenuItemOptionJumpAdjustment());
 //			jMenuOption.add(getJMenuItemAnnotationTimeCorrection());
 			jMenuOption.add(getJMenuItemOptionVideoRatio());
-			jMenuOption.add(getJMenuItemOptionIndicatorRange());
+			jMenuOption.add(getJMenuItemOptionFocusRange());
 			jMenuOption.addSeparator();
 			jMenuOption.add(getJMenuItemOptionRecorderMode());
 			jMenuOption.add(getJMenuItemOptionViewSyncMode());
@@ -2023,23 +2026,24 @@ public class MainFrame extends JFrame {
 	}
 
 	
-	private JMenuItem getJMenuItemOptionIndicatorRange() {
-		if (jMenuItemOptionIndicatorRange == null) {
-			jMenuItemOptionIndicatorRange = new JMenuItem("強調表示範囲");
-			jMenuItemOptionIndicatorRange
+	private JMenuItem getJMenuItemOptionFocusRange() {
+		if (jMenuItemOptionFocusRange == null) {
+			jMenuItemOptionFocusRange = new JMenuItem("強調表示範囲");
+			jMenuItemOptionFocusRange
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							String inputValue = JOptionPane.showInputDialog(
-									MainFrame.this, "現在の設定値: 前後 " + indicatorRange / 1000
+									MainFrame.this, "現在の設定値: 前後 " + focusRange / 1000
 											+ " (sec)", "強調表示範囲",
 									JOptionPane.PLAIN_MESSAGE);
 							if (inputValue != null) {
-								indicatorRange = Integer.parseInt(inputValue) * 1000;
+								focusRange = Integer.parseInt(inputValue) * 1000;
 							}
+							annotationGlobalViewPanel.setFocusRange(focusRange);
 						}
 					});
 		}
-		return jMenuItemOptionIndicatorRange;
+		return jMenuItemOptionFocusRange;
 	}
 
 	
@@ -2181,7 +2185,7 @@ public class MainFrame extends JFrame {
 			}
 			timeCurrent.setTime(time / 1000);
 			timeSlider.setValue(time / 1000);
-			commentTable.indicateCurrentComment(time, indicatorRange);
+			commentTable.indicateCurrentComment(time, focusRange);
 			if(jMenuItemOptionViewSyncMode.isSelected()){
 				commentTable.setViewCenter(time);
 			}
