@@ -166,9 +166,6 @@ public class MainFrame extends JFrame {
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<CommentButton> commentButtons;
 
-	// private SoundGraphBuffer soundGraphBuf;
-
-//	private String targetFilename = "";
 	private String xf = "";
 	private String mf = "";
 
@@ -554,10 +551,6 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent arg0) {
 							System.err.println("forward!");
 							soundPlayer.forward(skipTime); // msec
-//							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-//								timerStart();
-//								soundPlayer.myResume();
-//							}
 						}
 					});
 
@@ -566,10 +559,6 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent arg0) {
 							System.err.println("backward!");
 							soundPlayer.backward(skipTime); // msec
-//							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-//								timerStart();
-//								soundPlayer.myResume();
-//							}
 						}
 					});
 		}
@@ -592,7 +581,6 @@ public class MainFrame extends JFrame {
 
 		commentTable.resetPosition();
 		setWindowTitle(xf);
-		int aaa;
 		String selectedFilename;
 		if(isFile){
 			selectedFilename = chooseTargetFile();

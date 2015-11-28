@@ -22,11 +22,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.GeneralPath;
 
 import javax.swing.JComponent;
@@ -63,41 +60,14 @@ public class TimeSlider extends JSlider {
 				setValue(value);
 			}
 		});
-		// init2();
 	}
 
-	public void init2() {
-		MouseListener[] listeners = getMouseListeners();
-		for (MouseListener l : listeners)
-			removeMouseListener(l); // remove UI-installed TrackListener
-		final BasicSliderUI ui = (BasicSliderUI) getUI();
-		BasicSliderUI.TrackListener tl = ui.new TrackListener() {
-			// this is where we jump to absolute value of click
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (!TimeSlider.this.isEnabled()) {
-					return;
-				}
-				Point p = e.getPoint();
-				int value = ui.valueForXPosition(p.x);
-				vv = value;
-				setValue(value);
-				flagClick = true;
-			}
-
-			// disable check that will invoke scrollDueToClickInTrack
-			@Override
-			public boolean shouldScroll(int dir) {
-				return false;
-			}
-		};
-		addMouseListener(tl);
-	};
 
 	public boolean getFlag() {
 		return flagClick;
 	}
 
+	
 	public void clearFlag() {
 		flagClick = false;
 	}
