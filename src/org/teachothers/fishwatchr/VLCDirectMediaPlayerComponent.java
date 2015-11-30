@@ -138,11 +138,10 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     
 
     public DirectMediaPlayer getMediaPlayer(float videoAspectRatio){
-    	int componentWidth = getWidth();
-    	int componentHeight = getHeight();
+    	componentWidth = getWidth();
+    	componentHeight = getHeight();
 
     	float componentRatio = (float)componentWidth / (float)componentHeight;
-//		System.err.println("r: " + componentRatio + ", " + videoAspectRatio + ", " + componentHeight + ", " + componentWidth);
     	
     	if(componentRatio < videoAspectRatio){
     		imageWidth = componentWidth;
@@ -167,7 +166,6 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 
 
     public void setMarquee(String text){
-//    	if(text.length() > )
     	overlaidText = text;
     }
     
