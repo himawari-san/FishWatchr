@@ -55,7 +55,7 @@ public class CommentTable extends JTable {
 	public CommentTableModel ctm;
 	private JPopupMenu popupMenu = new JPopupMenu();
 	private int iCurrentComment = UNDEFINED;
-
+	private StringBuffer currentCommentBuffer = new StringBuffer();
 
 	public CommentTable(CommentTableModel ctm){
 		super(ctm);
@@ -270,6 +270,20 @@ public class CommentTable extends JTable {
 		return iCurrentComment;
 	}
 
+	
+	public String getCurrentComment(){
+		if(iCurrentComment != -1){
+			currentCommentBuffer.setLength(0);
+			Comment currentComment = ctm.getFilteredCommentList().get(iCurrentComment);
+			currentCommentBuffer.append(currentComment.getDiscusser().getName() + "(");
+			currentCommentBuffer.append(currentComment.getCommentType().getType() + "), ");
+			currentCommentBuffer.append(currentComment.getCommenter().getName() + ": ");
+			currentCommentBuffer.append(currentComment.getContentBody());
+			return currentCommentBuffer.toString();
+		} else {
+			return "";
+		}
+	}
 	
 	public int getNearCommentPosition(long msec, boolean isForward){
 		CommentList commentList = ctm.getCommentList();

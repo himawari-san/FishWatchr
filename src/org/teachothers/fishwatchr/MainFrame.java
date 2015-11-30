@@ -146,15 +146,15 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemAnnotationYourName;
 	private JMenuItem jMenuItemAnnotationDiscussers;
 	private JMenuItem jMenuItemAnnotationAnnotation;
-	// private JMenu jMenuAnnotationOption;
 	private JMenuItem jMenuItemAnnotationOrderDiscusser;
 	private JMenuItem jMenuItemAnnotationOrderType;
 	private JMenuItem jMenuItemAnnotationMulti;
 	private JMenuItem jMenuItemAnnotationTimeCorrection;
 	private JMenu jMenuOption;
+	private JMenuItem jMenuItemOptionTextOverlay;
+	private JMenuItem jMenuItemOptionVideoRatio;
 	private JMenuItem jMenuItemOptionSkipTime;
 	private JMenuItem jMenuItemOptionJumpAdjustment;
-	private JMenuItem jMenuItemOptionVideoRatio;
 	private JMenuItem jMenuItemOptionFocusRange;
 	private JMenuItem jMenuItemOptionRecorderMode;
 	private JMenuItem jMenuItemOptionViewSyncMode;
@@ -183,6 +183,7 @@ public class MainFrame extends JFrame {
 	// private int adjustmentJumpAtComment = 5; // ジャンプ時補正（コメント，行）
 	private float playRate = 1.0f; // 再生速度
 	private int iVideoAspectRate = 0;
+	private int iTextOverlayStyle = 0;
 
 	private int buttonType = CommentButton.BUTTON_TYPE_DISCUSSER; // ボタンタイプの初期値（討論者優先）
 
@@ -1929,10 +1930,11 @@ public class MainFrame extends JFrame {
 		if (jMenuOption == null) {
 			jMenuOption = new JMenu();
 			jMenuOption.setText("オプション");
+			jMenuOption.add(getJMenuItemOptionTextOverlay());
+			jMenuOption.add(getJMenuItemOptionVideoRatio());
 			jMenuOption.add(getJMenuItemOptionSkipTime());
 			jMenuOption.add(getJMenuItemOptionJumpAdjustment());
 //			jMenuOption.add(getJMenuItemAnnotationTimeCorrection());
-			jMenuOption.add(getJMenuItemOptionVideoRatio());
 			jMenuOption.add(getJMenuItemOptionFocusRange());
 			jMenuOption.addSeparator();
 			jMenuOption.add(getJMenuItemOptionRecorderMode());
@@ -1942,6 +1944,32 @@ public class MainFrame extends JFrame {
 		return jMenuOption;
 	}
 
+	
+	private JMenuItem getJMenuItemOptionTextOverlay() {
+		String[] textOverlayStyles = soundPlayer.getAvailableTextOverlayStyles();
+
+		if (jMenuItemOptionTextOverlay == null) {
+			jMenuItemOptionTextOverlay = new JMenu("テキスト表示");
+			ButtonGroup itemGroup = new ButtonGroup();
+			for (int i = 0; i < textOverlayStyles.length; i++) {
+				final int ii = i;
+				JMenuItem item = new JRadioButtonMenuItem(textOverlayStyles[i]);
+				item.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						soundPlayer.setTextOverlayStyle(ii);
+					}
+				});
+				jMenuItemOptionTextOverlay.add(item);
+				itemGroup.add(item);
+				if (i == iTextOverlayStyle) {
+					item.setSelected(true);
+				}
+			}
+		}
+		return jMenuItemOptionTextOverlay;
+	}
+	
+	
 	private JMenuItem getJMenuItemOptionVideoRatio() {
 		String[] videoAspectRatios = soundPlayer.getAvailableVideoAspectRatio();
 
@@ -2180,6 +2208,7 @@ public class MainFrame extends JFrame {
 			} else {
 				time = soundPlayer.getCurrentRecordingTime();
 			}
+			soundPlayer.setMarquee(commentTable.getCurrentComment());
 			timeCurrent.setTime(time / 1000);
 			timeSlider.setValue(time / 1000);
 			commentTable.indicateCurrentComment(time, focusRange);

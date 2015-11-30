@@ -17,6 +17,9 @@
 
 package org.teachothers.fishwatchr;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -50,6 +53,15 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 	private MediaPlayerFactory factory;
     private DirectMediaPlayer mediaPlayer;
     
+    private String overlayStyles[] = {"なし", "上部", "中央", "下部"};
+    private int iOverlaidTextStyle = 0;
+    private Font overlaidTextFont = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+    private int textHeight = 0;
+    private int textDescent = 0;
+    private FontMetrics fm;
+    private String overlaidText = "";
+    private Color bgColor;
+    
     public VLCDirectMediaPlayerComponent() throws InterruptedException, InvocationTargetException {
     	factory = new MediaPlayerFactory();
     	init();
@@ -70,6 +82,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     	
         mediaPlayer = factory.newDirectMediaPlayer(new VLCBufferFormatCallback(), new VLCRenderCallback());
         mediaPlayer.setPlaySubItems(true); // <--- This is very important for YouTube
+        
         clearDisplay();
     }
 
@@ -81,6 +94,41 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         int x0 = (componentWidth - imageWidth) / 2;
         int y0 = (componentHeight - imageHeight) / 2;
         g2.drawImage(image, null, x0, y0);
+        
+		if (iOverlaidTextStyle != 0) {
+			g2.setFont(overlaidTextFont);
+
+			if(fm == null){
+				fm = g2.getFontMetrics();
+				textHeight = fm.getHeight();
+				textDescent = fm.getDescent();
+				bgColor = getBackground();
+			}
+			
+
+			switch(iOverlaidTextStyle){
+			case 0:
+				return;
+			case 1: // upside
+				g2.setColor(bgColor);
+				g2.fillRect(x0, 0, fm.stringWidth(overlaidText), textHeight);
+				g2.setColor(Color.DARK_GRAY);
+				g2.drawString(overlaidText, x0, textHeight);
+				break;
+			case 2: // center
+				g2.setColor(bgColor);
+				g2.fillRect(x0, componentHeight/2, fm.stringWidth(overlaidText), textHeight);
+				g2.setColor(Color.DARK_GRAY);
+				g2.drawString(overlaidText, x0, componentHeight/2+textHeight-textDescent);
+				break;
+			case 3: // downside
+				g2.setColor(bgColor);
+				g2.fillRect(x0, componentHeight-textHeight-4, fm.stringWidth(overlaidText), textHeight);
+				g2.setColor(Color.DARK_GRAY);
+				g2.drawString(overlaidText, x0, componentHeight-textDescent-4);
+				break;
+			}
+		}
     }
 
     
@@ -117,6 +165,21 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     	}
     }
 
+
+    public void setMarquee(String text){
+//    	if(text.length() > )
+    	overlaidText = text;
+    }
+    
+    
+    public String[] getAvailableTextOverlayStyles(){
+    	return overlayStyles; 
+    }
+    
+    public void setTextOverlayStyle(int iOverlayStyle){
+    	this.iOverlaidTextStyle = iOverlayStyle;
+    }
+    
     
     class VLCRenderCallback extends RenderCallbackAdapter {
         public VLCRenderCallback() {

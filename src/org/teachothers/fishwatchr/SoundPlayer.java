@@ -182,7 +182,16 @@ public class SoundPlayer extends Thread {
 	public String[] getAvailableVideoAspectRatio(){
 		return videoAspectRates;
 	}
+
 	
+	public void setTextOverlayStyle(int iStyle){
+		mediaPlayerComponent.setTextOverlayStyle(iStyle);
+	}
+	
+	public String[] getAvailableTextOverlayStyles(){
+		return mediaPlayerComponent.getAvailableTextOverlayStyles();
+	}
+
 	
 	// すべての設定を初期化
 	public void init(){
@@ -789,6 +798,10 @@ public class SoundPlayer extends Thread {
 		soundGraphBuf.setPosition((int)(mp.getTime() /1000 / frameLength));
 	}
 
+	
+	public void setMarquee(String text){
+		mediaPlayerComponent.setMarquee(text);
+	}
 	
     private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
         public void finished(MediaPlayer mediaPlayer) {
