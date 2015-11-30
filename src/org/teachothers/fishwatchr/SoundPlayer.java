@@ -248,7 +248,6 @@ public class SoundPlayer extends Thread {
 			readWav(targetFilename, buf);
 			setSoundBufferEnable(true);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
-			int aaaaa;
 			isStreaming = true;
 			playerType = PLAYER_TYPE_VLC;
 			mp.startMedia(targetFilename);

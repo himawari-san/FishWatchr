@@ -146,7 +146,6 @@ public class CommentTable extends JTable {
 		JPopupMenu popupMenu = new JPopupMenu();
 		CommentList commentList = ctm.getCommentList();
 		
-//		popupMenu.setVisible(true);
 		if(commentList.size() == 0){
 			return;
 		}
@@ -272,7 +271,6 @@ public class CommentTable extends JTable {
 
 	
 	public String getCurrentComment(){
-		System.err.println("ic1:"+iCurrentComment);
 		if(iCurrentComment != -1){
 			currentCommentBuffer.setLength(0);
 			Comment currentComment = ctm.getFilteredCommentList().get(iCurrentComment);
@@ -396,7 +394,6 @@ public class CommentTable extends JTable {
 		@Override
 		public boolean isCellEditable(EventObject e) {
 			if(!(e instanceof MouseEvent)|| ((MouseEvent)e).getClickCount() >= clickCount){
-//				if(e == null || !(e instanceof MouseEvent)|| ((MouseEvent)e).getClickCount() >= clickCount){
 				return true;
 			}
 			return false;
@@ -456,56 +453,8 @@ public class CommentTable extends JTable {
 			return super.stopCellEditing();
 		}
 
-	}
-	
+	}	
 
-//	public class JComboBoxCellEditor extends DefaultCellEditor {
-//		private static final long serialVersionUID = 1L;
-////		private Object value;
-//		private JComboBox<User> comboBox;
-// 
-//		
-//		
-//		public JComboBoxCellEditor(List<User> list) {
-//
-//			super(new JComboBox<User>(list.toArray(new User[0])));
-//			this.comboBox = (JComboBox<User>)getComponent();
-//			setClickCountToStart(2);
-//
-//			
-//			//			DefaultComboBoxModel model = new DefaultComboBoxModel(list.toArray());
-//		}
-// 
-////		public JComboBox getComponent(){
-////			return (JComboBox) super.getComponent();
-////		}
-//		
-////		@Override
-////		public Object getCellEditorValue() {
-////			return value;
-////		}
-//
-//		@Override
-//		public Component getTableCellEditorComponent(JTable table, Object value,
-//				boolean isSelected, int row, int column) {
-//
-//			if (isSelected) {
-//				comboBox.setBackground(table.getSelectionBackground());
-//			} else {
-//				comboBox.setBackground(Color.white);
-//			}
-//			return comboBox;
-//		}
-//
-//
-////		@Override
-////		public boolean stopCellEditing() {
-////			return super.stopCellEditing();
-////		}
-//
-//	}
-
-	
 	
 	class CommentTableHeaderPopupMouseAdapter extends java.awt.event.MouseAdapter {
 		String headerName;
@@ -523,7 +472,6 @@ public class CommentTable extends JTable {
 			} else if(selectedValue.equals(LABEL_KEY_SET)){
 				String inputValue = JOptionPane.showInputDialog(
 						null, "正規表現: ", "検索文字列の入力",
-//						CommentTable.this, "test: ", "注釈者名",
 						JOptionPane.PLAIN_MESSAGE);
 				if (inputValue != null) {
 					ctm.addFilter(headerName, inputValue);
