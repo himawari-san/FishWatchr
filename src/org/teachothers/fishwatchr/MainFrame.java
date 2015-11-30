@@ -876,6 +876,7 @@ public class MainFrame extends JFrame {
 		soundPanel.repaint();
 		discussersPanel.repaintComponents();
 		commentTable.initState();
+		soundPlayer.setOverlayText("");
 	}
 
 	private void changeStatePlay() {
@@ -2208,7 +2209,7 @@ public class MainFrame extends JFrame {
 			} else {
 				time = soundPlayer.getCurrentRecordingTime();
 			}
-			soundPlayer.setMarquee(commentTable.getCurrentComment());
+			soundPlayer.setOverlayText(commentTable.getCurrentComment());
 			timeCurrent.setTime(time / 1000);
 			timeSlider.setValue(time / 1000);
 			commentTable.indicateCurrentComment(time, focusRange);

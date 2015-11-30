@@ -272,6 +272,7 @@ public class CommentTable extends JTable {
 
 	
 	public String getCurrentComment(){
+		System.err.println("ic1:"+iCurrentComment);
 		if(iCurrentComment != -1){
 			currentCommentBuffer.setLength(0);
 			Comment currentComment = ctm.getFilteredCommentList().get(iCurrentComment);

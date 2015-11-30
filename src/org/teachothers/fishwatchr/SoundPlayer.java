@@ -799,7 +799,7 @@ public class SoundPlayer extends Thread {
 	}
 
 	
-	public void setMarquee(String text){
+	public void setOverlayText(String text){
 		mediaPlayerComponent.setMarquee(text);
 	}
 	
