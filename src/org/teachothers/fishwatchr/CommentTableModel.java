@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
@@ -29,7 +28,7 @@ import javax.swing.table.AbstractTableModel;
 public class CommentTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	private CommentList commentList;
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.UK);
+	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	public ArrayList<User> discussers;
 	public ArrayList<CommentType> commentTypes;
 	private ArrayList<Comment> filteredCommentList = new ArrayList<Comment>();
