@@ -62,32 +62,29 @@ public class DiscusserSettingPanel extends JPanel {
 	}
 	
 	public String updateNewValue(){
-		ArrayList<Integer> deleteItems = new ArrayList<Integer>();
 		ArrayList<String> invalidItems = new ArrayList<String>();
+
+		int c = 0;
 		
 		for(int i = 0; i < discusserNames.length; i++){
-			if(discusserNames[i].getText().matches(".*[<>&'\"].*")){
+			if(discusserNames[i].getText().matches("^\\s+$")
+				|| discusserNames[i].getText().equals(USER_NOT_DEFINED)){
+				// 空白のみ，無記入の場合はスキップ
+				continue;
+			} else if(discusserNames[i].getText().matches(".*[<>&'\"\\s].*")){
+				// XML として不正な文字，ファイル名にした時に問題が起こりそうな文字は使用禁止
 				invalidItems.add(discusserNames[i].getText());
 				continue;
-			} else if(discusserNames[i].getText().matches(".*\\s.*")){
-				continue;
-			} else if(discusserNames[i].getText().equals(USER_NOT_DEFINED)){
-				if(discussers.size() > i){
-					deleteItems.add(i);
-				}
 			} else {
-				if(i < discussers.size()){
-					discussers.get(i).setName(discusserNames[i].getText());
-				} else {
-					discussers.add(new User(discusserNames[i].getText()));
-				}
+				discussers.get(c++).setName(discusserNames[i].getText());
 			} 
 		}
-
-		for(int i : deleteItems){
-			discussers.remove(i);
-		}
 		
+		// 空欄の部分
+		for(int i = c; i < discussers.size(); i++){
+			discussers.get(i).setName("");
+		}
+
 		return StringUtils.join(invalidItems, ", ");
 	}
 }

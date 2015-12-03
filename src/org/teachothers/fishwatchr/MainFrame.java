@@ -1889,7 +1889,7 @@ public class MainFrame extends JFrame {
 							}
 							String invalidItems = discusserSettingPanel.updateNewValue();
 							if(!invalidItems.isEmpty()){
-								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（<>\"\'&）が含まれているため，設定値を反映しませんでした。");
+								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（半角の <>\"\'& 空白文字）が含まれているため，設定値を反映しませんでした。");
 							}
 							discussersPanel.updateCompoments();
 							if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
