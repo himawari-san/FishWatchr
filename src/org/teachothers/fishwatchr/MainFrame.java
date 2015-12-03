@@ -222,8 +222,6 @@ public class MainFrame extends JFrame {
 		// commentTypes 初期値
 		commentTypes = new ArrayList<CommentType>();
 		// 初期値の設定
-//		addDefaultDiscussers();
-//		addDefaultCommentTypes();
 		config.load(commentTypes, discussers);
 		
 
@@ -241,33 +239,6 @@ public class MainFrame extends JFrame {
 		ginit();
 	}
 
-	
-	public void addDefaultDiscussers(){
-		discussers.clear();
-		discussers.add(new User("話者１"));
-		discussers.add(new User("話者２"));
-		discussers.add(new User("話者３"));
-		discussers.add(new User("話者４"));
-		discussers.add(new User("不特定"));
-		discussers.add(new User("誤り"));
-	}
-
-	
-	public void addDefaultCommentTypes(){
-		commentTypes.clear();
-		commentTypes.add(new CommentType("意見", Color.red));
-		commentTypes.add(new CommentType("質問", Color.ORANGE));
-		commentTypes.add(new CommentType("管理", Color.blue));
-		commentTypes.add(new CommentType("相づち", Color.green));
-		commentTypes.add(new CommentType("確認", Color.cyan));
-		commentTypes.add(new CommentType("その他", Color.yellow));
-		commentTypes.add(new CommentType("誤り", Color.magenta));
-		commentTypes.add(new CommentType("", new Color(10,10,10)));
-		commentTypes.add(new CommentType("", new Color(60,60,60)));
-		commentTypes.add(new CommentType("", new Color(110,110,110)));
-		commentTypes.add(new CommentType("", new Color(160,160,160)));
-		commentTypes.add(new CommentType("", new Color(210,210,210)));
-	}
 
 	public void init() {
 		// soundPanel.init();
@@ -608,7 +579,8 @@ public class MainFrame extends JFrame {
 			commentList.setStartTime(new Date());
 			commentList.setMediaFilename(mf);
 			ctm.refreshFilter();
-			setDefaultButton();
+			config.load(commentTypes, discussers);
+//			setDefaultButton();
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
 		}
@@ -634,7 +606,7 @@ public class MainFrame extends JFrame {
 						commentList.setStartTime(new Date());
 						commentList.setMediaFilename(mf);
 						ctm.refreshFilter();
-						setDefaultButton();
+						config.load(commentTypes, discussers);
 						updateButtonPanel(buttonType);
 						ctm.fireTableDataChanged();
 						xf = newXf;
@@ -652,7 +624,8 @@ public class MainFrame extends JFrame {
 				commentList.setStartTime(new Date());
 				commentList.setMediaFilename(mf);
 				ctm.refreshFilter();
-				setDefaultButton();
+				config.load(commentTypes, discussers);
+//				setDefaultButton();
 				updateButtonPanel(buttonType);
 				ctm.fireTableDataChanged();
 			}
@@ -670,7 +643,6 @@ public class MainFrame extends JFrame {
 				return false;
 			}
 			ctm.refreshFilter();
-			addDefaultButton();
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
 
@@ -738,43 +710,7 @@ public class MainFrame extends JFrame {
 			return filename;
 		}
 	}
-
 	
-	private void setDefaultButton(){
-		addDefaultCommentTypes();
-		addDefaultDiscussers();
-	}
-
-	
-	private void addDefaultButton(){
-		boolean flagCommentTypesExist = false;
-		boolean flagDiscussersExist = false;
-		
-		for(CommentType commentType: commentTypes){
-			if(!commentType.getType().isEmpty()){
-				flagCommentTypesExist = true;
-				break;
-			}
-		}	
-		
-		if(!flagCommentTypesExist){
-			addDefaultCommentTypes();
-		}
-		
-
-		for(User discusser: discussers){
-			if(!discusser.getName().isEmpty()){
-				flagDiscussersExist = true;
-				break;
-			}
-		}	
-
-		if(!flagDiscussersExist){
-			addDefaultDiscussers();
-		}
-	}
-	
-
 	
 	private void saveCommentList() throws IOException {
 		// 編集中のセルはキャンセル
@@ -1424,7 +1360,6 @@ public class MainFrame extends JFrame {
 							}
 
 							ctm.refreshFilter();
-							addDefaultButton();
 							updateButtonPanel(buttonType);
 							ctm.fireTableDataChanged();
 
