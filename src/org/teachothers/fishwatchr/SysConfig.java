@@ -34,7 +34,6 @@ public class SysConfig {
 		setDefault(commentTypes, discussers);
 		
 		if (configFile.exists()) {
-			System.err.println("exist!!");
 			DocumentBuilderFactory factory = DocumentBuilderFactory
 					.newInstance();
 

@@ -251,10 +251,7 @@ public class CommentList extends LinkedList<Comment> {
 	public String load(String targetFilename,
 			ArrayList<CommentType> commentTypes, ArrayList<User> discussers, boolean flagAdd) throws ParseException, ParserConfigurationException, SAXException, IOException, XPathExpressionException {
 
-		System.err.println("load!! " + targetFilename);
-
 		if(!flagAdd){
-			System.err.println("clear!! " + targetFilename);
 			// リストの初期化(override)
 			clear();
 			
