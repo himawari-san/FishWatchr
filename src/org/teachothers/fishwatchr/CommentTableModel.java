@@ -91,7 +91,6 @@ public class CommentTableModel extends AbstractTableModel {
 	
 	// time ミリ秒
 	private String formatTime(int msec){
-//		System.err.println(msec);
 		int time = (int) (msec / 1000);
 		int hour = time / 3600;
 		time -= hour * 3600;

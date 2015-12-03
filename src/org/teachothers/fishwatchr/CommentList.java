@@ -18,10 +18,13 @@
 package org.teachothers.fishwatchr;
 
 import java.awt.Color;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -58,7 +61,9 @@ public class CommentList extends LinkedList<Comment> {
 	private static final String NOT_DEFINED = "(未定義)";
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
+	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	private Date startTime = null;
+
 	private boolean isModified = false;
 //	private HashMap<String, Integer> mapStartTimeOffset = new HashMap<String, Integer>();
 	private HashMap<String, Integer> mapCommentTimeOffset = new HashMap<String, Integer>();
@@ -452,6 +457,40 @@ public class CommentList extends LinkedList<Comment> {
 
 		return mediaFilename;
 	}
+	
+	
+	public void export(String filename) throws IOException{
+
+		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
+		
+		for(Comment comment: this){
+			StringBuilder sb = new StringBuilder();
+			for(int i = 0; i < Comment.N_Field; i++){
+				String value;
+				
+				if(i == Comment.F_COMMENT_TIME){
+					value = formatTime(unifiedCommentTime(comment));
+				} else {
+					value = comment.getAt(i).toString();
+				}
+				sb.append(value + "\t");
+			}
+			pw.println(sb.toString().replaceFirst("\t$", ""));
+		}
+		pw.close();
+	}
+	
+	// time ミリ秒
+	private String formatTime(int msec){
+		int time = (int) (msec / 1000);
+		int hour = time / 3600;
+		time -= hour * 3600;
+		int minute = time / 60;
+		int sec = time - minute * 60;
+
+		return String.format("%02d:%02d:%02d", hour, minute, sec);
+	}
+
 	
 	
 	public void refreshID(){

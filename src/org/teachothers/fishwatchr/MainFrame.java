@@ -1275,7 +1275,24 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							try {
-								exportAsTSV();
+								String saveFilename = chooseFile(null, JFileChooser.FILES_ONLY, true);
+								if(saveFilename.isEmpty()){
+									JOptionPane.showMessageDialog(MainFrame.this, "ファイルが指定されなかったので，処理を中止します。");
+									return;
+								} else if(!saveFilename.endsWith(".tsv")){
+									saveFilename += ".tsv";
+								}
+								File saveFile = new File(saveFilename);
+								if(saveFile.exists()){
+									int response = JOptionPane.showConfirmDialog(MainFrame.this, saveFile.getName() + "は，すでに存在します。\n上書きしますか？", "上書きの確認", JOptionPane.OK_CANCEL_OPTION);
+									if(response != JOptionPane.OK_OPTION){
+										JOptionPane.showMessageDialog(MainFrame.this, "ファイルの書き込みを中止します。");
+										return;
+									}
+								}
+								
+								commentList.export(saveFilename);
+								JOptionPane.showMessageDialog(MainFrame.this, "ファイル(" + saveFile.getName() + ")への書き込みが完了しました。");
 							} catch (IOException e1) {
 								e1.printStackTrace();
 								JOptionPane.showMessageDialog(MainFrame.this,
@@ -1312,7 +1329,13 @@ public class MainFrame extends JFrame {
 		for(Comment comment: commentList){
 			StringBuilder sb = new StringBuilder();
 			for(int i = 0; i < Comment.N_Field; i++){
-				sb.append(comment.getAt(i).toString() + "\t");
+				String value = comment.getAt(i).toString();
+				
+				if(i == Comment.F_COMMENT_TIME){
+					sb.append(value + "\t");
+				} else {
+					sb.append(comment.getAt(i).toString() + "\t");
+				}
 			}
 			pw.println(sb.toString().replaceFirst("\t$", ""));
 		}
