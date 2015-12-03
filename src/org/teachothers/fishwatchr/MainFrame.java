@@ -205,6 +205,8 @@ public class MainFrame extends JFrame {
 	// 強調表示の範囲（現在再生中のコメントから前後 x msec）
 	private int focusRange = 10000; // msec
 	
+	private SysConfig config = new SysConfig();
+	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
 
@@ -217,11 +219,13 @@ public class MainFrame extends JFrame {
 
 		// discussers 初期値
 		discussers = new ArrayList<User>();
-		addDefaultDiscussers();
-		
 		// commentTypes 初期値
 		commentTypes = new ArrayList<CommentType>();
-		addDefaultCommentTypes();
+		// 初期値の設定
+//		addDefaultDiscussers();
+//		addDefaultCommentTypes();
+		config.load(commentTypes, discussers);
+		
 
 		soundPlayer = new SoundPlayer(this);
 
