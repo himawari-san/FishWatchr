@@ -23,6 +23,13 @@ import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -40,7 +47,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,6 +72,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.TransferHandler;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -69,6 +80,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 
 public class MainFrame extends JFrame {
@@ -270,7 +282,7 @@ public class MainFrame extends JFrame {
 		
 		changeStateStop();
 
-
+		new DropTarget(this, new DropFileAdapter());
 
 		// 閉じるボタンでいきなり閉じるのを抑制する
 		addWindowListener(new WindowAdapter() {
@@ -501,7 +513,7 @@ public class MainFrame extends JFrame {
 								return;
 							} else {
 								if (mf.isEmpty() && xf.isEmpty()) {
-									if(!setTargetFile(true)){
+									if(!setTargetFile("")){
 										return;
 									}
 								}
@@ -543,7 +555,7 @@ public class MainFrame extends JFrame {
 	}
 
 	
-	private boolean setTargetFile(boolean isFile) {
+	private boolean setTargetFile(String filename) {
 		try {
 			saveCommentList();
 		} catch (IOException e) {
@@ -558,9 +570,7 @@ public class MainFrame extends JFrame {
 		commentTable.resetPosition();
 		setWindowTitle(xf);
 		String selectedFilename;
-		if(isFile){
-			selectedFilename = chooseTargetFile();
-		} else {
+		if(filename == null){
 			JOptionPane pane = new JOptionPane("例： https://www.youtube.com/watch?v=your_input", JOptionPane.PLAIN_MESSAGE);
 			pane.setWantsInput(true);
 			pane.setInputValue("");
@@ -583,6 +593,10 @@ public class MainFrame extends JFrame {
 //			setDefaultButton();
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
+		} else if(filename.isEmpty()){
+			selectedFilename = chooseTargetFile();
+		} else {
+			selectedFilename = filename;
 		}
 
 		
@@ -653,8 +667,10 @@ public class MainFrame extends JFrame {
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
 			return false;
-		} else if (isFile && !SoundPlayer.isPlayable(selectedFilename)) {
+//		} else if (isFile && !SoundPlayer.isPlayable(selectedFilename)) {
+		} else {
 			// 注釈ファイルも存在しない場合。する場合は，ここをスルーするはず
+			System.err.println("heyhey!!!");
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
 			return false;
@@ -1083,7 +1099,7 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							soundPlayer.myStop();
-							if(!setTargetFile(true)){
+							if(!setTargetFile("")){
 								return;
 							}
 							int aaa;
@@ -1105,7 +1121,7 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							soundPlayer.myStop();
-							if(!setTargetFile(false)){
+							if(!setTargetFile(null)){
 								return;
 							}
 							int aaa;
@@ -1370,46 +1386,56 @@ public class MainFrame extends JFrame {
 										"フォルダが選択されなかったので，処理を中止します");
 								return;
 							}
-
-							try {
-								mf = commentList.merge(targetDir, MainFrame.this.commentTypes, MainFrame.this.discussers);
-								xf = getUniqueFilename(mf + ".merged.xml");
-								commentList.setModified(true);
-								JOptionPane.showMessageDialog(MainFrame.this, "マージ後の設定ファイルは，" + xf + " です。");
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(MainFrame.this,
-										"マージの過程でエラーが発生しました。処理を中止します。\n" + e1);
-								return;
-							}
-
-							ctm.refreshFilter();
-							updateButtonPanel(buttonType);
-							ctm.fireTableDataChanged();
-
-							if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
-								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
-								mf = "";
-								xf = "";
-								return;
-							}
-							isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
-							commentList.setSetName(xf, commenter);
-
-							setWindowTitle(xf);
-							timerStart();
-							timeSlider.setMinimum(0);
-							timeSlider.setMaximum((int) soundPlayer.getSoundLength());
-							timeSlider.setEnabled(true);
-							timeEnd.setTime((int) soundPlayer.getSoundLength());
-							annotationGlobalViewPanel.updatePanel();
-
-							changeStatePlay();
+							mergeAnnotationFiles(targetDir);
 						}
 					});
 		}
 		return jMenuItemFileMerge;
 	}
 
+	
+	private void mergeAnnotationFiles(String directoryName){
+		try {
+			ArrayList<String> results = commentList.merge(directoryName, commentTypes, discussers);
+			mf = results.remove(0); // mediafilename
+			xf = getUniqueFilename(mf + CommentList.MERGED_FILE_SUFFIX);
+			commentList.setModified(true);
+			Collections.sort(results);
+			
+			JOptionPane.showMessageDialog(MainFrame.this,
+					"マージ後の設定ファイルは，" + xf + " です。\n"
+					+ "マージしたファイルは，次のとおりです。\n"
+					+ StringUtils.join(results, "\n"));
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(MainFrame.this,
+					"マージの過程でエラーが発生しました。処理を中止します。\n" + e1);
+			return;
+		}
+
+		ctm.refreshFilter();
+		updateButtonPanel(buttonType);
+		ctm.fireTableDataChanged();
+
+		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
+			JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
+			mf = "";
+			xf = "";
+			return;
+		}
+		isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
+		commentList.setSetName(xf, commenter);
+
+		setWindowTitle(xf);
+		timerStart();
+		timeSlider.setMinimum(0);
+		timeSlider.setMaximum((int) soundPlayer.getSoundLength());
+		timeSlider.setEnabled(true);
+		timeEnd.setTime((int) soundPlayer.getSoundLength());
+		annotationGlobalViewPanel.updatePanel();
+
+		changeStatePlay();
+	}
+	
 	
 	private JMenuItem getJMenuItemFileExit() {
 		if (jMenuItemFileExit == null) {
@@ -2155,6 +2181,40 @@ public class MainFrame extends JFrame {
 		setTitle("[" + filename + "] - " + systemName);
 	}
 
+	
+	
+	class DropFileAdapter extends DropTargetAdapter {
+
+		@Override
+		public void drop(DropTargetDropEvent dtde) {
+			Transferable t = dtde.getTransferable();
+			dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+			
+			try {
+				@SuppressWarnings("unchecked")
+				List<File> files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+
+				if(files.size() > 0){
+					File target = files.get(0);
+					System.err.println("dropped file: " + target.getCanonicalPath() + ", " + soundPlayer.getPlayerState());
+
+					if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP){
+						if(target.isDirectory()){
+							mergeAnnotationFiles(target.getCanonicalPath());
+						} else {
+							setTargetFile(target.getCanonicalPath());
+						}
+					}
+				}
+			} catch (UnsupportedFlavorException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	
 	class DrawGraphTask extends TimerTask {
 		int time;
 

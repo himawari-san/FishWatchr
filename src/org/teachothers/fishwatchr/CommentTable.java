@@ -39,6 +39,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
+import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 
@@ -76,7 +78,6 @@ public class CommentTable extends JTable {
 		setDefaultRenderer(Number.class, new CellRenderer(SwingConstants.RIGHT));
 		getColumn("話者").setCellEditor(new ListCellEditor<User>(ctm.discussers));
 		getColumn("ラベル").setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
-		
 		
 		JMenuItem menuItemDelete = new JMenuItem("行の削除");
 		menuItemDelete.addActionListener(new ActionListener() {
@@ -485,5 +486,4 @@ public class CommentTable extends JTable {
 			ctm.refreshFilter();
 		}
 	}
-
 }

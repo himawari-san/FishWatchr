@@ -58,6 +58,7 @@ public class CommentList extends LinkedList<Comment> {
 
 	private static final long serialVersionUID = 1L;
 	public static final String FILE_SUFFIX = ".xml";
+	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
 	private static final String NOT_DEFINED = "(未定義)";
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
@@ -423,7 +424,7 @@ public class CommentList extends LinkedList<Comment> {
 	}
 	
 
-	public String merge(String dirName,
+	public ArrayList<String> merge(String dirName,
 			ArrayList<CommentType> commentTypes, ArrayList<User> discussers) throws IOException, XPathExpressionException, ParseException, ParserConfigurationException, SAXException {
 
 		File dir = new File(dirName);
@@ -431,12 +432,14 @@ public class CommentList extends LinkedList<Comment> {
 //		String xmlFilename = "";
 		String candMediafilename = "";
 		File[] files = dir.listFiles();
+		ArrayList<String> results = new ArrayList<String>();
 		
 		for (File file : files) {
 			String filename = file.getCanonicalPath();
 			
 			if (filename.endsWith(CommentList.FILE_SUFFIX)) {
 				load(filename, commentTypes, discussers, flagAdd);
+				results.add(file.getName());
 				// 初回だけ，false にする
 				if (!flagAdd) {
 					flagAdd = true;
@@ -454,8 +457,9 @@ public class CommentList extends LinkedList<Comment> {
 			}
 		}
 		mediaFilename = candMediafilename;
-
-		return mediaFilename;
+		results.add(0, mediaFilename);
+		
+		return results;
 	}
 	
 	
