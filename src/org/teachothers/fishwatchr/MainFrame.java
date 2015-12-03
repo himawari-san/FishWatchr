@@ -1850,6 +1850,7 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（半角の <>\"\'& 空白文字）が含まれているため，設定値を反映しませんでした。");
 							}
 							discussersPanel.updateCompoments();
+							annotationGlobalViewPanel.updatePanel();
 							if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
 								updateButtonPanel(buttonType);
 							}
@@ -1879,6 +1880,7 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（<>\"\'&）が含まれているため，設定値を反映しませんでした。");
 							}
 							discussersPanel.updateCompoments();
+							annotationGlobalViewPanel.updatePanel();
 							if (buttonType == CommentButton.BUTTON_TYPE_COMMENT) {
 								updateButtonPanel(buttonType);
 							}
