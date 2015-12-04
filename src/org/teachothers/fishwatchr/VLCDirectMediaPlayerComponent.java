@@ -113,7 +113,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 				g2.setColor(bgColor);
 				g2.fillRect(x0, 0, fm.stringWidth(overlaidText), textHeight);
 				g2.setColor(Color.DARK_GRAY);
-				g2.drawString(overlaidText, x0, textHeight);
+				g2.drawString(overlaidText, x0, textHeight-textDescent);
 				break;
 			case 2: // center
 				g2.setColor(bgColor);
