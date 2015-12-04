@@ -1433,7 +1433,8 @@ public class MainFrame extends JFrame {
 		timeEnd.setTime((int) soundPlayer.getSoundLength());
 		annotationGlobalViewPanel.updatePanel();
 
-		changeStatePlay();
+		soundPlayer.myStop();
+		changeStateStop();
 	}
 	
 	
@@ -2203,6 +2204,9 @@ public class MainFrame extends JFrame {
 							mergeAnnotationFiles(target.getCanonicalPath());
 						} else {
 							setTargetFile(target.getCanonicalPath());
+							changeStatePlay();
+							soundPlayer.myPlay();
+							timerStart();
 						}
 					}
 				}
