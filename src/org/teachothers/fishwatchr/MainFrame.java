@@ -532,7 +532,9 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							System.err.println("forward!");
-							soundPlayer.forward(skipTime); // msec
+							if(soundPlayer.getSoundLength()*1000 - soundPlayer.getElapsedTime() > skipTime){
+								soundPlayer.forward(skipTime); // msec
+							}
 						}
 					});
 
