@@ -57,10 +57,12 @@ import org.xml.sax.SAXException;
 public class CommentList extends LinkedList<Comment> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String FILE_SUFFIX = ".xml";
-	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
 	private static final String NOT_DEFINED = "(未定義)";
 
+	public static final String FILE_SUFFIX = ".xml";
+	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
+	public static final String BACKUP_DIR = "Bak.fw";
+	
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
 	private Date startTime = null;
 
@@ -156,11 +158,22 @@ public class CommentList extends LinkedList<Comment> {
 
 		File xmlFile = new File(xmlFilename);
 		if (xmlFile.exists()) {
-			String backupFilename = MainFrame.getUniqueFilename(xmlFilename + ".bak");
+			String parentPath = xmlFile.getParentFile().getCanonicalPath();
+			String filename = xmlFile.getName();
+			
+			String backupFilename =
+					MainFrame.getUniqueFilename(
+							parentPath + File.separatorChar
+							+ BACKUP_DIR + File.separatorChar
+							+ filename + ".bak");
+			File backupDir = new File(parentPath + File.separatorChar + BACKUP_DIR);
+			if(!backupDir.exists()){
+				backupDir.mkdir();
+			}
 			File backupFile = new File(backupFilename);
 			Files.copy(xmlFile.toPath(), backupFile.toPath());
 			message += xmlFile.toPath().getFileName() + " は，すでに存在するため，"
-					+ backupFile.toPath().getFileName() + "へコピーしました。";
+					+ backupFile.getAbsolutePath() + "へバックアップしました。";
 		}
 
 		OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(
