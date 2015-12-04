@@ -859,18 +859,21 @@ public class MainFrame extends JFrame {
 			timeSlider.addChangeListener(new ChangeListener() {
 				boolean isDragged = false;
 				int value = 0;
+				int currentState = soundPlayer.getPlayerState();
 
 				public void stateChanged(ChangeEvent e) {
-					int currentState = soundPlayer.getPlayerState();
 					
 					// ドラッグしている時
 					if (timeSlider.getValueIsAdjusting()) {
+						if(!isDragged){
+							currentState = soundPlayer.getPlayerState();
+						}
 						soundPlayer.myPause();
 						timer.cancel();
 						value = timeSlider.getValue();
 						isDragged = true;
 						// ドラッグし終わった時
-					} else if (isDragged && !timeSlider.getValueIsAdjusting()) {
+					} else if (isDragged) {
 						if(currentState != SoundPlayer.PLAYER_STATE_PAUSE){
 							soundPlayer.myResume();
 						}
