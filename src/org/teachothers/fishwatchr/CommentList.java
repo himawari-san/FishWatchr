@@ -61,7 +61,7 @@ public class CommentList extends LinkedList<Comment> {
 
 	public static final String FILE_SUFFIX = ".xml";
 	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
-	public static final String BACKUP_DIR = "Bak.fw";
+	public static final String BACKUP_DIR = "BAK";
 	
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
 	private Date startTime = null;
@@ -437,15 +437,22 @@ public class CommentList extends LinkedList<Comment> {
 
 		File dir = new File(dirName);
 		boolean flagAdd = false;
-//		String xmlFilename = "";
 		String candMediafilename = "";
 		File[] files = dir.listFiles();
 		ArrayList<String> results = new ArrayList<String>();
+		String mergedFileSuffix = MERGED_FILE_SUFFIX;
+		String backupFileSuffix = mergedFileSuffix.replaceFirst(FILE_SUFFIX, "");
 		
 		for (File file : files) {
 			String filename = file.getCanonicalPath();
 			
-			if (filename.endsWith(CommentList.FILE_SUFFIX)) {
+			if (filename.endsWith(FILE_SUFFIX)){
+				if(filename.endsWith(mergedFileSuffix)
+						|| filename.matches(".*" + backupFileSuffix + "\\.\\d\\d\\d" + FILE_SUFFIX + "$")){
+					System.err.println("Warning(CommentList): exclude " + filename);
+					continue;
+				}
+				
 				load(filename, commentTypes, discussers, flagAdd);
 				results.add(file.getName());
 				// 初回だけ，false にする
