@@ -47,7 +47,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -72,7 +71,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.TransferHandler;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -332,7 +330,6 @@ public class MainFrame extends JFrame {
 			commentPanel.setLayout(new BorderLayout());
 			operationPanel = getOperationPanel();
 			buttonPanel = getButtonPanel();
-			int bbbbb;
 			buttonPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, BUTTON_PANEL_HEIGHT));
 			commentPanel.add(operationPanel, BorderLayout.NORTH);
 			commentPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -1318,46 +1315,6 @@ public class MainFrame extends JFrame {
 					});
 		}
 		return jMenuItemFileExport;
-	}
-
-	
-	private void exportAsTSV() throws IOException{
-		String saveFilename = chooseFile(null, JFileChooser.FILES_ONLY, true);
-		if(saveFilename.isEmpty()){
-			JOptionPane.showMessageDialog(MainFrame.this, "ファイルが指定されなかったので，処理を中止します。");
-			return;
-		} else if(!saveFilename.endsWith(".tsv")){
-			saveFilename += ".tsv";
-		}
-		
-		File saveFile = new File(saveFilename);
-		if(saveFile.exists()){
-			int response = JOptionPane.showConfirmDialog(MainFrame.this, saveFile.getName() + "は，すでに存在します。\n上書きしますか？", "上書きの確認", JOptionPane.OK_CANCEL_OPTION);
-			if(response != JOptionPane.OK_OPTION){
-				JOptionPane.showMessageDialog(MainFrame.this, "ファイルの書き込みを中止します。");
-				return;
-			}
-		}
-		
-		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(saveFile)));
-		
-		
-		for(Comment comment: commentList){
-			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < Comment.N_Field; i++){
-				String value = comment.getAt(i).toString();
-				
-				if(i == Comment.F_COMMENT_TIME){
-					sb.append(value + "\t");
-				} else {
-					sb.append(comment.getAt(i).toString() + "\t");
-				}
-			}
-			pw.println(sb.toString().replaceFirst("\t$", ""));
-		}
-		
-		pw.close();
-		JOptionPane.showMessageDialog(MainFrame.this, "ファイル(" + saveFile.getName() + ")への書き込みが完了しました。");
 	}
 	
 	

@@ -62,7 +62,6 @@ public class CommentList extends LinkedList<Comment> {
 	private static final String NOT_DEFINED = "(未定義)";
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	private Date startTime = null;
 
 	private boolean isModified = false;
@@ -71,7 +70,6 @@ public class CommentList extends LinkedList<Comment> {
 	private HashMap<String, String> mapStartTime = new HashMap<String, String>();
 	private String mediaFilename = "";
 	private String setName = "";
-	private int current = -1;
 
 	
 	@Override
