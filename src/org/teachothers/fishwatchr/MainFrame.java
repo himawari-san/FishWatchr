@@ -446,12 +446,12 @@ public class MainFrame extends JFrame {
 									+ FILE_PREFIX + today.format(new Date()) + "_" + commenter;
 
 							if (jMenuItemOptionRecorderMode.isSelected()) {
-								mf = getUniqueFilename(basename + SoundPlayer.SOUNDFILE_EXTENSION);
+								mf = CommentList.getUniqueFilename(basename + SoundPlayer.SOUNDFILE_EXTENSION);
 								xf = mf + CommentList.FILE_SUFFIX;
 								isSoundPanelEnable = true;
 							} else {
 								mf = "";
-								xf = getUniqueFilename(basename + CommentList.FILE_SUFFIX);
+								xf = CommentList.getUniqueFilename(basename + CommentList.FILE_SUFFIX);
 							}
 							
 							setWindowTitle(xf);
@@ -580,7 +580,7 @@ public class MainFrame extends JFrame {
 				return false;
 			}
 			mf = selectedFilename;
-			xf = getUniqueFilename(userHomeDir + File.separator
+			xf = CommentList.getUniqueFilename(userHomeDir + File.separator
 					+ FILE_PREFIX + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "_" + commenter + CommentList.FILE_SUFFIX);
 			commentList.clear();
 			commentList.setStartTime(new Date());
@@ -604,7 +604,7 @@ public class MainFrame extends JFrame {
 			mf = selectedFilename;
 			xf = mf + CommentList.FILE_SUFFIX;
 			if(new File(xf).exists()){
-				String newXf = getUniqueFilename(xf);
+				String newXf = CommentList.getUniqueFilename(xf);
 				int result = JOptionPane.showConfirmDialog(this, "注釈ファイル（" + new File(xf).getName() + "）がすでに存在します。\n" +
 						"「はい」を選択すると，新規に注釈ファイル（" + new File(newXf).getName() + "）を生成します。\n" +
 						"「いいえ」を選択すると，既存の注釈ファイルを読み込みます。\n" +
@@ -695,34 +695,34 @@ public class MainFrame extends JFrame {
 	}
 
 	
-	// すでにファイル yyy.xml が存在する場合は，yyy.001.xml を返す
-	static public String getUniqueFilename(String filename){
-		String nameBody;
-		String suffix;
-		int p = filename.lastIndexOf(".");
-		int c = 1;
-		
-		if(p != -1){
-			nameBody = filename.substring(0, p);
-			suffix = filename.substring(p, filename.length());
-		} else {
-			nameBody = filename;
-			suffix = "";
-		}
-
-		if(new File(filename).exists()){
-			while(true){
-				String newFilename = nameBody + String.format(".%03d", c++) + suffix;
-				if(new File(newFilename).exists()){
-					continue;
-				} else {
-					return newFilename;
-				}
-			}
-		} else {
-			return filename;
-		}
-	}
+//	// すでにファイル yyy.xml が存在する場合は，yyy.001.xml を返す
+//	static public String getUniqueFilename(String filename){
+//		String nameBody;
+//		String suffix;
+//		int p = filename.lastIndexOf(".");
+//		int c = 1;
+//		
+//		if(p != -1){
+//			nameBody = filename.substring(0, p);
+//			suffix = filename.substring(p, filename.length());
+//		} else {
+//			nameBody = filename;
+//			suffix = "";
+//		}
+//
+//		if(new File(filename).exists()){
+//			while(true){
+//				String newFilename = nameBody + String.format(".%03d", c++) + suffix;
+//				if(new File(newFilename).exists()){
+//					continue;
+//				} else {
+//					return newFilename;
+//				}
+//			}
+//		} else {
+//			return filename;
+//		}
+//	}
 	
 	
 	private void saveCommentList() throws IOException {
@@ -1355,7 +1355,7 @@ public class MainFrame extends JFrame {
 		try {
 			ArrayList<String> results = commentList.merge(directoryName, commentTypes, discussers);
 			mf = results.remove(0); // mediafilename
-			xf = getUniqueFilename(mf + CommentList.MERGED_FILE_SUFFIX);
+			xf = CommentList.getUniqueFilename(mf + CommentList.MERGED_FILE_SUFFIX);
 			commentList.setModified(true);
 			Collections.sort(results);
 			

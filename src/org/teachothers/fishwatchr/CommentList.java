@@ -162,7 +162,7 @@ public class CommentList extends LinkedList<Comment> {
 			String filename = xmlFile.getName();
 			
 			String backupFilename =
-					MainFrame.getUniqueFilename(
+					getUniqueFilename(
 							parentPath + File.separatorChar
 							+ BACKUP_DIR + File.separatorChar
 							+ filename + ".bak");
@@ -625,6 +625,36 @@ public class CommentList extends LinkedList<Comment> {
 		return mediaFilename;
 	}
 		
+	
+	// すでにファイル yyy.xml が存在する場合は，yyy.001.xml を返す
+	static public String getUniqueFilename(String filename){
+		String nameBody;
+		String suffix;
+		int p = filename.lastIndexOf(".");
+		int c = 1;
+		
+		if(p != -1){
+			nameBody = filename.substring(0, p);
+			suffix = filename.substring(p, filename.length());
+		} else {
+			nameBody = filename;
+			suffix = "";
+		}
+
+		if(new File(filename).exists()){
+			while(true){
+				String newFilename = nameBody + String.format(".%03d", c++) + suffix;
+				if(new File(newFilename).exists()){
+					continue;
+				} else {
+					return newFilename;
+				}
+			}
+		} else {
+			return filename;
+		}
+	}
+
 	
 	class UserComparator implements Comparator<User> {
 
