@@ -670,6 +670,7 @@ public class MainFrame extends JFrame {
 			timeSlider.setEnabled(false);
 			return false;
 		} else if (filename != null) {
+			// 関係ないファイルはここで止まるはず。null の場合は，url
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
 			return false;
@@ -2137,7 +2138,9 @@ public class MainFrame extends JFrame {
 						if(target.isDirectory()){
 							mergeAnnotationFiles(target.getCanonicalPath());
 						} else {
-							setTargetFile(target.getCanonicalPath());
+							if(!setTargetFile(target.getCanonicalPath())){
+								return;
+							}
 							changeStatePlay();
 							soundPlayer.myPlay();
 							timerStart();
