@@ -40,6 +40,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -552,6 +553,11 @@ public class MainFrame extends JFrame {
 
 	
 	private boolean setTargetFile(String filename) {
+		// filename:
+		//	null	=> url 選択
+		//	""		=> ファイル 選択
+		//	otherwise	=> ファイル
+		
 		try {
 			saveCommentList();
 		} catch (IOException e) {
@@ -663,13 +669,12 @@ public class MainFrame extends JFrame {
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
 			return false;
-//		} else if (isFile && !SoundPlayer.isPlayable(selectedFilename)) {
-		} else {
-			// 注釈ファイルも存在しない場合。する場合は，ここをスルーするはず
-			System.err.println("heyhey!!!");
+		} else if (filename != null) {
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
 			return false;
+		} else {
+			System.err.println("Warning(MainFrame): what?");
 		}
 		
 		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
