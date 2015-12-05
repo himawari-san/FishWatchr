@@ -49,7 +49,6 @@ public class SysConfig {
 						.compile("/settings/comment_types/li");
 				NodeList commentTypesNodes = (NodeList) expr.evaluate(doc,
 						XPathConstants.NODESET);
-				System.err.println("co:" + commentTypes.size());
 				for (int i = 0; i < commentTypes.size(); i++) {
 					CommentType ct = commentTypes.get(i);
 					if(i < commentTypesNodes.getLength()){

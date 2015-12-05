@@ -40,7 +40,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -243,8 +242,6 @@ public class MainFrame extends JFrame {
 			userHomeDir = "";
 			System.err.println("Warning(MainFrame): Can not get the user homedir.");
 		}
-		
-		
 	}
 
 
@@ -279,8 +276,6 @@ public class MainFrame extends JFrame {
 		}
 		
 		ginit();
-		// soundPanel.init();
-		// timerStart();
 	}
 
 	public void timerStart() {
