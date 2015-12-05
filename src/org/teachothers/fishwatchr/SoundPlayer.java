@@ -168,6 +168,8 @@ public class SoundPlayer extends Thread {
 				}
 			}
 			mp.setTime(now);
+		} else if(currentState == PLAYER_STATE_STOP){
+			mp.prepareMedia(targetFilename);
 		}
 		mainFrame.changeState(state);
 	}
