@@ -193,7 +193,10 @@ public class MainFrame extends JFrame {
 	private int iVideoAspectRate = 0;
 	private int iTextOverlayStyle = 0;
 
-	private int buttonType = CommentButton.BUTTON_TYPE_DISCUSSER; // ボタンタイプの初期値（討論者優先）
+	// ボタンタイプの初期値（討論者優先）
+	private int buttonType = CommentButton.BUTTON_TYPE_DISCUSSER;
+	// 同時注釈
+	private boolean isAnnotationMulti = false;
 
 	// コメントテーブルの幅
 	private int columnWidth[] = { 35, 150, 150, 150, 150, 2048 };
@@ -229,8 +232,6 @@ public class MainFrame extends JFrame {
 		discussers = new ArrayList<User>();
 		// commentTypes 初期値
 		commentTypes = new ArrayList<CommentType>();
-		// 初期値の設定
-		config.load(commentTypes, discussers);
 		
 
 		soundPlayer = new SoundPlayer(this);
@@ -244,11 +245,40 @@ public class MainFrame extends JFrame {
 		}
 		
 		
-		ginit();
 	}
 
 
 	public void init() {
+		// 初期値の設定
+		config.load(commentTypes, discussers);
+		String configValue = null;
+
+		configValue = config.getFirstNodeAsString("/settings/button_type/@value");
+		if(configValue != null){
+			if(configValue.equals("comment")){
+				buttonType = CommentButton.BUTTON_TYPE_COMMENT;
+			} else {
+				buttonType = CommentButton.BUTTON_TYPE_DISCUSSER;				
+			}
+		}
+		configValue = config.getFirstNodeAsString("/settings/isAnnotationMulti/@value");
+		if(configValue != null){
+			if(configValue.equals("true")){
+				isAnnotationMulti = true;
+			} else {
+				isAnnotationMulti = false;
+			}
+		}
+		configValue = config.getFirstNodeAsString("/settings/isViewSyncMode/@value");
+		if(configValue != null){
+			if(configValue.equals("true")){
+				isViewSyncMode = true;
+			} else {
+				isViewSyncMode = false;
+			}
+		}
+		
+		ginit();
 		// soundPanel.init();
 		// timerStart();
 	}
@@ -264,12 +294,14 @@ public class MainFrame extends JFrame {
 	public void ginit() {
 		jMenuBar = getJMenuBar();
 		setJMenuBar(jMenuBar);
+		// execute after getJMenuBar()
 		jMenuItemOptionRecorderMode.setSelected(isRecorderMode);
 		jMenuItemOptionViewSyncMode.setSelected(isViewSyncMode);
 		jMenuItemOptionWaveform.setSelected(flagWaveform);
+		jMenuItemAnnotationMulti.setSelected(isAnnotationMulti);
 
 		displayPanel = getDisplayPanel();
-		commentPanel = getCommentPanel(); // get after getJMenuBar();
+		commentPanel = getCommentPanel(); // execute after getJMenuBar();
 		commentPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE,
 				COMMENT_PANEL_HEIGHT));
 		getContentPane().add(displayPanel, BorderLayout.CENTER);
@@ -1686,7 +1718,6 @@ public class MainFrame extends JFrame {
 		buttonType = newButtonType;
 		buttonPanel.removeAll();
 		commentButtons.clear();
-		boolean isAnnotationMulti = false;
 		
 		if(jMenuItemAnnotationMulti != null){
 			isAnnotationMulti = jMenuItemAnnotationMulti.isSelected();

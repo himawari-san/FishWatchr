@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
@@ -18,6 +19,8 @@ import org.w3c.dom.NodeList;
 
 public class SysConfig {
 	private final String configFilename = "fishwatchr.config";
+	private Document doc = null;
+	private XPath xpath = null;
 	
 	public SysConfig(){
 		
@@ -36,10 +39,10 @@ public class SysConfig {
 			DocumentBuilder builder;
 			try {
 				builder = factory.newDocumentBuilder();
-				Document doc = builder.parse(configFile);
+				doc = builder.parse(configFile);
 
 				XPathFactory xPathFactory = XPathFactory.newInstance();
-				XPath xpath = xPathFactory.newXPath();
+				xpath = xPathFactory.newXPath();
 
 				// comment_types 要素
 				XPathExpression expr = xpath
@@ -139,6 +142,29 @@ public class SysConfig {
 		commentTypes.add(new CommentType("", new Color(110, 110, 110)));
 		commentTypes.add(new CommentType("", new Color(160, 160, 160)));
 		commentTypes.add(new CommentType("", new Color(210, 210, 210)));
+	}
+	
+	
+	public String getFirstNodeAsString(String path){
+		if(doc == null || xpath == null){
+			return null;
+		}
+		
+		String nodeValue = null;
+
+		try {
+			XPathExpression expr = xpath.compile(path);
+			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+			if(nodes.getLength() > 0){
+				nodeValue = nodes.item(0).getTextContent();
+			} else {
+				nodeValue = "";
+			}
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		
+		return nodeValue;
 	}
 	
 }

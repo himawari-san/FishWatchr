@@ -65,9 +65,9 @@ public class FishWatchr {
 		MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
 		mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 		mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
+		mainFrame.init();
 		mainFrame.setVisible(true);
 		mainFrame.revalidate();
-		mainFrame.init();
 	}
 }
 
