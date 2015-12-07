@@ -82,7 +82,9 @@ public class CommentTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				int selectedRow = CommentTable.this.getSelectedRow();
-				int selectedValue = JOptionPane.showConfirmDialog(null, "行を削除してもよいですか？", "削除の確認", JOptionPane.OK_CANCEL_OPTION);
+				int selectedValue = JOptionPane.showConfirmDialog(null,
+						(selectedRow+1) + 
+						"行目を削除してもよいですか？", "削除の確認", JOptionPane.OK_CANCEL_OPTION);
 				if(selectedValue == JOptionPane.OK_OPTION){
 					deleteComment(selectedRow);
 				}
