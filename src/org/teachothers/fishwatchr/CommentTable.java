@@ -217,6 +217,7 @@ public class CommentTable extends JTable {
 	
 	public void deleteComment(int row){
 		ctm.deleteCommentAt(row);
+		resetPosition();
 	}
 	
 	
@@ -270,7 +271,7 @@ public class CommentTable extends JTable {
 
 	
 	public String getCurrentComment(){
-		if(iCurrentComment != -1){
+		if(iCurrentComment != -1 && ctm.getFilteredCommentList().size() < iCurrentComment){
 			currentCommentBuffer.setLength(0);
 			Comment currentComment = ctm.getFilteredCommentList().get(iCurrentComment);
 			currentCommentBuffer.append(currentComment.getDiscusser().getName() + "(");
