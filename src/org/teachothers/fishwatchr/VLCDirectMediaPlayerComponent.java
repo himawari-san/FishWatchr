@@ -102,7 +102,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 				fm = g2.getFontMetrics();
 				textHeight = fm.getHeight();
 				textDescent = fm.getDescent();
-				bgColor = getBackground();
+				bgColor = Color.WHITE;
 			}
 			
 
