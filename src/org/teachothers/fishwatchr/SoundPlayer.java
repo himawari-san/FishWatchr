@@ -244,11 +244,12 @@ public class SoundPlayer extends Thread {
 			// ファイル名だけセットするということでいいか？
 			return true;
 		} else if(targetFilename.toLowerCase().endsWith(".wav")){
-			playerType = PLAYER_TYPE_DEFAULT;
+			playerType = PLAYER_TYPE_VLC;
 			readWavInfo(targetFilename);
 			buf = new byte[maxDataSize]; 
 			readWav(targetFilename, buf);
 			setSoundBufferEnable(true);
+			mp.startMedia(targetFilename);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
 			isStreaming = true;
 			playerType = PLAYER_TYPE_VLC;
