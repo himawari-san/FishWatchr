@@ -19,6 +19,7 @@ package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
@@ -40,6 +41,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -168,6 +171,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionWaveform;
 	private JMenu jMenuHelp;
 	private JMenuItem jMenuItemHelpVersion;
+	private JMenuItem jMenuItemHelpURL;
 
 	private CommentList commentList;
 	private ArrayList<CommentType> commentTypes;
@@ -216,6 +220,8 @@ public class MainFrame extends JFrame {
 	private int focusRange = 10000; // msec
 	
 	private SysConfig config = new SysConfig();
+	
+	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%A5%C7%A5%A3%A5%B9%A5%AB%A5%C3%A5%B7%A5%E7%A5%F3%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0";
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -273,6 +279,10 @@ public class MainFrame extends JFrame {
 			} else {
 				isViewSyncMode = false;
 			}
+		}
+		configValue = config.getFirstNodeAsString("/settings/manual_url/@value");
+		if(configValue != null){
+			manualURLStr = configValue;
 		}
 		
 		ginit();
@@ -2112,9 +2122,33 @@ public class MainFrame extends JFrame {
 		if (jMenuHelp == null) {
 			jMenuHelp = new JMenu();
 			jMenuHelp.setText("ヘルプ");
+			jMenuHelp.add(getJMenuItemHelpURL());
 			jMenuHelp.add(getJMenuItemHelpVersion());
 		}
 		return jMenuHelp;
+	}
+
+	private JMenuItem getJMenuItemHelpURL() {
+		if (jMenuItemHelpURL == null) {
+			jMenuItemHelpURL = new JMenuItem("マニュアル");
+			jMenuItemHelpURL
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							Desktop desktop = Desktop.getDesktop();
+							try {
+								desktop.browse(new URI(manualURLStr));
+							} catch (IOException | URISyntaxException e1) {
+								JOptionPane.showMessageDialog(MainFrame.this,
+										"エラーが発生したため，表示できませんでした。\n" + e1.getLocalizedMessage(),
+										"エラー",
+										JOptionPane.INFORMATION_MESSAGE);
+								e1.printStackTrace();
+							}
+							
+						}
+					});
+		}
+		return jMenuItemHelpURL;
 	}
 
 	private JMenuItem getJMenuItemHelpVersion() {
