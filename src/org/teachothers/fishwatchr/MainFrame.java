@@ -644,7 +644,7 @@ public class MainFrame extends JFrame {
 			String oldMf = mf;
 			String oldXf = xf;
 			mf = selectedFilename;
-			xf = mf + CommentList.FILE_SUFFIX;
+			xf = mf + "_" + commenter + CommentList.FILE_SUFFIX;
 			if(new File(xf).exists()){
 				String newXf = CommentList.getUniqueFilename(xf);
 				int result = JOptionPane.showConfirmDialog(this, "注釈ファイル（" + new File(xf).getName() + "）がすでに存在します。\n" +
