@@ -357,6 +357,7 @@ public class CommentTable extends JTable {
 
 			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
+			setForeground(Color.BLACK); // MacOS
 			if(row == iCurrentComment){
 				setBackground(colorCurrent);
 			} else {
