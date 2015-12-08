@@ -2064,7 +2064,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemOptionWaveform() {
 		if (jMenuItemOptionWaveform == null) {
-			jMenuItemOptionWaveform = new JCheckBoxMenuItem("波形表示");
+			jMenuItemOptionWaveform = new JCheckBoxMenuItem("波形データ読込み");
 			jMenuItemOptionWaveform
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {

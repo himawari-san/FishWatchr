@@ -281,21 +281,22 @@ public class SoundPlayer extends Thread {
 
 			// wav データの読み込み
 			String wavFilename = targetFilename + ".wav";
-			if(new File(wavFilename).exists()){
-				readWavInfo(wavFilename);
-				buf = new byte[maxDataSize];
-				readWav(wavFilename, buf);
-				setSoundBufferEnable(true);
-			} else {
-//				int selectedValue = JOptionPane.showConfirmDialog(mainFrame, "音声波形の表示を行うために，wavファイルを生成しますか？");
-//				if(flagWaveform){
-//					return false;
-				if(flagWaveform){
-					JOptionPane.showMessageDialog(mainFrame, "wav ファイル（" + wavFilename  + "）を生成します。\n生成には数分かかる場合があります。");
+			if(flagWaveform){
+				if (new File(wavFilename).exists()) {
+					readWavInfo(wavFilename);
+					buf = new byte[maxDataSize];
+					readWav(wavFilename, buf);
+					setSoundBufferEnable(true);
+				} else {
+					JOptionPane.showMessageDialog(mainFrame, "wav ファイル（"
+							+ wavFilename + "）を生成します。\n生成には数分かかる場合があります。");
 					mp.removeMediaPlayerEventListener(mpEventListener);
-					mp.startMedia(targetFilename, ":sout=#transcode{acodec=s16l,channels=2,samplerate=44100,ab=128}:standard{access=file,mux=wav,dst=" + wavFilename + "}");
-					while(true){
-						if(!mp.isPlaying()){
+					mp.startMedia(
+							targetFilename,
+							":sout=#transcode{acodec=s16l,channels=2,samplerate=44100,ab=128}:standard{access=file,mux=wav,dst="
+									+ wavFilename + "}");
+					while (true) {
+						if (!mp.isPlaying()) {
 							break;
 						}
 						try {
@@ -305,14 +306,15 @@ public class SoundPlayer extends Thread {
 							return false;
 						}
 					}
-					JOptionPane.showMessageDialog(mainFrame, wavFilename + "が生成されました。");
+					JOptionPane.showMessageDialog(mainFrame, wavFilename
+							+ "が生成されました。");
 					try {
 						Thread.sleep(2000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 
-			        soundGraphBuf.setPosition(0);
+					soundGraphBuf.setPosition(0);
 					readWavInfo(wavFilename);
 					buf = new byte[maxDataSize];
 					readWav(wavFilename, buf);
