@@ -70,6 +70,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
@@ -610,15 +611,21 @@ public class MainFrame extends JFrame {
 		setWindowTitle(xf);
 		String selectedFilename;
 		if(filename == null){
-			JOptionPane pane = new JOptionPane("例： https://www.youtube.com/watch?v=your_input", JOptionPane.PLAIN_MESSAGE);
+			JOptionPane pane = new JOptionPane(
+					"例： https://www.youtube.com/watch?v=your_input\n" +
+					"(CTRL + v キーでペースト）", JOptionPane.PLAIN_MESSAGE);
 			pane.setWantsInput(true);
-			pane.setInputValue("");
 			pane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
+			pane.setInputValue("");
 			JDialog dialog = pane.createDialog(this, "URLの入力");
 			dialog.setSize(500, 150);
 			dialog.setVisible(true);
 			selectedFilename = (String) pane.getInputValue();
-			if(pane.getValue() == null || selectedFilename.isEmpty()){
+			if(pane.getValue() == null
+					|| (Integer)pane.getValue() == JOptionPane.NO_OPTION
+					|| (Integer)pane.getValue() == JOptionPane.CLOSED_OPTION
+					|| pane.getValue() == JOptionPane.UNINITIALIZED_VALUE
+					|| selectedFilename.isEmpty()){
 				return false;
 			}
 			mf = selectedFilename;
@@ -629,7 +636,6 @@ public class MainFrame extends JFrame {
 			commentList.setMediaFilename(mf);
 			ctm.refreshFilter();
 			config.load(commentTypes, discussers);
-//			setDefaultButton();
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
 		} else if(filename.isEmpty()){
