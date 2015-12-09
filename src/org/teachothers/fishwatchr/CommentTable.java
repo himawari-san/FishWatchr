@@ -38,6 +38,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -71,11 +72,11 @@ public class CommentTable extends JTable {
 	
 	public void ginit(){
 		setOpaque(false);
-		setColumnSelectionAllowed(true);
 		setDefaultRenderer(Object.class, new CellRenderer());
 		setDefaultRenderer(Number.class, new CellRenderer(SwingConstants.RIGHT));
 		getColumn("話者").setCellEditor(new ListCellEditor<User>(ctm.discussers));
 		getColumn("ラベル").setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
+		setCellSelectionEnabled(true);
 		
 		JMenuItem menuItemDelete = new JMenuItem("行の削除");
 		menuItemDelete.addActionListener(new ActionListener() {
@@ -355,8 +356,6 @@ public class CommentTable extends JTable {
 		public Component getTableCellRendererComponent(JTable table, Object value,
 	            boolean isSelected, boolean hasFocus, int row, int column) {
 
-			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
 			setForeground(Color.BLACK); // MacOS
 			if(row == iCurrentComment){
 				setBackground(colorCurrent);
@@ -369,7 +368,9 @@ public class CommentTable extends JTable {
 				}
 			}
 			
-	        return this;
+			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+			return this;
 		}
 	}
 
