@@ -1,10 +1,10 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.3 (2015-11-04)
+ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.4 (2015-12-09)
 Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
   - vlc/            ... VLC ƒ‰ƒCƒuƒ‰ƒŠC‚¨‚æ‚ÑCƒvƒ‰ƒOƒCƒ“
                         (ver.2.2.1, Windows 32bit”Å)
-  - jre/            ... JRE ver.1.8.0_65 (Windows 32bit”Å)
+  - jre/            ... JRE ver.1.8.0_66 (Windows 32bit”Å)
   - FishWatchr.exe  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Windows ê—p)
   - fishwatchr.jar  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Mac, Linux, Windows ‹¤—p)
   - README.txt      ... ‚±‚Ìƒtƒ@ƒCƒ‹
@@ -43,9 +43,35 @@ Copyright 2014-2015 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
     -- vlcj (https://github.com/caprica/vlcj)
     -- JSPS‰ÈŒ¤”ïi26560135Cu‘¦Žž«‚Æ‹³ˆçŒø‰Ê‚ðl—¶‚µ‚½‹¦’²ŠwK‰ß’ö‚Ì
        \‘¢‰»Žè–@‚ÉŠÖ‚·‚éŒ¤‹†vj
+    -- JSPS‰ÈŒ¤”ïi25560123Cu‹¦“¯‚É‚æ‚é’mŽ¯‚Ì‘ÌŒn‰»EŽ‹Šo‰»ƒVƒXƒeƒ€‚ð
+       —p‚¢‚½ƒ‰ƒCƒeƒBƒ“ƒOŽw“±–@‚ÌŒ¤‹†vj
 
 
 ‚SD—š—ð
+  2015-12-09: wFishWatchrxver.0.9.4 ŒöŠJ
+    [V‹K]
+    - ƒOƒ‹[ƒv‚Å‚Ì•]‰¿Šˆ“®—p‚Ì‹@”\‚ð‹­‰»
+     -- Ä¶‰ÓŠ‚Ì‹ß—×‚ÌƒRƒƒ“ƒg‚ðF•ª‚¯‚µ‚Ä•\Ž¦‚·‚é‚æ‚¤‚É‚µ‚½
+     -- ƒRƒƒ“ƒg‚²‚Æ‚ÉŽü•Ó‚É‘¶Ý‚·‚éƒRƒƒ“ƒg‚Ì—Ê‚ðƒOƒ‰ƒt•\Ž¦‚·‚é‚æ‚¤‚É
+        ‚µ‚½
+    - “®‰æ•”•ª‚ÉƒRƒƒ“ƒg‚ð•\Ž¦‚Å‚«‚é‚æ‚¤‚É‚µ‚½
+    - ‹N“®Žž‚ÌÝ’èƒtƒ@ƒCƒ‹‚ð—pˆÓ‚Å‚«‚é‚æ‚¤‚É‚µ‚½
+    - ƒAƒmƒe[ƒVƒ‡ƒ“Œ‹‰ÊCƒƒfƒBƒAƒtƒ@ƒCƒ‹‚ðƒhƒƒbƒv‚É‚æ‚è“Ç‚Ýž‚ß‚é‚æ
+      ‚¤‚É‚µ‚½
+    - ƒ}ƒjƒ…ƒAƒ‹‚Ö‚ÌURL‚ðŽw’è‚Å‚«‚é‚æ‚¤‚É‚µ‚½
+    [•ÏX]
+    - exportŽž‚ÌƒAƒmƒe[ƒVƒ‡ƒ“Œ‹‰Ê‚ÌŽžŠÔ•\Ž¦Œ`Ž®‚ðŽÀsŽž‚Æ“¯ˆê‚É‚µ‚½
+    - ƒoƒbƒNƒAƒbƒvƒtƒ@ƒCƒ‹‚ÍCê—p‚ÌƒtƒHƒ‹ƒ_(Bak)‚ÉƒRƒs[‚·‚é‚æ‚¤‚É‚µ‚½
+    - ƒ}[ƒW‚³‚ê‚½ƒAƒmƒe[ƒVƒ‡ƒ“Œ‹‰Ê‚ðÄ“xƒ}[ƒW‚µ‚È‚¢‚æ‚¤‚É‚µ‚½
+      iƒtƒ@ƒCƒ‹–¼‚Å”»’fj
+    - “®‰æÄ¶Žž‚Ì”gŒ`•\Ž¦‚ð”gŒ`•\Ž¦ƒIƒvƒVƒ‡ƒ“‚Æ˜A“®‚³‚¹‚é‚æ‚¤‚É‚µ‚½
+      (]—ˆ‚ÍƒIƒvƒVƒ‡ƒ“‚Ì—L–³‚ÉŠÖ‚í‚ç‚¸C•\Ž¦—pƒtƒ@ƒCƒ‹‚ª‘¶Ý‚·‚ê‚Î•\Ž¦)
+    [C³]
+    - ˜bŽÒCƒ‰ƒxƒ‹‚ÌÝ’è•ÏX‚ðs‚Á‚½ŽžC‚»‚Ìî•ñ‚ªƒAƒmƒe[ƒVƒ‡ƒ“•\Ž¦(‘S
+      ‘Ìƒ^ƒu)‚É”½‰f‚³‚ê‚È‚¢•s‹ï‡‚ðC³
+    - ƒAƒmƒe[ƒVƒ‡ƒ“Œ‹‰Êƒtƒ@ƒCƒ‹–¼‚É’ŽßŽÒ–¼‚ª”½‰f‚³‚ê‚È‚¢•s‹ï‡‚ðC³
+    - wav ƒtƒ@ƒCƒ‹‚ðÄ¶‚µ‚½ŽžCÄ¶‘¬“x‚ð’²®‚Å‚«‚È‚¢•s‹ï‡‚ðC³
+
   2015-11-04: wFishWatchrxver.0.9.3 ŒöŠJ
     - ƒAƒmƒe[ƒVƒ‡ƒ“Œ‹‰Ê•\Ž¦‚ðƒtƒBƒ‹ƒ^Œ‹‰Ê‚Æ˜A“®‚·‚é‚æ‚¤•ÏX
     - ”gŒ`•\Ž¦ƒIƒvƒVƒ‡ƒ“‚Ì’Ç‰Á
