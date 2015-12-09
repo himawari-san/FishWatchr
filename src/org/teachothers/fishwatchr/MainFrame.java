@@ -70,7 +70,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
@@ -1142,7 +1141,6 @@ public class MainFrame extends JFrame {
 							if(!setTargetFile(null)){
 								return;
 							}
-							int aaa;
 							changeStatePlay();
 							soundPlayer.myPlay();
 							timerStart();
