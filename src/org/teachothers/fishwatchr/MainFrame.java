@@ -2185,7 +2185,11 @@ public class MainFrame extends JFrame {
 		public void drop(DropTargetDropEvent dtde) {
 			Transferable t = dtde.getTransferable();
 			dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-			
+
+			if(!dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)){
+				System.err.println("Warning(MainFrame): not supported data");
+				return;
+			}
 			try {
 				@SuppressWarnings("unchecked")
 				List<File> files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
