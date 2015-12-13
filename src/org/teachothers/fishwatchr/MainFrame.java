@@ -55,6 +55,7 @@ import java.util.TimerTask;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
@@ -222,6 +223,16 @@ public class MainFrame extends JFrame {
 	private SysConfig config = new SysConfig();
 	
 	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%A5%C7%A5%A3%A5%B9%A5%AB%A5%C3%A5%B7%A5%E7%A5%F3%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0";
+
+	
+	private ImageIcon iconPlay = new ImageIcon(getClass().getResource("resources/images/play.png"));
+	private ImageIcon iconForward = new ImageIcon(getClass().getResource("resources/images/forward.png"));
+	private ImageIcon iconBackward = new ImageIcon(getClass().getResource("resources/images/backward.png"));
+	private ImageIcon iconStop = new ImageIcon(getClass().getResource("resources/images/stop.png"));
+	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png"));
+	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png"));
+	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png"));
+	
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -447,12 +458,17 @@ public class MainFrame extends JFrame {
 		if (playerOperationPanel == null) {
 			playerOperationPanel = new JPanel();
 
-			soundPlayButton = new JButton("▶");
-			soundForwardButton = new JButton("▶▶");
-			soundBackwardButton = new JButton("◀◀");
-//			soundStopButton = new JButton("■");
-			soundStopButton = new JButton(String.valueOf('\u25A0'));
-			soundRecordButton = new JButton("●");
+			// height of images 10 pixels, saved with transparent color option by libreoffice
+			soundPlayButton = new JButton(iconPlay);
+			soundPlayButton.setPreferredSize(new Dimension(46,23));
+			soundForwardButton = new JButton(iconForward);
+			soundForwardButton.setPreferredSize(new Dimension(46,23));
+			soundBackwardButton = new JButton(iconBackward);
+			soundBackwardButton.setPreferredSize(new Dimension(46,23));
+			soundStopButton = new JButton(iconStop);
+			soundStopButton.setPreferredSize(new Dimension(46,23));
+			soundRecordButton = new JButton(iconRecordSound);
+			soundRecordButton.setPreferredSize(new Dimension(46,23));
 
 			playerOperationPanel.add(soundBackwardButton);
 			playerOperationPanel.add(soundPlayButton);
@@ -827,7 +843,7 @@ public class MainFrame extends JFrame {
 		soundPlayButton.setEnabled(true);
 		soundForwardButton.setEnabled(false);
 		soundBackwardButton.setEnabled(false);
-		soundPlayButton.setText("▶");
+		soundPlayButton.setIcon(iconPlay);
 		jMenuItemFileOpen.setEnabled(true);
 		jMenuItemURLOpen.setEnabled(true);
 		jMenuItemFileSave.setEnabled(true);
@@ -855,7 +871,7 @@ public class MainFrame extends JFrame {
 		soundPlayButton.setEnabled(true);
 		soundForwardButton.setEnabled(true);
 		soundBackwardButton.setEnabled(true);
-		soundPlayButton.setText("〓");
+		soundPlayButton.setIcon(iconPause);
 		jMenuItemFileOpen.setEnabled(false);
 		jMenuItemURLOpen.setEnabled(false);
 		jMenuItemFileSave.setEnabled(true);
@@ -876,7 +892,7 @@ public class MainFrame extends JFrame {
 		soundPlayButton.setEnabled(true);
 		soundForwardButton.setEnabled(true);
 		soundBackwardButton.setEnabled(true);
-		soundPlayButton.setText("▶");
+		soundPlayButton.setIcon(iconPlay);
 		jMenuItemFileOpen.setEnabled(false);
 		jMenuItemURLOpen.setEnabled(false);
 		jMenuItemFileSave.setEnabled(true);
@@ -2049,9 +2065,9 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							if(jMenuItemOptionRecorderMode.isSelected()){
-								soundRecordButton.setForeground(Color.red);
+								soundRecordButton.setIcon(iconRecordSound);
 							} else {
-								soundRecordButton.setForeground(Color.black);
+								soundRecordButton.setIcon(iconRecordNoSound);
 							}
 						}
 					});
