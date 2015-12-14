@@ -29,12 +29,14 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JPanel;
 
+import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
+import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
 
 public class VLCDirectMediaPlayerComponent extends JPanel {
 
@@ -177,6 +179,18 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     public void setTextOverlayStyle(int iOverlayStyle){
     	this.iOverlaidTextStyle = iOverlayStyle;
     }
+    
+
+    public MediaList getVideoDeviceList(){
+    	MediaDiscoverer md = factory.newVideoMediaDiscoverer();
+    	return md.getMediaList();
+    }
+
+    public MediaList getAudioDeviceList(){
+    	MediaDiscoverer md = factory.newAudioMediaDiscoverer();
+    	return md.getMediaList();
+    }
+
     
     
     class VLCRenderCallback extends RenderCallbackAdapter {
