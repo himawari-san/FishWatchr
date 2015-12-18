@@ -82,6 +82,9 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 
+import uk.co.caprica.vlcj.medialist.MediaList;
+import uk.co.caprica.vlcj.medialist.MediaListItem;
+
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -164,6 +167,9 @@ public class MainFrame extends JFrame {
 	private JMenu jMenuOption;
 	private JMenuItem jMenuItemOptionTextOverlay;
 	private JMenuItem jMenuItemOptionVideoRatio;
+	private JMenuItem jMenuItemOptionInputMediaDevices;
+	private JMenuItem jMenuItemOptionInputVideoMediaDevices;
+	private JMenuItem jMenuItemOptionInputAudioMediaDevices;
 	private JMenuItem jMenuItemOptionSkipTime;
 	private JMenuItem jMenuItemOptionJumpAdjustment;
 	private JMenuItem jMenuItemOptionFocusRange;
@@ -224,7 +230,6 @@ public class MainFrame extends JFrame {
 	
 	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%A5%C7%A5%A3%A5%B9%A5%AB%A5%C3%A5%B7%A5%E7%A5%F3%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0";
 
-	
 	private ImageIcon iconPlay = new ImageIcon(getClass().getResource("resources/images/play.png"));
 	private ImageIcon iconForward = new ImageIcon(getClass().getResource("resources/images/forward.png"));
 	private ImageIcon iconBackward = new ImageIcon(getClass().getResource("resources/images/backward.png"));
@@ -232,6 +237,11 @@ public class MainFrame extends JFrame {
 	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png"));
 	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png"));
 	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png"));
+
+	private MediaList videoDeviceList = null;
+	private MediaList audioDeviceList = null;
+	private int iSelectedVideoDevice = 0;
+	private int iSelectedAudioDevice = 0;
 	
 	
 	public MainFrame(String systemName) {
@@ -1915,6 +1925,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.setText("オプション");
 			jMenuOption.add(getJMenuItemOptionTextOverlay());
 			jMenuOption.add(getJMenuItemOptionVideoRatio());
+			jMenuOption.add(getJMenuItemOptionInputMediaDevices());
 			jMenuOption.add(getJMenuItemOptionSkipTime());
 			jMenuOption.add(getJMenuItemOptionJumpAdjustment());
 //			jMenuOption.add(getJMenuItemAnnotationTimeCorrection());
@@ -1994,6 +2005,70 @@ public class MainFrame extends JFrame {
 		return jMenuItemOptionVideoRatio;
 	}
 
+	
+	private JMenuItem getJMenuItemOptionInputMediaDevices() {
+		int aaaaa;
+
+		if (jMenuItemOptionInputMediaDevices == null) {
+			jMenuItemOptionInputMediaDevices = new JMenu("入力メディア機器");
+			videoDeviceList = soundPlayer.getVideoDeviceList();
+			jMenuItemOptionInputVideoMediaDevices = new JMenu("ビデオ機器");
+			if(videoDeviceList != null && videoDeviceList.size() > 0){
+				int i = 0;
+				if(iSelectedVideoDevice == -1){
+					iSelectedVideoDevice = 0;
+				}
+				for(MediaListItem videoDevice : videoDeviceList.items()){
+					JMenuItem item = new JRadioButtonMenuItem(videoDevice.name());
+					final int j = i++;
+					item.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							iSelectedVideoDevice = j;
+						}
+					});
+					if(iSelectedVideoDevice == j){
+						item.setSelected(true);
+					}
+					jMenuItemOptionInputVideoMediaDevices.add(item);
+				}
+			} else {
+				JMenuItem item = new JRadioButtonMenuItem("なし");
+				iSelectedVideoDevice = -1;
+				item.setSelected(true);
+				jMenuItemOptionInputVideoMediaDevices.add(item);
+			}
+
+			audioDeviceList = soundPlayer.getAudioDeviceList();
+			jMenuItemOptionInputAudioMediaDevices = new JMenu("オーディオ機器");
+			if(audioDeviceList != null && audioDeviceList.size() > 0){
+				int i = 0;
+				for(MediaListItem audioDevice : audioDeviceList.items()){
+					final int j = i++;
+					JMenuItem item = new JRadioButtonMenuItem(audioDevice.name());
+					item.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							iSelectedAudioDevice = j;
+						}
+					});
+					if(iSelectedAudioDevice == j){
+						item.setSelected(true);
+					}
+					jMenuItemOptionInputAudioMediaDevices.add(item);
+				}
+			} else {
+				JMenuItem item = new JRadioButtonMenuItem("なし");
+				iSelectedAudioDevice = -1;
+				item.setSelected(true);
+				jMenuItemOptionInputAudioMediaDevices.add(item);
+			}
+
+			jMenuItemOptionInputMediaDevices.add(jMenuItemOptionInputVideoMediaDevices);
+			jMenuItemOptionInputMediaDevices.add(jMenuItemOptionInputAudioMediaDevices);
+		}
+		return jMenuItemOptionInputMediaDevices;
+	}
+
+		
 	private JMenuItem getJMenuItemOptionSkipTime() {
 		if (jMenuItemOptionSkipTime == null) {
 			jMenuItemOptionSkipTime = new JMenuItem("スキップ時間");

@@ -37,8 +37,10 @@ import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
+import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
 
 
 public class SoundPlayer extends Thread {
@@ -806,6 +808,16 @@ public class SoundPlayer extends Thread {
 	public void setOverlayText(String text){
 		mediaPlayerComponent.setMarquee(text);
 	}
+	
+	
+    public MediaList getVideoDeviceList(){
+    	return mediaPlayerComponent.getVideoDeviceList();
+    }
+
+    public MediaList getAudioDeviceList(){
+    	return mediaPlayerComponent.getAudioDeviceList();
+    }
+	
 	
     private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
         public void finished(MediaPlayer mediaPlayer) {

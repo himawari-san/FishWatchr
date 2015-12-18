@@ -26,10 +26,12 @@ import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 import uk.co.caprica.vlcj.medialist.MediaList;
+import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
@@ -182,13 +184,32 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     
 
     public MediaList getVideoDeviceList(){
-    	MediaDiscoverer md = factory.newVideoMediaDiscoverer();
-    	return md.getMediaList();
+    	MediaDiscoverer md = null;
+    	try {
+    		md = factory.newVideoMediaDiscoverer();
+    	} catch(Exception e){
+    		
+    	}
+    	if(md == null){
+    		return null;
+    	} else {
+        	return md.getMediaList();
+    	}
     }
 
     public MediaList getAudioDeviceList(){
-    	MediaDiscoverer md = factory.newAudioMediaDiscoverer();
-    	return md.getMediaList();
+    	MediaDiscoverer md = null;
+    	try {
+    		md = factory.newAudioMediaDiscoverer();
+    	} catch(Exception e){
+    		
+    	}
+    	if(md == null){
+//    		MediaListItem defaultAudioDevice = new MediaListItem("デフォルト", "dshow://", new ArrayList<MediaListItem>());
+    		return null;
+    	} else {
+    		return md.getMediaList();
+    	}
     }
 
     
