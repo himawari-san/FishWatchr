@@ -35,6 +35,7 @@ public class Comment {
 
 	public static final String headers[] = {"番号", "時間", "注釈者", "話者", "ラベル", "セット", "コメント"};
 	public static final int COMMENT_TIME_END_UNDEFINED = -1; // 範囲型でない場合，終了時間は-1とする
+	private static String defaultDiscusserName = "不特定";
 
 	private static int currentID = 1;
 	private Object[] data = new Object[N_Field];
@@ -60,11 +61,17 @@ public class Comment {
 		currentID = 1;
 	}
 	
+	
+	public static void setDefaultDiscusserName(String name){
+		defaultDiscusserName = name;
+	}
+	
+	
 	public void set(String contentBody, CommentType commentType, User commenter, User discusser,
 			Date commentDate, int commentTime, String setName){
 		// for testing
 		if(discusser.getName().isEmpty()){
-			discusser.setName("不特定");
+			discusser.setName(defaultDiscusserName);
 		}
 		data[F_COMMENTER] = commenter;
 		data[F_COMMENT] = contentBody;

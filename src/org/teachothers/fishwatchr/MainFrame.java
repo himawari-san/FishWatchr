@@ -306,7 +306,14 @@ public class MainFrame extends JFrame {
 		if(configValue != null){
 			manualURLStr = configValue;
 		}
-		
+		configValue = config.getFirstNodeAsString("/settings/default_discusser/@value");
+		if(configValue != null){
+			if(!configValue.matches("^\\s+$") && !configValue.matches(".*[<>&'\"\\s].*")){
+				Comment.setDefaultDiscusserName(configValue);
+			} else {
+				System.err.println("Warning(MainFrame): Not used default_discusser, " + configValue);
+			}
+		}
 		ginit();
 	}
 
