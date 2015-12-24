@@ -237,6 +237,7 @@ public class MainFrame extends JFrame {
 	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png"));
 	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png"));
 	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png"));
+//	private ImageIcon iconRecordSoundReady = new ImageIcon(getClass().getResource("resources/images/recordSoundReady.png"));
 
 	private MediaList videoDeviceList = null;
 	private MediaList audioDeviceList = null;
@@ -507,6 +508,7 @@ public class MainFrame extends JFrame {
 									+ FILE_PREFIX + today.format(new Date()) + "_" + commenter;
 
 							if (jMenuItemOptionRecorderMode.isSelected()) {
+								int a;
 								mf = CommentList.getUniqueFilename(basename + SoundPlayer.SOUNDFILE_EXTENSION);
 								xf = mf + CommentList.FILE_SUFFIX;
 								isSoundPanelEnable = true;
@@ -533,7 +535,9 @@ public class MainFrame extends JFrame {
 							timeEnd.setTime(SoundPlayer.LIMIT_RECODING_TIME);
 //							timerStart();
 							changeStateRecord();
-							soundPlayer.myRecord(mf, jMenuItemOptionRecorderMode.isSelected());
+							soundPlayer.myRecord(mf,
+									jMenuItemOptionRecorderMode.isSelected(),
+									iSelectedVideoDevice, iSelectedAudioDevice);
 							timerStart();
 							commentList.setStartTime(soundPlayer.getStartTime());
 						}

@@ -38,6 +38,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 import uk.co.caprica.vlcj.medialist.MediaList;
+import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
@@ -621,15 +622,54 @@ public class SoundPlayer extends Thread {
 		return state;
 	}
 
-	public void myRecord(String filename, boolean withSoundFile){
+	public void myRecord(String filename, boolean withSoundFile, int iVideoDevice, int iAudioDevice){
 		state = PLAYER_STATE_RECORD;
 		playerType = PLAYER_TYPE_DEFAULT;
 		startTime = new Date();
 		targetFilename = filename;
 		if(withSoundFile){
-			start();
+			playerType = PLAYER_TYPE_VLC;
+			recordVLC(iVideoDevice, iAudioDevice);
+//			start();
 		}
 	}
+	
+	
+	public void recordVLC(int iVideoDevice, int iAudioDevice){
+        String os = System.getProperty("os.name").toLowerCase();
+        String options[] = new String[3];
+        String mrl = "";
+
+        if(os.contains("nux")){
+        	if(iVideoDevice == -1){
+        		if(iAudioDevice == -1){
+        			// no device
+        		} else {
+        			// audio only
+        			System.err.println("adn: " + getAudioDeviceList().items().get(iAudioDevice));
+            		options[0] = ":sout=#transcode{vcodec=mp4v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + targetFilename  + ".mp4}}";
+            		mrl = getAudioDeviceList().items().get(iAudioDevice).mrl();
+        		}
+        	} else if(iAudioDevice == -1){
+        		// video only
+        		options[0] = ":sout=#transcode{vcodec=mp4v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + targetFilename  + ".mp4},dst=display}";
+        		mrl = getVideoDeviceList().items().get(iVideoDevice).mrl();
+        	} else {
+        		// video and audio
+    			System.err.println("adn: " + getAudioDeviceList().items().get(iAudioDevice));
+    			System.err.println("vdn: " + getVideoDeviceList().items().get(iVideoDevice));
+        		options[0] = ":sout=#transcode{vcodec=mp4v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + targetFilename  + ".mp4},dst=display{noaudio}}";
+        		options[1] = ":input-slave=" + getAudioDeviceList().items().get(iAudioDevice).mrl();
+        		mrl = getVideoDeviceList().items().get(iVideoDevice).mrl();
+        	}
+        } else {
+        	
+        }
+        mp.addMediaPlayerEventListener(mpEventListener);
+        mp.playMedia(mrl, options);
+
+	}
+	
 	
 
 	public void myPlay(){

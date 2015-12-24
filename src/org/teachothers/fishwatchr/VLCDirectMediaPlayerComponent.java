@@ -25,10 +25,19 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
 
+import javax.media.CaptureDeviceManager;
 import javax.swing.JPanel;
+
+import com.codeminders.hidapi.HIDDeviceInfo;
+import com.codeminders.hidapi.HIDManager;
+import com.github.sarxos.webcam.Webcam;
 
 import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.medialist.MediaListItem;
@@ -65,6 +74,9 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     private FontMetrics fm;
     private String overlaidText = "";
     private Color bgColor;
+    private MediaListItem defaultVideoDevice;
+    private MediaListItem defaultAudioDevice;
+    private String os = "";
     
     public VLCDirectMediaPlayerComponent() throws InterruptedException, InvocationTargetException {
     	factory = new MediaPlayerFactory();
@@ -86,6 +98,40 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     	
         mediaPlayer = factory.newDirectMediaPlayer(new VLCBufferFormatCallback(), new VLCRenderCallback());
         mediaPlayer.setPlaySubItems(true); // <--- This is very important for YouTube
+        
+        os = System.getProperty("os.name").toLowerCase();
+        ArrayList<MediaListItem> emptyMediaList = new ArrayList<MediaListItem>();
+//        Properties props =  System.getProperties();
+//        System.out.println(props);
+//        new HIDManager();
+//        try {
+//			HIDDeviceInfo hi[] = HIDManager.getInstance().listDevices();
+//			for(HIDDeviceInfo h: hi){
+//				System.err.println("hi: " + h.getProduct_string());
+//			}
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//        CaptureDeviceManager cdm = new CaptureDeviceManager();
+//        Vector dl = cdm.getDeviceList(null);
+//        System.err.println("dl: " + dl.get(0));
+//        List<Webcam> webcams = Webcam.getWebcams();
+//        Webcam wc = Webcam.getDefault();
+//        System.err.println("gd: " + wc.getName());
+        System.err.println("os: " + os);
+        
+        if(os.contains("windows")){
+        	defaultAudioDevice = new MediaListItem("デフォルト", "dshow://", emptyMediaList);
+        } else if(os.contains("mac")){
+        	defaultVideoDevice = new MediaListItem("デフォルト", "gtcapture://", emptyMediaList);
+        	defaultAudioDevice = new MediaListItem("デフォルト", "gtsound://", emptyMediaList);
+        } else if(os.contains("nux")){
+        	defaultVideoDevice = new MediaListItem("デフォルト", "v4l2://", emptyMediaList);
+        	defaultAudioDevice = new MediaListItem("デフォルト", "alsa://", emptyMediaList);
+        } else {
+        	defaultAudioDevice = null;
+        }
         
         clearDisplay();
     }
@@ -205,13 +251,14 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     		
     	}
     	if(md == null){
-//    		MediaListItem defaultAudioDevice = new MediaListItem("デフォルト", "dshow://", new ArrayList<MediaListItem>());
+    		int aa;
     		return null;
     	} else {
     		return md.getMediaList();
     	}
     }
 
+       
     
     
     class VLCRenderCallback extends RenderCallbackAdapter {
