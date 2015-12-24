@@ -1400,6 +1400,9 @@ public class MainFrame extends JFrame {
 								return;
 							}
 							mergeAnnotationFiles(targetDir);
+							changeStatePlay();
+							soundPlayer.myPlay();
+							timerStart();
 						}
 					});
 		}
@@ -2311,10 +2314,10 @@ public class MainFrame extends JFrame {
 							if(!setTargetFile(target.getCanonicalPath())){
 								return;
 							}
-							changeStatePlay();
-							soundPlayer.myPlay();
-							timerStart();
 						}
+						changeStatePlay();
+						soundPlayer.myPlay();
+						timerStart();
 					}
 				}
 			} catch (UnsupportedFlavorException e) {
