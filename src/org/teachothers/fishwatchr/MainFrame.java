@@ -239,8 +239,8 @@ public class MainFrame extends JFrame {
 	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png"));
 //	private ImageIcon iconRecordSoundReady = new ImageIcon(getClass().getResource("resources/images/recordSoundReady.png"));
 
-	private MediaList videoDeviceList = null;
-	private MediaList audioDeviceList = null;
+	private List<CaptureDevice> videoDeviceList = null;
+	private List<CaptureDevice> audioDeviceList = null;
 	private int iSelectedVideoDevice = 0;
 	private int iSelectedAudioDevice = 0;
 	
@@ -509,6 +509,9 @@ public class MainFrame extends JFrame {
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
+	
+							CaptureDevice videoDevice = soundPlayer.getVideoDeviceList().get(iSelectedVideoDevice);
+							CaptureDevice audioDevice = soundPlayer.getAudioDeviceList().get(iSelectedAudioDevice);
 							
 							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
 							String basename = userHomeDir + File.separator 
@@ -516,13 +519,14 @@ public class MainFrame extends JFrame {
 
 							if (jMenuItemOptionRecorderMode.isSelected()) {
 								int a;
-								mf = CommentList.getUniqueFilename(basename + SoundPlayer.SOUNDFILE_EXTENSION);
+								mf = CommentList.getUniqueFilename(basename + CaptureDevice.getMediadataSuffix(videoDevice, audioDevice));
 								xf = mf + CommentList.FILE_SUFFIX;
 								isSoundPanelEnable = true;
 							} else {
 								mf = "";
 								xf = CommentList.getUniqueFilename(basename + CommentList.FILE_SUFFIX);
 							}
+							System.err.println("mf: " + mf);
 							
 							setWindowTitle(xf);
 							// for testing
@@ -544,7 +548,7 @@ public class MainFrame extends JFrame {
 							changeStateRecord();
 							soundPlayer.myRecord(mf,
 									jMenuItemOptionRecorderMode.isSelected(),
-									iSelectedVideoDevice, iSelectedAudioDevice);
+									videoDevice, audioDevice);
 							timerStart();
 							commentList.setStartTime(soundPlayer.getStartTime());
 						}
@@ -568,7 +572,7 @@ public class MainFrame extends JFrame {
 							if(!mf.isEmpty()
 									&& !SoundPlayer.isPlayable(mf)
 									&& !mf.matches("^https?://.+")){
-								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。");
+								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。\n" + mf);
 								return;
 							}
 
@@ -757,6 +761,7 @@ public class MainFrame extends JFrame {
 			System.err.println("Warning(MainFrame): what?");
 		}
 		
+		System.err.println("set mf: " + mf);
 		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 			JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
 			mf = "";
@@ -2027,13 +2032,14 @@ public class MainFrame extends JFrame {
 			jMenuItemOptionInputMediaDevices = new JMenu("入力メディア機器");
 			videoDeviceList = soundPlayer.getVideoDeviceList();
 			jMenuItemOptionInputVideoMediaDevices = new JMenu("ビデオ機器");
+			ButtonGroup vButtonGroup = new ButtonGroup();
 			if(videoDeviceList != null && videoDeviceList.size() > 0){
 				int i = 0;
 				if(iSelectedVideoDevice == -1){
 					iSelectedVideoDevice = 0;
 				}
-				for(MediaListItem videoDevice : videoDeviceList.items()){
-					JMenuItem item = new JRadioButtonMenuItem(videoDevice.name());
+				for(CaptureDevice videoDevice : videoDeviceList){
+					JMenuItem item = new JRadioButtonMenuItem(videoDevice.getName());
 					final int j = i++;
 					item.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2044,21 +2050,18 @@ public class MainFrame extends JFrame {
 						item.setSelected(true);
 					}
 					jMenuItemOptionInputVideoMediaDevices.add(item);
+					vButtonGroup.add(item);
 				}
-			} else {
-				JMenuItem item = new JRadioButtonMenuItem("なし");
-				iSelectedVideoDevice = -1;
-				item.setSelected(true);
-				jMenuItemOptionInputVideoMediaDevices.add(item);
 			}
 
 			audioDeviceList = soundPlayer.getAudioDeviceList();
 			jMenuItemOptionInputAudioMediaDevices = new JMenu("オーディオ機器");
+			ButtonGroup aButtonGroup = new ButtonGroup();
 			if(audioDeviceList != null && audioDeviceList.size() > 0){
 				int i = 0;
-				for(MediaListItem audioDevice : audioDeviceList.items()){
+				for(CaptureDevice audioDevice : audioDeviceList){
 					final int j = i++;
-					JMenuItem item = new JRadioButtonMenuItem(audioDevice.name());
+					JMenuItem item = new JRadioButtonMenuItem(audioDevice.getName());
 					item.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							iSelectedAudioDevice = j;
@@ -2068,12 +2071,8 @@ public class MainFrame extends JFrame {
 						item.setSelected(true);
 					}
 					jMenuItemOptionInputAudioMediaDevices.add(item);
+					aButtonGroup.add(item);
 				}
-			} else {
-				JMenuItem item = new JRadioButtonMenuItem("なし");
-				iSelectedAudioDevice = -1;
-				item.setSelected(true);
-				jMenuItemOptionInputAudioMediaDevices.add(item);
 			}
 
 			jMenuItemOptionInputMediaDevices.add(jMenuItemOptionInputVideoMediaDevices);

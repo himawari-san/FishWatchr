@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.List;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -606,6 +607,8 @@ public class SoundPlayer extends Thread {
 	        mp.stop();
 			mediaPlayerComponent.clearDisplay();
 		}
+		
+		System.err.println("hey! stop: " + state);
 	}
 
 	public void pauseVlc(){
@@ -622,52 +625,30 @@ public class SoundPlayer extends Thread {
 		return state;
 	}
 
-	public void myRecord(String filename, boolean withSoundFile, int iVideoDevice, int iAudioDevice){
+	public void myRecord(String filename, boolean withSoundFile, CaptureDevice videoDevice, CaptureDevice audioDevice){
 		state = PLAYER_STATE_RECORD;
 		playerType = PLAYER_TYPE_DEFAULT;
 		startTime = new Date();
 		targetFilename = filename;
 		if(withSoundFile){
 			playerType = PLAYER_TYPE_VLC;
-			recordVLC(iVideoDevice, iAudioDevice);
+			recordVLC(videoDevice, audioDevice);
 //			start();
 		}
 	}
 	
 	
-	public void recordVLC(int iVideoDevice, int iAudioDevice){
-        String os = System.getProperty("os.name").toLowerCase();
-        String options[] = new String[3];
-        String mrl = "";
+	public void recordVLC(CaptureDevice videoDevice, CaptureDevice audioDevice){
+        String mrl = CaptureDevice.getMRL(videoDevice, audioDevice);
+        String[] options = CaptureDevice.getOption(videoDevice, audioDevice, targetFilename);
+        System.err.println("mrl: " + mrl);
+        System.err.println("opt0: " + options[0]);
+        System.err.println("opt1: " + options[1]);
 
-        if(os.contains("nux")){
-        	if(iVideoDevice == -1){
-        		if(iAudioDevice == -1){
-        			// no device
-        		} else {
-        			// audio only
-        			System.err.println("adn: " + getAudioDeviceList().items().get(iAudioDevice));
-            		options[0] = ":sout=#transcode{vcodec=mp4v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + targetFilename  + ".mp4}}";
-            		mrl = getAudioDeviceList().items().get(iAudioDevice).mrl();
-        		}
-        	} else if(iAudioDevice == -1){
-        		// video only
-        		options[0] = ":sout=#transcode{vcodec=mp4v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + targetFilename  + ".mp4},dst=display}";
-        		mrl = getVideoDeviceList().items().get(iVideoDevice).mrl();
-        	} else {
-        		// video and audio
-    			System.err.println("adn: " + getAudioDeviceList().items().get(iAudioDevice));
-    			System.err.println("vdn: " + getVideoDeviceList().items().get(iVideoDevice));
-        		options[0] = ":sout=#transcode{vcodec=mp4v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + targetFilename  + ".mp4},dst=display{noaudio}}";
-        		options[1] = ":input-slave=" + getAudioDeviceList().items().get(iAudioDevice).mrl();
-        		mrl = getVideoDeviceList().items().get(iVideoDevice).mrl();
-        	}
-        } else {
-        	
-        }
+		if(mp != null) mp.release();
+		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
         mp.addMediaPlayerEventListener(mpEventListener);
-        mp.playMedia(mrl, options);
-
+        mp.startMedia(mrl, options);
 	}
 	
 	
@@ -850,11 +831,11 @@ public class SoundPlayer extends Thread {
 	}
 	
 	
-    public MediaList getVideoDeviceList(){
+    public List<CaptureDevice> getVideoDeviceList(){
     	return mediaPlayerComponent.getVideoDeviceList();
     }
 
-    public MediaList getAudioDeviceList(){
+    public List<CaptureDevice> getAudioDeviceList(){
     	return mediaPlayerComponent.getAudioDeviceList();
     }
 	
