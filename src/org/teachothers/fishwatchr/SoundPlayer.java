@@ -46,7 +46,7 @@ public class SoundPlayer extends Thread {
 	public static final int LIMIT_RECODING_TIME = 60 * 60 * 2; // 7200sec = 2hours
 	public static String SOUNDFILE_EXTENSION = ".wav";
 	private static String[] videoAspectRates = {"16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"};
-	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"};
+	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mpg", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"};
 	private final static int MAX_RETRY_REFERRING_DATA = 100;  
 	private final static int RETRY_INTERVAL = 50; // msec  
 	

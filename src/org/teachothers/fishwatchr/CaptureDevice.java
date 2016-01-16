@@ -111,7 +111,7 @@ public class CaptureDevice {
         		options[1] = " :dshow-vdev=None :dshow-adev=" + audioDevice.getDeviceID() + " :live-caching=300";
         	} else if(audioDevice.type == TYPE_NONE){
         		// video only
-        		options[0] = " :sout=#transcode{vcodec=mp4v,acodec=none,ab=128,scale=1,channels=2,deinterlace,audio-sync,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
+        		options[0] = " :sout=#transcode{vcodec=mp2v,acodec=none,ab=128,scale=1,channels=2,deinterlace,audio-sync,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
         		options[1] = " :dshow-vdev=" + videoDevice.getName() + " :dshow-adev=None :live-caching=300";
         	} else {
         		// video and audio
@@ -132,10 +132,10 @@ public class CaptureDevice {
         		options[0] = " :sout=#transcode{vcodec=none,acodec=s16l,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "}}";
         	} else if(audioDevice.type == TYPE_NONE){
         		// video only
-        		options[0] = " :sout=#transcode{vcodec=mp4v,acodec=none,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
+        		options[0] = " :sout=#transcode{vcodec=mp2v,acodec=none,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
         	} else {
         		// video and audio
-        		options[0] = " :sout=#transcode{vcodec=mp4v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display{noaudio}}";
+        		options[0] = " :sout=#transcode{vcodec=mp2v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display{noaudio}}";
         	}
 		} else if(os.contains("nux")){
         	if(videoDevice.type == TYPE_NONE){
@@ -143,10 +143,10 @@ public class CaptureDevice {
         		options[0] = ":sout=#transcode{vcodec=none,acodec=s16l,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "}}";
         	} else if(audioDevice.type == TYPE_NONE){
         		// video only
-        		options[0] = ":sout=#transcode{vcodec=mp4v,acodec=none,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
+        		options[0] = ":sout=#transcode{vcodec=mp2v,acodec=none,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
         	} else {
         		// video and audio
-        		options[0] = ":sout=#transcode{vcodec=mp4v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display{noaudio}}";
+        		options[0] = ":sout=#transcode{vcodec=mp2v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display{noaudio}}";
         		options[1] = ":input-slave=alsa://" + audioDevice.getDeviceID().replaceFirst(".*\\[(.+?)\\].*", "$1");
         	}
         }
