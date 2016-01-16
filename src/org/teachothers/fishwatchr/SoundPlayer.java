@@ -38,11 +38,8 @@ import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
-import uk.co.caprica.vlcj.medialist.MediaList;
-import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
-import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
 
 
 public class SoundPlayer extends Thread {
@@ -253,7 +250,7 @@ public class SoundPlayer extends Thread {
 			buf = new byte[maxDataSize]; 
 			readWav(targetFilename, buf);
 			setSoundBufferEnable(true);
-			mp.startMedia(targetFilename);
+			mp.prepareMedia(targetFilename);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
 			isStreaming = true;
 			playerType = PLAYER_TYPE_VLC;
@@ -266,8 +263,7 @@ public class SoundPlayer extends Thread {
 					mp.release();
 					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
 			        mp.addMediaPlayerEventListener(mpEventListener);
-					mp.startMedia(targetFilename);
-					break;
+			        break;
 				} else {
 					try {
 						Thread.sleep(RETRY_INTERVAL);
@@ -337,11 +333,11 @@ public class SoundPlayer extends Thread {
 			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
 				videoDimension = mp.getVideoDimension();
 				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
+					soundLength = (float)(mp.getLength()/1000);
 					mp.release();
 					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
 			        mp.addMediaPlayerEventListener(mpEventListener);
-					mp.startMedia(targetFilename);
-					soundLength = (float)(mp.getLength()/1000);
+					mp.prepareMedia(targetFilename);
 					break;
 				} else {
 					try {
@@ -574,6 +570,13 @@ public class SoundPlayer extends Thread {
 		skippedFrame = 0;
 		soundGraphBuf.setPosition(0);
 		if(playerType == PLAYER_TYPE_VLC){
+			if(state == PLAYER_STATE_RECORD){
+				if(mp != null) mp.release();
+				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+		        mp.addMediaPlayerEventListener(mpEventListener);
+		        System.err.println("hei rec init: " + targetFilename);
+		        setFile(targetFilename, false);
+			}
 			mp.setPosition(0);
 		}
         mainFrame.changeState(PLAYER_STATE_STOP);
@@ -582,9 +585,8 @@ public class SoundPlayer extends Thread {
 	}
 	
 	public void playVlc(){
-//		System.err.println("sub:" + mp.subItemCount() + ", " + mp.subItemIndex());
 		if(isStreaming){
-			mp.playSubItem(0, "");
+			mp.startMedia(targetFilename);
 			for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
 				if (mp.isSeekable()) {
 					break;
@@ -598,7 +600,6 @@ public class SoundPlayer extends Thread {
 			}
 		} else {
 			mp.play();
-//			mp.start();
 		}
 	}
 
@@ -841,7 +842,7 @@ public class SoundPlayer extends Thread {
 	
 	
     private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
-        public void finished(MediaPlayer mediaPlayer) {
+		public void finished(MediaPlayer mediaPlayer) {
         	if(playerType == PLAYER_TYPE_VLC){
         		System.err.println("vlc finish!");
         		if(mp.isSeekable()){
