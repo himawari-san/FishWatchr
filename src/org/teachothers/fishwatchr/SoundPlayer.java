@@ -645,6 +645,7 @@ public class SoundPlayer extends Thread {
         System.err.println("mrl: " + mrl);
         System.err.println("opt0: " + options[0]);
         System.err.println("opt1: " + options[1]);
+        System.err.println("opt2: " + options[2]);
 
 		if(mp != null) mp.release();
 		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
