@@ -72,9 +72,6 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     private FontMetrics fm;
     private String overlaidText = "";
     private Color bgColor;
-    private MediaListItem defaultVideoDevice;
-    private MediaListItem defaultAudioDevice;
-    private ArrayList<MediaListItem> emptyMediaList = new ArrayList<MediaListItem>();
     private String os = System.getProperty("os.name").toLowerCase();
     
     public VLCDirectMediaPlayerComponent() throws InterruptedException, InvocationTargetException {

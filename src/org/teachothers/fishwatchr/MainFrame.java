@@ -82,8 +82,6 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 
-import uk.co.caprica.vlcj.medialist.MediaList;
-import uk.co.caprica.vlcj.medialist.MediaListItem;
 
 public class MainFrame extends JFrame {
 
@@ -237,7 +235,6 @@ public class MainFrame extends JFrame {
 	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png"));
 	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png"));
 	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png"));
-//	private ImageIcon iconRecordSoundReady = new ImageIcon(getClass().getResource("resources/images/recordSoundReady.png"));
 
 	private List<CaptureDevice> videoDeviceList = null;
 	private List<CaptureDevice> audioDeviceList = null;
@@ -1170,7 +1167,6 @@ public class MainFrame extends JFrame {
 							if(!setTargetFile("")){
 								return;
 							}
-							int aaa;
 							changeStatePlay();
 							soundPlayer.myPlay();
 							timerStart();
@@ -2035,8 +2031,6 @@ public class MainFrame extends JFrame {
 
 	
 	private JMenuItem getJMenuItemOptionInputMediaDevices() {
-		int aaaaa;
-
 		if (jMenuItemOptionInputMediaDevices == null) {
 			jMenuItemOptionInputMediaDevices = new JMenu("入力メディア機器");
 			videoDeviceList = soundPlayer.getVideoDeviceList();
