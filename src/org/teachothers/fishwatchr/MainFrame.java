@@ -515,7 +515,7 @@ public class MainFrame extends JFrame {
 							
 							if(videoDevice.getType() == CaptureDevice.TYPE_NONE
 									&& audioDevice.getType() == CaptureDevice.TYPE_NONE){
-								JOptionPane.showMessageDialog(MainFrame.this, "キャプチャデバイスが指定されていないため，中止します。\n" + mf);
+								JOptionPane.showMessageDialog(MainFrame.this, "キャプチャデバイスが指定されていないため，処理を中止します。\n" + mf);
 								return;
 							}
 							
