@@ -513,6 +513,13 @@ public class MainFrame extends JFrame {
 							CaptureDevice videoDevice = soundPlayer.getVideoDeviceList().get(iSelectedVideoDevice);
 							CaptureDevice audioDevice = soundPlayer.getAudioDeviceList().get(iSelectedAudioDevice);
 							
+							if(videoDevice.getType() == CaptureDevice.TYPE_NONE
+									&& audioDevice.getType() == CaptureDevice.TYPE_NONE){
+								JOptionPane.showMessageDialog(MainFrame.this, "キャプチャデバイスが指定されていないため，中止します。\n" + mf);
+								return;
+							}
+							
+							
 							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
 							String basename = userHomeDir + File.separator 
 									+ FILE_PREFIX + today.format(new Date()) + "_" + commenter;
