@@ -216,6 +216,9 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         
         for(Device videoDevice: videoDevices){
         	CaptureDevice captureDevice = new CaptureDevice(videoDevice.getIdentifierStr(), videoDevice.getNameStr(), CaptureDevice.TYPE_VIDEO);
+        	if(!captureDevice.validate()){
+        		continue;
+        	}
         	captureDevices.add(captureDevice);
         	System.err.println("vd(str): " + videoDevice.getNameStr());
         	System.err.println("vd(id): " + videoDevice.getIdentifierStr());
