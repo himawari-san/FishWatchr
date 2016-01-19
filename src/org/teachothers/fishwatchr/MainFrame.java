@@ -862,6 +862,7 @@ public class MainFrame extends JFrame {
 		jMenuItemFileSave.setEnabled(false);
 		jMenuItemFileMerge.setEnabled(false);
 		timeSlider.setEnabled(false);
+		setResizable(false);
 	}
 
 	private void changeStateStop() {
@@ -870,6 +871,7 @@ public class MainFrame extends JFrame {
 			commentTable.getCellEditor().stopCellEditing();
 		}
 		
+		setResizable(true);
 		// saveAndClearCommentList();
 		soundStopButton.setEnabled(false);
 		soundRecordButton.setEnabled(true);
