@@ -37,6 +37,7 @@ import org.openimaj.audio.util.AudioUtils;
 import org.openimaj.video.capture.Device;
 import org.openimaj.video.capture.VideoCapture;
 
+import uk.co.caprica.vlcj.log.NativeLog;
 import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -75,7 +76,18 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     private String os = System.getProperty("os.name").toLowerCase();
     
     public VLCDirectMediaPlayerComponent() throws InterruptedException, InvocationTargetException {
-    	factory = new MediaPlayerFactory();
+//    	factory = new MediaPlayerFactory();
+    	factory = new MediaPlayerFactory(new String[]{
+//    			"--verbose=15",
+//    			"--intf", "dummy",
+//    			"--vout", "dummy",
+//    			"--no-audio",
+//    			"--no-stat",
+//    			"--no-snapshot-preview",
+//    			"--no-video-title-show",
+//    			"--quiet",
+//    			"--live-caching=50"
+    	});
     	init();
     }
 
@@ -168,7 +180,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     public DirectMediaPlayer getMediaPlayer(float videoAspectRatio){
     	componentWidth = getWidth();
     	componentHeight = getHeight();
-
+    	
     	float componentRatio = (float)componentWidth / (float)componentHeight;
     	
     	if(componentRatio < videoAspectRatio){
@@ -236,6 +248,9 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         		continue;
         	}
         	captureDevices.add(captureDevice);
+        	System.err.println("ad(id): " + audioDevice.deviceName);
+        	System.err.println("ad(dsp): " + audioDevice.displayName);
+        	System.err.println("ad(string): " + audioDevice.toString());
         }
     	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));
 

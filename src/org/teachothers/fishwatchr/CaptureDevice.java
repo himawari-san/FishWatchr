@@ -54,8 +54,8 @@ public class CaptureDevice {
 				name = deviceID; // attention (Windows's names are useless)
         		
         		if(deviceID.startsWith("マイク") || deviceID.toLowerCase().startsWith("mic")){
-//        			name = "Default"; // temporary codes to deal with Java Sound bugs  
-//        			deviceID = ""; // temporary codes to deal with Java Sound bugs
+        			name = "Default"; // temporary codes to deal with Java Sound bugs  
+        			deviceID = ""; // temporary codes to deal with Java Sound bugs
         			return true;
         		} else {
         			return false;
@@ -68,6 +68,10 @@ public class CaptureDevice {
 						|| normalizedDeviceID.startsWith("built-in output")) {
         			return false;
         		}
+	        	if(os.contains("mac")){
+        			name = "Default"; // temporary codes to deal with Java Sound bugs  
+        			deviceID = ""; // temporary codes to deal with Java Sound bugs
+	        	}
     			return true;
         	}
 		} else {
@@ -85,9 +89,16 @@ public class CaptureDevice {
 		
 		
 		if(os.contains("windows")){
-			mrl = "dshow:// ";
+			mrl = "dshow://";
 		} else if(os.contains("mac")){
-			mrl = "qtcapture://" + videoDevice.getDeviceID();
+        	if(videoDevice.type == TYPE_NONE){
+        		// audio only
+//    			mrl = "qtsound://" + audioDevice.getDeviceID(); // this code does not work.
+    			mrl = "qtsound://"; // use a default device
+        	} else {
+        		// video(and audio)
+    			mrl = "qtcapture://" + videoDevice.getDeviceID();
+        	}
 		} else if(os.contains("nux")){
         	if(videoDevice.type == TYPE_NONE){
         		// audio only
@@ -103,7 +114,7 @@ public class CaptureDevice {
 
 	
 	public static String[] getOption(CaptureDevice videoDevice, CaptureDevice audioDevice, String filename){
-		String[] options = new String[4];
+		String[] options = null;
 		
 		if(videoDevice.type == TYPE_NONE && audioDevice.type == TYPE_NONE){
 			return null;
@@ -113,47 +124,69 @@ public class CaptureDevice {
 		if(os.contains("windows")){
         	if(videoDevice.type == TYPE_NONE){
         		// audio only
-        		options[0] = ":sout=#transcode{acodec=s16l,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "}}";
-        		options[1] = ":dshow-vdev=None";
-        		options[2] = ":dshow-adev=" + audioDevice.getDeviceID();
+        		options = new String[]{
+        				":sout=#transcode{vcodec=none,acodec=s16l,ab=128,channels=2,samplerate=44100}:standard{access=file,mux=wav,dst=" + filename  + "}}",
+        				":dshow-vdev=none",
+        				":dshow-adev=" + audioDevice.getDeviceID()
+        		};
         	} else if(audioDevice.type == TYPE_NONE){
         		// video only
-        		options[0] = ":sout=#transcode{vcodec=mp2v,acodec=none,ab=128,scale=1,channels=2,deinterlace,audio-sync,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
-        		options[1] = ":dshow-vdev=" + videoDevice.getName();
-        		options[2] = ":dshow-adev=none :live-caching=300";
-        		options[3] = ":live-caching=300";
+        		options = new String[]{
+        				":sout=#transcode{vcodec=mp2v,acodec=none,scale=1,deinterlace}:duplicate{dst=file{dst=" + filename  + "},dst=display}",
+        				":dshow-vdev=" + videoDevice.getName(),
+                		":dshow-adev=none",
+                		":live-caching=300"
+                		};
         	} else {
         		// video and audio
-        		options[0] = ":sout=#transcode{vcodec=mp2v,acodec=mpga,ab=128,channels=2}:duplicate{dst=file{dst=" + filename + "},dst=display{noaudio}}";
-        		options[1] = ":dshow-vdev=" + videoDevice.getDeviceID();
-        		options[2] = ":dshow-adev=" + audioDevice.getDeviceID();
-        		options[3] = ":live-caching=300";
-//        		options[0] = ":sout=#transcode{vcodec=mp2v,vb=4096,scale=1,acodec=mpga,channels=2,samplerate=44100}:standard{access=file,dst=" + filename  + ".mpg}";
-//        		options[0] = ":sout=#transcode{vcodec=h264,venc=h264,chrome=h264,acodec=mp2a,ab=128,channels=2}:duplicate{dst=standard{access=file,mux=ps,dst=\"" + filename  + ".mpg\"},dst=display{noaudio}}";
-//        		options[0] = ":sout=#transcode{vcodec=mp2v,acodec=mpga,ab=128,channels=2,deinterlace,audio-sync}:duplicate{dst=standard{access=file,mux=ps,dst=" + filename + "},dst=display{noaudio}}";
+        		options = new String[]{
+        				":sout=#transcode{vcodec=mp2v,acodec=mpga,samplerate=44100,ab=128,channels=2,deinterlace}:duplicate{dst=std{access=file,dst=" + filename + "},dst=display{noaudio}}",
+        				":dshow-vdev=" + videoDevice.getDeviceID(),
+        				":dshow-adev=" + audioDevice.getDeviceID(),
+        				":live-caching=300"
+        		};
+        		//":sout=#transcode{vcodec=theo,acodec=vorbis}:duplicate{dst=std{access=file,dst=" + filename + "},dst=display{noaudio}}";
         	}
 		} else if(os.contains("mac")){
         	if(videoDevice.type == TYPE_NONE){
         		// audio only
-        		options[0] = " :sout=#transcode{vcodec=none,acodec=s16l,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "}}";
+        		options = new String[]{
+        				":sout=#transcode{vcodec=none,acodec=s16l,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "}}"
+        		};
         	} else if(audioDevice.type == TYPE_NONE){
         		// video only
-        		options[0] = " :sout=#transcode{vcodec=mp2v,acodec=none,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
+        		options = new String[]{
+        				":sout=#transcode{vcodec=mp2v,acodec=none,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}"
+        		};
         	} else {
         		// video and audio
-        		options[0] = " :sout=#transcode{vcodec=mp2v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display{noaudio}}";
+        		options = new String[]{
+        				":sout=#transcode{vcodec=mp2v,acodec=mpga,ab=128,channels=2,samplerate=44100,audio-sync}:duplicate{dst=file{dst=" + filename  + "},dst=display{noaudio}}",
+        				":input-slave=qtsound://"  // use a default device
+//        				":input-slave=qtsound://" + audioDevice.getDeviceID()
+        		};
+//        		options[1] = ":input-slave=qtsound://";
+//        		options[1] = ":input-slave=qtsound://AppleHDAEngineInput:1B,0,1,0:1";
+//        		options[1] = ":input-slave=qtcapture://" + videoDevice.getDeviceID();
+//        		options[1] = ":input-slave=qtsound://" + audioDevice.getDeviceID();
         	}
 		} else if(os.contains("nux")){
         	if(videoDevice.type == TYPE_NONE){
         		// audio only
-        		options[0] = ":sout=#transcode{vcodec=none,acodec=s16l,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "}}";
+        		options = new String[]{
+        				":sout=#transcode{vcodec=none,acodec=s16l,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "}}"
+        		};
         	} else if(audioDevice.type == TYPE_NONE){
         		// video only
-        		options[0] = ":sout=#transcode{vcodec=mp2v,acodec=none,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}";
+        		options = new String[]{
+        				":sout=#transcode{vcodec=mp2v,acodec=none,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display}"
+        		};
         	} else {
         		// video and audio
-        		options[0] = ":sout=#transcode{vcodec=mp2v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display{noaudio}}";
-        		options[1] = ":input-slave=alsa://" + audioDevice.getDeviceID().replaceFirst(".*\\[(.+?)\\].*", "$1");
+        		options = new String[]{
+        				":sout=#transcode{vcodec=mp2v,acodec=mpga,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "},dst=display{noaudio}}",
+        				":input-slave=alsa://" + audioDevice.getDeviceID().replaceFirst(".*\\[(.+?)\\].*", "$1")
+        		};
         	}
         }
 

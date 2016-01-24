@@ -38,6 +38,8 @@ import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang3.StringUtils;
+
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 
@@ -643,9 +645,7 @@ public class SoundPlayer extends Thread {
         String mrl = CaptureDevice.getMRL(videoDevice, audioDevice);
         String[] options = CaptureDevice.getOption(videoDevice, audioDevice, targetFilename);
         System.err.println("mrl: " + mrl);
-        System.err.println("opt0: " + options[0]);
-        System.err.println("opt1: " + options[1]);
-        System.err.println("opt2: " + options[2]);
+        System.err.println("opts: " + StringUtils.join(options, "\n"));
 
 		if(mp != null) mp.release();
 		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
