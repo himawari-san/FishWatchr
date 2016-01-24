@@ -859,7 +859,7 @@ public class MainFrame extends JFrame {
 		jMenuItemFileSave.setEnabled(false);
 		jMenuItemFileMerge.setEnabled(false);
 		timeSlider.setEnabled(false);
-		setResizable(false);
+//		setResizable(false);
 	}
 
 	private void changeStateStop() {
@@ -1043,6 +1043,9 @@ public class MainFrame extends JFrame {
 			soundPlayer.getMediaplayerComponent().setOpaque(false); // これがないと背景がおかしくなる
 			moviePanel.addComponentListener(new ComponentAdapter() {
 				public void componentResized(final ComponentEvent ev) {
+					if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD){
+						return;
+					}
 					if(t != null) t.cancel();
 					t = new Timer();
 					t.schedule(new TimerTask() {
