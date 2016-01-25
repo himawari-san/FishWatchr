@@ -151,7 +151,7 @@ public class CaptureDevice {
         	if(videoDevice.type == TYPE_NONE){
         		// audio only
         		options = new String[]{
-        				":sout=#transcode{vcodec=none,acodec=s16l,ab=128,channels=2,samplerate=44100}:duplicate{dst=file{dst=" + filename  + "}}"
+        				":sout=#transcode{vcodec=none,acodec=s16l}:standard{mux=wav,access=file,dst=" + filename  + "}"
         		};
         	} else if(audioDevice.type == TYPE_NONE){
         		// video only
