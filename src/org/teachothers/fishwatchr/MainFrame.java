@@ -146,6 +146,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemFileSave;
 	private JMenuItem jMenuItemFileMerge;
 	private JMenuItem jMenuItemFileExport;
+	private JMenuItem jMenuItemFileSaveConfig;
 	private JMenuItem jMenuItemFileExit;
 	private JMenu jMenuControl;
 	private JMenuItem jMenuItemControlPlayPause;
@@ -1185,6 +1186,7 @@ public class MainFrame extends JFrame {
 			jMenuFile.add(getJMenuItemFileSave());
 			jMenuFile.add(getJMenuItemFileExport());
 			jMenuFile.add(getJMenuItemFileMerge());
+			jMenuFile.add(getJMenuItemFileSaveConfig());
 			jMenuFile.add(getJMenuItemFileExit());
 		}
 		return jMenuFile;
@@ -1496,6 +1498,27 @@ public class MainFrame extends JFrame {
 
 		soundPlayer.myStop();
 		changeStateStop();
+	}
+
+
+	private JMenuItem getJMenuItemFileSaveConfig() {
+		if (jMenuItemFileSaveConfig == null) {
+			jMenuItemFileSaveConfig = new JMenuItem("設定の保存");
+			jMenuItemFileSaveConfig.setAccelerator(KeyStroke.getKeyStroke('C',
+					KeyEvent.CTRL_MASK, false));
+			jMenuItemFileSaveConfig
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							try {
+								config.save();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					});
+		}
+		return jMenuItemFileSaveConfig;
 	}
 	
 	

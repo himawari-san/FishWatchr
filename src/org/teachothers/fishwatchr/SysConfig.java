@@ -2,17 +2,31 @@ package org.teachothers.fishwatchr;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -116,6 +130,47 @@ public class SysConfig {
 			setDefault(commentTypes, discussers);
 		}
 	}
+
+	
+	public boolean save() throws IOException {
+		
+		if(doc == null){
+			return false;
+		}
+
+		File configFile = new File(configFilename);
+		if (configFile.exists()) {
+			String filename = configFile.getName();
+			
+			String backupFilename = filename + ".bak";
+			File backupFile = new File(backupFilename);
+			Files.copy(configFile.toPath(), backupFile.toPath());
+		}
+
+        Transformer transformer = null;
+        try {
+             TransformerFactory transformerFactory = TransformerFactory
+                       .newInstance();
+             transformer = transformerFactory.newTransformer();
+        } catch (TransformerConfigurationException e) {
+             e.printStackTrace();
+             return false;
+        }
+        
+        transformer.setOutputProperty("indent", "yes");
+        transformer.setOutputProperty("encoding", "utf-8");
+
+        // XMLファイルの作成
+        try {
+             transformer.transform(new DOMSource(doc), new StreamResult(configFile));
+        } catch (TransformerException e) {
+             e.printStackTrace();
+             return false;
+        }
+        
+		return true;
+	}
+
 	
 	public void setDefault(ArrayList<CommentType> commentTypes, ArrayList<User> discussers){
 		discussers.clear();
