@@ -41,8 +41,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -94,7 +96,10 @@ public class MainFrame extends JFrame {
 	private static final int TAB_STATUS_DETAIL_VIEW = 1;
 	private static final String FILE_PREFIX = "fw";
 	
+	private static final String COMMENTER_NAME_GLUE1 = "_";
+	private static final String COMMENTER_NAME_GLUE2 = "_in_";
 	public static final String USER_NOT_SPECIFIED = "noname";
+	
 	public static final int MAX_DISCUSSERS = 8;
 	public static final int COMMENT_PANEL_HEIGHT = 270;
 	public static final int BUTTON_PANEL_HEIGHT = 50;
@@ -249,8 +254,6 @@ public class MainFrame extends JFrame {
 
 		// コメントリスト
 		commentList = new CommentList();
-		// commenter 初期値
-		commenter = new User(USER_NOT_SPECIFIED);
 
 		// discussers 初期値
 		discussers = new ArrayList<User>();
@@ -311,6 +314,35 @@ public class MainFrame extends JFrame {
 				System.err.println("Warning(MainFrame): Not used default_discusser, " + configValue);
 			}
 		}
+
+		// set commenter's name
+		configValue = config.getFirstNodeAsString("/settings/commenter/@value");
+		if(configValue == null
+				|| configValue.isEmpty()
+				|| configValue.matches("^\\s+$")){
+			String username = System.getProperty("user.name");
+			String hostname;
+			try {
+				hostname = InetAddress.getLocalHost().getHostName();
+			} catch (UnknownHostException e) {
+				hostname = "";
+			}
+			if(hostname.isEmpty()){
+				if(username.isEmpty()){
+					configValue = USER_NOT_SPECIFIED;
+				} else {
+					configValue = username;
+				}
+			} else {
+				configValue = username + COMMENTER_NAME_GLUE2 + hostname;
+			}
+		}
+		String modifiedName = configValue.replaceAll("[/<>&'\"\\s]", COMMENTER_NAME_GLUE1);
+		if(!configValue.equals(modifiedName)){
+			System.err.println("Warning(mainFrame): commenter's name was modified from " + configValue + " to " + modifiedName);
+		}
+		commenter = new User(modifiedName);
+
 		ginit();
 	}
 
@@ -797,7 +829,7 @@ public class MainFrame extends JFrame {
 
 		if (commentList.isModified() || (!xf.isEmpty() && !(new File(xf).exists()))) {
 			if(xf.isEmpty()){
-				xf = userHomeDir + File.separator + "fw_noname.xml";
+				xf = userHomeDir + File.separator + "fw_" + commenter.getName() + ".xml";
 				System.err.println("Warning(MainFrame): ファイル名がつけられていません。\n" + xf + "として保存します。");
 			}
 			
@@ -1875,8 +1907,8 @@ public class MainFrame extends JFrame {
 									JOptionPane.PLAIN_MESSAGE);
 							if(inputValue == null || inputValue.isEmpty()){
 								JOptionPane.showMessageDialog(null, "注釈者名が空です。");
-							} else if(inputValue.matches(".*[\\s<>&'\"].*")){
-								JOptionPane.showMessageDialog(null, inputValue + "\nには，使用できない文字（<>\"\'& および空白）が含まれているため，設定値を反映しませんでした。");
+							} else if(inputValue.matches(".*[\\s<>/&'\"].*")){
+								JOptionPane.showMessageDialog(null, inputValue + "\nには，使用できない文字（<>/\"\'& および空白）が含まれているため，設定値を反映しませんでした。");
 							} else {
 								commenter.setName(inputValue);
 							}
