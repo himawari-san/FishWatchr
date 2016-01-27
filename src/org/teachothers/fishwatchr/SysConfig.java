@@ -2,20 +2,16 @@ package org.teachothers.fishwatchr;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.URLEncoder;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -26,13 +22,13 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class SysConfig {
-	private final String configFilename = "fishwatchr.config";
+	public final static String CONFIG_FILENAME = "fishwatchr.config";
 	private Document doc = null;
 	private XPath xpath = null;
 	
@@ -42,7 +38,7 @@ public class SysConfig {
 	
 	
 	public void load(ArrayList<CommentType> commentTypes, ArrayList<User> discussers) {
-		File configFile = new File(configFilename);
+		File configFile = new File(CONFIG_FILENAME);
 
 		setDefault(commentTypes, discussers);
 		
@@ -117,7 +113,7 @@ public class SysConfig {
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null,
 						"設定ファイル("
-						+ configFilename
+						+ CONFIG_FILENAME
 						+ ")の読み込み中にエラーが発生したため，デフォルトの設定が読み込まれました。"
 						+ "\nエラーメッセージ：\n" + e.getLocalizedMessage());
 				System.err.println("Error(SysConfig): " + "設定ファイルの読み込み中にエラーが発生したため，デフォルトの設定が読み込まれました。");
@@ -132,43 +128,25 @@ public class SysConfig {
 	}
 
 	
-	public boolean save() throws IOException {
+	public void save() throws IOException, TransformerException {
 		
-		if(doc == null){
-			return false;
-		}
-
-		File configFile = new File(configFilename);
+		File configFile = new File(CONFIG_FILENAME);
 		if (configFile.exists()) {
 			String filename = configFile.getName();
 			
 			String backupFilename = filename + ".bak";
 			File backupFile = new File(backupFilename);
-			Files.copy(configFile.toPath(), backupFile.toPath());
+			Files.copy(configFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 
-        Transformer transformer = null;
-        try {
-             TransformerFactory transformerFactory = TransformerFactory
-                       .newInstance();
-             transformer = transformerFactory.newTransformer();
-        } catch (TransformerConfigurationException e) {
-             e.printStackTrace();
-             return false;
-        }
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
         
         transformer.setOutputProperty("indent", "yes");
         transformer.setOutputProperty("encoding", "utf-8");
 
         // XMLファイルの作成
-        try {
-             transformer.transform(new DOMSource(doc), new StreamResult(configFile));
-        } catch (TransformerException e) {
-             e.printStackTrace();
-             return false;
-        }
-        
-		return true;
+        transformer.transform(new DOMSource(doc), new StreamResult(configFile));
 	}
 
 	
@@ -220,5 +198,68 @@ public class SysConfig {
 		
 		return nodeValue;
 	}
+
 	
+	public void setCommentTypes(String path, String nodeName, List<CommentType> commentTypes){
+
+		XPathExpression expr;
+		try {
+			expr = xpath.compile(path);
+			Node nodeCommentTypes = (Node) expr.evaluate(doc, XPathConstants.NODE);
+			
+			while(nodeCommentTypes.hasChildNodes()){
+				nodeCommentTypes.removeChild(nodeCommentTypes.getFirstChild());
+			}
+			
+			for(CommentType commentType: commentTypes){
+				if(commentType.getType().isEmpty()){
+					continue;
+				}
+				Element newElement = doc.createElement(nodeName);
+				newElement.setAttribute("name", commentType.getType());
+				newElement.setAttribute("color", String.valueOf(commentType.getColor().getRGB()));
+				nodeCommentTypes.appendChild(newElement);
+			}
+			
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+
+	
+	public void setDiscussers(String path, String nodeName, List<User> discussers){
+
+		XPathExpression expr;
+		try {
+			expr = xpath.compile(path);
+			Node nodeCommentTypes = (Node) expr.evaluate(doc, XPathConstants.NODE);
+			
+			while(nodeCommentTypes.hasChildNodes()){
+				nodeCommentTypes.removeChild(nodeCommentTypes.getFirstChild());
+			}
+			
+			for(User discusser: discussers){
+				if(discusser.getName().isEmpty()){
+					continue;
+				}
+				Element newElement = doc.createElement(nodeName);
+				newElement.setAttribute("name", discusser.getName());
+				nodeCommentTypes.appendChild(newElement);
+			}
+			
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+
+	public void setValue(String pathToElement, String attributeName, String value) throws XPathExpressionException{
+		XPathExpression expr = xpath.compile(pathToElement);
+		Element element = (Element) expr.evaluate(doc, XPathConstants.NODE);
+		element.setAttribute(attributeName, value);
+	}
+
 }

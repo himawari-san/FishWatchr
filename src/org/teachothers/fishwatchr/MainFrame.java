@@ -79,6 +79,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -281,7 +282,7 @@ public class MainFrame extends JFrame {
 
 		configValue = config.getFirstNodeAsString("/settings/button_type/@value");
 		if(configValue != null){
-			if(configValue.equals("comment")){
+			if(configValue.equals(CommentButton.BUTTON_TYPE_COMMENT_STR)){
 				buttonType = CommentButton.BUTTON_TYPE_COMMENT;
 			} else {
 				buttonType = CommentButton.BUTTON_TYPE_DISCUSSER;				
@@ -1511,8 +1512,12 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							try {
 								config.save();
+								JOptionPane.showMessageDialog(MainFrame.this, "設定を" + SysConfig.CONFIG_FILENAME +"に保存しました。" + mf);
 							} catch (IOException e1) {
-								// TODO Auto-generated catch block
+								JOptionPane.showMessageDialog(MainFrame.this, "設定の保存時にエラーが発生したため，保存を中止します。\n" + e1.getLocalizedMessage());
+								e1.printStackTrace();
+							} catch (TransformerException e1) {
+								JOptionPane.showMessageDialog(MainFrame.this, "設定の保存時にエラーが発生したため，保存を中止します。\n" + e1.getLocalizedMessage());
 								e1.printStackTrace();
 							}
 						}
@@ -1873,12 +1878,16 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationOrderDiscusser() {
 		if (jMenuItemAnnotationOrderDiscusser == null) {
-			jMenuItemAnnotationOrderDiscusser = new JRadioButtonMenuItem(
-					"話者優先");
+			jMenuItemAnnotationOrderDiscusser = new JRadioButtonMenuItem("話者優先");
 			jMenuItemAnnotationOrderDiscusser
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							updateButtonPanel(CommentButton.BUTTON_TYPE_DISCUSSER);
+							try {
+								config.setValue("/settings/button_type", "value", CommentButton.BUTTON_TYPE_DISCUSSER_STR);
+							} catch (XPathExpressionException e1) {
+								e1.printStackTrace();
+							}
 						}
 					});
 		}
@@ -1892,6 +1901,11 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							updateButtonPanel(CommentButton.BUTTON_TYPE_COMMENT);
+							try {
+								config.setValue("/settings/button_type", "value", CommentButton.BUTTON_TYPE_COMMENT_STR);
+							} catch (XPathExpressionException e1) {
+								e1.printStackTrace();
+							}
 						}
 					});
 		}
@@ -1908,6 +1922,15 @@ public class MainFrame extends JFrame {
 								commentButton
 										.setMultiAnnotation(jMenuItemAnnotationMulti
 												.isSelected());
+							}
+							try {
+								if(jMenuItemAnnotationMulti.isSelected()){
+									config.setValue("/settings/isAnnotationMulti", "value", "true");
+								} else {
+									config.setValue("/settings/isAnnotationMulti", "value", "false");
+								}
+							} catch (XPathExpressionException e1) {
+								e1.printStackTrace();
 							}
 						}
 					});
@@ -1958,7 +1981,9 @@ public class MainFrame extends JFrame {
 							String invalidItems = discusserSettingPanel.updateNewValue();
 							if(!invalidItems.isEmpty()){
 								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（半角の <>\"\'& 空白文字）が含まれているため，設定値を反映しませんでした。");
+								return;
 							}
+							config.setDiscussers("/settings/discussers", "li", discussers);
 							discussersPanel.updateCompoments();
 							annotationGlobalViewPanel.updatePanel();
 							if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
@@ -1988,7 +2013,9 @@ public class MainFrame extends JFrame {
 							String invalidItems = annotationSettingPanel.updateNewValue();
 							if(!invalidItems.isEmpty()){
 								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（<>\"\'&）が含まれているため，設定値を反映しませんでした。");
+								return;
 							}
+							config.setCommentTypes("/settings/comment_types", "li", commentTypes);
 							discussersPanel.updateCompoments();
 							annotationGlobalViewPanel.updatePanel();
 							if (buttonType == CommentButton.BUTTON_TYPE_COMMENT) {
