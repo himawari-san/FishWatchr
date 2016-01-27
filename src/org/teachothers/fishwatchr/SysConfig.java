@@ -28,7 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class SysConfig {
-	public final static String CONFIG_FILENAME = "fishwatchr.config";
+	public final static String CONFIG_FILENAME = "config.xml";
 	private Document doc = null;
 	private XPath xpath = null;
 	
@@ -122,7 +122,7 @@ public class SysConfig {
 			}
 
 		} else {
-			System.err.println("Warning(SysConfig): fishwatchr.config が見つからなかったため，デフォルトの設定を使用します。");
+			System.err.println("Warning(SysConfig): " + CONFIG_FILENAME + "が見つからなかったため，デフォルトの設定を使用します。");
 			setDefault(commentTypes, discussers);
 		}
 	}
