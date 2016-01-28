@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
   <!-- [注釈]⇒[話者優先]，[ラベル優先] -->
-  <button_type value="comment" />
+  <button_type value="label" />
 
   <!-- [注釈]⇒[同時注釈] -->
   <isAnnotationMulti value="false" />

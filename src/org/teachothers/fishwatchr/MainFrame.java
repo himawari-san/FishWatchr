@@ -2260,7 +2260,15 @@ public class MainFrame extends JFrame {
 			jMenuItemOptionViewSyncMode
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							// 何もしないが，チェックボックスの状態が変わる。
+							try {
+								if(jMenuItemOptionViewSyncMode.isSelected()){
+									config.setValue("/settings/isViewSyncMode", "value", "true");
+								} else {
+									config.setValue("/settings/isViewSyncMode", "value", "false");
+								}
+							} catch (XPathExpressionException e1) {
+								e1.printStackTrace();
+							}
 						}
 					});
 		}

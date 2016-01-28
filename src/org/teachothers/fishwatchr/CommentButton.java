@@ -46,7 +46,7 @@ public class CommentButton extends JButton implements ActionListener {
 	public static final String BUTTON_TYPE_DISCUSSER_STR = "discusser";
 	// コメント優先
 	public static final int BUTTON_TYPE_COMMENT = 1;
-	public static final String BUTTON_TYPE_COMMENT_STR = "comment";
+	public static final String BUTTON_TYPE_COMMENT_STR = "label";
 	
 	private CommentTableModel ctm;
 	private SoundPlayer soundPlayer;
