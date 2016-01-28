@@ -578,6 +578,7 @@ public class SoundPlayer extends Thread {
 		        mp.addMediaPlayerEventListener(mpEventListener);
 		        System.err.println("hei rec init: " + targetFilename);
 		        setFile(targetFilename, false);
+		        mp.stop();
 			}
 			mp.setPosition(0);
 		}

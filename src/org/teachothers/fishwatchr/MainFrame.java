@@ -595,12 +595,8 @@ public class MainFrame extends JFrame {
 			soundStopButton
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
-							int playerState = soundPlayer.getPlayerState();
-							soundPlayer.myStop();
 							timer.cancel();
-							if(playerState == SoundPlayer.PLAYER_STATE_RECORD && !jMenuItemOptionRecorderMode.isSelected()){
-								changeStateStop();
-							}
+							soundPlayer.myStop();
 						}
 					});
 
