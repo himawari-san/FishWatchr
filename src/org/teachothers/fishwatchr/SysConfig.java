@@ -2,8 +2,11 @@ package org.teachothers.fishwatchr;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,17 @@ public class SysConfig {
 	
 	public void load(ArrayList<CommentType> commentTypes, ArrayList<User> discussers) {
 		File configFile = new File(CONFIG_FILENAME);
+
+		if(!configFile.exists()){
+			try {
+				Files.copy(getClass().getResourceAsStream("resources/config/" + CONFIG_FILENAME),
+						configFile.toPath());
+				System.err.println("Warning(SysConfig): Generate the default " + CONFIG_FILENAME + ", because " +  CONFIG_FILENAME + " is not found.");
+			} catch (IOException e) {
+				System.err.println("Error(SysConfig): Can not copy the default config file.");
+				e.printStackTrace();
+			}
+		}
 
 		setDefault(commentTypes, discussers);
 		
