@@ -1443,7 +1443,9 @@ public class MainFrame extends JFrame {
 										"フォルダが選択されなかったので，処理を中止します");
 								return;
 							}
-							mergeAnnotationFiles(targetDir);
+							if(!mergeAnnotationFiles(targetDir)){
+								return;
+							}
 							changeStatePlay();
 							soundPlayer.myPlay();
 							timerStart();
@@ -1454,7 +1456,7 @@ public class MainFrame extends JFrame {
 	}
 
 	
-	private void mergeAnnotationFiles(String directoryName){
+	private boolean mergeAnnotationFiles(String directoryName){
 		try {
 			ArrayList<String> results = commentList.merge(directoryName, commentTypes, discussers);
 			mf = results.remove(0); // mediafilename
@@ -1469,7 +1471,7 @@ public class MainFrame extends JFrame {
 		} catch (Exception e1) {
 			JOptionPane.showMessageDialog(MainFrame.this,
 					"マージの過程でエラーが発生しました。処理を中止します。\n" + e1);
-			return;
+			return false;
 		}
 
 		ctm.refreshFilter();
@@ -1480,7 +1482,7 @@ public class MainFrame extends JFrame {
 			JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
 			mf = "";
 			xf = "";
-			return;
+			return false;
 		}
 		isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
 		commentList.setSetName(xf, commenter);
@@ -1495,6 +1497,8 @@ public class MainFrame extends JFrame {
 
 		soundPlayer.myStop();
 		changeStateStop();
+
+		return true;
 	}
 
 
@@ -2400,7 +2404,9 @@ public class MainFrame extends JFrame {
 
 					if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP){
 						if(target.isDirectory()){
-							mergeAnnotationFiles(target.getCanonicalPath());
+							if(!mergeAnnotationFiles(target.getCanonicalPath())){
+								return;
+							}
 						} else {
 							if(!setTargetFile(target.getCanonicalPath())){
 								return;

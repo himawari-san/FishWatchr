@@ -471,6 +471,11 @@ public class CommentList extends LinkedList<Comment> {
 				}
 			}
 		}
+		
+		if(!flagAdd){
+			throw new IllegalStateException("マージ対象のファイルが一つも見つかりませんでした。");
+		}
+		
 		mediaFilename = candMediafilename;
 		results.add(0, mediaFilename);
 		
