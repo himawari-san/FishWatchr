@@ -576,7 +576,6 @@ public class SoundPlayer extends Thread {
 				if(mp != null) mp.release();
 				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
 		        mp.addMediaPlayerEventListener(mpEventListener);
-		        System.err.println("hei rec init: " + targetFilename);
 		        setFile(targetFilename, false);
 		        mp.stop();
 			}
@@ -611,8 +610,6 @@ public class SoundPlayer extends Thread {
 	        mp.stop();
 			mediaPlayerComponent.clearDisplay();
 		}
-		
-		System.err.println("hey! stop: " + state);
 	}
 
 	public void pauseVlc(){
@@ -645,8 +642,6 @@ public class SoundPlayer extends Thread {
 	public void recordVLC(CaptureDevice videoDevice, CaptureDevice audioDevice){
         String mrl = CaptureDevice.getMRL(videoDevice, audioDevice);
         String[] options = CaptureDevice.getOption(videoDevice, audioDevice, targetFilename);
-        System.err.println("mrl: " + mrl);
-        System.err.println("opts: " + StringUtils.join(options, "\n"));
 
 		if(mp != null) mp.release();
 		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);

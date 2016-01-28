@@ -556,7 +556,6 @@ public class MainFrame extends JFrame {
 									+ FILE_PREFIX + today.format(new Date()) + "_" + commenter;
 
 							if (jMenuItemOptionRecorderMode.isSelected()) {
-								int a;
 								mf = CommentList.getUniqueFilename(basename + CaptureDevice.getMediadataSuffix(videoDevice, audioDevice));
 								xf = mf + CommentList.FILE_SUFFIX;
 								isSoundPanelEnable = true;

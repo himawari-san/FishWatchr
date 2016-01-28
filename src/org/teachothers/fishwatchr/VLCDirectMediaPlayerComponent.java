@@ -25,7 +25,6 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +36,12 @@ import org.openimaj.audio.util.AudioUtils;
 import org.openimaj.video.capture.Device;
 import org.openimaj.video.capture.VideoCapture;
 
-import uk.co.caprica.vlcj.log.NativeLog;
-import uk.co.caprica.vlcj.medialist.MediaList;
-import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
-import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
 
 public class VLCDirectMediaPlayerComponent extends JPanel {
 
@@ -73,7 +68,6 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     private FontMetrics fm;
     private String overlaidText = "";
     private Color bgColor;
-    private String os = System.getProperty("os.name").toLowerCase();
     
     public VLCDirectMediaPlayerComponent() throws InterruptedException, InvocationTargetException {
 //    	factory = new MediaPlayerFactory();
@@ -106,22 +100,6 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     	
         mediaPlayer = factory.newDirectMediaPlayer(new VLCBufferFormatCallback(), new VLCRenderCallback());
         mediaPlayer.setPlaySubItems(true); // <--- This is very important for YouTube
-        
-//
-//        
-//        System.err.println("os: " + os);
-//        
-//        if(os.contains("windows")){
-//        	defaultAudioDevice = new MediaListItem("デフォルト", "dshow://", emptyMediaList);
-//        } else if(os.contains("mac")){
-//        	defaultVideoDevice = new MediaListItem("デフォルト", "gtcapture://", emptyMediaList);
-//        	defaultAudioDevice = new MediaListItem("デフォルト", "gtsound://", emptyMediaList);
-//        } else if(os.contains("nux")){
-//        	defaultVideoDevice = new MediaListItem("デフォルト", "v4l2://", emptyMediaList);
-//        	defaultAudioDevice = new MediaListItem("デフォルト", "alsa://", emptyMediaList);
-//        } else {
-//        	defaultAudioDevice = null;
-//        }
         
         clearDisplay();
     }
@@ -257,81 +235,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         return captureDevices;
     }
 
-    public List<CaptureDevice> getAudioDeviceList2(){
-        List<AudioDevice> audioDevices = AudioUtils.getDevices();
-        ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
 
-        for(AudioDevice audioDevice: audioDevices){
-        	if(audioDevice.deviceName.toLowerCase().startsWith("hdmi ") 
-        			|| audioDevice.deviceName.toLowerCase().startsWith("port ")
-        			|| audioDevice.deviceName.toLowerCase().startsWith("default ")
-        			|| audioDevice.deviceName.toLowerCase().startsWith("built-in output")){
-        		continue;
-        	}
-        	if(os.contains("windows")){
-        		if(audioDevice.displayName.toLowerCase().endsWith("playback")){
-        			continue;
-        		}
-//					captureDevices.add(new CaptureDevice(audioDevice.displayName, audioDevice.deviceName));
-        		try {
-        			captureDevices.add(new CaptureDevice(audioDevice.displayName, new String(audioDevice.deviceName.getBytes("ISO-8859-1"), "MS932"), CaptureDevice.TYPE_AUDIO));
-        		} catch (UnsupportedEncodingException e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-        		}
-        	} else {
-            	captureDevices.add(new CaptureDevice(audioDevice.deviceName, audioDevice.displayName, CaptureDevice.TYPE_AUDIO));
-        	}
-        	System.err.println("ad(display): " + audioDevice.displayName);
-        	try {
-				System.err.println("ad(name): " + new String(audioDevice.deviceName.getBytes("ISO-8859-1"), "MS932"));
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        	
-        }
-
-        return captureDevices;
-    }
-    
-    public MediaList getVideoDeviceListByVLCJ(){
-    	MediaDiscoverer md = null;
-    	try {
-    		md = factory.newVideoMediaDiscoverer();
-    	} catch(Exception e){
-    		
-    	}
-    	if(md == null){
-    		return null;
-    	} else {
-        	return md.getMediaList();
-    	}
-    }
-
-    
-    public List<CaptureDevice> getAudioDeviceListVLC(){
-    	MediaDiscoverer md = null;
-    	try {
-    		md = factory.newAudioMediaDiscoverer();
-    		for(MediaListItem i: md.getMediaList().items()){
-    			System.err.println("aa: " + i.name());
-    		}
-    	} catch(Exception e){
-    		
-    	}
-    	return null;
-//    	if(md == null){
-//    		int aa;
-//    		return null;
-//    	} else {
-//    		return md.getMediaList();
-//    	}
-    }
-
-       
-    
-    
     class VLCRenderCallback extends RenderCallbackAdapter {
         public VLCRenderCallback() {
             super(((DataBufferInt) image.getRaster().getDataBuffer()).getData());

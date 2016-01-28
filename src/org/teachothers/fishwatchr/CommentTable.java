@@ -325,9 +325,6 @@ public class CommentTable extends JTable {
 		
 		Rectangle targetRect = getCellRect(targetCommentPosition, 0, true);
 		Rectangle viewRect = getVisibleRect();
-		if(targetRect == null||viewRect == null){
-//			System.err.println("hey you!");
-		}
 		int dy = viewRect.height / 2;
 		viewRect.setLocation(targetRect.x, targetRect.y	- dy);
 		scrollRectToVisible(viewRect);
