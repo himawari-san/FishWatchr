@@ -766,6 +766,10 @@ public class SoundPlayer extends Thread {
 
 	
 	public static boolean isPlayable(String filename){
+		if(filename.startsWith("http://") || filename.startsWith("file://") || filename.startsWith("https://")){
+			return false;
+		}
+
 		for(String extension: MEDIA_FILE_EXTENSIONS){
 			if(filename.toLowerCase().endsWith(extension.toLowerCase())){
 				return true;
