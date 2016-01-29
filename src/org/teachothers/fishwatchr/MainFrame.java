@@ -1355,7 +1355,7 @@ public class MainFrame extends JFrame {
 							String message = "";
 							try {
 								if(xf.isEmpty()){
-									JOptionPane.showMessageDialog(MainFrame.this, "ファイル名が未指定のため，保存できません。\n新規に注釈をつける場合は，録音状態で行ってください。");
+									JOptionPane.showMessageDialog(MainFrame.this, "ファイル名が未指定のため，保存できません。\n新規に注釈をつける場合は，録音/録画状態で行ってください。");
 									return;
 								} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
 									soundPlayer.myPause();
@@ -1648,7 +1648,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemControlRecord() {
 		if (jMenuItemControlRecord == null) {
-			jMenuItemControlRecord = new JMenuItem("録音（●）");
+			jMenuItemControlRecord = new JMenuItem("録音/録画（●）");
 			jMenuItemControlRecord
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2234,7 +2234,7 @@ public class MainFrame extends JFrame {
 	
 	private JMenuItem getJMenuItemOptionRecorderMode() {
 		if (jMenuItemOptionRecorderMode == null) {
-			jMenuItemOptionRecorderMode = new JCheckBoxMenuItem("録音モード");
+			jMenuItemOptionRecorderMode = new JCheckBoxMenuItem("録音/録画モード");
 			jMenuItemOptionRecorderMode.setAccelerator(KeyStroke.getKeyStroke('R',
 					KeyEvent.CTRL_MASK, false));
 			jMenuItemOptionRecorderMode
