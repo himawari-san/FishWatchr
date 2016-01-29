@@ -20,4 +20,6 @@
   	</dependency>
   </dependencies>
   <groupId>org.teachothers</groupId>
+  <name>FishWatchr</name>
+  <description>Video Annotation System for Observing Educational Activities</description>
 </project>

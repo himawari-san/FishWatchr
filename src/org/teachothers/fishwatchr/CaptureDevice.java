@@ -37,6 +37,7 @@ public class CaptureDevice {
 		if(type == TYPE_VIDEO){
 	    	if(os.contains("windows")){
 	    		deviceID = name; //  // attention (Windows's deviceIDs are useless);
+	    		return false;
 	    	}
 			return true;
 		} else if(type == TYPE_AUDIO){
