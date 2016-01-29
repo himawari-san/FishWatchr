@@ -2,6 +2,7 @@ Package/Win_and_Generic/vlc
 bin/
 old/
 util/
+target/
 *.log
 *.wav
 *.xml
@@ -9,3 +10,4 @@ util/
 *.exe
 *.zip
 *~
+*.bak
