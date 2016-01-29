@@ -10,11 +10,7 @@ FishWatchr is a discussion observation support system which allows users to anno
 # Install
 ## Build
 1. Clone
-2. Copy the following files to the "lib" directory. jna.jar, platform.jar, slf4j-api-1.7.10.jar will be referred by vlcj.
-  * [vlcj-3.9.0.jar](http://search.maven.org/remotecontent?filepath=uk/co/caprica/vlcj/3.9.0/vlcj-3.9.0.jar)
-  * [jna-3.5.2.jar](https://maven.java.net/content/repositories/releases/net/java/dev/jna/jna/3.5.2/jna-3.5.2.jar)
-  * [platform-3.5.2.jar](https://maven.java.net/content/repositories/releases/net/java/dev/jna/platform/3.5.2/platform-3.5.2.jar)
-  * [slf4j-api-1.7.10.jar] (http://www.slf4j.org/dist/slf4j-1.7.10.zip)
+2. Import the project root directory as Maven project by Eclipse ([File]=>[Import]=>[Maven]=>Existing Maven Projects)
 3. Install [VLC](http://www.videolan.org/vlc/). Note that 64bit VLC should be installed if you use 64bit Java.
 
 ## Binary Package
