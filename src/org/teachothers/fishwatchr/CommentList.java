@@ -172,7 +172,7 @@ public class CommentList extends LinkedList<Comment> {
 			}
 			File backupFile = new File(backupFilename);
 			Files.copy(xmlFile.toPath(), backupFile.toPath());
-			message += xmlFile.toPath().getFileName() + " は，すでに存在するため，"
+			message += xmlFile.toPath().getFileName() + " は，すでに存在するため，\n"
 					+ backupFile.getAbsolutePath() + "へバックアップしました。";
 		}
 
@@ -192,7 +192,6 @@ public class CommentList extends LinkedList<Comment> {
 		// commentTypes settings
 		ow.write("  <comment_types>\n");
 		for (int i = 0; i < commentTypes.size(); i++) {
-			// System.err.println("aa:" + commentTypes.get(i).getType());
 			ow.write("    <li name=\"" + commentTypes.get(i).getType()
 					+ "\" color=\"" + commentTypes.get(i).getColor().getRGB()
 					+ "\" />\n");
