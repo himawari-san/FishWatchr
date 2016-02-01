@@ -17,6 +17,72 @@
   		<groupId>org.openimaj</groupId>
   		<artifactId>core-video-capture</artifactId>
   		<version>1.3.1</version>
+  		<exclusions>
+  			<exclusion>
+  				<artifactId>animation</artifactId>
+  				<groupId>org.openimaj.content</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>azure-bing-search-java</artifactId>
+  				<groupId>net.billylieurance.azuresearch</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>jeuclid-core</artifactId>
+  				<groupId>net.sourceforge.jeuclid</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>snuggletex-upconversion</artifactId>
+  				<groupId>uk.ac.ed.ph.snuggletex</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>snuggletex-core</artifactId>
+  				<groupId>uk.ac.ed.ph.snuggletex</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>core-math</artifactId>
+  				<groupId>org.openimaj</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>flickrapi</artifactId>
+  				<groupId>com.aetrion.flickr</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>snuggletex-jeuclid</artifactId>
+  				<groupId>uk.ac.ed.ph.snuggletex</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>BezierUtils</artifactId>
+  				<groupId>com.caffeineowl.graphics</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>sanselan</artifactId>
+  				<groupId>org.apache.sanselan</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>imageio-jpeg</artifactId>
+  				<groupId>com.twelvemonkeys.imageio</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>jai-codec</artifactId>
+  				<groupId>com.sun.media</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>jai-core</artifactId>
+  				<groupId>javax.media</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>core</artifactId>
+  				<groupId>org.openimaj</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>dx</artifactId>
+  				<groupId>com.google.android.tools</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>asm</artifactId>
+  				<groupId>org.ow2.asm</groupId>
+  			</exclusion>
+  		</exclusions>
   	</dependency>
   </dependencies>
   <groupId>org.teachothers</groupId>
