@@ -96,6 +96,7 @@ public class MainFrame extends JFrame {
 	private static final int TAB_STATUS_GLOBAL_VIEW = 0;
 	private static final int TAB_STATUS_DETAIL_VIEW = 1;
 	private static final String FILE_PREFIX = "fw";
+	private static final String FILENAME_GRUE =".";
 	
 	private static final String COMMENTER_NAME_GLUE1 = "_";
 	private static final String COMMENTER_NAME_GLUE2 = "_in_";
@@ -553,7 +554,7 @@ public class MainFrame extends JFrame {
 							
 							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
 							String basename = userHomeDir + File.separator 
-									+ FILE_PREFIX + today.format(new Date()) + "_" + commenter;
+									+ FILE_PREFIX + today.format(new Date()) + FILENAME_GRUE + commenter;
 
 							if (jMenuItemOptionRecorderMode.isSelected()) {
 								mf = CommentList.getUniqueFilename(basename + CaptureDevice.getMediadataSuffix(videoDevice, audioDevice));
@@ -703,7 +704,7 @@ public class MainFrame extends JFrame {
 			}
 			mf = selectedFilename;
 			xf = CommentList.getUniqueFilename(userHomeDir + File.separator
-					+ FILE_PREFIX + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "_" + commenter + CommentList.FILE_SUFFIX);
+					+ FILE_PREFIX + new SimpleDateFormat("yyyyMMdd").format(new Date()) + FILENAME_GRUE + commenter + CommentList.FILE_SUFFIX);
 			commentList.clear();
 			commentList.setStartTime(new Date());
 			commentList.setMediaFilename(mf);
@@ -723,7 +724,7 @@ public class MainFrame extends JFrame {
 			String oldMf = mf;
 			String oldXf = xf;
 			mf = selectedFilename;
-			xf = mf + "_" + commenter + CommentList.FILE_SUFFIX;
+			xf = mf + FILENAME_GRUE + commenter + CommentList.FILE_SUFFIX;
 			if(new File(xf).exists()){
 				String newXf = CommentList.getUniqueFilename(xf);
 				int result = JOptionPane.showConfirmDialog(this, "注釈ファイル（" + new File(xf).getName() + "）がすでに存在します。\n" +
