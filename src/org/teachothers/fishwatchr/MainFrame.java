@@ -89,7 +89,7 @@ import org.xml.sax.SAXException;
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final String VERSION = "Ver.0.9.5 [20160201]";
+	private static final String VERSION = "Ver.0.9.5.1b [20160509]";
 	private static final String COPYRIGHT = "Copyright(c) 2014-2016 Masaya YAMAGUCHI";
 	private static final int TASK_INTERVAL = 250;
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
@@ -545,18 +545,17 @@ public class MainFrame extends JFrame {
 							CaptureDevice videoDevice = soundPlayer.getVideoDeviceList().get(iSelectedVideoDevice);
 							CaptureDevice audioDevice = soundPlayer.getAudioDeviceList().get(iSelectedAudioDevice);
 							
-							if(videoDevice.getType() == CaptureDevice.TYPE_NONE
-									&& audioDevice.getType() == CaptureDevice.TYPE_NONE){
-								JOptionPane.showMessageDialog(MainFrame.this, "キャプチャデバイスが指定されていないため，処理を中止します。\n" + mf);
-								return;
-							}
-							
-							
 							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
 							String basename = userHomeDir + File.separator 
 									+ FILE_PREFIX + today.format(new Date()) + FILENAME_GRUE + commenter;
 
 							if (jMenuItemOptionRecorderMode.isSelected()) {
+								if(videoDevice.getType() == CaptureDevice.TYPE_NONE
+										&& audioDevice.getType() == CaptureDevice.TYPE_NONE){
+									JOptionPane.showMessageDialog(MainFrame.this, "キャプチャデバイスが指定されていないため，処理を中止します。\n" + mf);
+									return;
+								}
+								
 								mf = CommentList.getUniqueFilename(basename + CaptureDevice.getMediadataSuffix(videoDevice, audioDevice));
 								xf = mf + CommentList.FILE_SUFFIX;
 								isSoundPanelEnable = true;
