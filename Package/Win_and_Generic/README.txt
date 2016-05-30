@@ -1,10 +1,10 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.5 (2016-02-01)
+ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.5.1 (2016-05-17)
 Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
   - vlc/            ... VLC ƒ‰ƒCƒuƒ‰ƒŠC‚¨‚æ‚ÑCƒvƒ‰ƒOƒCƒ“
                         (ver.2.2.1, Windows 32bit”Å)
-  - jre/            ... JRE ver.1.8.0_71 (Windows 32bit”Å)
+  - jre/            ... JRE ver.1.8.0_91 (Windows 32bit”Å)
   - FishWatchr.exe  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Windows ê—p)
   - fishwatchr.jar  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Mac, Linux, Windows ‹¤—p)
   - README.txt      ... ‚±‚Ìƒtƒ@ƒCƒ‹
@@ -48,6 +48,11 @@ Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
 
 
 ‚SD—š—ð
+  2016-05-17: wFishWatchrxver.0.9.5.1 ŒöŠJ
+    [C³]
+    - ˜^‰¹^˜^‰æƒ‚[ƒh‚ªƒIƒt‚Ìó‘Ô‚ÅƒAƒmƒe[ƒVƒ‡ƒ“‚·‚éÛCˆê•”‚ÌPC‚Å˜^
+      ‰¹^˜^‰æƒfƒoƒCƒX‚ð”­Œ©‚Å‚«‚¸Cˆ—‚ª’†Ž~‚³‚ê‚é•s‹ï‡‚ðC³
+
   2016-02-01: wFishWatchrxver.0.9.5 ŒöŠJ
     [V‹K]
     - Ý’è“à—e‚ðÝ’èƒtƒ@ƒCƒ‹‚É•Û‘¶‚Å‚«‚é‚æ‚¤‚É‚µ‚½
