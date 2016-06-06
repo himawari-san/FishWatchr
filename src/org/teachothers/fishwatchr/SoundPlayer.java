@@ -38,8 +38,6 @@ import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
-import org.apache.commons.lang3.StringUtils;
-
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 
@@ -49,6 +47,7 @@ public class SoundPlayer extends Thread {
 	public static String SOUNDFILE_EXTENSION = ".wav";
 	private static String[] videoAspectRates = {"16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"};
 	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mpg", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"};
+	private static String[] SOUND_FILE_EXTENSIONS = { "mp3", "oga", "wav", "wma"};
 	private final static int MAX_RETRY_REFERRING_DATA = 100;  
 	private final static int RETRY_INTERVAL = 50; // msec  
 	
@@ -323,42 +322,64 @@ public class SoundPlayer extends Thread {
 					setSoundBufferEnable(true);
 				}
 			}
-			
+
 //			try {
 //				join();
 //			} catch (InterruptedException e) {
 //				e.printStackTrace();
 //			}
 
-			mp.startMedia(targetFilename);
-			Dimension videoDimension = null;
-			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
-				videoDimension = mp.getVideoDimension();
-				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
-					soundLength = (float)(mp.getLength()/1000);
-					mp.release();
-					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
-			        mp.addMediaPlayerEventListener(mpEventListener);
-					mp.prepareMedia(targetFilename);
-					break;
-				} else {
-					try {
-						Thread.sleep(RETRY_INTERVAL);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+			if (isSoundFile(targetFilename)) {
+				mp.startMedia(targetFilename);
+				soundLength = (float) (mp.getLength() / 1000);
+				mp.stop();
+				mp.release();
+				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+				mp.addMediaPlayerEventListener(mpEventListener);
+				mp.prepareMedia(targetFilename);
+			} else {
+				mp.startMedia(targetFilename);
+				Dimension videoDimension = null;
+				for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
+					videoDimension = mp.getVideoDimension();
+					if (videoDimension != null && videoDimension.height != 0
+							&& videoDimension.width != 0) {
+						soundLength = (float) (mp.getLength() / 1000);
+						mp.release();
+						mp = mediaPlayerComponent
+								.getMediaPlayer(videoAspectRate);
+						mp.addMediaPlayerEventListener(mpEventListener);
+						mp.prepareMedia(targetFilename);
+						break;
+					} else {
+						try {
+							Thread.sleep(RETRY_INTERVAL);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
+				if (videoDimension == null) {
+					soundLength = (float) (mp.getLength() / 1000);
+					mp.release();
+					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+					mp.addMediaPlayerEventListener(mpEventListener);
+					mp.prepareMedia(targetFilename);
+					if(!mp.isMediaParsed()){
+						mp.stop();
+						mp.release();
+						return false;
+					}
+					// mp.stop();
+					// return false;
+				}
 			}
-			if(videoDimension == null) {
-				mp.stop();
-				return false;
-			}
-
 		}
 		soundGraphBuf.setPosition(0);
 		return true;
 	}
 
+	
 	public int readWavInfo(String filename){
 		try {
 			File mediaFile = new File(filename);
@@ -777,6 +798,21 @@ public class SoundPlayer extends Thread {
 		}
 		return false;
 	}
+
+	
+	public static boolean isSoundFile(String filename){
+		if(filename.startsWith("http://") || filename.startsWith("https://")){
+			return false;
+		}
+
+		for(String extension: SOUND_FILE_EXTENSIONS){
+			if(filename.toLowerCase().endsWith(extension.toLowerCase())){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	
 	
 	public void forward(int msec){
