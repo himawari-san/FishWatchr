@@ -1,4 +1,4 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.5.1 (2016-05-17)
+ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.5.2 (2016-06-06)
 Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
@@ -48,6 +48,12 @@ Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
 
 
 ‚SD—š—ð
+  2016-06-06: wFishWatchrxver.0.9.5.2 ŒöŠJ
+    [C³]
+    - wav ˆÈŠO‚ÌƒI[ƒfƒBƒIƒtƒ@ƒCƒ‹‚ªÄ¶‚Å‚«‚È‚¢•s‹ï‡‚ðC³
+    - ƒƒfƒBƒAƒtƒ@ƒCƒ‹‚ð“Ç‚Ýž‚ñ‚¾ŽžCŠù‘¶‚ÌƒAƒmƒe[ƒVƒ‡ƒ“Œ‹‰Êƒtƒ@ƒCƒ‹
+      ‚ª‘¶Ý‚µ‚Ä‚àCƒAƒmƒe[ƒVƒ‡ƒ“Œ‹‰Ê‚ª“Ç‚Ýž‚Ü‚ê‚È‚¢•s‹ï‡‚ðC³
+
   2016-05-17: wFishWatchrxver.0.9.5.1 ŒöŠJ
     [C³]
     - ˜^‰¹^˜^‰æƒ‚[ƒh‚ªƒIƒt‚Ìó‘Ô‚ÅƒAƒmƒe[ƒVƒ‡ƒ“‚·‚éÛCˆê•”‚ÌPC‚Å˜^
