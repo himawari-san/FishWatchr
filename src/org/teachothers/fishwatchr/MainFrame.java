@@ -745,6 +745,21 @@ public class MainFrame extends JFrame {
 						break;
 					case JOptionPane.NO_OPTION:
 						selectedFilename = xf;
+						commentList.clear();
+
+						try {
+							commentList.load(selectedFilename, commentTypes, discussers, false);
+						} catch (XPathExpressionException | ParseException
+								| ParserConfigurationException
+								| SAXException | IOException e2) {
+							JOptionPane.showMessageDialog(MainFrame.this, "データファイルの読み込み時にエラーが発生しました。\n" + e2);
+							e2.printStackTrace();
+							return false;
+						}
+						ctm.refreshFilter();
+						updateButtonPanel(buttonType);
+						ctm.fireTableDataChanged();
+						
 						break;
 					case JOptionPane.CANCEL_OPTION:
 						xf = oldXf;
