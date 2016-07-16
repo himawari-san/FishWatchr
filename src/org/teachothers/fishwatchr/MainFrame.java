@@ -36,6 +36,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -70,10 +71,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
+import javax.swing.ToolTipManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -83,6 +88,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openimaj.video.VideoDisplay.EndAction;
 import org.xml.sax.SAXException;
 
 
@@ -1031,6 +1037,28 @@ public class MainFrame extends JFrame {
 					}
 				}
 			});
+			timeSlider.addMouseListener(new MouseAdapter() {
+				ToolTipManager ttm = ToolTipManager.sharedInstance();
+				int defaultDelay = ttm.getInitialDelay();
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					ttm.setInitialDelay(0);
+				}
+				
+				@Override
+				public void mouseExited(MouseEvent e) {
+					ttm.setInitialDelay(defaultDelay);
+				}
+			});
+			
+			timeSlider.addMouseMotionListener(new MouseAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					timeSlider.setTipTime((int)soundPlayer.getSoundLength(), e.getX());
+				}
+			});
+			
 			timeOperationPanel.add(timeCurrent);
 			timeOperationPanel.add(timeSlider);
 			timeOperationPanel.add(timeEnd);

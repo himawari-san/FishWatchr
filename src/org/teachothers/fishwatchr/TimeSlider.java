@@ -72,6 +72,19 @@ public class TimeSlider extends JSlider {
 		flagClick = false;
 	}
 
+	
+	public void setTipTime(int time, int x){
+		// time (sec)
+		time =  time * x / this.getWidth();
+		int hour = time / 3600;
+		time -= hour * 3600;
+		int minute = time / 60;
+		int sec = time - minute * 60;
+		
+		setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec));
+	}
+
+	
 // quoted from http://stackoverflow.com/questions/12293982/change-the-jslider-look-and-feel
 	public class CustomSliderUI extends BasicSliderUI {
 
