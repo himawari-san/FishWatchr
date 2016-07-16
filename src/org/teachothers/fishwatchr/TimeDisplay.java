@@ -21,18 +21,12 @@ import javax.swing.JLabel;
 
 public class TimeDisplay extends JLabel {
 	private static final long serialVersionUID = 1L;
-	private String timeStr = "";
 
 	public void setTime(int time){
 		int hour = time / 3600;
 		time -= hour * 3600;
 		int minute = time / 60;
 		int sec = time - minute * 60;
-		timeStr = String.format("%02d:%02d:%02d", hour, minute, sec);
-		setText(timeStr);
-	}
-	
-	public String getTime(){
-		return timeStr;
+		setText(String.format("%02d:%02d:%02d", hour, minute, sec));
 	}
 }
