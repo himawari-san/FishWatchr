@@ -71,13 +71,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
 import javax.swing.ToolTipManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
@@ -88,7 +85,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openimaj.video.VideoDisplay.EndAction;
 import org.xml.sax.SAXException;
 
 

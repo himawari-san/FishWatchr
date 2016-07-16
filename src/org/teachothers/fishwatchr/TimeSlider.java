@@ -34,7 +34,9 @@ import javax.swing.plaf.basic.BasicSliderUI;
 public class TimeSlider extends JSlider {
 
 	private static final long serialVersionUID = 1L;
-
+	private int marginLow = 7;
+	private int marginHigh = 5;
+	
 	private boolean flagClick = false;
 	public int vv = 0;
 
@@ -51,7 +53,6 @@ public class TimeSlider extends JSlider {
 				// scrollByBlock(direction);
 
 				int value = getValue();
-				System.err.println("v:" + value);
 				if (getOrientation() == JSlider.HORIZONTAL) {
 					value = this.valueForXPosition(getMousePosition().x);
 				} else if (getOrientation() == JSlider.VERTICAL) {
@@ -75,7 +76,17 @@ public class TimeSlider extends JSlider {
 	
 	public void setTipTime(int time, int x){
 		// time (sec)
-		time =  time * x / this.getWidth();
+		int maxX = getWidth() - marginLow - marginHigh;
+		
+		x -= marginLow;
+		if(x < 0){
+			x = 0;
+		}
+		if(x > maxX){
+			x = maxX;
+		}
+		
+		time =  time * x / maxX;
 		int hour = time / 3600;
 		time -= hour * 3600;
 		int minute = time / 60;
