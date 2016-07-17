@@ -65,7 +65,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private int markWidth = 2;
 	private int markHeight = 20;
 	
-	private int scaleFactor = SCALE_FACTOR_DEFAULT; // x scaleFactor (1/x)
+	private float scaleFactor = SCALE_FACTOR_DEFAULT; // x scaleFactor (1/x)
 	
 	private JPanel namePanel;
 	private JPanel displayPanel;
@@ -229,8 +229,9 @@ public class AnnotationGlobalViewer extends JPanel {
 								break;
 							}
 						}
-						int x = x0AnnotationViewerPanel +
-								commentList.unifiedCommentTime(targetComment) / 1000 / scaleFactor;
+						int x = (int)
+								(x0AnnotationViewerPanel +
+								commentList.unifiedCommentTime(targetComment) / 1000 / scaleFactor);
 //						g.fillRect(x, y0Histogram-(50), markWidth, 50);
 						g.fillRect(x, y0Histogram-(freq*scaleFactorHistogram), markWidth, freq*scaleFactorHistogram);
 						this.getHeight();
@@ -245,8 +246,9 @@ public class AnnotationGlobalViewer extends JPanel {
 					String commentType;
 					
 					for(Comment comment : filteredCommentList){
-						x = x0AnnotationViewerPanel +
-								commentList.unifiedCommentTime(comment) / 1000 / scaleFactor;
+						x = (int)
+								(x0AnnotationViewerPanel +
+										commentList.unifiedCommentTime(comment) / 1000 / scaleFactor);
 						g.setColor(comment.getCommentType().getColor());
 
 						switch (targetSelector.getSelectedIndex()){
@@ -264,7 +266,8 @@ public class AnnotationGlobalViewer extends JPanel {
 							break;
 						}
 					}
-					int xTime = x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000;
+					int xTime = (int)
+							(x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000);
 					g.setColor(Color.BLACK);
 					g.drawLine(xTime, 0, xTime, getSize().height);
 					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
@@ -312,15 +315,16 @@ public class AnnotationGlobalViewer extends JPanel {
 
 					for(int i = 0; i < results.length; i++){
 						if(results[i] == null) continue;
-						x = x0AnnotationViewerPanel + i * 15 / scaleFactor;
+						x = (int)(x0AnnotationViewerPanel + i * 15 / scaleFactor);
 						int entropy = (int)(calEntropy(results[i])*180);
 						if(entropy > 255) entropy = 255;
 						System.err.println("ent: " + entropy);
 						g.setColor(new Color(entropy, 0, 0));
-						g.fillRect(x, y0AnnotationViewerPanel, markWidth*(15 / scaleFactor), markHeight);
+						g.fillRect(x, y0AnnotationViewerPanel, markWidth*((int)(15 / scaleFactor)), markHeight);
 					}
 					
-					int xTime = x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000;
+					int xTime = (int)
+							(x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000);
 					g.setColor(Color.BLACK);
 					g.drawLine(xTime, 0, xTime, getSize().height);
 					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
@@ -452,7 +456,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			scaleFactor = SCALE_FACTOR_DEFAULT;
 		}
 		
-		xTimeMax = x0AnnotationViewerPanel + (int)totalTime / scaleFactor;
+		xTimeMax = (int)(x0AnnotationViewerPanel + (int)totalTime / scaleFactor);
 
 		repaint();
 		y0Histogram = annotationViewerPanel.getHeight() - y0MarginHistogram;
