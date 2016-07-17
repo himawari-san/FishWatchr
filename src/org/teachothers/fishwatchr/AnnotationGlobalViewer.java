@@ -372,7 +372,7 @@ public class AnnotationGlobalViewer extends JPanel {
 					if(e.getClickCount() < 2) {
 						return;
 					}
-					float newTime = e.getX() * scaleFactor;
+					float newTime = (e.getX() - x0AnnotationViewerPanel) * scaleFactor;
 					if(newTime < totalTime){
 						soundPlayer.setPlayPoint((long)(newTime * 1000));
 					}
@@ -382,7 +382,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			annotationViewerPanel.addMouseMotionListener(new MouseAdapter() {
 				@Override
 				public void mouseMoved(MouseEvent e) {
-					int time = (int)(e.getX() * scaleFactor);
+					int time = (int)((e.getX() - x0AnnotationViewerPanel) * scaleFactor);
 					int hour = time / 3600;
 					time -= hour * 3600;
 					int minute = time / 60;
