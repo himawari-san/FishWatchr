@@ -22,7 +22,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -32,11 +31,13 @@ import java.util.HashMap;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
 import javax.swing.border.EtchedBorder;
+
 
 public class AnnotationGlobalViewer extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private static final int SCALE_FACTOR_DEFAULT = 4;
+	private static final float SCALE_FACTOR_DEFAULT = 2f;
 	private static final int VIEW_TYPE_SPEAKER = 0; 
 	private static final int VIEW_TYPE_LABEL = 1; 
 	private static final int VIEW_TYPE_COMMENTER = 2; 
@@ -353,17 +354,41 @@ public class AnnotationGlobalViewer extends JPanel {
 
 			
 			annotationViewerPanel.addMouseListener(new MouseAdapter() {
+				ToolTipManager ttm = ToolTipManager.sharedInstance();
+				int defaultDelay = ttm.getInitialDelay();
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					ttm.setInitialDelay(0);
+				}
+				
+				@Override
+				public void mouseExited(MouseEvent e) {
+					ttm.setInitialDelay(defaultDelay);
+				}
+
 				@Override
 				public void mouseClicked(MouseEvent e) {
-//					super.mouseClicked(e);
 					if(e.getClickCount() < 2) {
 						return;
 					}
-					Point point = e.getPoint();
-					float newTime = point.x * scaleFactor;
+					float newTime = e.getX() * scaleFactor;
 					if(newTime < totalTime){
 						soundPlayer.setPlayPoint((long)(newTime * 1000));
 					}
+				}
+			});
+			
+			annotationViewerPanel.addMouseMotionListener(new MouseAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					int time = (int)(e.getX() * scaleFactor);
+					int hour = time / 3600;
+					time -= hour * 3600;
+					int minute = time / 60;
+					int sec = time - minute * 60;
+					
+					annotationViewerPanel.setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec));
 				}
 			});
 		}
