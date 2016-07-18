@@ -22,14 +22,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -139,8 +135,6 @@ public class AnnotationGlobalViewer extends JPanel {
 		if(annotationViewerPanel == null){
 			annotationViewerPanel = new JPanel(){
 				private static final long serialVersionUID = 1L;
-				@SuppressWarnings("unchecked")
-				private HashMap<String, Integer>[] results = (HashMap<String, Integer>[]) new HashMap[2000];
 				
 				@Override
 				protected void paintComponent(Graphics g) {
@@ -275,83 +269,6 @@ public class AnnotationGlobalViewer extends JPanel {
 					g.setColor(Color.BLACK);
 					g.drawLine(xTime, 0, xTime, getSize().height);
 					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
-				}
-				
-				protected void displayTypeEntropy(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
-					int x;
-					String discusserName;
-					String commenterName;
-					String commentType;
-					
-					for(int i = 0; i < results.length; i++){
-						results[i] = null;
-					}
-
-					String key;
-					for(Comment comment : filteredCommentList){
-						int i = commentList.unifiedCommentTime(comment) / 1000 / 15;
-						HashMap<String, Integer> data = results[i];
-						if(results[i] == null){
-							data = new HashMap<String, Integer>();
-							results[i] = data;
-						}
-
-						switch (targetSelector.getSelectedIndex()){
-						case VIEW_TYPE_SPEAKER:
-							key = comment.getDiscusser().getName();
-							break;
-						case VIEW_TYPE_LABEL:
-							key = comment.getCommentType().getType();
-							break;
-						case VIEW_TYPE_COMMENTER:
-							key = comment.getCommenter().getName();
-							break;
-						default:
-							key = "";
-						}
-
-						if(data.containsKey(key)){
-							data.put(key, data.get(key) + 1);
-						} else {
-							data.put(key, 1);
-						}
-					}
-
-					for(int i = 0; i < results.length; i++){
-						if(results[i] == null) continue;
-						x = (int)(x0AnnotationViewerPanel + i * 15 / scaleFactor);
-						int entropy = (int)(calEntropy(results[i])*180);
-						if(entropy > 255) entropy = 255;
-						System.err.println("ent: " + entropy);
-						g.setColor(new Color(entropy, 0, 0));
-						g.fillRect(x, y0AnnotationViewerPanel, markWidth*((int)(15 / scaleFactor)), markHeight);
-					}
-					
-					int xTime = (int)
-							(x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000);
-					g.setColor(Color.BLACK);
-					g.drawLine(xTime, 0, xTime, getSize().height);
-					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
-				}
-				
-				
-				
-				protected double calEntropy(HashMap<String, Integer> data){
-					int freqSum = 0;
-					double res = 0;
-					
-					for(int v : data.values()){
-						freqSum += v;
-					}
-
-					for(int v : data.values()){
-						res += (double)v * Math.log10((double)v / freqSum);
-//						System.err.println("v: " + v + ", " +  freqSum + ", " + res);
-					}
-					res = -1 * res / freqSum / Math.log10(2);
-					System.err.println("res: " + res);
-//					System.exit(0);
-					return res;
 				}
 			};
 
