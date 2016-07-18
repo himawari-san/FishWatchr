@@ -22,6 +22,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -442,7 +445,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		return namePanel;
 	}
 	
-    
+
 	public void updatePanel(){
 		discusserNames.clear();
 		for(User discusser: discussers){
@@ -480,7 +483,9 @@ public class AnnotationGlobalViewer extends JPanel {
 		} else {
 			scaleFactor = SCALE_FACTOR_DEFAULT;
 		}
-		
+
+		// update scaleFactor
+		scaleFactor = totalTime / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
 		xTimeMax = (int)(x0AnnotationViewerPanel + (int)totalTime / scaleFactor);
 
 		repaint();
