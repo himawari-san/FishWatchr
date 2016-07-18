@@ -55,7 +55,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private final int x0AnnotationViewerPanel = 2;
 	private final int y0AnnotationViewerPanel = 4;	
 
-	private final int xTimeMaxTickHeight = 5;	
+	private final int xTimeTickHeight = 5;	
 
 	private final int y0MarginHistogram = 2;
 	private int y0Histogram = 0;
@@ -85,6 +85,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private float totalTime = 0; // sec
 	private int xTimeMax = 0;
 	private int focusedRange = 10000;
+	private int focusedRangeTick = 2;
 	
 	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
 		this.ctm = ctm;
@@ -268,7 +269,8 @@ public class AnnotationGlobalViewer extends JPanel {
 							(x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000);
 					g.setColor(Color.BLACK);
 					g.drawLine(xTime, 0, xTime, getSize().height);
-					g.drawLine(xTimeMax, 0, xTimeMax, xTimeMaxTickHeight);
+					g.drawLine(xTime-focusedRangeTick, 0, xTime-focusedRangeTick, xTimeTickHeight);
+					g.drawLine(xTime+focusedRangeTick, 0, xTime+focusedRangeTick, xTimeTickHeight);
 				}
 			};
 
@@ -404,6 +406,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		// update scaleFactor
 		scaleFactor = totalTime / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
 		xTimeMax = (int)(x0AnnotationViewerPanel + (int)totalTime / scaleFactor);
+		focusedRangeTick = (int)(focusedRange/scaleFactor/1000);
 
 		repaint();
 		y0Histogram = annotationViewerPanel.getHeight() - y0MarginHistogram;
@@ -419,5 +422,6 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	public void setFocusRange(int msec){
 		focusedRange = msec;
+		focusedRangeTick = (int)(focusedRange/scaleFactor/1000);
 	}
 }
