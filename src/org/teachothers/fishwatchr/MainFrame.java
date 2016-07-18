@@ -236,8 +236,8 @@ public class MainFrame extends JFrame {
 	
 	private SysConfig config = new SysConfig();
 	
-	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%A5%C7%A5%A3%A5%B9%A5%AB%A5%C3%A5%B7%A5%E7%A5%F3%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0";
-
+	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0";
+	
 	private ImageIcon iconPlay = new ImageIcon(getClass().getResource("resources/images/play.png"));
 	private ImageIcon iconForward = new ImageIcon(getClass().getResource("resources/images/forward.png"));
 	private ImageIcon iconBackward = new ImageIcon(getClass().getResource("resources/images/backward.png"));
