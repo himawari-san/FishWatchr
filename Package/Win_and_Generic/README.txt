@@ -1,4 +1,4 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.5.2 (2016-06-06)
+ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.6 (2016-07-19)
 Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
@@ -7,6 +7,7 @@ Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
   - jre/            ... JRE ver.1.8.0_91 (Windows 32bit”Å)
   - FishWatchr.exe  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Windows ê—p)
   - fishwatchr.jar  ... FishWatchr ƒvƒƒOƒ‰ƒ€(Mac, Linux, Windows ‹¤—p)
+  - config.xml      ... Ý’èƒtƒ@ƒCƒ‹
   - README.txt      ... ‚±‚Ìƒtƒ@ƒCƒ‹
   - COPYING.txt     ... GPL 3.0 ƒ‰ƒCƒZƒ“ƒX•¶‘
 
@@ -48,6 +49,16 @@ Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
 
 
 ‚SD—š—ð
+  2016-07-19: wFishWatchrxver.0.9.6 ŒöŠJ
+    [V‹K]
+    - ŽžŠÔ•\Ž¦—p‚ÌƒXƒ‰ƒCƒ_C‚¨‚æ‚ÑCu‘S‘Ìv•\Ž¦‰æ–Êã‚Éƒ}ƒEƒXƒJ[ƒ\ƒ‹
+      ‚ð‡‚í‚¹‚½ŽžCƒ|ƒbƒvƒAƒbƒv‚Å“–ŠYŒÂŠ‚ÌŽžŠÔ‚ð•\Ž¦‚·‚é‚æ‚¤‚É‚µ‚½
+    - ƒƒfƒBƒAƒtƒ@ƒCƒ‹‚Ì’·‚³‚É‰ž‚¶‚ÄCu‘S‘Ìv•\Ž¦‚Ì•\Ž¦ƒTƒCƒY‚ðŽ©“®’²
+      ®‚·‚é‚æ‚¤‚É‚µ‚½
+    - ‹­’²•\Ž¦”ÍˆÍ‚ðu‘S‘Ìv•\Ž¦‚ÌÄ¶ƒJ[ƒ\ƒ‹‚É‚à’Ç‰Á
+    [•ÏX]
+    - ƒ}ƒjƒ…ƒAƒ‹‚ÌURL‚ðXV
+
   2016-06-06: wFishWatchrxver.0.9.5.2 ŒöŠJ
     [C³]
     - wav ˆÈŠO‚ÌƒI[ƒfƒBƒIƒtƒ@ƒCƒ‹‚ªÄ¶‚Å‚«‚È‚¢•s‹ï‡‚ðC³
