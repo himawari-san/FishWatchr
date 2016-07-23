@@ -688,6 +688,11 @@ public class SoundPlayer extends Thread {
 		} else if(state == PLAYER_STATE_PLAY){
 			state = PLAYER_STATE_STOPPING;
 		} else {
+			if(state == PLAYER_STATE_RECORD){ // jMenuItemOptionRecorderMode.isSelected() == false
+				skippedFrame = 0;
+				soundGraphBuf.setPosition(0);
+		        mainFrame.changeState(PLAYER_STATE_STOP);
+			}
 			state = PLAYER_STATE_STOP;
 		}
 
