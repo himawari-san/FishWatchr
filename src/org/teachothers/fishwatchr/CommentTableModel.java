@@ -146,7 +146,7 @@ public class CommentTableModel extends AbstractTableModel {
 	}
 
 	
-	public void addComment(String contentBody, CommentType commentType, User commenter, User discusser,
+	public Comment addComment(String contentBody, CommentType commentType, User commenter, User discusser,
 			Date commentDate, int commentTime){
 		Comment comment = new Comment();
 		String setName = commentList.getSetName();
@@ -182,6 +182,8 @@ public class CommentTableModel extends AbstractTableModel {
 //		fireTableRowsInserted(getRowCount()-1, getRowCount()-1);
 		refreshFilter();
 		fireTableDataChanged();
+
+		return comment;
 	}
 
 	
@@ -250,5 +252,16 @@ public class CommentTableModel extends AbstractTableModel {
 		}
 		return -1;
 	}
+
+	
+	public int findFilteredComment(Comment comment){
+		for(int i = 0; i < filteredCommentList.size(); i++){
+			if(filteredCommentList.get(i).equals(comment)){
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	
 }

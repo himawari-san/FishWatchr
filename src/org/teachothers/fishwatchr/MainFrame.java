@@ -32,6 +32,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
@@ -1887,9 +1888,23 @@ public class MainFrame extends JFrame {
 		if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
 			for (User discusser : discussers) {
 				if (!discusser.getName().isEmpty()) {
-					CommentButton newCommentButton = new CommentButton(ctm,
+					final CommentButton newCommentButton = new CommentButton(ctm,
 							soundPlayer, isAnnotationMulti,
 							discusser, commentTypes, commenter);
+					newCommentButton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							Comment newComment = newCommentButton.addComment(e.getModifiers());
+							int row = ctm.findFilteredComment(newComment);
+							if(row != -1){
+								if(commentTable.isEditing()){
+									commentTable.getCellEditor().stopCellEditing();
+								}
+								commentTable.editCellAt(row, Comment.F_COMMENT);
+								commentTable.getEditorComponent().requestFocusInWindow();
+							}
+						}
+					});
 					newCommentButton.setActionKey(i++);
 					newCommentButton.setPreferredSize(new Dimension(80, 40));
 					commentButtons.add(newCommentButton);
@@ -1899,9 +1914,23 @@ public class MainFrame extends JFrame {
 		} else if (buttonType == CommentButton.BUTTON_TYPE_COMMENT) {
 			for (CommentType commentType : commentTypes) {
 				if (!commentType.getType().isEmpty()) {
-					CommentButton newCommentButton = new CommentButton(ctm,
+					final CommentButton newCommentButton = new CommentButton(ctm,
 							soundPlayer, isAnnotationMulti,
 							commentType, discussers, commenter);
+					newCommentButton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							Comment newComment = newCommentButton.addComment(e.getModifiers());
+							int row = ctm.findFilteredComment(newComment);
+							if(row != -1){
+								if(commentTable.isEditing()){
+									commentTable.getCellEditor().stopCellEditing();
+								}
+								commentTable.editCellAt(row, Comment.F_COMMENT);
+								commentTable.getEditorComponent().requestFocusInWindow();
+							}
+						}
+					});
 					newCommentButton.setActionKey(i++);
 					newCommentButton.setPreferredSize(new Dimension(80, 40));
 					commentButtons.add(newCommentButton);
