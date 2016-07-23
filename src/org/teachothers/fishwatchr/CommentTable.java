@@ -210,7 +210,6 @@ public class CommentTable extends JTable {
 			} else {
 				ctm.addFilter(headerName, selectedValue);
 			}
-//			setRowSelectionInterval(prevCommentID, prevCommentID);
 			resetPosition();
 			ctm.refreshFilter();
 		}

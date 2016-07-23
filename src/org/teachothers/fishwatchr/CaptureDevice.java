@@ -53,7 +53,7 @@ public class CaptureDevice {
 	public boolean validate(){
 		if(type == TYPE_VIDEO){
 	    	if(os.contains("windows")){
-	    		deviceID = name; //  // attention (Windows's deviceIDs are useless);
+	    		deviceID = name; // attention (Windows's deviceIDs are useless);
 	    		return false;
 	    	}
 			return true;
@@ -221,6 +221,4 @@ public class CaptureDevice {
 			return "";
 		}
 	}
-
-	
 }

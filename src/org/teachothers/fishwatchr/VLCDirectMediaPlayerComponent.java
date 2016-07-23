@@ -31,8 +31,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import uk.co.caprica.vlcj.medialist.MediaList;
-import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
@@ -203,22 +201,6 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 
     public List<CaptureDevice> getAudioDeviceList(){
         ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
-//    	MediaList mediaList = factory.newAudioMediaDiscoverer().getMediaList();
-//        
-//        if(mediaList == null){
-//        	return captureDevices;
-//        }
-//
-//        for(MediaListItem audioDevice: mediaList.items()){
-//        	CaptureDevice captureDevice = new CaptureDevice("plughw:1,0", audioDevice.name(), CaptureDevice.TYPE_AUDIO);
-//        	if(!captureDevice.validate()){
-//        		continue;
-//        	}
-//        	captureDevices.add(captureDevice);
-//        	System.err.println("ad(id): " + audioDevice.name());
-//        	System.err.println("ad(dsp): " + audioDevice.mrl());
-//        	System.err.println("ad(string): " + audioDevice.toString());
-//        }
     	CaptureDevice captureDevice = new CaptureDevice("", "Default", CaptureDevice.TYPE_AUDIO);
     	captureDevices.add(captureDevice);
     	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));

@@ -38,7 +38,6 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 public class CommentButton extends JButton {
-//public class CommentButton extends JButton implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private static boolean isWorking = false;
     private static String os = System.getProperty("os.name").toLowerCase();
@@ -59,7 +58,7 @@ public class CommentButton extends JButton {
 	private CommentType commentType = null;
 	private int buttonType = BUTTON_TYPE_DISCUSSER;
 	private boolean isMultiAnnotation = false;
-//	private String setName = "";
+
 	AbstractAction actNormal = new AbstractAction() {
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -88,7 +87,6 @@ public class CommentButton extends JButton {
 		this.isMultiAnnotation = isMultiAnnotation;
 
 		buttonType = BUTTON_TYPE_COMMENT;
-//		addActionListener(this);
 	}
 
 	// 話者優先
@@ -103,13 +101,12 @@ public class CommentButton extends JButton {
 		this.isMultiAnnotation = isMultiAnnotation;
 		
 		buttonType = BUTTON_TYPE_DISCUSSER;
-//		addActionListener(this);
 	}
 	
 	
 	public void setActionKey(int c){
 		String label = getText();
-//		char mnemonic = (char) getMnemonic();
+
 		if(c < 0 || c > 9){
 			return;
 		} else if(c == 9){
@@ -190,58 +187,7 @@ public class CommentButton extends JButton {
 		return addedComment;
 	}
 
-//	public void actionPerformed(ActionEvent arg0) {
-//		if(isWorking){
-//			return;
-//		} else {
-//			isWorking = true; // 同時に複数の処理が行われるのを防止
-//		}
-//		
-//		boolean isTempMultiAnnotation = isMultiAnnotation;
-//		
-//		Date now = new Date(); // 現在日時
-//		int currentTime = soundPlayer.getElapsedTime(); // 開始からの経過時間（msec）
-//		
-//		// shift キーを押してクリックした場合，isMultiAnnotation を反転
-//		if((arg0.getModifiers() & ActionEvent.SHIFT_MASK) != 0){
-//			isTempMultiAnnotation ^= true; // reverse
-//		}
-//		
-//		if(buttonType == BUTTON_TYPE_COMMENT){
-//			User selectedDiscusser = new User("");
-//			if (isTempMultiAnnotation) {
-//				ButtonDialog dialog = new ButtonDialog("ラベルの選択(" + commentType.getType() + ")", discussers);
-//				dialog.setModal(true);
-//				dialog.setLocationRelativeTo(this);
-//				dialog.setVisible(true);
-//				int iSelectedValue = dialog.getSelectedValue();
-//				if (iSelectedValue == -1) {
-//					isWorking = false;
-//					return;
-//				}
-//				selectedDiscusser = discussers.get(iSelectedValue);
-//			}
-//			ctm.addComment("", commentType, commenter, selectedDiscusser, now, currentTime);
-//		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
-//			CommentType commentType = new CommentType("", Color.BLACK);
-//			if (isTempMultiAnnotation) {
-//				ButtonDialog dialog = new ButtonDialog("ラベルの選択(" + discusser.getName() + ")", commentTypes);
-//				dialog.setModal(true);
-//				dialog.setLocationRelativeTo(this);
-//				dialog.setVisible(true);
-//				int iSelectedValue = dialog.getSelectedValue();
-//				if (iSelectedValue == -1) {
-//					isWorking = false;
-//					return;
-//				}
-//				commentType = commentTypes.get(iSelectedValue);
-//			}
-//			ctm.addComment("", commentType, commenter, discusser, now, currentTime);
-//		}
-//		isWorking = false;
-//	}
-
-
+	
 	class ButtonDialog extends JDialog {
 		private static final long serialVersionUID = 1L;
 		ArrayList<?> objects;
