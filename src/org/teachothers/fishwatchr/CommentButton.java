@@ -41,6 +41,7 @@ public class CommentButton extends JButton {
 //public class CommentButton extends JButton implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private static boolean isWorking = false;
+    private static String os = System.getProperty("os.name").toLowerCase();
 	
 	// 話者優先
 	public static final int BUTTON_TYPE_DISCUSSER = 0;
@@ -118,7 +119,11 @@ public class CommentButton extends JButton {
 		}
 		setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>");
 		InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "normal");
+		if(os.startsWith("mac")){
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.META_DOWN_MASK), "normal");
+		} else {
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "normal");
+		}
 		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "reverse");
 		getActionMap().put("normal", actNormal);
 		getActionMap().put("reverse", actReverse);
@@ -328,7 +333,11 @@ public class CommentButton extends JButton {
 			setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>");
 			InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, 0), "key0");
-			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "keyALT");
+			if(os.startsWith("mac")){
+				imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.META_DOWN_MASK), "keyALT");
+			} else {
+				imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "keyALT");
+			}
 			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "keyCTRL");
 			getActionMap().put("key0", act);
 			getActionMap().put("keyALT", act);
