@@ -2101,7 +2101,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.setText("オプション");
 			jMenuOption.add(getJMenuItemOptionTextOverlay());
 			jMenuOption.add(getJMenuItemOptionVideoRatio());
-			jMenuOption.add(getJMenuItemOptionInputMediaDevices());
+//			jMenuOption.add(getJMenuItemOptionInputMediaDevices());
 			jMenuOption.add(getJMenuItemOptionSkipTime());
 			jMenuOption.add(getJMenuItemOptionJumpAdjustment());
 //			jMenuOption.add(getJMenuItemAnnotationTimeCorrection());

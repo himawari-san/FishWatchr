@@ -31,11 +31,8 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import org.openimaj.audio.AudioDevice;
-import org.openimaj.audio.util.AudioUtils;
-import org.openimaj.video.capture.Device;
-import org.openimaj.video.capture.VideoCapture;
-
+import uk.co.caprica.vlcj.medialist.MediaList;
+import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
@@ -198,43 +195,77 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     
 
     public List<CaptureDevice> getVideoDeviceList(){
-        List<Device> videoDevices = VideoCapture.getVideoDevices();
         ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
-        
-        for(Device videoDevice: videoDevices){
-        	CaptureDevice captureDevice = new CaptureDevice(videoDevice.getIdentifierStr(), videoDevice.getNameStr(), CaptureDevice.TYPE_VIDEO);
-        	if(!captureDevice.validate()){
-        		continue;
-        	}
-        	captureDevices.add(captureDevice);
-        	System.err.println("vd(str): " + videoDevice.getNameStr());
-        	System.err.println("vd(id): " + videoDevice.getIdentifierStr());
-        }
     	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));
-
         return captureDevices;
     }
 
 
     public List<CaptureDevice> getAudioDeviceList(){
-        List<AudioDevice> audioDevices = AudioUtils.getDevices();
         ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
-
-        for(AudioDevice audioDevice: audioDevices){
-        	CaptureDevice captureDevice = new CaptureDevice(audioDevice.deviceName, audioDevice.displayName, CaptureDevice.TYPE_AUDIO);
-        	if(!captureDevice.validate()){
-        		continue;
-        	}
-        	captureDevices.add(captureDevice);
-        	System.err.println("ad(id): " + audioDevice.deviceName);
-        	System.err.println("ad(dsp): " + audioDevice.displayName);
-        	System.err.println("ad(string): " + audioDevice.toString());
-        }
+//    	MediaList mediaList = factory.newAudioMediaDiscoverer().getMediaList();
+//        
+//        if(mediaList == null){
+//        	return captureDevices;
+//        }
+//
+//        for(MediaListItem audioDevice: mediaList.items()){
+//        	CaptureDevice captureDevice = new CaptureDevice("plughw:1,0", audioDevice.name(), CaptureDevice.TYPE_AUDIO);
+//        	if(!captureDevice.validate()){
+//        		continue;
+//        	}
+//        	captureDevices.add(captureDevice);
+//        	System.err.println("ad(id): " + audioDevice.name());
+//        	System.err.println("ad(dsp): " + audioDevice.mrl());
+//        	System.err.println("ad(string): " + audioDevice.toString());
+//        }
+    	CaptureDevice captureDevice = new CaptureDevice("", "Default", CaptureDevice.TYPE_AUDIO);
+    	captureDevices.add(captureDevice);
     	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));
 
         return captureDevices;
     }
 
+    
+//    public List<CaptureDevice> getVideoDeviceList(){
+//        List<Device> videoDevices = VideoCapture.getVideoDevices();
+//        ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
+//        
+//        for(Device videoDevice: videoDevices){
+//        	CaptureDevice captureDevice = new CaptureDevice(videoDevice.getIdentifierStr(), videoDevice.getNameStr(), CaptureDevice.TYPE_VIDEO);
+//        	if(!captureDevice.validate()){
+//        		continue;
+//        	}
+//        	captureDevices.add(captureDevice);
+//        	System.err.println("vd(str): " + videoDevice.getNameStr());
+//        	System.err.println("vd(id): " + videoDevice.getIdentifierStr());
+//        }
+//    	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));
+//
+//        return captureDevices;
+//    }
+
+    
+//    public List<CaptureDevice> getAudioDeviceList(){
+//        List<AudioDevice> audioDevices = AudioUtils.getDevices();
+//        ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
+//
+//        for(AudioDevice audioDevice: audioDevices){
+//        	CaptureDevice captureDevice = new CaptureDevice(audioDevice.deviceName, audioDevice.displayName, CaptureDevice.TYPE_AUDIO);
+//        	if(!captureDevice.validate()){
+//        		continue;
+//        	}
+//        	captureDevices.add(captureDevice);
+//        	System.err.println("ad(id): " + audioDevice.deviceName);
+//        	System.err.println("ad(dsp): " + audioDevice.displayName);
+//        	System.err.println("ad(string): " + audioDevice.toString());
+//        }
+//    	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));
+//
+//        return captureDevices;
+//    }
+
+    
 
     class VLCRenderCallback extends RenderCallbackAdapter {
         public VLCRenderCallback() {
