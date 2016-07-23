@@ -313,7 +313,16 @@ public class CommentTable extends JTable {
 	}
 
 
-	public void setViewCenter(long msec){
+	public void setViewCenteraByIndex(int commentIndex){		
+		Rectangle targetRect = getCellRect(commentIndex, 0, true);
+		Rectangle viewRect = getVisibleRect();
+		int dy = viewRect.height / 2;
+		viewRect.setLocation(targetRect.x, targetRect.y	- dy);
+		scrollRectToVisible(viewRect);
+	}
+
+	
+	public void setViewCenterByTime(long msec){
 		// 現在の行が表の真ん中になるように調整
 		int targetCommentPosition = getCurrentCommentPosition();
 		if(targetCommentPosition == UNDEFINED){
@@ -323,11 +332,7 @@ public class CommentTable extends JTable {
 			}
 		}
 		
-		Rectangle targetRect = getCellRect(targetCommentPosition, 0, true);
-		Rectangle viewRect = getVisibleRect();
-		int dy = viewRect.height / 2;
-		viewRect.setLocation(targetRect.x, targetRect.y	- dy);
-		scrollRectToVisible(viewRect);
+		setViewCenteraByIndex(targetCommentPosition);
 	}
 	
 	

@@ -1842,7 +1842,7 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							System.err.println("jump!!");
-							commentTable.setViewCenter(soundPlayer.getElapsedTime());
+							commentTable.setViewCenterByTime(soundPlayer.getElapsedTime());
 						}
 					});
 		}
@@ -1902,6 +1902,7 @@ public class MainFrame extends JFrame {
 								}
 								commentTable.editCellAt(row, Comment.F_COMMENT);
 								commentTable.getEditorComponent().requestFocusInWindow();
+								commentTable.setViewCenteraByIndex(row);
 							}
 						}
 					});
@@ -1928,6 +1929,7 @@ public class MainFrame extends JFrame {
 								}
 								commentTable.editCellAt(row, Comment.F_COMMENT);
 								commentTable.getEditorComponent().requestFocusInWindow();
+								commentTable.setViewCenteraByIndex(row);
 							}
 						}
 					});
@@ -2516,7 +2518,7 @@ public class MainFrame extends JFrame {
 			timeSlider.setValue(time / 1000);
 			commentTable.indicateCurrentComment(time, focusRange);
 			if(jMenuItemOptionViewSyncMode.isSelected()){
-				commentTable.setViewCenter(time);
+				commentTable.setViewCenterByTime(time);
 			}
 		}
 	}
