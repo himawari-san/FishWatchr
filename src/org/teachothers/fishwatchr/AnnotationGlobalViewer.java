@@ -393,7 +393,11 @@ public class AnnotationGlobalViewer extends JPanel {
 		Collections.sort(commenterNames);
 
 		
-		totalTime = soundPlayer.getSoundLength();
+		if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD){
+			totalTime = SoundPlayer.LIMIT_RECODING_TIME;
+		} else {
+			totalTime = soundPlayer.getSoundLength();
+		}
 		
 		// 1800 = 30min 
 		int t = (int) Math.ceil(totalTime / 1800f);

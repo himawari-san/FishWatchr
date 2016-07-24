@@ -589,6 +589,7 @@ public class MainFrame extends JFrame {
 							soundPlayer.myRecord(mf,
 									jMenuItemOptionRecorderMode.isSelected(),
 									videoDevice, audioDevice);
+							annotationGlobalViewPanel.updatePanel();
 							timerStart();
 							commentList.setStartTime(soundPlayer.getStartTime());
 						}
@@ -880,6 +881,7 @@ public class MainFrame extends JFrame {
 	}
 
 
+	
 	
 	public void changeState(int state){
 		switch(state){
