@@ -38,6 +38,9 @@ public class SoundGraphBuffer {
 			sum += Math.abs(p*p);
 			c++;
 		}
+		if(c == 0){
+			return -1;
+		}
 		short res = (short)(Math.log10(sum/c) * 10);
 		buf[pc++] = res;
 		

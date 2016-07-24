@@ -881,6 +881,11 @@ public class MainFrame extends JFrame {
 	}
 
 
+	public void updateMediaLengthUI(){
+		annotationGlobalViewPanel.updatePanel();
+		timeSlider.setMaximum((int)soundPlayer.getSoundLength());
+		timeEnd.setTime((int)soundPlayer.getSoundLength());
+	}
 	
 	
 	public void changeState(int state){

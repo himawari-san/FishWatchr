@@ -48,6 +48,7 @@ public class SoundPanel extends JPanel {
 		p = soundPlayer.getCurrentFrame();
 		int pStart = p - xMax;
 		int pEnd = p + xMax;
+		int lenSoundBuf = soundBuf.length;
 		
 		// tick mark of the origin
 		g.fillRect(x0, Y_ORIGIN, BAR_WIDTH, TICK_MARK_SIZE);
@@ -55,7 +56,7 @@ public class SoundPanel extends JPanel {
 
 		int v;
 		for(int i = pStart; i < pEnd; i++){
-			if(i >= 0){
+			if(i >= 0 && lenSoundBuf > i){
 				v = soundBuf[i];
 //				v = soundBuf[i] / 150;
 //				System.err.println("v:" + v + ", " + i + ", " + soundBuf.length);

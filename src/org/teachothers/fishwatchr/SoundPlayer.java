@@ -420,7 +420,10 @@ public class SoundPlayer extends Thread {
 
 	        int nRead;
 	        while((nRead = ais.read(buf)) > 0){
-	        	soundGraphBuf.add(buf, nRead, channels);
+	        	if(soundGraphBuf.add(buf, nRead, channels) < 0){
+	        		System.err.println("Warning(SoundPlayer): exceeded SoundGraphBuffer size");
+	        		break;
+	        	}
 	        	if(nRead != buf.length){
 	        		System.err.println("nRead: " + nRead);
 	        	}
@@ -603,6 +606,7 @@ public class SoundPlayer extends Thread {
 			mp.setPosition(0);
 		}
         mainFrame.changeState(PLAYER_STATE_STOP);
+        mainFrame.updateMediaLengthUI();
         System.err.println("initcall state stop");
     	state = PLAYER_STATE_STOP;
 	}
