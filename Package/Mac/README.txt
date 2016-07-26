@@ -1,5 +1,6 @@
-ƒfƒBƒXƒJƒbƒVƒ‡ƒ“ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.6 (2016-07-19)
-Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
+ŠÏŽ@Žx‰‡ƒc[ƒ‹wFishWatchrx ver.0.9.7 (2016-07-26)
+Copyright 2014-2016 ŽRŒû¹–ç
+(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†Š)
 
 ‚PD–{ƒpƒbƒP[ƒW‚Ì“à—e
   - FishWatchr      ... FishWatchr –{‘Ì(Mac OS X ê—p)
@@ -42,6 +43,23 @@ Copyright 2014-2016 ŽRŒû¹–ç(‘åŠw‹¤“¯—˜—p‹@ŠÖ–@l lŠÔ•¶‰»Œ¤‹†‹@\ ‘—§‘ŒêŒ¤‹†
 
 
 ‚SD—š—ð
+  2016-07-26: wFishWatchrxver.0.9.7 ŒöŠJ
+    [V‹K]
+    - ’Žßƒ{ƒ^ƒ“‰Ÿ‰º’¼ŒãCƒRƒƒ“ƒg—“‚É’¼ÚƒRƒƒ“ƒg‚ð“ü—Í‚Å‚«‚é‚æ‚¤‚É‚µ‚½
+    - u‘S‘Ìv•\Ž¦‰æ–Ê‚ðƒŠƒAƒ‹ƒ^ƒCƒ€‚ÉXV‚·‚é‚æ‚¤‚É‚µ‚½
+    [•ÏX]
+    - ˆê•”‚Ì Windows10 PC ‚Å FishWatchr ‚ª‹N“®’¼Œã‚ÉˆÙíI—¹‚·‚é‚½‚ßC
+      “ü—ÍƒƒfƒBƒA‹@Ší‚Ì‘I‘ð‹@”\‚ð’âŽ~B–{”Å‚Å‚ÍCƒrƒfƒI“ü—Í‚ÍŽw’è‚Å‚«
+      ‚¸CƒfƒtƒHƒ‹ƒg‚Ìƒ}ƒCƒN“ü—Í‚Ì‚Ý‚ªŒÅ’è“I‚ÉŽg—p‚³‚ê‚é
+    - ’Žßƒ{ƒ^ƒ“‚Å“ü—Í‚µ‚½’Žß‚ÉƒtƒH[ƒJƒX‚ªˆÚ“®‚·‚é‚æ‚¤•ÏX
+    - Mac OS X ‚Å’Žßƒ{ƒ^ƒ“‚ÌƒVƒ‡[ƒgƒJƒbƒgƒL[‚ð Alt ƒL[‚©‚ç Meta ƒL[
+      ‚É•ÏX
+    [C³]
+    - ˜^‰¹^˜^‰æƒ‚[ƒh‚ªƒIƒt‚Ìó‘Ô‚Å˜^‰¹’âŽ~‚·‚é‚ÆC˜^‰¹ƒ{ƒ^ƒ“EÄ¶ƒ{
+      ƒ^ƒ“‚ª•\Ž¦‚³‚ê‚È‚¢•s‹ï‡‚ðC³
+    - ˜^‰¹^˜^‰æƒ‚[ƒh‚ªƒIƒ“‚Å˜^‰¹‚µ‚½’¼ŒãCÄ¶‚·‚é‚ÆCŽû˜^ŽžŠÔ‚ªŒë‚Á
+      ‚Ä•\Ž¦‚³‚ê‚é•s‹ï‡‚ðC³
+
   2016-07-19: wFishWatchrxver.0.9.6 ŒöŠJ
     [V‹K]
     - ŽžŠÔ•\Ž¦—p‚ÌƒXƒ‰ƒCƒ_C‚¨‚æ‚ÑCu‘S‘Ìv•\Ž¦‰æ–Êã‚Éƒ}ƒEƒXƒJ[ƒ\ƒ‹
