@@ -685,6 +685,7 @@ public class MainFrame extends JFrame {
 		iVideoAspectRate = 0;
 
 		commentTable.resetPosition();
+		ctm.clearFilter();
 		setWindowTitle(xf);
 		String selectedFilename;
 		if(filename == null){

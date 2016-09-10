@@ -202,6 +202,12 @@ public class CommentTableModel extends AbstractTableModel {
 		}
 	}
 	
+	
+	void clearFilter(){
+		filters.clear();
+	}
+	
+	
 	void refreshFilter(){
 		filteredCommentList.clear();
 		for(Comment comment: commentList){
