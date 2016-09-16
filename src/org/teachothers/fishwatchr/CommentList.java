@@ -58,7 +58,8 @@ public class CommentList extends LinkedList<Comment> {
 
 	private static final long serialVersionUID = 1L;
 	private static final String NOT_DEFINED = "(未定義)";
-
+	private static final int maxElapsedTime = 1000 * 60 * 60 * 2; // 2 hours
+	
 	public static final String FILE_SUFFIX = ".xml";
 	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
 	public static final String BACKUP_DIR = "BAK";
@@ -417,12 +418,7 @@ public class CommentList extends LinkedList<Comment> {
 
 		System.err.println("load end");
 
-		Collections.sort(this, new Comparator<Comment>() {
-			public int compare(Comment c1, Comment c2) {
-				return unifiedCommentTime(c1) - unifiedCommentTime(c2);
-			}
-		});
-		
+		sortByTime();
 		refreshID();
 		setModified(false);
 
@@ -430,7 +426,16 @@ public class CommentList extends LinkedList<Comment> {
 		return mediaFilename;
 	}
 	
+	
+	public void sortByTime(){
+		Collections.sort(this, new Comparator<Comment>() {
+			public int compare(Comment c1, Comment c2) {
+				return unifiedCommentTime(c1) - unifiedCommentTime(c2);
+			}
+		});
+	}
 
+	
 	public ArrayList<String> merge(String dirName,
 			ArrayList<CommentType> commentTypes, ArrayList<User> discussers) throws IOException, XPathExpressionException, ParseException, ParserConfigurationException, SAXException {
 
@@ -479,6 +484,27 @@ public class CommentList extends LinkedList<Comment> {
 		results.add(0, mediaFilename);
 		
 		return results;
+	}
+	
+	
+	public boolean syncByStartTime(){
+		boolean flagSyncCondition = true;
+		long startTimeLong = startTime.getTime();
+		
+		for(Comment comment : this){
+			long commentTime = comment.getDate();
+			long elasedTime = commentTime - startTimeLong;
+			if(elasedTime < 0){
+				System.err.println("Warning(CommentList): this comment was made before recording the video:" + dateFormat.format(commentTime));
+				flagSyncCondition = false;
+			} else if(elasedTime > maxElapsedTime){ // 2 hours
+				System.err.println("Warning(CommentList): The elapsed time of this comment exceeds 2hours:" + dateFormat.format(commentTime));
+				flagSyncCondition = false;
+			}
+			comment.setCommentTimeBegin((int)elasedTime);
+		}
+		
+		return flagSyncCondition;
 	}
 	
 	

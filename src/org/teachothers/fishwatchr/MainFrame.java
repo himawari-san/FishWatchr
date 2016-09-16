@@ -177,6 +177,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionTextOverlay;
 	private JMenuItem jMenuItemOptionVideoRatio;
 	private JMenuItem jMenuItemOptionInputMediaDevices;
+	private JMenuItem jMenuItemOptionMergeMode;
 	private JMenuItem jMenuItemOptionInputVideoMediaDevices;
 	private JMenuItem jMenuItemOptionInputAudioMediaDevices;
 	private JMenuItem jMenuItemOptionSkipTime;
@@ -211,7 +212,8 @@ public class MainFrame extends JFrame {
 	private float playRate = 1.0f; // 再生速度
 	private int iVideoAspectRate = 0;
 	private int iTextOverlayStyle = 0;
-
+	private int iMergeMode = 0;
+	
 	// ボタンタイプの初期値（討論者優先）
 	private int buttonType = CommentButton.BUTTON_TYPE_DISCUSSER;
 	// 同時注釈
@@ -1490,6 +1492,7 @@ public class MainFrame extends JFrame {
 										"フォルダが選択されなかったので，処理を中止します");
 								return;
 							}
+
 							if(!mergeAnnotationFiles(targetDir)){
 								return;
 							}
@@ -1504,23 +1507,60 @@ public class MainFrame extends JFrame {
 
 	
 	private boolean mergeAnnotationFiles(String directoryName){
-		try {
+//	    int option = JOptionPane.showConfirmDialog(MainFrame.this, "収録日時の指定をしますか？");
+	    Date recordingDate = null;
+	    if(iMergeMode > 0){
+			String inputValue = JOptionPane.showInputDialog(
+					MainFrame.this, "収録開始時刻を正確に入力してください。\n" +
+							"形式は，次の例を参考にしてください。\n" +
+							"（例：2016-01-01 01:02:03.000）",
+					JOptionPane.PLAIN_MESSAGE);
+			if (inputValue != null) {
+				try{
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+					recordingDate = dateFormat.parse(inputValue);
+				} catch (ParseException e) {
+					JOptionPane.showMessageDialog(MainFrame.this,
+							"時刻の形式が正しくありません。処理を中止します。\n" + e);
+					return false;
+				}
+			} else {
+				return false;
+			}
+	    }
+
+	    try {
 			ArrayList<String> results = commentList.merge(directoryName, commentTypes, discussers);
 			mf = results.remove(0); // mediafilename
 			xf = CommentList.getUniqueFilename(mf + CommentList.MERGED_FILE_SUFFIX);
 			commentList.setModified(true);
 			Collections.sort(results);
-			
+
+			boolean flagSyncCondition = true; // good
+		    if(iMergeMode > 0){
+		    	commentList.setStartTime(recordingDate);
+		    	flagSyncCondition = commentList.syncByStartTime();
+		    	commentList.sortByTime();
+		    }
+
 			JOptionPane.showMessageDialog(MainFrame.this,
 					"マージ後の設定ファイルは，" + xf + " です。\n"
 					+ "マージしたファイルは，次のとおりです。\n"
 					+ StringUtils.join(results, "\n"));
+
+			if(!flagSyncCondition){
+				JOptionPane.showMessageDialog(MainFrame.this,
+						"マージしたデータに，動画開始前か，開始から２時間を過ぎた注釈が含まれています。\n"
+						+ "「時間」欄を確認してください。\n");
+			}
+			
 		} catch (Exception e1) {
 			JOptionPane.showMessageDialog(MainFrame.this,
 					"マージの過程でエラーが発生しました。処理を中止します。\n" + e1);
 			return false;
 		}
 
+	    
 		ctm.refreshFilter();
 		updateButtonPanel(buttonType);
 		ctm.fireTableDataChanged();
@@ -2112,6 +2152,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.add(getJMenuItemOptionTextOverlay());
 			jMenuOption.add(getJMenuItemOptionVideoRatio());
 //			jMenuOption.add(getJMenuItemOptionInputMediaDevices());
+			jMenuOption.add(getJMenuItemOptionMergeMode());
 			jMenuOption.add(getJMenuItemOptionSkipTime());
 			jMenuOption.add(getJMenuItemOptionJumpAdjustment());
 //			jMenuOption.add(getJMenuItemAnnotationTimeCorrection());
@@ -2189,6 +2230,33 @@ public class MainFrame extends JFrame {
 			}
 		}
 		return jMenuItemOptionVideoRatio;
+	}
+
+	
+	private JMenuItem getJMenuItemOptionMergeMode() {
+		String[] mergeModes = {"通常(経過時間)", "収録時刻"};
+
+		if (jMenuItemOptionMergeMode == null) {
+			jMenuItemOptionMergeMode = new JMenu("合併時同期モード");
+			ButtonGroup itemGroup = new ButtonGroup();
+			int i = 0;
+			for (String mergeMode : mergeModes){
+				JMenuItem item = new JRadioButtonMenuItem(mergeMode);
+				final int ii = i;
+				item.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						iMergeMode = ii;
+					}
+				});
+				jMenuItemOptionMergeMode.add(item);
+				itemGroup.add(item);
+				if (i == iMergeMode) {
+					item.setSelected(true);
+				}
+				i++;
+			}
+		}
+		return jMenuItemOptionMergeMode;
 	}
 
 	
