@@ -3,6 +3,9 @@ bin/
 old/
 util/
 target/
+.classpath
+.gitignore
+.settings/*
 *.log
 *.wav
 *.xml
