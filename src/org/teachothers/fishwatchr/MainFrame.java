@@ -458,6 +458,11 @@ public class MainFrame extends JFrame {
 //								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
 								return;
 							}
+							
+							if(commentTime / 1000 < soundPlayer.getSoundLength()){
+								JOptionPane.showMessageDialog(MainFrame.this, "コメントした時間が再生時間外です。\n");
+							}
+							
 							isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
 
 							timeSlider.setEnabled(true);
@@ -471,6 +476,10 @@ public class MainFrame extends JFrame {
 							soundPlayer.myPlay();
 							soundPlayer.setPlayPoint(commentTime);
 						} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
+							if(commentTime / 1000 > soundPlayer.getSoundLength()){
+								JOptionPane.showMessageDialog(MainFrame.this, "コメントした時間が再生時間外です。\n");
+								return;
+							}
 							soundPlayer.setPlayPoint(commentTime);
 						}
 						System.out.println("ここにジャンプして，再生します。" + commentTime
@@ -1817,6 +1826,10 @@ public class MainFrame extends JFrame {
 							prevSkipTime = now;	
 							Comment nextComment;
 							nextComment = filteredCommentList.get(currentCommentIndex);
+							if(commentList.unifiedCommentTime(nextComment) + adjustmentTimeAtJump < 0){
+								JOptionPane.showMessageDialog(MainFrame.this, "コメントした時間が再生時間外です。\n");
+								return;
+							}
 							soundPlayer.setPlayPoint(commentList.unifiedCommentTime(nextComment) + adjustmentTimeAtJump);
 							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
 								// 300msec くらいにしないと数秒戻ってしまう
@@ -1869,6 +1882,10 @@ public class MainFrame extends JFrame {
 							prevSkipTime = now;	
 							Comment nextComment;
 							nextComment = filteredCommentList.get(currentCommentIndex);
+							if((commentList.unifiedCommentTime(nextComment) + adjustmentTimeAtJump) / 1000 > soundPlayer.getSoundLength()){
+								JOptionPane.showMessageDialog(MainFrame.this, "コメントした時間が再生時間外です。\n");
+								return;
+							}
 							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
 								// 300msec くらいにしないと数秒戻ってしまう
 								soundPlayer.setPlayPoint(commentList.unifiedCommentTime(nextComment)+300);
