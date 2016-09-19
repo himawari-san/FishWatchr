@@ -459,7 +459,7 @@ public class MainFrame extends JFrame {
 								return;
 							}
 							
-							if(commentTime / 1000 < soundPlayer.getSoundLength()){
+							if(commentTime / 1000 < soundPlayer.getSoundLength() || commentTime < 0){
 								JOptionPane.showMessageDialog(MainFrame.this, "コメントした時間が再生時間外です。\n");
 							}
 							
@@ -476,7 +476,7 @@ public class MainFrame extends JFrame {
 							soundPlayer.myPlay();
 							soundPlayer.setPlayPoint(commentTime);
 						} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
-							if(commentTime / 1000 > soundPlayer.getSoundLength()){
+							if(commentTime / 1000 > soundPlayer.getSoundLength() || commentTime < 0){
 								JOptionPane.showMessageDialog(MainFrame.this, "コメントした時間が再生時間外です。\n");
 								return;
 							}
