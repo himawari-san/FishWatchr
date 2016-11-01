@@ -38,8 +38,8 @@ import javax.swing.border.EtchedBorder;
 public class AnnotationGlobalViewer extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final float SCALE_FACTOR_DEFAULT = 2f;
-	private static final float Y_SCALE_FACTOR_DEFAULT = 4f;
-	private static final float Y_SCALE_FACTOR_MIN = 0.5f;
+	private static final float Y_SCALE_FACTOR_DEFAULT = 10f;
+	private static final float Y_SCALE_FACTOR_MIN = 0.2f;
 	private static final int VIEW_TYPE_SPEAKER = 0; 
 	private static final int VIEW_TYPE_LABEL = 1; 
 	private static final int VIEW_TYPE_COMMENTER = 2; 
