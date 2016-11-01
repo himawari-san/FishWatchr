@@ -35,6 +35,7 @@ public class FishWatchr {
 	public final static int SOUND_VIEWER_HEIGHT = 80;
 	public final static int WINDOW_WIDTH = 1024;
 	public final static int WINDOW_HEIGHT = 650;
+	public final static int DEFAULT_FONT_SIZE = 12;
 	
 	
 	public static void main(final String[] arg){
@@ -52,15 +53,15 @@ public class FishWatchr {
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), libVlcDir);
 		}
 		
-		UIManager.put("Button.font",new Font(Font.DIALOG, Font.PLAIN, 12));
-		UIManager.put("Label.font",new Font(Font.DIALOG, Font.PLAIN, 12));
-		UIManager.put("List.font",new Font(Font.DIALOG, Font.PLAIN, 12));
-		UIManager.put("ComboBox.font",new Font(Font.DIALOG, Font.PLAIN, 12));
-		UIManager.put("Menu.font",new Font(Font.DIALOG, Font.PLAIN, 12));
-		UIManager.put("MenuItem.font",new Font(Font.DIALOG, Font.PLAIN, 12));
-		UIManager.put("CheckBoxMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, 12));
-		UIManager.put("RadioButtonMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, 12));
-		UIManager.put("RadioButtonMenuItem.acceleratorFont",new Font(Font.DIALOG, Font.PLAIN, 12));
+		UIManager.put("Button.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("Label.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("List.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("ComboBox.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("Menu.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("MenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("CheckBoxMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("RadioButtonMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("RadioButtonMenuItem.acceleratorFont",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
 		
 		MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
 		mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
