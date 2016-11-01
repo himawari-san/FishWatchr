@@ -38,6 +38,8 @@ import javax.swing.border.EtchedBorder;
 public class AnnotationGlobalViewer extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final float SCALE_FACTOR_DEFAULT = 2f;
+	private static final float Y_SCALE_FACTOR_DEFAULT = 4f;
+	private static final float Y_SCALE_FACTOR_MIN = 0.5f;
 	private static final int VIEW_TYPE_SPEAKER = 0; 
 	private static final int VIEW_TYPE_LABEL = 1; 
 	private static final int VIEW_TYPE_COMMENTER = 2; 
@@ -47,7 +49,6 @@ public class AnnotationGlobalViewer extends JPanel {
 	private static final int COMPARISON_LABEL = 2; 
 	private static final int COMPARISON_DISCUSSER = 3; 
 
-	private static final int scaleFactorHistogram = 4;
 	
 	private final int xTimeTickHeight = 5;	
 
@@ -68,7 +69,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	private int markHeight = 20;
 	
 	private float scaleFactor = SCALE_FACTOR_DEFAULT; // x scaleFactor (1/x)
-	private float ratioPlotArea = 0.9F;
+	private float yScaleFactorHistogram = Y_SCALE_FACTOR_DEFAULT;
+	private float ratioPlotArea = 0.9f;
 	
 	private JPanel namePanel;
 	private JPanel displayPanel;
@@ -159,7 +161,9 @@ public class AnnotationGlobalViewer extends JPanel {
 					String targetCond = null;
 					String cond = null;
 					int selector = displayTypeSelector.getSelectedIndex();
+					int heightMax = (int)(getHeight() * (1 - ratioPlotArea));
 					
+					yScaleFactorHistogram = Y_SCALE_FACTOR_DEFAULT;
 					g.setColor(Color.darkGray);
 					for(int i = 0; i < n; i++){
 						Comment targetComment = filteredCommentList.get(i);
@@ -231,11 +235,18 @@ public class AnnotationGlobalViewer extends JPanel {
 								break;
 							}
 						}
+						
+						int y = (int)(freq * yScaleFactorHistogram);
+						if(heightMax < y && yScaleFactorHistogram > Y_SCALE_FACTOR_MIN){
+							i = 0;
+							yScaleFactorHistogram -= 0.1f;
+							continue;
+						}
+						
 						int x = (int)
 								(x0AnnotationViewerPanel +
 								commentList.unifiedCommentTime(targetComment) / 1000 / scaleFactor);
-//						g.fillRect(x, y0Histogram-(50), markWidth, 50);
-						g.fillRect(x, y0Histogram-(freq*scaleFactorHistogram), markWidth, freq*scaleFactorHistogram);
+						g.fillRect(x, y0Histogram-y, markWidth, y);
 						this.getHeight();
 					}
 				}
