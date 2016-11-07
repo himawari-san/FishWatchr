@@ -63,6 +63,7 @@ public class CommentList extends LinkedList<Comment> {
 	public static final String FILE_SUFFIX = ".xml";
 	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
 	public static final String BACKUP_DIR = "BAK";
+	public static final String BASE_TIME_FILE_PREFIX = "_sys_basetime";
 	
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
 	private Date startTime = null;
@@ -446,13 +447,19 @@ public class CommentList extends LinkedList<Comment> {
 		ArrayList<String> results = new ArrayList<String>();
 		String mergedFileSuffix = MERGED_FILE_SUFFIX;
 		String backupFileSuffix = mergedFileSuffix.replaceFirst(FILE_SUFFIX, "");
+		ArrayList<File> baseTimeFileCandidates = new ArrayList<File>();
 		
 		for (File file : files) {
 			String filename = file.getCanonicalPath();
-			
+
 			if (filename.endsWith(FILE_SUFFIX)){
-				if(filename.endsWith(mergedFileSuffix)
-						|| filename.matches(".*" + backupFileSuffix + "\\.\\d\\d\\d" + FILE_SUFFIX + "$")){
+				if(filename.matches(".*/" + BASE_TIME_FILE_PREFIX + "_[^/]*"+ FILE_SUFFIX + "$")){ // basetime
+					baseTimeFileCandidates.add(file);
+					System.err.println("Message(CommentList): found a basetime file " + filename);
+					continue;
+				} else if(filename.endsWith(mergedFileSuffix) // merge file
+						|| filename.matches(".*" + backupFileSuffix + "\\.\\d\\d\\d" + FILE_SUFFIX + "$") // backup				
+						){
 					System.err.println("Warning(CommentList): exclude " + filename);
 					continue;
 				}
@@ -480,6 +487,21 @@ public class CommentList extends LinkedList<Comment> {
 			throw new IllegalStateException("マージ対象のファイルが一つも見つかりませんでした。");
 		}
 		
+
+		// load a basetime file
+		// the basetime file must be loaded at the end for setting startTime
+		if(baseTimeFileCandidates.size() > 0){
+			String filename = baseTimeFileCandidates.get(0).getCanonicalPath();
+			if(baseTimeFileCandidates.size() != 1){
+				System.err.println("Warning(CommentList): " + filename + "will be used, although more than 2 basetime files were found.");
+			}
+			load(filename, commentTypes, discussers, true);
+			syncByStartTime();
+			sortByTime();
+			refreshID();
+
+		}
+
 		mediaFilename = candMediafilename;
 		results.add(0, mediaFilename);
 		
