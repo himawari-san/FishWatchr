@@ -248,6 +248,7 @@ public class MainFrame extends JFrame {
 	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png"));
 	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png"));
 	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png"));
+	private ImageIcon iconFishWatchr = new ImageIcon(getClass().getResource("resources/images/fw_icon.png"));
 
 	private List<CaptureDevice> videoDeviceList = null;
 	private List<CaptureDevice> audioDeviceList = null;
@@ -363,6 +364,7 @@ public class MainFrame extends JFrame {
 	}
 
 	public void ginit() {
+		setIconImage(iconFishWatchr.getImage());
 		jMenuBar = getJMenuBar();
 		setJMenuBar(jMenuBar);
 		// execute after getJMenuBar()
