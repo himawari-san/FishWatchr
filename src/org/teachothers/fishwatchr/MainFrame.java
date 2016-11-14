@@ -461,7 +461,7 @@ public class MainFrame extends JFrame {
 								return;
 							}
 							
-							if(commentTime / 1000 < soundPlayer.getSoundLength() || commentTime < 0){
+							if(commentTime / 1000 > soundPlayer.getSoundLength() || commentTime < 0){
 								JOptionPane.showMessageDialog(MainFrame.this, "コメントした時間が再生時間外です。\n");
 							}
 							
