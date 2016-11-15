@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings>
+  <!-- [注釈]⇒[話者優先]，[ラベル優先] -->
+  <button_type value="label"/>
+
+  <!-- [注釈]⇒[同時注釈] -->
+  <isAnnotationMulti value="false"/>
+
+  <!-- [オプション]⇒[注釈連動再生] -->
+  <isViewSyncMode value="true"/>
+
+  <!-- マニュアルのURL -->
+  <manual_url value="http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0"/>
+
+  <!-- 話者未指定時のデフォルト話者名 -->
+  <default_discusser value="不特定"/>
+ 
+  <!-- ラベル -->
+  <comment_types>
+    <li color="-65536" name="良い"/>
+    <li color="-14336" name="悪い"/>
+  </comment_types>
+
+  <!-- 話者 -->
+  <discussers>
+    <li name="話者１"/>
+    <li name="話者２"/>
+    <li name="話者３"/>
+    <li name="話者４"/>
+    <li name="不特定"/>
+    <li name="誤り"/>
+  </discussers>
+
+  <!-- 注釈者名の指定 -->
+  <!-- 空欄の場合は，
+       システムのデフォルト値(ログイン + _in_ + ホスト名)が使われる
+  -->
+  <commenter value=""/>
+</settings>
