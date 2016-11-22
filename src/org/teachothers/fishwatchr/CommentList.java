@@ -451,9 +451,13 @@ public class CommentList extends LinkedList<Comment> {
 		
 		for (File file : files) {
 			String filename = file.getCanonicalPath();
+			String separator = File.separator.equals("\\") ? File.separator + File.separator : File.separator; 
 
 			if (filename.endsWith(FILE_SUFFIX)){
-				if(filename.matches(".*/" + BASE_TIME_FILE_PREFIX + "_[^/]*"+ FILE_SUFFIX + "$")){ // basetime
+				if(filename.matches(".*" + separator +
+						BASE_TIME_FILE_PREFIX +
+						"_[^" + separator + "]*"+
+						FILE_SUFFIX + "$")){ // basetime
 					baseTimeFileCandidates.add(file);
 					System.err.println("Message(CommentList): found a basetime file " + filename);
 					continue;
