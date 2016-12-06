@@ -297,7 +297,7 @@ public class CommentList extends LinkedList<Comment> {
 					"/comment_list/@start_time が正しく読み込めませんでした。");
 		} else if(startTime == null){
 			startTime = newStartTime;
-		} else if(newStartTime.compareTo(startTime) < 0){
+		} else {
 			startTime = newStartTime;
 		}
 
