@@ -1,6 +1,7 @@
 FishWatchr
 ===========
-FishWatchr is a discussion observation support system which allows users to annotate video/sound files during discussion. Target users of this system are learners of discussion in the Fishbowl method.
+FishWatchr is a video annotation tool for observing educational activities as presentation exercises and discussion exercises. This tool allows users to make annotations on real-time/recorded activities using comments and user-defined annotation buttons. The real-time annotation data can be synchronized with the video data. FishWatchr provides functions for editing annotations, displaying annotation data in histogram format.
+
 
 # Requirements
 * [vlcj (ver.3.9 or later)](https://github.com/caprica/vlcj)
