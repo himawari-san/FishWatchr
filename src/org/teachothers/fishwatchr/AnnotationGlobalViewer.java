@@ -65,12 +65,13 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	private int itemHeight = 25;
 	
-	private int markWidth = 2;
+	private int markWidth = 1;
 	private int markHeight = 20;
 	
 	private float scaleFactor = SCALE_FACTOR_DEFAULT; // x scaleFactor (1/x)
 	private float yScaleFactorHistogram = Y_SCALE_FACTOR_DEFAULT;
 	private float ratioPlotArea = 0.9f;
+	private float yScaleFactorHistogramNext = yScaleFactorHistogram;
 	
 	private JPanel namePanel;
 	private JPanel displayPanel;
@@ -163,7 +164,7 @@ public class AnnotationGlobalViewer extends JPanel {
 					int selector = displayTypeSelector.getSelectedIndex();
 					int heightMax = (int)(getHeight() * (1 - ratioPlotArea));
 					
-					yScaleFactorHistogram = Y_SCALE_FACTOR_DEFAULT;
+					yScaleFactorHistogram = yScaleFactorHistogramNext;
 					g.setColor(Color.darkGray);
 					for(int i = 0; i < n; i++){
 						Comment targetComment = filteredCommentList.get(i);
@@ -239,7 +240,8 @@ public class AnnotationGlobalViewer extends JPanel {
 						int y = (int)(freq * yScaleFactorHistogram);
 						if(heightMax < y && yScaleFactorHistogram > Y_SCALE_FACTOR_MIN){
 							i = 0;
-							yScaleFactorHistogram -= 0.1f;
+							yScaleFactorHistogramNext = (float)heightMax / (freq+1);
+							yScaleFactorHistogram = yScaleFactorHistogramNext;
 							continue;
 						}
 						
@@ -454,6 +456,8 @@ public class AnnotationGlobalViewer extends JPanel {
 		scaleFactor = totalTime / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
 		xTimeMax = (int)(x0AnnotationViewerPanel + (int)totalTime / scaleFactor);
 		focusedRangeTick = (int)(focusedRange/scaleFactor/1000);
+		yScaleFactorHistogram = Y_SCALE_FACTOR_DEFAULT;
+		yScaleFactorHistogramNext = yScaleFactorHistogram;
 
 		repaint();
 		y0Histogram = annotationViewerPanel.getHeight() - y0MarginHistogram;
