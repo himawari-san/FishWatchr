@@ -188,11 +188,7 @@ public class CommentTableModel extends AbstractTableModel {
 
 	
 	void addFilter(String header, String value){
-		if(filters.containsKey(header)){
-			filters.put(header, value);
-		} else {
-			filters.put(header, value);
-		}
+		filters.put(header, value);
 	}
 	
 	
