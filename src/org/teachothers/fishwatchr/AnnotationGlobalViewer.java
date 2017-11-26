@@ -148,49 +148,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 	private JPanel getNamePanel(){
 		if(namePanel == null){
-			namePanel = new JPanel(){
-				private static final long serialVersionUID = 1L;
-				private final int fontHeight = getFontMetrics(getFont()).getHeight();
-
-				public void paintComponent(Graphics g) {
-					super.paintComponent(g);
-					int i = 0;
-					switch (targetSelector.getSelectedIndex()){
-					case VIEW_TYPE_SPEAKER:
-						for(String name: discusserNames){
-							g.setColor(Color.black);
-							g.drawString(name, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
-							i++;
-						}
-						break;
-					case VIEW_TYPE_LABEL:
-						for(String type: types){
-							g.setColor(Color.black);
-							g.drawString(type, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
-							i++;
-						}
-						break;
-					case VIEW_TYPE_COMMENTER:
-						int newItemHeight = getItemHeight(g, getHeight());
-						int newFontHeight = g.getFontMetrics(g.getFont()).getHeight();
-
-						for(String commenterName: commenterNames){
-							g.setColor(Color.black);
-							g.drawString(commenterName , x0NamePanel, y0NamePanel + i * newItemHeight + newFontHeight);
-							i++;
-						}
-						g.setFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
-						break;
-					default:
-						for(String name: discusserNames){
-							g.setColor(Color.black);
-							g.drawString(name, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
-							i++;
-						}
-					}
-				}
-			};
-			
+			namePanel = new AnnotationNamePanel();
 		}
 		
 		return namePanel;
@@ -512,6 +470,50 @@ public class AnnotationGlobalViewer extends JPanel {
 		public void mouseReleased(MouseEvent e) {
 			selectionStartX = -1;
 			isDragged = false;
+		}
+	}
+	
+	
+	class AnnotationNamePanel extends JPanel {
+		private static final long serialVersionUID = 1L;
+		private final int fontHeight = getFontMetrics(getFont()).getHeight();
+
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			int i = 0;
+			switch (targetSelector.getSelectedIndex()){
+			case VIEW_TYPE_SPEAKER:
+				for(String name: discusserNames){
+					g.setColor(Color.black);
+					g.drawString(name, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
+					i++;
+				}
+				break;
+			case VIEW_TYPE_LABEL:
+				for(String type: types){
+					g.setColor(Color.black);
+					g.drawString(type, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
+					i++;
+				}
+				break;
+			case VIEW_TYPE_COMMENTER:
+				int newItemHeight = getItemHeight(g, getHeight());
+				int newFontHeight = g.getFontMetrics(g.getFont()).getHeight();
+
+				for(String commenterName: commenterNames){
+					g.setColor(Color.black);
+					g.drawString(commenterName , x0NamePanel, y0NamePanel + i * newItemHeight + newFontHeight);
+					i++;
+				}
+				g.setFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
+				break;
+			default:
+				for(String name: discusserNames){
+					g.setColor(Color.black);
+					g.drawString(name, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
+					i++;
+				}
+			}
 		}
 	}
 }
