@@ -23,8 +23,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -140,199 +141,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	private JPanel getAnnotationViewerPanel(){
 		if(annotationViewerPanel == null){
-			annotationViewerPanel = new JPanel(){
-				private static final long serialVersionUID = 1L;
-				
-				@Override
-				protected void paintComponent(Graphics g) {
-					super.paintComponent(g);
-					
-					ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
-					CommentList commentList = ctm.getCommentList();
-
-					plotData(g, filteredCommentList, commentList);
-					drawHistogram(g, filteredCommentList, commentList);
-				}
-
-				
-				private void drawHistogram(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
-					int n = filteredCommentList.size();
-					int freq;
-					Comment comment;
-					String targetCond = null;
-					String cond = null;
-					int selector = displayTypeSelector.getSelectedIndex();
-					int heightMax = (int)(getHeight() * (1 - ratioPlotArea));
-					
-					yScaleFactorHistogram = yScaleFactorHistogramNext;
-					g.setColor(Color.darkGray);
-					for(int i = 0; i < n; i++){
-						Comment targetComment = filteredCommentList.get(i);
-						int targetCommentTime = commentList.unifiedCommentTime(targetComment);
-						freq = 0;
-						
-						switch(selector){
-						case COMPARISON_NOTHING:
-							targetCond = null;
-							break;
-						case COMPARISON_COMMENTER:
-							targetCond = targetComment.getCommenter().getName();
-							break;
-						case COMPARISON_LABEL:
-							targetCond = targetComment.getCommentType().getType();
-							break;
-						case COMPARISON_DISCUSSER:
-							targetCond = targetComment.getDiscusser().getName();
-						}
-
-
-						for(int j = i+1; j < n; j++){
-							comment = filteredCommentList.get(j);
-
-							switch(selector){
-							case COMPARISON_NOTHING:
-								cond = null;
-								break;
-							case COMPARISON_COMMENTER:
-								cond = comment.getCommenter().getName();
-								break;
-							case COMPARISON_LABEL:
-								cond = comment.getCommentType().getType();
-								break;
-							case COMPARISON_DISCUSSER:
-								cond = comment.getDiscusser().getName();
-							}
-
-							if(commentList.unifiedCommentTime(comment) - targetCommentTime < focusedRange){
-								if(targetCond == null || !targetCond.equals(cond)){
-									freq++;
-								}
-							} else {
-								break;
-							}
-						}
-						for(int j = i-1; j >= 0; j--){
-							comment = filteredCommentList.get(j);
-
-							switch(selector){
-							case COMPARISON_NOTHING:
-								cond = null;
-								break;
-							case COMPARISON_COMMENTER:
-								cond = comment.getCommenter().getName();
-								break;
-							case COMPARISON_LABEL:
-								cond = comment.getCommentType().getType();
-								break;
-							case COMPARISON_DISCUSSER:
-								cond = comment.getDiscusser().getName();
-							}
-
-							if(targetCommentTime - commentList.unifiedCommentTime(comment) < focusedRange){
-								if(targetCond == null || !targetCond.equals(cond)){
-									freq++;
-								}
-							} else {
-								break;
-							}
-						}
-						
-						int y = (int)(freq * yScaleFactorHistogram);
-						if(heightMax < y && yScaleFactorHistogram > Y_SCALE_FACTOR_MIN){
-							i = 0;
-							yScaleFactorHistogramNext = (float)heightMax / (freq+1);
-							yScaleFactorHistogram = yScaleFactorHistogramNext;
-							continue;
-						}
-						
-						int x = (int)
-								(x0AnnotationViewerPanel +
-								commentList.unifiedCommentTime(targetComment) / 1000 / scaleFactor);
-						g.fillRect(x, y0Histogram-y, markWidth, y);
-						this.getHeight();
-					}
-				}
-
-				
-				protected void plotData(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
-					int x;
-					String discusserName;
-					String commenterName;
-					String commentType;
-					
-					for(Comment comment : filteredCommentList){
-						x = (int)
-								(x0AnnotationViewerPanel +
-										commentList.unifiedCommentTime(comment) / 1000 / scaleFactor);
-						g.setColor(comment.getCommentType().getColor());
-
-						switch (targetSelector.getSelectedIndex()){
-						case VIEW_TYPE_SPEAKER:
-							discusserName = comment.getDiscusser().getName();
-							g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight , markWidth, markHeight);
-							break;
-						case VIEW_TYPE_LABEL:
-							commentType = comment.getCommentType().getType();
-							g.fillRect(x, y0AnnotationViewerPanel + types.indexOf(commentType)*itemHeight , markWidth, markHeight);
-							break;
-						case VIEW_TYPE_COMMENTER:
-							int newItemHeight = getItemHeight(g, getHeight());
-							int newMarkHeight = newItemHeight < 2 ? newItemHeight : newItemHeight - 1;
-							commenterName = comment.getCommenter().getName();
-							g.fillRect(x, y0AnnotationViewerPanel + commenterNames.indexOf(commenterName)*newItemHeight , markWidth, newMarkHeight);
-							break;
-						}
-					}
-					int xTime = (int)
-							(x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000);
-					g.setColor(Color.BLACK);
-					g.drawLine(xTime, 0, xTime, getSize().height);
-					g.drawLine(xTime-focusedRangeTick, 0, xTime-focusedRangeTick, xTimeTickHeight);
-					g.drawLine(xTime+focusedRangeTick, 0, xTime+focusedRangeTick, xTimeTickHeight);
-				}
-			};
-
-			
-			annotationViewerPanel.addMouseListener(new MouseAdapter() {
-				ToolTipManager ttm = ToolTipManager.sharedInstance();
-				int defaultDelay = ttm.getInitialDelay();
-
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					ttm.setInitialDelay(0);
-				}
-				
-				@Override
-				public void mouseExited(MouseEvent e) {
-					ttm.setInitialDelay(defaultDelay);
-				}
-
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if(e.getClickCount() < 2) {
-						return;
-					}
-					float newTime = (e.getX() - x0AnnotationViewerPanel) * scaleFactor;
-					if(newTime < totalTime){
-						soundPlayer.setPlayPoint((long)(newTime * 1000));
-					}
-				}
-			});
-			
-			annotationViewerPanel.addMouseMotionListener(new MouseAdapter() {
-				@Override
-				public void mouseMoved(MouseEvent e) {
-					int time = (int)((e.getX() - x0AnnotationViewerPanel) * scaleFactor);
-					int hour = time / 3600;
-					time -= hour * 3600;
-					int minute = time / 60;
-					int sec = time - minute * 60;
-					
-					annotationViewerPanel.setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec));
-				}
-			});
+			annotationViewerPanel = new AnnotationViewerPanel();
 		}
-		
 		return annotationViewerPanel;
 	}
 
@@ -474,5 +284,234 @@ public class AnnotationGlobalViewer extends JPanel {
 	public void setFocusRange(int msec){
 		focusedRange = msec;
 		focusedRangeTick = (int)(focusedRange/scaleFactor/1000);
+	}
+	
+	
+	class AnnotationViewerPanel extends JPanel implements MouseMotionListener, MouseListener {
+		private static final long serialVersionUID = 1L;
+		private ToolTipManager ttm = ToolTipManager.sharedInstance();
+		private int defaultDelay = ttm.getInitialDelay();
+		private int selectionStartX = -1;
+		private int selectionEndX = -1;
+		boolean isDragged = false;
+		
+		public AnnotationViewerPanel() {
+			addMouseListener(this);
+			addMouseMotionListener(this);
+		}
+		
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
+			CommentList commentList = ctm.getCommentList();
+
+			plotData(g, filteredCommentList, commentList);
+			drawHistogram(g, filteredCommentList, commentList);
+
+			if(isDragged){
+				drawSelection(g);
+			}
+		}
+
+		
+		private void drawSelection(Graphics g){
+			g.setColor(Color.black);
+			if(selectionEndX - selectionStartX > 0){
+				g.drawRect(selectionStartX, 0, selectionEndX - selectionStartX, 30);
+			} else {
+				g.drawRect(selectionEndX, 0, selectionStartX - selectionEndX, 30);
+			}
+		}
+		
+		
+		private void drawHistogram(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
+			int n = filteredCommentList.size();
+			int freq;
+			Comment comment;
+			String targetCond = null;
+			String cond = null;
+			int selector = displayTypeSelector.getSelectedIndex();
+			int heightMax = (int)(getHeight() * (1 - ratioPlotArea));
+			
+			yScaleFactorHistogram = yScaleFactorHistogramNext;
+			g.setColor(Color.darkGray);
+			for(int i = 0; i < n; i++){
+				Comment targetComment = filteredCommentList.get(i);
+				int targetCommentTime = commentList.unifiedCommentTime(targetComment);
+				freq = 0;
+				
+				switch(selector){
+				case COMPARISON_NOTHING:
+					targetCond = null;
+					break;
+				case COMPARISON_COMMENTER:
+					targetCond = targetComment.getCommenter().getName();
+					break;
+				case COMPARISON_LABEL:
+					targetCond = targetComment.getCommentType().getType();
+					break;
+				case COMPARISON_DISCUSSER:
+					targetCond = targetComment.getDiscusser().getName();
+				}
+
+
+				for(int j = i+1; j < n; j++){
+					comment = filteredCommentList.get(j);
+
+					switch(selector){
+					case COMPARISON_NOTHING:
+						cond = null;
+						break;
+					case COMPARISON_COMMENTER:
+						cond = comment.getCommenter().getName();
+						break;
+					case COMPARISON_LABEL:
+						cond = comment.getCommentType().getType();
+						break;
+					case COMPARISON_DISCUSSER:
+						cond = comment.getDiscusser().getName();
+					}
+
+					if(commentList.unifiedCommentTime(comment) - targetCommentTime < focusedRange){
+						if(targetCond == null || !targetCond.equals(cond)){
+							freq++;
+						}
+					} else {
+						break;
+					}
+				}
+				for(int j = i-1; j >= 0; j--){
+					comment = filteredCommentList.get(j);
+
+					switch(selector){
+					case COMPARISON_NOTHING:
+						cond = null;
+						break;
+					case COMPARISON_COMMENTER:
+						cond = comment.getCommenter().getName();
+						break;
+					case COMPARISON_LABEL:
+						cond = comment.getCommentType().getType();
+						break;
+					case COMPARISON_DISCUSSER:
+						cond = comment.getDiscusser().getName();
+					}
+
+					if(targetCommentTime - commentList.unifiedCommentTime(comment) < focusedRange){
+						if(targetCond == null || !targetCond.equals(cond)){
+							freq++;
+						}
+					} else {
+						break;
+					}
+				}
+				
+				int y = (int)(freq * yScaleFactorHistogram);
+				if(heightMax < y && yScaleFactorHistogram > Y_SCALE_FACTOR_MIN){
+					i = 0;
+					yScaleFactorHistogramNext = (float)heightMax / (freq+1);
+					yScaleFactorHistogram = yScaleFactorHistogramNext;
+					continue;
+				}
+				
+				int x = (int)
+						(x0AnnotationViewerPanel +
+						commentList.unifiedCommentTime(targetComment) / 1000 / scaleFactor);
+				g.fillRect(x, y0Histogram-y, markWidth, y);
+				this.getHeight();
+			}
+		}
+
+		
+		protected void plotData(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
+			int x;
+			String discusserName;
+			String commenterName;
+			String commentType;
+			
+			for(Comment comment : filteredCommentList){
+				x = (int)
+						(x0AnnotationViewerPanel +
+								commentList.unifiedCommentTime(comment) / 1000 / scaleFactor);
+				g.setColor(comment.getCommentType().getColor());
+
+				switch (targetSelector.getSelectedIndex()){
+				case VIEW_TYPE_SPEAKER:
+					discusserName = comment.getDiscusser().getName();
+					g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight , markWidth, markHeight);
+					break;
+				case VIEW_TYPE_LABEL:
+					commentType = comment.getCommentType().getType();
+					g.fillRect(x, y0AnnotationViewerPanel + types.indexOf(commentType)*itemHeight , markWidth, markHeight);
+					break;
+				case VIEW_TYPE_COMMENTER:
+					int newItemHeight = getItemHeight(g, getHeight());
+					int newMarkHeight = newItemHeight < 2 ? newItemHeight : newItemHeight - 1;
+					commenterName = comment.getCommenter().getName();
+					g.fillRect(x, y0AnnotationViewerPanel + commenterNames.indexOf(commenterName)*newItemHeight , markWidth, newMarkHeight);
+					break;
+				}
+			}
+			int xTime = (int)
+					(x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000);
+			g.setColor(Color.BLACK);
+			g.drawLine(xTime, 0, xTime, getSize().height);
+			g.drawLine(xTime-focusedRangeTick, 0, xTime-focusedRangeTick, xTimeTickHeight);
+			g.drawLine(xTime+focusedRangeTick, 0, xTime+focusedRangeTick, xTimeTickHeight);
+		}
+		
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			ttm.setInitialDelay(0);
+		}
+				
+		@Override
+		public void mouseExited(MouseEvent e) {
+			ttm.setInitialDelay(defaultDelay);
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if(e.getClickCount() < 2) {
+				return;
+			}
+			float newTime = (e.getX() - x0AnnotationViewerPanel) * scaleFactor;
+			if(newTime < totalTime){
+				soundPlayer.setPlayPoint((long)(newTime * 1000));
+			}
+		}
+		
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			selectionEndX = e.getX();
+			isDragged = true;
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			int time = (int)((e.getX() - x0AnnotationViewerPanel) * scaleFactor);
+			int hour = time / 3600;
+			time -= hour * 3600;
+			int minute = time / 60;
+			int sec = time - minute * 60;
+				
+			annotationViewerPanel.setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec));
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if(selectionStartX == -1){
+				selectionStartX = e.getX();
+				selectionEndX = -1;
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			selectionStartX = -1;
+			isDragged = false;
+		}
 	}
 }
