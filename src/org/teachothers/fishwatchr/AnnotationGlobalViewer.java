@@ -94,6 +94,9 @@ public class AnnotationGlobalViewer extends JPanel {
 	private int focusedRange = 10000;
 	private int focusedRangeTick = 2;
 	
+	private int selectionStartTime = 0;
+	private int selectionEndTime = 0;
+	
 	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
 		this.ctm = ctm;
 		this.discussers = discussers;
@@ -276,11 +279,13 @@ public class AnnotationGlobalViewer extends JPanel {
 		
 		private void drawSelection(Graphics g){
 			g.setColor(Color.black);
-			if(selectionEndX - selectionStartX > 0){
-				g.drawRect(selectionStartX, 0, selectionEndX - selectionStartX, 30);
-			} else {
-				g.drawRect(selectionEndX, 0, selectionStartX - selectionEndX, 30);
+			
+			if(selectionEndX - selectionStartX < 0){
+				int t = selectionStartX;
+				selectionStartX = selectionEndX;
+				selectionEndX = t;
 			}
+			g.drawRect(selectionStartX, 0, selectionEndX - selectionStartX, getHeight());
 		}
 		
 		
@@ -468,6 +473,20 @@ public class AnnotationGlobalViewer extends JPanel {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
+			int a;
+			if(isDragged){
+				if(selectionEndX - selectionStartX < 0){ // swap
+					int t = selectionStartX;
+					selectionStartX = selectionEndX;
+					selectionEndX = t;
+				}
+				selectionStartTime = (int)((selectionStartX - x0AnnotationViewerPanel) * scaleFactor) * 1000;
+				selectionEndTime = (int)((selectionEndX - x0AnnotationViewerPanel) * scaleFactor) * 1000;
+
+				ctm.addFilter(ctm.getColumnName(Comment.F_COMMENT_TIME), new SimpleTimePeriod(selectionStartTime, selectionEndTime));
+				ctm.refreshFilter();
+			}
+			
 			selectionStartX = -1;
 			isDragged = false;
 		}
