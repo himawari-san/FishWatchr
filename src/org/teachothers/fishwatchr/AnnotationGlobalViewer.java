@@ -215,14 +215,6 @@ public class AnnotationGlobalViewer extends JPanel {
 			totalTime = soundPlayer.getSoundLength();
 		}
 		
-		// 1800 = 30min 
-		int t = (int) Math.ceil(totalTime / 1800f);
-		if(t > 1){
-			scaleFactor = SCALE_FACTOR_DEFAULT * t;
-		} else {
-			scaleFactor = SCALE_FACTOR_DEFAULT;
-		}
-
 		// update scaleFactor
 		scaleFactor = totalTime / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
 		xTimeMax = (int)(x0AnnotationViewerPanel + (int)totalTime / scaleFactor);
@@ -381,7 +373,7 @@ public class AnnotationGlobalViewer extends JPanel {
 				
 				int x = (int)
 						(x0AnnotationViewerPanel +
-						commentList.unifiedCommentTime(targetComment) / 1000 / scaleFactor);
+						(commentList.unifiedCommentTime(targetComment) - selectionStartTime) / 1000 / scaleFactor);
 				g.fillRect(x, y0Histogram-y, markWidth, y);
 				this.getHeight();
 			}
@@ -397,7 +389,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			for(Comment comment : filteredCommentList){
 				x = (int)
 						(x0AnnotationViewerPanel +
-								commentList.unifiedCommentTime(comment) / 1000 / scaleFactor);
+								((float)(commentList.unifiedCommentTime(comment)- selectionStartTime) / 1000 ) / scaleFactor);
 				g.setColor(comment.getCommentType().getColor());
 
 				switch (targetSelector.getSelectedIndex()){
@@ -440,7 +432,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			if(e.getClickCount() < 2) {
 				return;
 			}
-			float newTime = (e.getX() - x0AnnotationViewerPanel) * scaleFactor;
+			float newTime = (e.getX() - x0AnnotationViewerPanel) * scaleFactor + (float)selectionStartTime/1000;
 			if(newTime < totalTime){
 				soundPlayer.setPlayPoint((long)(newTime * 1000));
 			}
@@ -454,7 +446,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			int time = (int)((e.getX() - x0AnnotationViewerPanel) * scaleFactor);
+			int time = (int)((e.getX() - x0AnnotationViewerPanel) * scaleFactor + ((float)selectionStartTime/1000));
 			int hour = time / 3600;
 			time -= hour * 3600;
 			int minute = time / 60;
@@ -473,7 +465,6 @@ public class AnnotationGlobalViewer extends JPanel {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			int a;
 			if(isDragged){
 				if(selectionEndX - selectionStartX < 0){ // swap
 					int t = selectionStartX;
@@ -482,6 +473,7 @@ public class AnnotationGlobalViewer extends JPanel {
 				}
 				selectionStartTime = (int)((selectionStartX - x0AnnotationViewerPanel) * scaleFactor) * 1000;
 				selectionEndTime = (int)((selectionEndX - x0AnnotationViewerPanel) * scaleFactor) * 1000;
+				scaleFactor = ((float)(selectionEndTime - selectionStartTime)) / 1000 / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
 
 				ctm.addFilter(ctm.getColumnName(Comment.F_COMMENT_TIME), new SimpleTimePeriod(selectionStartTime, selectionEndTime));
 				ctm.refreshFilter();
