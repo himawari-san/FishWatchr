@@ -475,8 +475,7 @@ public class AnnotationGlobalViewer extends JPanel {
 				selectionEndTime = (int)((selectionEndX - x0AnnotationViewerPanel) * scaleFactor) * 1000;
 				scaleFactor = ((float)(selectionEndTime - selectionStartTime)) / 1000 / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
 
-				ctm.addFilter(ctm.getColumnName(Comment.F_COMMENT_TIME), new SimpleTimePeriod(selectionStartTime, selectionEndTime));
-				ctm.refreshFilter();
+				ctm.selectTimePeriod(new SimpleTimePeriod(selectionStartTime, selectionEndTime));
 			}
 			
 			selectionStartX = -1;

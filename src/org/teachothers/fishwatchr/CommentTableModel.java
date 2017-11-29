@@ -32,7 +32,7 @@ public class CommentTableModel extends AbstractTableModel {
 	public ArrayList<User> discussers;
 	public ArrayList<CommentType> commentTypes;
 	private ArrayList<Comment> filteredCommentList = new ArrayList<Comment>();
-	private HashMap<String, Object> filters = new HashMap<String, Object>();
+	private HashMap<String, String> filters = new HashMap<String, String>();
 	
 	
 	public CommentTableModel(CommentList commentList, ArrayList<User> discussers, ArrayList<CommentType> commentTypes){
@@ -187,7 +187,7 @@ public class CommentTableModel extends AbstractTableModel {
 	}
 
 	
-	void addFilter(String header, Object value){
+	void addFilter(String header, String value){
 		filters.put(header, value);
 	}
 	
@@ -208,24 +208,16 @@ public class CommentTableModel extends AbstractTableModel {
 		filteredCommentList.clear();
 		for(Comment comment: commentList){
 			boolean flag = true;
-			for(Map.Entry<String, Object> filter : filters.entrySet()){
+			for(Map.Entry<String, String> filter : filters.entrySet()){
 				String headerName = filter.getKey();
 				String value = comment.getValueByHeaderName(headerName).toString();
-				Object filterCond = filter.getValue();
-				if(filterCond instanceof String){
-					if(value != null && !value.matches((String)filterCond)){
-						flag = false;
-						break;
-					} else if(value == null && !((String)filterCond).isEmpty()){
-						flag = false;
-						break;
-					}
-				} else if(filterCond instanceof SimpleTimePeriod){
-					int commentTime = (int)comment.getValueByHeaderName(headerName);
-					if(!((SimpleTimePeriod)filterCond).includes(commentTime)){
-						flag = false;
-						break;
-					}
+				String filterCond = filter.getValue();
+				if(value != null && !value.matches((String)filterCond)){
+					flag = false;
+					break;
+				} else if(value == null && !((String)filterCond).isEmpty()){
+					flag = false;
+					break;
 				}
 			}
 			
@@ -245,6 +237,23 @@ public class CommentTableModel extends AbstractTableModel {
 		int p = findComment(comment);
 		commentList.remove(p);
 		refreshFilter();
+	}
+
+	
+	public void selectTimePeriod(SimpleTimePeriod period){
+		ArrayList<Comment> tempCommentList = new ArrayList<Comment>();
+		String timeFieldName = getColumnName(Comment.F_COMMENT_TIME);
+		
+		for(Comment comment: filteredCommentList){
+			int commentTime = (int)comment.getValueByHeaderName(timeFieldName);
+			if(period.includes(commentTime)){
+				tempCommentList.add(comment);
+			}
+		}
+		filteredCommentList.clear();
+		filteredCommentList.addAll(tempCommentList);
+		
+		fireTableDataChanged();
 	}
 	
 	
