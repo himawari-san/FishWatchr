@@ -67,6 +67,9 @@ public class CommentTable extends JTable {
 
 	public void initState(){
 		iCurrentComment = UNDEFINED;
+		ctm.clearFilter();
+		ctm.selectTimePeriod(null);
+		ctm.refreshFilter();
 	}
 	
 	public void ginit(){
