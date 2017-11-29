@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
+
 public class CommentTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	private CommentList commentList;
@@ -33,6 +34,7 @@ public class CommentTableModel extends AbstractTableModel {
 	public ArrayList<CommentType> commentTypes;
 	private ArrayList<Comment> filteredCommentList = new ArrayList<Comment>();
 	private HashMap<String, String> filters = new HashMap<String, String>();
+	private SimpleTimePeriod selectedPeriod = null;
 	
 	
 	public CommentTableModel(CommentList commentList, ArrayList<User> discussers, ArrayList<CommentType> commentTypes){
@@ -199,6 +201,15 @@ public class CommentTableModel extends AbstractTableModel {
 	}
 	
 	
+	boolean isFiltered(){
+		if(filters.isEmpty()){
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	
 	void clearFilter(){
 		filters.clear();
 	}
@@ -206,6 +217,7 @@ public class CommentTableModel extends AbstractTableModel {
 	
 	void refreshFilter(){
 		filteredCommentList.clear();
+		
 		for(Comment comment: commentList){
 			boolean flag = true;
 			for(Map.Entry<String, String> filter : filters.entrySet()){
@@ -228,6 +240,11 @@ public class CommentTableModel extends AbstractTableModel {
 				comment.setExcluded(true);
 			}
 		}
+
+		if(selectedPeriod != null){
+			selectTimePeriod(selectedPeriod);
+		}
+		
 		fireTableDataChanged();
 	}
 	
@@ -243,10 +260,11 @@ public class CommentTableModel extends AbstractTableModel {
 	public void selectTimePeriod(SimpleTimePeriod period){
 		ArrayList<Comment> tempCommentList = new ArrayList<Comment>();
 		String timeFieldName = getColumnName(Comment.F_COMMENT_TIME);
+		this.selectedPeriod = period;
 		
 		for(Comment comment: filteredCommentList){
 			int commentTime = (int)comment.getValueByHeaderName(timeFieldName);
-			if(period.includes(commentTime)){
+			if(period == null || period.includes(commentTime)){
 				tempCommentList.add(comment);
 			}
 		}

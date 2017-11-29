@@ -157,7 +157,7 @@ public class CommentTable extends JTable {
 
 		// フィルター解除用item追加
 		int fromIndexForSorting = 0;
-		if(commentList.size() != ctm.getFilteredCommentList().size()){
+		if(ctm.isFiltered()){
 			itemList.add(0, LABEL_FILTER_CANCEL);
 			fromIndexForSorting++;
 		}

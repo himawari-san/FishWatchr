@@ -23,12 +23,15 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -79,6 +82,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JPanel annotationViewerPanel;
 	private JComboBox<String> targetSelector;
 	private JComboBox<String> displayTypeSelector;
+	private JButton resetScaleButton;
 	private String[] targets = {"話者", "ラベル", "注釈者"};
 	private String[] displayTypes = {"なし", "注釈者", "ラベル", "話者"};
 	private ArrayList<User> discussers;
@@ -89,8 +93,6 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	private CommentTableModel ctm;
 	private SoundPlayer soundPlayer;
-	private float totalTime = 0; // sec
-	private int xTimeMax = 0;
 	private int focusedRange = 10000;
 	private int focusedRangeTick = 2;
 	
@@ -128,10 +130,20 @@ public class AnnotationGlobalViewer extends JPanel {
 		
 		targetSelector = new JComboBox<String>(targets);
 		displayTypeSelector = new JComboBox<String>(displayTypes);
+		resetScaleButton = new JButton("リセット");
+		resetScaleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				initScaleFactor();
+				ctm.selectTimePeriod(null); // clear
+				ctm.refreshFilter();
+			}
+		});
 		p2.add(new JLabel("表示"));
 		p2.add(targetSelector);
 		p2.add(new JLabel("比較"));
 		p2.add(displayTypeSelector);
+		p2.add(resetScaleButton);
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
 		
@@ -208,16 +220,8 @@ public class AnnotationGlobalViewer extends JPanel {
 		}
 		Collections.sort(commenterNames);
 
-		
-		if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD){
-			totalTime = SoundPlayer.LIMIT_RECODING_TIME;
-		} else {
-			totalTime = soundPlayer.getSoundLength();
-		}
-		
 		// update scaleFactor
-		scaleFactor = totalTime / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
-		xTimeMax = (int)(x0AnnotationViewerPanel + (int)totalTime / scaleFactor);
+		initScaleFactor();
 		focusedRangeTick = (int)(focusedRange/scaleFactor/1000);
 		yScaleFactorHistogram = Y_SCALE_FACTOR_DEFAULT;
 		yScaleFactorHistogramNext = yScaleFactorHistogram;
@@ -226,6 +230,25 @@ public class AnnotationGlobalViewer extends JPanel {
 		y0Histogram = annotationViewerPanel.getHeight() - y0MarginHistogram;
 	}
 	
+	
+	public void initScaleFactor(){
+		float totalTime = 0;
+		
+		if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD){
+			totalTime = SoundPlayer.LIMIT_RECODING_TIME;
+		} else {
+			totalTime = soundPlayer.getSoundLength();
+		}
+		
+		selectionStartTime = 0;
+		selectionEndTime = (int)(totalTime * 1000);
+		updateScaleFactor();
+	}
+	
+	
+	public void updateScaleFactor(){
+		scaleFactor = ((float)(selectionEndTime - selectionStartTime)) / 1000 / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
+	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -410,7 +433,7 @@ public class AnnotationGlobalViewer extends JPanel {
 				}
 			}
 			int xTime = (int)
-					(x0AnnotationViewerPanel + soundPlayer.getElapsedTime() / scaleFactor /1000);
+					(x0AnnotationViewerPanel + (soundPlayer.getElapsedTime() - selectionStartTime) / scaleFactor /1000);
 			g.setColor(Color.BLACK);
 			g.drawLine(xTime, 0, xTime, getSize().height);
 			g.drawLine(xTime-focusedRangeTick, 0, xTime-focusedRangeTick, xTimeTickHeight);
@@ -432,9 +455,9 @@ public class AnnotationGlobalViewer extends JPanel {
 			if(e.getClickCount() < 2) {
 				return;
 			}
-			float newTime = (e.getX() - x0AnnotationViewerPanel) * scaleFactor + (float)selectionStartTime/1000;
-			if(newTime < totalTime){
-				soundPlayer.setPlayPoint((long)(newTime * 1000));
+			float newTime = (e.getX() - x0AnnotationViewerPanel) * scaleFactor * 1000 + selectionStartTime;
+			if(newTime >= 0 && newTime < selectionEndTime){
+				soundPlayer.setPlayPoint((long)newTime);
 			}
 		}
 		
@@ -473,8 +496,7 @@ public class AnnotationGlobalViewer extends JPanel {
 				}
 				selectionStartTime = (int)((selectionStartX - x0AnnotationViewerPanel) * scaleFactor) * 1000;
 				selectionEndTime = (int)((selectionEndX - x0AnnotationViewerPanel) * scaleFactor) * 1000;
-				scaleFactor = ((float)(selectionEndTime - selectionStartTime)) / 1000 / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
-
+				updateScaleFactor();
 				ctm.selectTimePeriod(new SimpleTimePeriod(selectionStartTime, selectionEndTime));
 			}
 			
