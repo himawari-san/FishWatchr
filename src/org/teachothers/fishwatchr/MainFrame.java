@@ -963,7 +963,14 @@ public class MainFrame extends JFrame {
 		discussersPanel.repaintComponents();
 		commentTable.initState();
 		soundPlayer.setOverlayText("");
+		
+		if (timer != null) {
+			timer.cancel();
+		}
+		timer = new Timer();
+		timer.schedule(new DrawAnnotationGlobalViewerTask(), 0, TASK_INTERVAL);
 	}
+	
 
 	private void changeStatePlay() {
 		soundStopButton.setEnabled(true);
@@ -2614,6 +2621,20 @@ public class MainFrame extends JFrame {
 			commentTable.indicateCurrentComment(time, focusRange);
 			if(jMenuItemOptionViewSyncMode.isSelected()){
 				commentTable.setViewCenterByTime(time);
+			}
+		}
+	}
+	
+	
+	class DrawAnnotationGlobalViewerTask extends TimerTask {
+		public void run() {
+			if(timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW){
+				if(isSoundPanelEnable){
+					soundPanel.repaint();
+				}
+				discussersPanel.repaintComponents();
+			} else {
+				annotationGlobalViewPanel.repaint();
 			}
 		}
 	}
