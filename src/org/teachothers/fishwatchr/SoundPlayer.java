@@ -37,6 +37,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
@@ -143,7 +144,12 @@ public class SoundPlayer extends Thread {
         mp.addMediaPlayerEventListener(mpEventListener);
 
         if(playerType == PLAYER_TYPE_DEFAULT){
-    		mainFrame.changeState(state);
+    		SwingUtilities.invokeLater(new Runnable() {
+    			@Override
+    			public void run() {
+    	    		mainFrame.changeState(state);
+    			}
+    		});
         	System.err.println("return: " + state);
 			return;
 		}
@@ -173,7 +179,13 @@ public class SoundPlayer extends Thread {
 		} else if(currentState == PLAYER_STATE_STOP){
 			mp.prepareMedia(targetFilename);
 		}
-		mainFrame.changeState(state);
+
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+	    		mainFrame.changeState(state);
+			}
+		});
 	}
 
 	
@@ -605,8 +617,13 @@ public class SoundPlayer extends Thread {
 			}
 			mp.setPosition(0);
 		}
-        mainFrame.changeState(PLAYER_STATE_STOP);
-        mainFrame.updateMediaLengthUI();
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+		        mainFrame.changeState(PLAYER_STATE_STOP);
+		        mainFrame.updateMediaLengthUI();
+			}
+		});
         System.err.println("initcall state stop");
     	state = PLAYER_STATE_STOP;
 	}
@@ -695,7 +712,12 @@ public class SoundPlayer extends Thread {
 			if(state == PLAYER_STATE_RECORD){ // jMenuItemOptionRecorderMode.isSelected() == false
 				skippedFrame = 0;
 				soundGraphBuf.setPosition(0);
-		        mainFrame.changeState(PLAYER_STATE_STOP);
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+				        mainFrame.changeState(PLAYER_STATE_STOP);
+					}
+				});
 			}
 			state = PLAYER_STATE_STOP;
 		}
