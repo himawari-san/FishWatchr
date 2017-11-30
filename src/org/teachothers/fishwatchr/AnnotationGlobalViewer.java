@@ -23,6 +23,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -513,6 +515,10 @@ public class AnnotationGlobalViewer extends JPanel {
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
+			
+		    ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+
 			int i = 0;
 			switch (targetSelector.getSelectedIndex()){
 			case VIEW_TYPE_SPEAKER:
