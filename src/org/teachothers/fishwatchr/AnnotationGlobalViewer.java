@@ -44,8 +44,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	private static final float SCALE_FACTOR_DEFAULT = 2f;
 	private static final float Y_SCALE_FACTOR_DEFAULT = 10f;
 	private static final float Y_SCALE_FACTOR_MIN = 0.2f;
-	private static final int VIEW_TYPE_SPEAKER = 0; 
-	private static final int VIEW_TYPE_LABEL = 1; 
+	private static final int VIEW_TYPE_LABEL = 0; 
+	private static final int VIEW_TYPE_SPEAKER = 1; 
 	private static final int VIEW_TYPE_COMMENTER = 2; 
 
 	private static final int COMPARISON_NOTHING = 0; 
@@ -83,7 +83,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JComboBox<String> targetSelector;
 	private JComboBox<String> displayTypeSelector;
 	private JButton resetScaleButton;
-	private String[] targets = {"話者", "ラベル", "注釈者"};
+	private String[] targets = {"ラベル", "話者", "注釈者"};
 	private String[] displayTypes = {"なし", "注釈者", "ラベル", "話者"};
 	private ArrayList<User> discussers;
 	private ArrayList<CommentType> commentTypes;
