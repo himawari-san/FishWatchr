@@ -17,6 +17,7 @@
 
 package org.teachothers.fishwatchr;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,6 +26,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -271,6 +273,9 @@ public class AnnotationGlobalViewer extends JPanel {
 		private int defaultDelay = ttm.getInitialDelay();
 		private int selectionStartX = -1;
 		private int selectionEndX = -1;
+		private int cursorX = -1;
+		private float cursorLineDash[] = {3.0f, 3.0f};
+		private BasicStroke dashStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, cursorLineDash, 0.0f); 
 		boolean isDragged = false;
 		
 		public AnnotationViewerPanel() {
@@ -287,6 +292,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 			plotData(g, filteredCommentList, commentList);
 			drawHistogram(g, filteredCommentList, commentList);
+			drawCursorLine(g);
 
 			if(isDragged){
 				drawSelection(g);
@@ -442,6 +448,16 @@ public class AnnotationGlobalViewer extends JPanel {
 			g.drawLine(xTime+focusedRangeTick, 0, xTime+focusedRangeTick, xTimeTickHeight);
 		}
 		
+		
+		private void drawCursorLine(Graphics g){
+			Stroke defaultStroke = ((Graphics2D)g).getStroke();
+			g.setColor(Color.LIGHT_GRAY);
+			((Graphics2D)g).setStroke(dashStroke);
+			g.drawLine(cursorX, 0, cursorX, getSize().height);
+			((Graphics2D)g).setStroke(defaultStroke);
+		}
+		
+		
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			ttm.setInitialDelay(0);
@@ -450,6 +466,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		@Override
 		public void mouseExited(MouseEvent e) {
 			ttm.setInitialDelay(defaultDelay);
+			cursorX = -1;
 		}
 
 		@Override
@@ -478,6 +495,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			int sec = time - minute * 60;
 				
 			annotationViewerPanel.setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec));
+			cursorX = e.getX();
 		}
 
 		@Override
@@ -501,6 +519,7 @@ public class AnnotationGlobalViewer extends JPanel {
 				selectionEndTime = (int)((selectionEndX - x0AnnotationViewerPanel) * scaleFactor) * 1000 + oldSelectionStartTime;
 				updateScaleFactor();
 				ctm.selectTimePeriod(new SimpleTimePeriod(selectionStartTime, selectionEndTime));
+				cursorX = e.getX();
 			}
 			
 			selectionStartX = -1;
