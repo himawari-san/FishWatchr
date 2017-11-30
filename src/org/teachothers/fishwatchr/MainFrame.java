@@ -1123,7 +1123,7 @@ public class MainFrame extends JFrame {
 			timeLineTabbedPane.addTab("全体", annotationGlobalViewPanel);
 			timeLineTabbedPane.addTab("詳細", timeLinePanel);
 			timeLineTabbedPane.setPreferredSize(new Dimension(TIMELINE_PANEL_WIDTH, TIMELINE_PANEL_HEIGHT));
-			timeLineTabbedPane.setSelectedIndex(TAB_STATUS_DETAIL_VIEW); // デフォルトは詳細
+			timeLineTabbedPane.setSelectedIndex(TAB_STATUS_GLOBAL_VIEW); // デフォルトは「全体」
 			displayPanel.add(timeLineTabbedPane, BorderLayout.WEST);
 			displayPanel.add(moviePanel, BorderLayout.CENTER);
 		}
