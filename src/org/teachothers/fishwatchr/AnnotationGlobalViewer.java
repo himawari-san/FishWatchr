@@ -267,6 +267,19 @@ public class AnnotationGlobalViewer extends JPanel {
 	}
 	
 	
+	public void setExternalMouseListener(MouseListener l){
+		annotationViewerPanel.addMouseListener(l);
+	}
+	
+	
+	public void setPlayPoint(int x){
+		float newTime = (x - x0AnnotationViewerPanel) * scaleFactor * 1000 + selectionStartTime;
+		if(newTime >= 0 && newTime < selectionEndTime){
+			soundPlayer.setPlayPoint((long)newTime);
+		}
+	}
+	
+	
 	class AnnotationViewerPanel extends JPanel implements MouseMotionListener, MouseListener {
 		private static final long serialVersionUID = 1L;
 		private ToolTipManager ttm = ToolTipManager.sharedInstance();
@@ -471,13 +484,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			if(e.getClickCount() < 2) {
-				return;
-			}
-			float newTime = (e.getX() - x0AnnotationViewerPanel) * scaleFactor * 1000 + selectionStartTime;
-			if(newTime >= 0 && newTime < selectionEndTime){
-				soundPlayer.setPlayPoint((long)newTime);
-			}
+			// use an external listener now
 		}
 		
 		@Override

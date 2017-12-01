@@ -1112,6 +1112,40 @@ public class MainFrame extends JFrame {
 			timeLinePanel = getTimeLinePanel();
 			annotationGlobalViewPanel = new AnnotationGlobalViewer(ctm, soundPlayer, discussers, commentTypes);
 			annotationGlobalViewPanel.setFocusRange(focusRange);
+			annotationGlobalViewPanel.setExternalMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if(e.getClickCount() < 2) {
+						return;
+					}
+
+					if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
+						if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){
+							JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。\n" + mf);
+							return;
+						}
+
+						if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
+							JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
+							return;
+						}
+					
+						isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
+						timeSlider.setEnabled(true);
+
+						changeStatePlay();
+						soundPlayer.myPlay();
+						annotationGlobalViewPanel.setPlayPoint(e.getX());
+						timerStart();
+					} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
+						changeStatePlay();
+						annotationGlobalViewPanel.setPlayPoint(e.getX());
+						soundPlayer.myPlay();
+					} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
+						annotationGlobalViewPanel.setPlayPoint(e.getX());
+					}
+				}
+			});
 
 			moviePanel = getMoviePanel();
 			moviePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
