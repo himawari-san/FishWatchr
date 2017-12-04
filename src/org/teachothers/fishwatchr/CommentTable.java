@@ -56,6 +56,10 @@ public class CommentTable extends JTable {
 	private JPopupMenu popupMenu = new JPopupMenu();
 	private int iCurrentComment = UNDEFINED;
 	private StringBuffer currentCommentBuffer = new StringBuffer();
+	
+	private JMenuItem menuItemStat = new JMenuItem("集計");
+	private JMenuItem menuItemDelete = new JMenuItem("行の削除");
+	private JMenuItem menuItemCellDelete = new JMenuItem("セル値の削除");
 
 	public CommentTable(CommentTableModel ctm){
 		super(ctm);
@@ -80,7 +84,16 @@ public class CommentTable extends JTable {
 		getColumn("ラベル").setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
 		setCellSelectionEnabled(true);
 		
-		JMenuItem menuItemDelete = new JMenuItem("行の削除");
+		
+		menuItemStat.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int a;
+				StatFrame sf = invokeStatFrame(StatFrame.CHART_STYLE_UNIQ);
+				sf.setSize(400,  200);
+			}
+		});
+		
 		menuItemDelete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -93,7 +106,6 @@ public class CommentTable extends JTable {
 				}
 			}
 		});
-		JMenuItem menuItemCellDelete = new JMenuItem("セル値の削除");
 		menuItemCellDelete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -119,6 +131,7 @@ public class CommentTable extends JTable {
 		});
 
 		
+		popupMenu.add(menuItemStat);
 		popupMenu.add(menuItemDelete);
 		popupMenu.add(menuItemCellDelete);
 		addMouseListener(new MouseAdapter() {
@@ -143,8 +156,26 @@ public class CommentTable extends JTable {
 			}
 		});
 	}
+
 	
+	public StatFrame invokeStatFrame(int style){
+		int[] iSelectedColumns = getSelectedColumns();
+		String headers[] = new String[iSelectedColumns.length];
+		for(int i = 0; i < iSelectedColumns.length; i++){
+			headers[i] = ctm.getColumnName(iSelectedColumns[i]);
+		}
+
+		DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns);
+		StatFrame sf = new StatFrame(dc.getSummary(), headers);
+		sf.showChart(style);
+		sf.setSize(400,  200);
+		sf.setTitle("集計結果");
+		sf.setVisible(true);
 		
+		return sf;
+	}
+
+	
 	void invokeDialogForFiltering(String headerName, Component component,
 			int x, int y) {
 		JPopupMenu popupMenu = new JPopupMenu();
