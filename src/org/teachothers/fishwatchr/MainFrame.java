@@ -173,6 +173,10 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemAnnotationOrderType;
 	private JMenuItem jMenuItemAnnotationMulti;
 	private JMenuItem jMenuItemAnnotationTimeCorrection;
+	private JMenu jMenuAnalysis;
+	private JMenu jMenuAnalysisTarget;
+	private JMenu jMenuAnalysisLabel;
+	private JMenu jMenuAnalysisFreq;
 	private JMenu jMenuOption;
 	private JMenuItem jMenuItemOptionTextOverlay;
 	private JMenuItem jMenuItemOptionVideoRatio;
@@ -1239,11 +1243,13 @@ public class MainFrame extends JFrame {
 			jMenuFile = getJMenuFile();
 			jMenuControl = getJMenuControl();
 			jMenuAnnotation = getJMenuAnnotation();
+			jMenuAnalysis = getJMenuAnalysis();
 			jMenuOption = getJMenuOption();
 			jMenuHelp = getJMenuHelp();
 			jMenuBar.add(jMenuFile);
 			jMenuBar.add(jMenuControl);
 			jMenuBar.add(jMenuAnnotation);
+			jMenuBar.add(jMenuAnalysis);
 			jMenuBar.add(jMenuOption);
 			jMenuBar.add(jMenuHelp);
 			KeyboardFocusManager.getCurrentKeyboardFocusManager()
@@ -2205,6 +2211,92 @@ public class MainFrame extends JFrame {
 
 	}
 
+
+	private JMenu getJMenuAnalysis() {
+		String subLabelAll = DataCounter.SUMMARY_MODE_ALL;
+		String subLabelSelf = DataCounter.SUMMARY_MODE_SELF;
+		String subLabelAverage = DataCounter.SUMMARY_MODE_ALL_COMPARE;
+		String subLabelCompare = DataCounter.SUMMARY_MODE_SELF_COMPARE;
+		
+		
+		if (jMenuAnalysis == null) {
+			jMenuAnalysis = new JMenu();
+			jMenuAnalysis.setText("分析");
+			jMenuAnalysisTarget = new JMenu(StatFrame.LABEL_STYLE_TARGET);
+			jMenuAnalysisLabel = new JMenu(StatFrame.LABEL_STYLE_LABEL);
+			jMenuAnalysisFreq = new JMenu(StatFrame.LABEL_STYLE_UNIQ);
+			jMenuAnalysis.add(jMenuAnalysisTarget);
+			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, subLabelAll));
+			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, subLabelSelf));
+			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, subLabelAverage));
+			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, subLabelCompare));
+			jMenuAnalysis.add(jMenuAnalysisLabel);
+			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, subLabelAll));
+			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, subLabelSelf));
+			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, subLabelAverage));
+			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, subLabelCompare));
+			jMenuAnalysis.add(jMenuAnalysisFreq);
+			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, subLabelAll));
+//			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, subLabelSelf));
+			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, subLabelAverage));
+//			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, subLabelCompare));
+		}
+		return jMenuAnalysis;
+	}
+
+
+	private JMenuItem getJMenuItemAnalysis(final int chartStyle, final String subTitle){
+		final String title;
+		final int iColumns[];
+		
+		switch(chartStyle){
+		case StatFrame.CHART_STYLE_TARGET:
+			title = StatFrame.LABEL_STYLE_TARGET;
+			iColumns = new int[]{Comment.F_COMMENTER, Comment.F_DISCUSSER};
+			break;
+		case StatFrame.CHART_STYLE_LABEL:
+			title = StatFrame.LABEL_STYLE_LABEL;
+			iColumns = new int[]{Comment.F_COMMENTER, Comment.F_COMMENT_TYPE};
+			break;
+		case StatFrame.CHART_STYLE_EVAL:
+			title = StatFrame.LABEL_STYLE_EVAL;
+			iColumns = new int[]{};
+			break;
+		case StatFrame.CHART_STYLE_UNIQ:
+			title = StatFrame.LABEL_STYLE_UNIQ;
+			iColumns = null;
+			break;
+		default:
+			title = "(none)";
+			iColumns = new int[]{};
+		}
+		
+		JMenuItem menuItem = new JMenuItem(subTitle);
+		
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int[] iSelectedColumns = iColumns;
+				if(iColumns == null){
+					iSelectedColumns = commentTable.getSelectedColumns();
+				}
+				
+				String headers[] = new String[iSelectedColumns.length];
+				for(int i = 0; i < iSelectedColumns.length; i++){
+					headers[i] = ctm.getColumnName(iSelectedColumns[i]);
+				}
+
+				DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, commenter.getName());
+				StatFrame sf = new StatFrame(dc.getSummary(subTitle), headers);
+				sf.showChart(chartStyle);
+				sf.pack();
+				sf.setTitle("集計結果/" + title + "/" + subTitle);
+				sf.setVisible(true);
+			}
+		});
+		return menuItem;
+	}
+
+	
 	private JMenu getJMenuOption() {
 		if (jMenuOption == null) {
 			jMenuOption = new JMenu();

@@ -89,8 +89,8 @@ public class CommentTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int a;
-				StatFrame sf = invokeStatFrame(StatFrame.CHART_STYLE_UNIQ);
-				sf.setSize(400,  200);
+//				StatFrame sf = invokeStatFrame(StatFrame.CHART_STYLE_UNIQ);
+//				sf.setSize(400,  200);
 			}
 		});
 		
@@ -165,7 +165,7 @@ public class CommentTable extends JTable {
 			headers[i] = ctm.getColumnName(iSelectedColumns[i]);
 		}
 
-		DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns);
+		DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, "");
 		StatFrame sf = new StatFrame(dc.getSummary(), headers);
 		sf.showChart(style);
 		sf.setSize(400,  200);
