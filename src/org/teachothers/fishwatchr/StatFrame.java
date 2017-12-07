@@ -2,6 +2,11 @@ package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.TreeSet;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -96,6 +101,46 @@ public class StatFrame extends JFrame {
 		    for(Object[] record : data){
 		    	dataSet.addValue(Double.parseDouble(record[iFreq].toString()), record[0].toString(), record[1].toString());
 //		    	dataSet.addValue(((Integer)record[iFreq]).doubleValue(), record[0].toString(), record[1].toString());
+		    }
+	    } else if(style == CHART_STYLE_EVAL){
+	    	flagLegend = true;
+	    	// calc evaluation of each category
+	    	// record[0]:annotator, [1]:target, [2]:label, [3]:freq
+	    	HashMap<String, Double> mapEvalSum = new HashMap<String, Double>();
+	    	HashMap<String, Double> mapFreqSum = new HashMap<String, Double>();
+	    	TreeSet<String> setTargets = new TreeSet<String>();
+	    	TreeSet<String> setLabels = new TreeSet<String>();
+
+	    	for(Object[] record : data){
+		    	String key = record[0] + "\t" + record[1];
+		    	double addedValue = Double.parseDouble(record[2].toString()) * Double.parseDouble(record[3].toString());
+		    	setTargets.add(record[0].toString());
+		    	setLabels.add(record[1].toString());
+		    	
+		    	if(mapEvalSum.containsKey(key)){
+		    		mapEvalSum.put(key, mapEvalSum.get(key) + addedValue);
+		    		mapFreqSum.put(key, mapFreqSum.get(key) + Double.parseDouble(record[3].toString()));
+		    	} else {
+		    		mapEvalSum.put(key, addedValue);
+		    		mapFreqSum.put(key, Double.parseDouble(record[3].toString()));
+		    	}
+		    }
+		    
+	    	// generate all target/label combinations  
+	    	TreeSet<String> keys = new TreeSet<String>(); // for sorting keys
+	    	for(String target : setTargets){
+		    	for(String label : setLabels){
+		    		keys.add(target + "\t" + label);
+		    	}
+	    	}
+	    	
+		    for(String key : keys){
+		    	String[] keyArray = key.split("\t");
+		    	if(mapEvalSum.containsKey(key)){
+			    	dataSet.addValue(mapEvalSum.get(key) / mapFreqSum.get(key), keyArray[0].toString(), keyArray[1].toString());
+		    	} else {
+			    	dataSet.addValue(0, keyArray[0].toString(), keyArray[1].toString());
+		    	}
 		    }
 	    }
 	    

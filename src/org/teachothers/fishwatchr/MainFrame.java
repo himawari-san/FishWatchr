@@ -176,6 +176,7 @@ public class MainFrame extends JFrame {
 	private JMenu jMenuAnalysis;
 	private JMenu jMenuAnalysisTarget;
 	private JMenu jMenuAnalysisLabel;
+	private JMenu jMenuAnalysisEval;
 	private JMenu jMenuAnalysisFreq;
 	private JMenu jMenuOption;
 	private JMenuItem jMenuItemOptionTextOverlay;
@@ -2219,6 +2220,7 @@ public class MainFrame extends JFrame {
 			jMenuAnalysis.setText("分析");
 			jMenuAnalysisTarget = new JMenu(StatFrame.LABEL_STYLE_TARGET);
 			jMenuAnalysisLabel = new JMenu(StatFrame.LABEL_STYLE_LABEL);
+			jMenuAnalysisEval = new JMenu(StatFrame.LABEL_STYLE_EVAL);
 			jMenuAnalysisFreq = new JMenu(StatFrame.LABEL_STYLE_UNIQ);
 			jMenuAnalysis.add(jMenuAnalysisTarget);
 			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, DataCounter.SUMMARY_MODE_ALL));
@@ -2230,6 +2232,11 @@ public class MainFrame extends JFrame {
 			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, DataCounter.SUMMARY_MODE_SELF));
 			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, DataCounter.SUMMARY_MODE_ALL_COMPARE));
 			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, DataCounter.SUMMARY_MODE_SELF_COMPARE));
+			jMenuAnalysis.add(jMenuAnalysisEval);
+			jMenuAnalysisEval.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_EVAL, DataCounter.SUMMARY_MODE_ALL));
+			jMenuAnalysisEval.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_EVAL, DataCounter.SUMMARY_MODE_SELF));
+			jMenuAnalysisEval.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_EVAL, DataCounter.SUMMARY_MODE_ALL_COMPARE));
+			jMenuAnalysisEval.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_EVAL, DataCounter.SUMMARY_MODE_SELF_COMPARE));
 			jMenuAnalysis.add(jMenuAnalysisFreq);
 			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_ALL));
 			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_SELF));
@@ -2255,7 +2262,7 @@ public class MainFrame extends JFrame {
 			break;
 		case StatFrame.CHART_STYLE_EVAL:
 			title = StatFrame.LABEL_STYLE_EVAL;
-			iColumns = new int[]{};
+			iColumns = new int[]{Comment.F_COMMENTER, Comment.F_DISCUSSER, Comment.F_COMMENT_TYPE};
 			break;
 		case StatFrame.CHART_STYLE_UNIQ:
 			title = StatFrame.LABEL_STYLE_UNIQ;
