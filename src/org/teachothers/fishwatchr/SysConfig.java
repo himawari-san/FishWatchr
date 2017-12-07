@@ -108,7 +108,7 @@ public class SysConfig {
 					for(int i = commentTypes.size(); i < commentTypesNodes.getLength(); i++){
 						String commentTypeName = ((Element) commentTypesNodes
 								.item(i)).getAttribute("name");
-						System.err.println("Warning(SysConfig): 登録数を越えたため，ラベル "
+						System.err.println("Warning(SysConfig): 登録数を越えたため，" + Comment.ITEM_LABEL + " "
 										+ commentTypeName + " が登録できませんでした。");
 					}
 				}
@@ -134,7 +134,7 @@ public class SysConfig {
 					for(int i = discussers.size(); i < discussersNodes.getLength(); i++){
 						String discusserName = ((Element) discussersNodes.item(i))
 								.getAttribute("name");
-						System.err.println("Warning(SysConfig): 登録数を越えたため，話者 "
+						System.err.println("Warning(SysConfig): 登録数を越えたため，" + Comment.ITEM_TARGET + " "
 								+ discusserName + " が登録できませんでした。");
 					}
 				}
@@ -180,10 +180,10 @@ public class SysConfig {
 	
 	public void setDefault(ArrayList<CommentType> commentTypes, ArrayList<User> discussers){
 		discussers.clear();
-		discussers.add(new User("話者１"));
-		discussers.add(new User("話者２"));
-		discussers.add(new User("話者３"));
-		discussers.add(new User("話者４"));
+		discussers.add(new User(Comment.ITEM_TARGET + "１"));
+		discussers.add(new User(Comment.ITEM_TARGET + "２"));
+		discussers.add(new User(Comment.ITEM_TARGET + "３"));
+		discussers.add(new User(Comment.ITEM_TARGET + "４"));
 		discussers.add(new User("不特定"));
 		discussers.add(new User("誤り"));
 		discussers.add(new User(""));

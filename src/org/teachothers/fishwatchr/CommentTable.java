@@ -80,8 +80,8 @@ public class CommentTable extends JTable {
 		setOpaque(false);
 		setDefaultRenderer(Object.class, new CellRenderer());
 		setDefaultRenderer(Number.class, new CellRenderer(SwingConstants.RIGHT));
-		getColumn("話者").setCellEditor(new ListCellEditor<User>(ctm.discussers));
-		getColumn("ラベル").setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
+		getColumn(Comment.ITEM_TARGET).setCellEditor(new ListCellEditor<User>(ctm.discussers));
+		getColumn(Comment.ITEM_LABEL).setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
 		setCellSelectionEnabled(true);
 		
 		

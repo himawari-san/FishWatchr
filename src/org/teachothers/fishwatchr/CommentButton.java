@@ -42,7 +42,7 @@ public class CommentButton extends JButton {
 	private static boolean isWorking = false;
     private static String os = System.getProperty("os.name").toLowerCase();
 	
-	// 話者優先
+	// 観察対象優先
 	public static final int BUTTON_TYPE_DISCUSSER = 0;
 	public static final String BUTTON_TYPE_DISCUSSER_STR = "discusser";
 	// コメント優先
@@ -89,7 +89,7 @@ public class CommentButton extends JButton {
 		buttonType = BUTTON_TYPE_COMMENT;
 	}
 
-	// 話者優先
+	// 観察対象優先
 	public CommentButton(CommentTableModel ctm, SoundPlayer soundPlayer, boolean isMultiAnnotation, User discusser, ArrayList<CommentType> commentTypes, User commenter) {
 		super(discusser.getName());
 		this.ctm = ctm;
@@ -154,7 +154,7 @@ public class CommentButton extends JButton {
 		if(buttonType == BUTTON_TYPE_COMMENT){
 			User selectedDiscusser = new User("");
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog("ラベルの選択(" + commentType.getType() + ")", discussers);
+				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + "の選択(" + commentType.getType() + ")", discussers);
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);
@@ -169,7 +169,7 @@ public class CommentButton extends JButton {
 		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
 			CommentType commentType = new CommentType("", Color.BLACK);
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog("ラベルの選択(" + discusser.getName() + ")", commentTypes);
+				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + "の選択(" + discusser.getName() + ")", commentTypes);
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);

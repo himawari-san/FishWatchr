@@ -35,8 +35,8 @@ public class StatFrame extends JFrame {
 	public static final int CHART_STYLE_EVAL = 3;
 
 	public static final String LABEL_STYLE_UNIQ = "頻度(選択項目)";
-	public static final String LABEL_STYLE_TARGET = "観察対象";
-	public static final String LABEL_STYLE_LABEL = "ラベル";
+	public static final String LABEL_STYLE_TARGET = Comment.ITEM_TARGET;
+	public static final String LABEL_STYLE_LABEL = Comment.ITEM_LABEL;
 	public static final String LABEL_STYLE_EVAL = "評価";
 	
 	private JTabbedPane	figureTabbedPane;

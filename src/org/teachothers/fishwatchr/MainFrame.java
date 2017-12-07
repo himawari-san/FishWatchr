@@ -1610,7 +1610,7 @@ public class MainFrame extends JFrame {
 			if(!flagSyncCondition){
 				JOptionPane.showMessageDialog(MainFrame.this,
 						"マージしたデータに，動画開始前か，開始から２時間を過ぎた注釈が含まれています。\n"
-						+ "「時間」欄を確認してください。\n");
+						+ "「" + Comment.ITEM_TIME + "」欄を確認してください。\n");
 			}
 			
 		} catch (Exception e1) {
@@ -2062,7 +2062,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationOrderDiscusser() {
 		if (jMenuItemAnnotationOrderDiscusser == null) {
-			jMenuItemAnnotationOrderDiscusser = new JRadioButtonMenuItem("話者優先");
+			jMenuItemAnnotationOrderDiscusser = new JRadioButtonMenuItem(Comment.ITEM_TARGET + "優先");
 			jMenuItemAnnotationOrderDiscusser
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2080,7 +2080,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationOrderType() {
 		if (jMenuItemAnnotationOrderType == null) {
-			jMenuItemAnnotationOrderType = new JRadioButtonMenuItem("ラベル優先");
+			jMenuItemAnnotationOrderType = new JRadioButtonMenuItem(Comment.ITEM_LABEL + "優先");
 			jMenuItemAnnotationOrderType
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2125,7 +2125,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationYourName() {
 		if (jMenuItemAnnotationYourName == null) {
-			jMenuItemAnnotationYourName = new JMenuItem("注釈者名");
+			jMenuItemAnnotationYourName = new JMenuItem(Comment.ITEM_ANNOTATOR + "名");
 			jMenuItemAnnotationYourName
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2133,10 +2133,10 @@ public class MainFrame extends JFrame {
 									: commenter.getName();
 							String inputValue = JOptionPane.showInputDialog(
 									MainFrame.this, "現在の設定値: "
-											+ currentCommenterName, "注釈者名",
+											+ currentCommenterName, Comment.ITEM_ANNOTATOR + "名",
 									JOptionPane.PLAIN_MESSAGE);
 							if(inputValue == null || inputValue.isEmpty()){
-								JOptionPane.showMessageDialog(null, "注釈者名が空です。");
+								JOptionPane.showMessageDialog(null, Comment.ITEM_ANNOTATOR + "名が空です。");
 							} else if(inputValue.matches(".*[\\s<>/&'\"].*")){
 								JOptionPane.showMessageDialog(null, inputValue + "\nには，使用できない文字（<>/\"\'& および空白）が含まれているため，設定値を反映しませんでした。");
 							} else {
@@ -2150,14 +2150,14 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationDiscussers() {
 		if (jMenuItemAnnotationDiscussers == null) {
-			jMenuItemAnnotationDiscussers = new JMenuItem("話者");
+			jMenuItemAnnotationDiscussers = new JMenuItem(Comment.ITEM_TARGET);
 			jMenuItemAnnotationDiscussers
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							DiscusserSettingPanel discusserSettingPanel = new DiscusserSettingPanel(
 									discussers, MAX_DISCUSSERS);
 							int selectedValue = JOptionPane.showConfirmDialog(
-									null, discusserSettingPanel, "話者の設定",
+									null, discusserSettingPanel, Comment.ITEM_TARGET + "の設定",
 									JOptionPane.OK_CANCEL_OPTION);
 							if (selectedValue == JOptionPane.CANCEL_OPTION) {
 								return;
@@ -2181,7 +2181,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationAnnotation() {
 		if (jMenuItemAnnotationAnnotation == null) {
-			jMenuItemAnnotationAnnotation = new JMenuItem("ラベル");
+			jMenuItemAnnotationAnnotation = new JMenuItem(Comment.ITEM_LABEL);
 			jMenuItemAnnotationAnnotation
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2189,7 +2189,7 @@ public class MainFrame extends JFrame {
 							AnnotationSettingPanel annotationSettingPanel = new AnnotationSettingPanel(
 									commentTypes);
 							int selectedValue = JOptionPane.showConfirmDialog(
-									null, annotationSettingPanel, "ラベルの設定",
+									null, annotationSettingPanel, Comment.ITEM_LABEL + "の設定",
 									JOptionPane.OK_CANCEL_OPTION);
 							if (selectedValue == JOptionPane.CANCEL_OPTION) {
 								return;

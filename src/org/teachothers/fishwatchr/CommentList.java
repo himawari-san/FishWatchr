@@ -343,7 +343,7 @@ public class CommentList extends LinkedList<Comment> {
 			}
 			
 			if(!flagRegister){
-				System.err.println("Warning(CommentList): ラベル " + commentTypeName + " が登録できませんでした。");
+				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + commentTypeName + " が登録できませんでした。");
 			}
 		}
 		
@@ -366,7 +366,7 @@ public class CommentList extends LinkedList<Comment> {
 				}
 			}
 			if(!flagRegister){
-				System.err.println("Warning(CommentList): ラベル " + discusserName + " が登録できませんでした。");
+				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + discusserName + " が登録できませんでした。");
 			}
 		}
 		

@@ -32,8 +32,16 @@ public class Comment {
 	public static final int F_SET_NAME = 5; // コメントセット名
 	public static final int F_COMMENT_TIME_END = 8; // 範囲型のコメントの終了時間
 //	public static final int F_COMMENT_TIME_OFFSET = 9; // 経過時間に対するオフセット
+	
+	public static final String ITEM_NUMBER = "番号";
+	public static final String ITEM_ANNOTATOR = "注釈者";
+	public static final String ITEM_TIME = "時間";
+	public static final String ITEM_TARGET = "観察対象";
+	public static final String ITEM_LABEL = "ラベル";
+	public static final String ITEM_SET = "セット";
+	public static final String ITEM_COMMENT = "コメント";
 
-	public static final String headers[] = {"番号", "時間", "注釈者", "話者", "ラベル", "セット", "コメント"};
+	public static final String headers[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT};
 	public static final int COMMENT_TIME_END_UNDEFINED = -1; // 範囲型でない場合，終了時間は-1とする
 	private static String defaultDiscusserName = "不特定";
 

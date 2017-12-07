@@ -87,8 +87,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JComboBox<String> targetSelector;
 	private JComboBox<String> displayTypeSelector;
 	private JButton resetScaleButton;
-	private String[] targets = {"ラベル", "話者", "注釈者"};
-	private String[] displayTypes = {"なし", "注釈者", "ラベル", "話者"};
+	private String[] targets = {Comment.ITEM_LABEL, Comment.ITEM_TARGET, Comment.ITEM_ANNOTATOR};
+	private String[] displayTypes = {"なし", Comment.ITEM_ANNOTATOR, Comment.ITEM_LABEL, Comment.ITEM_TARGET};
 	private ArrayList<User> discussers;
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<String> discusserNames = new ArrayList<String>();
