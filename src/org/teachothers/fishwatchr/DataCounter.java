@@ -75,7 +75,7 @@ public class DataCounter {
 
 	public ArrayList<Object[]> getSummary(String mode){
 		HashMap<String, Object[]> map = new HashMap<String, Object[]>();
-		HashSet<String> nameSet = new HashSet<String>();
+		HashSet<String> annotatorNameSet = new HashSet<String>();
 		
 		StringBuffer key = new StringBuffer();
 		for(Comment comment : comments){
@@ -102,7 +102,7 @@ public class DataCounter {
 					newUser = comment.getCommenter();
 				} else {
 					newUser = new User("他人");
-					nameSet.add(comment.getCommenter().getName());
+					annotatorNameSet.add(comment.getCommenter().getName());
 				}
 					
 				newComment.set(
@@ -141,7 +141,7 @@ public class DataCounter {
 			for(String keyStr : map.keySet()){
 				if(keyStr.startsWith("他人")){
 					Object[] data = map.get(keyStr);
-					data[iSelected.length] = Double.parseDouble(data[iSelected.length].toString()) / (double)nameSet.size();
+					data[iSelected.length] = Double.parseDouble(data[iSelected.length].toString()) / (double)annotatorNameSet.size();
 				}
 			}
 		}
