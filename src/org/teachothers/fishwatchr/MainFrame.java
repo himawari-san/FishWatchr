@@ -2213,11 +2213,6 @@ public class MainFrame extends JFrame {
 
 
 	private JMenu getJMenuAnalysis() {
-		String subLabelAll = DataCounter.SUMMARY_MODE_ALL;
-		String subLabelSelf = DataCounter.SUMMARY_MODE_SELF;
-		String subLabelAverage = DataCounter.SUMMARY_MODE_ALL_COMPARE;
-		String subLabelCompare = DataCounter.SUMMARY_MODE_SELF_COMPARE;
-		
 		
 		if (jMenuAnalysis == null) {
 			jMenuAnalysis = new JMenu();
@@ -2226,26 +2221,26 @@ public class MainFrame extends JFrame {
 			jMenuAnalysisLabel = new JMenu(StatFrame.LABEL_STYLE_LABEL);
 			jMenuAnalysisFreq = new JMenu(StatFrame.LABEL_STYLE_UNIQ);
 			jMenuAnalysis.add(jMenuAnalysisTarget);
-			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, subLabelAll));
-			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, subLabelSelf));
-			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, subLabelAverage));
-			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, subLabelCompare));
+			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, DataCounter.SUMMARY_MODE_ALL));
+			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, DataCounter.SUMMARY_MODE_SELF));
+			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, DataCounter.SUMMARY_MODE_ALL_COMPARE));
+			jMenuAnalysisTarget.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_TARGET, DataCounter.SUMMARY_MODE_SELF_COMPARE));
 			jMenuAnalysis.add(jMenuAnalysisLabel);
-			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, subLabelAll));
-			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, subLabelSelf));
-			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, subLabelAverage));
-			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, subLabelCompare));
+			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, DataCounter.SUMMARY_MODE_ALL));
+			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, DataCounter.SUMMARY_MODE_SELF));
+			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, DataCounter.SUMMARY_MODE_ALL_COMPARE));
+			jMenuAnalysisLabel.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_LABEL, DataCounter.SUMMARY_MODE_SELF_COMPARE));
 			jMenuAnalysis.add(jMenuAnalysisFreq);
-			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, subLabelAll));
-//			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, subLabelSelf));
-			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, subLabelAverage));
-//			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, subLabelCompare));
+			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_ALL));
+			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_SELF));
+			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_ALL_COMPARE));
+//			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_SELF_COMPARE));
 		}
 		return jMenuAnalysis;
 	}
 
 
-	private JMenuItem getJMenuItemAnalysis(final int chartStyle, final String subTitle){
+	private JMenuItem getJMenuItemAnalysis(final int chartStyle, final String mode){
 		final String title;
 		final int iColumns[];
 		
@@ -2271,7 +2266,7 @@ public class MainFrame extends JFrame {
 			iColumns = new int[]{};
 		}
 		
-		JMenuItem menuItem = new JMenuItem(subTitle);
+		JMenuItem menuItem = new JMenuItem(mode);
 		
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -2286,10 +2281,10 @@ public class MainFrame extends JFrame {
 				}
 
 				DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, commenter.getName());
-				StatFrame sf = new StatFrame(dc.getSummary(subTitle), headers);
+				StatFrame sf = new StatFrame(dc.getSummary(mode), headers);
 				sf.showChart(chartStyle);
 				sf.pack();
-				sf.setTitle("集計結果/" + title + "/" + subTitle);
+				sf.setTitle("集計結果/" + title + "/" + mode);
 				sf.setVisible(true);
 			}
 		});
