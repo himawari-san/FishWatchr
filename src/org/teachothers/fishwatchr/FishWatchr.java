@@ -63,6 +63,8 @@ public class FishWatchr {
 		UIManager.put("RadioButtonMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
 		UIManager.put("RadioButtonMenuItem.acceleratorFont",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
 		
+		System.setProperty("awt.useSystemAAFontSettings", "on");
+		
 		MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
 		mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 		mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
