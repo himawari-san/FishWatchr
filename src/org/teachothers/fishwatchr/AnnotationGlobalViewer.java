@@ -424,7 +424,6 @@ public class AnnotationGlobalViewer extends JPanel {
 						(x0AnnotationViewerPanel +
 						(commentList.unifiedCommentTime(targetComment) - selectionStartTime) / 1000 / scaleFactor);
 				g.fillRect(x, y0Histogram-y, markWidth, y);
-				this.getHeight();
 			}
 		}
 
