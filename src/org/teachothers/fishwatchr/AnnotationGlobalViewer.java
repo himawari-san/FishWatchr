@@ -252,6 +252,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	public void updateScaleFactor(){
 		scaleFactor = ((float)(selectionEndTime - selectionStartTime)) / 1000 / (annotationViewerPanel.getWidth() - x0AnnotationViewerPanel*2 - 1);
+		setFocusRange(focusedRange); // update focusedRangeTick
 	}
 
 	public void paintComponent(Graphics g) {
