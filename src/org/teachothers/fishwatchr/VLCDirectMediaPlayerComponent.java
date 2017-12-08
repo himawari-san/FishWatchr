@@ -23,6 +23,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.lang.reflect.InvocationTargetException;
@@ -110,6 +111,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         
 		if (iOverlaidTextStyle != 0) {
 			g2.setFont(overlaidTextFont);
+			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
 			if(fm == null){
 				fm = g2.getFontMetrics();
