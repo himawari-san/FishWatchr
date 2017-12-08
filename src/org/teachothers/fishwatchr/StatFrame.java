@@ -85,9 +85,10 @@ public class StatFrame extends JFrame {
 	}
 
 	
-	public void showChart(int style){
+	public boolean showChart(int style){
 	    DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
 	    boolean flagLegend = false;
+	    boolean flagSuccess = true;
 	    
 	    if(style == CHART_STYLE_UNIQ){
 	    	String categoryName = StringUtils.join(headers, "/");
@@ -112,6 +113,14 @@ public class StatFrame extends JFrame {
 	    	TreeSet<String> setLabels = new TreeSet<String>();
 
 	    	for(Object[] record : data){
+	    		// is numeric?
+	    		try{
+		    		Double.parseDouble(record[2].toString());
+	    		} catch(NumberFormatException e){
+	    			flagSuccess = false;
+	    			continue;
+	    		}
+	    		
 		    	String key = record[0] + "\t" + record[1];
 		    	double addedValue = Double.parseDouble(record[2].toString()) * Double.parseDouble(record[3].toString());
 		    	setTargets.add(record[0].toString());
@@ -161,6 +170,8 @@ public class StatFrame extends JFrame {
 	    }
 	    
 	    chartPanel.add(new ChartPanel(chart));
+	    
+	    return flagSuccess;
 	}
 	
 	
