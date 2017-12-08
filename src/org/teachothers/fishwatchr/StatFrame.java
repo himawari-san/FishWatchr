@@ -1,6 +1,7 @@
 package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
@@ -149,7 +150,6 @@ public class StatFrame extends JFrame {
 		    }
 	    }
 	    
-	    
 	    JFreeChart chart = 
 	    	      ChartFactory.createBarChart("", // title
 	    	                                  "",
@@ -160,7 +160,17 @@ public class StatFrame extends JFrame {
 	    	                                  true,
 	    	                                  false);
 
+	    // font settings
+	    chart.setAntiAlias(true);
+	    chart.getLegend().setItemFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
+	    chart.getCategoryPlot().getDomainAxis().setLabelFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
+	    chart.getCategoryPlot().getDomainAxis().setTickLabelFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
+	    chart.getCategoryPlot().getRangeAxis().setLabelFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
+	    chart.getCategoryPlot().getRangeAxis().setTickLabelFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
+
+	    // rotate category labels
 	    chart.getCategoryPlot().getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
+	    
 	    if(!flagLegend){
 		    chart.removeLegend();
 	    }
