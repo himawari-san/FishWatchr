@@ -316,12 +316,17 @@ public class AnnotationGlobalViewer extends JPanel {
 		private void drawSelection(Graphics g){
 			g.setColor(Color.black);
 			
-			if(selectionEndX - selectionStartX < 0){
-				int t = selectionStartX;
-				selectionStartX = selectionEndX;
-				selectionEndX = t;
+			int tempSelectionStartX;
+			int tempSelectionEndX;
+			
+			if(selectionEndX - selectionStartX > 0){
+				tempSelectionStartX = selectionStartX;
+				tempSelectionEndX = selectionEndX;
+			} else {
+				tempSelectionStartX = selectionEndX;
+				tempSelectionEndX = selectionStartX;
 			}
-			g.drawRect(selectionStartX, 0, selectionEndX - selectionStartX, getHeight());
+			g.drawRect(tempSelectionStartX, 0, tempSelectionEndX - tempSelectionStartX, getHeight());
 		}
 		
 		
