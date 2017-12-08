@@ -2278,8 +2278,16 @@ public class MainFrame extends JFrame {
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int[] iSelectedColumns = iColumns;
-				if(iColumns == null){
+				if(iColumns == null){ // CHART_STYLE_UNIQ
 					iSelectedColumns = commentTable.getSelectedColumns();
+					if(iSelectedColumns.length == 0){
+						JOptionPane.showMessageDialog(null,  "分析したい列のセルを選択して下さい。");
+						return;
+					}
+				}
+				if(ctm.getFilteredCommentList().size() == 0){
+					JOptionPane.showMessageDialog(null,  "分析するデータがありません。");
+					return;
 				}
 				
 				String headers[] = new String[iSelectedColumns.length];
