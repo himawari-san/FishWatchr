@@ -2,10 +2,7 @@ package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.TreeSet;
 
 import javax.swing.JFrame;
@@ -101,7 +98,6 @@ public class StatFrame extends JFrame {
 	    	flagLegend = true;
 		    for(Object[] record : data){
 		    	dataSet.addValue(Double.parseDouble(record[iFreq].toString()), record[0].toString(), record[1].toString());
-//		    	dataSet.addValue(((Integer)record[iFreq]).doubleValue(), record[0].toString(), record[1].toString());
 		    }
 	    } else if(style == CHART_STYLE_EVAL){
 	    	flagLegend = true;
