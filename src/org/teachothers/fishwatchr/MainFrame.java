@@ -2526,11 +2526,11 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							String inputValue = JOptionPane.showInputDialog(
-									MainFrame.this, "現在の設定値: 前後 " + focusRange / 1000
+									MainFrame.this, "現在の設定値: 前後 " + (double)focusRange / 1000
 											+ " (sec)", "強調表示範囲",
 									JOptionPane.PLAIN_MESSAGE);
 							if (inputValue != null) {
-								focusRange = Integer.parseInt(inputValue) * 1000;
+								focusRange = (int)(Double.parseDouble(inputValue) * 1000);
 							}
 							annotationGlobalViewPanel.setFocusRange(focusRange);
 						}
