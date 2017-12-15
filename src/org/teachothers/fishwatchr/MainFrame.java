@@ -2739,26 +2739,30 @@ public class MainFrame extends JFrame {
 		int time;
 
 		public void run() {
-			if(timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW){
-				if(isSoundPanelEnable){
-					soundPanel.repaint();
+			try {
+				if (timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW) {
+					if (isSoundPanelEnable) {
+						soundPanel.repaint();
+					}
+					discussersPanel.repaintComponents();
+				} else {
+					annotationGlobalViewPanel.repaint();
 				}
-				discussersPanel.repaintComponents();
-			} else {
-				annotationGlobalViewPanel.repaint();
-			}
-			soundPlayer.updateVlcInfo();
-			if (jMenuItemOptionRecorderMode.isSelected()) {
-				time = soundPlayer.getElapsedTime();
-			} else {
-				time = soundPlayer.getCurrentRecordingTime();
-			}
-			soundPlayer.setOverlayText(commentTable.getCurrentComment());
-			timeCurrent.setTime(time / 1000);
-			timeSlider.setValue(time / 1000);
-			commentTable.indicateCurrentComment(time, focusRange);
-			if(jMenuItemOptionViewSyncMode.isSelected()){
-				commentTable.setViewCenterByTime(time);
+				soundPlayer.updateVlcInfo();
+				if (jMenuItemOptionRecorderMode.isSelected()) {
+					time = soundPlayer.getElapsedTime();
+				} else {
+					time = soundPlayer.getCurrentRecordingTime();
+				}
+				soundPlayer.setOverlayText(commentTable.getCurrentComment());
+				timeCurrent.setTime(time / 1000);
+				timeSlider.setValue(time / 1000);
+				commentTable.indicateCurrentComment(time, focusRange);
+				if (jMenuItemOptionViewSyncMode.isSelected()) {
+					commentTable.setViewCenterByTime(time);
+				}
+			} catch (Exception e) {
+				System.err.println("Error(MainFrame): some exception is caused in run() of DrawGraphTask.");
 			}
 		}
 	}
@@ -2766,13 +2770,17 @@ public class MainFrame extends JFrame {
 	
 	class DrawAnnotationGlobalViewerTask extends TimerTask {
 		public void run() {
-			if(timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW){
-				if(isSoundPanelEnable){
-					soundPanel.repaint();
+			try {
+				if(timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW){
+					if(isSoundPanelEnable){
+						soundPanel.repaint();
+					}
+					discussersPanel.repaintComponents();
+				} else {
+					annotationGlobalViewPanel.repaint();
 				}
-				discussersPanel.repaintComponents();
-			} else {
-				annotationGlobalViewPanel.repaint();
+			} catch (Exception e) {
+				System.err.println("Error(MainFrame): some exception is caused in run() of DrawAnnotationGlobalViewerTask.");
 			}
 		}
 	}
