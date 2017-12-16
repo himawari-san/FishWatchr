@@ -34,6 +34,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -102,6 +103,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	private int selectionStartTime = 0;
 	private int selectionEndTime = 0;
+	
+	private boolean isFiltered = true;
 	
 	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
 		this.ctm = ctm;
@@ -281,6 +284,10 @@ public class AnnotationGlobalViewer extends JPanel {
 	}
 	
 	
+	public void applyFilter(boolean flag){
+		isFiltered = flag;
+	}
+	
 	class AnnotationViewerPanel extends JPanel implements MouseMotionListener, MouseListener {
 		private static final long serialVersionUID = 1L;
 		private ToolTipManager ttm = ToolTipManager.sharedInstance();
@@ -332,18 +339,26 @@ public class AnnotationGlobalViewer extends JPanel {
 		
 		
 		private void drawHistogram(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
-			int n = filteredCommentList.size();
+			int n;
 			int freq;
 			Comment comment;
 			String targetCond = null;
 			String cond = null;
 			int selector = displayTypeSelector.getSelectedIndex();
 			int heightMax = (int)(getHeight() * (1 - ratioPlotArea));
+			List<Comment> targetList = commentList;
+			
+			if(isFiltered){
+				targetList = filteredCommentList;
+			} else {
+				targetList = commentList;
+			}
+			n = targetList.size();
 			
 			yScaleFactorHistogram = yScaleFactorHistogramNext;
 			g.setColor(Color.darkGray);
 			for(int i = 0; i < n; i++){
-				Comment targetComment = filteredCommentList.get(i);
+				Comment targetComment = targetList.get(i);
 				int targetCommentTime = commentList.unifiedCommentTime(targetComment);
 				freq = 0;
 				
@@ -363,7 +378,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 
 				for(int j = i+1; j < n; j++){
-					comment = filteredCommentList.get(j);
+					comment = targetList.get(j);
 
 					switch(selector){
 					case COMPARISON_NOTHING:
@@ -388,7 +403,7 @@ public class AnnotationGlobalViewer extends JPanel {
 					}
 				}
 				for(int j = i-1; j >= 0; j--){
-					comment = filteredCommentList.get(j);
+					comment = targetList.get(j);
 
 					switch(selector){
 					case COMPARISON_NOTHING:
@@ -434,8 +449,15 @@ public class AnnotationGlobalViewer extends JPanel {
 			String discusserName;
 			String commenterName;
 			String commentType;
+			List<Comment> targetList;
+
+			if(isFiltered){
+				targetList = filteredCommentList;
+			} else {
+				targetList = commentList;
+			}
 			
-			for(Comment comment : filteredCommentList){
+			for(Comment comment : targetList){
 				x = (int)
 						(x0AnnotationViewerPanel +
 								((float)(commentList.unifiedCommentTime(comment)- selectionStartTime) / 1000 ) / scaleFactor);

@@ -190,6 +190,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionFocusRange;
 	private JMenuItem jMenuItemOptionRecorderMode;
 	private JMenuItem jMenuItemOptionViewSyncMode;
+	private JMenuItem jMenuItemOptionFilteredViewMode;
 	private JMenuItem jMenuItemOptionWaveform;
 	private JMenu jMenuHelp;
 	private JMenuItem jMenuItemHelpVersion;
@@ -377,6 +378,7 @@ public class MainFrame extends JFrame {
 		jMenuItemOptionViewSyncMode.setSelected(isViewSyncMode);
 		jMenuItemOptionWaveform.setSelected(flagWaveform);
 		jMenuItemAnnotationMulti.setSelected(isAnnotationMulti);
+		jMenuItemOptionFilteredViewMode.setSelected(true);
 
 		displayPanel = getDisplayPanel();
 		commentPanel = getCommentPanel(); // execute after getJMenuBar();
@@ -850,6 +852,7 @@ public class MainFrame extends JFrame {
 		timeSlider.setMaximum((int) soundPlayer.getSoundLength());
 		timeSlider.setEnabled(true);
 		timeEnd.setTime((int) soundPlayer.getSoundLength());
+		annotationGlobalViewPanel.applyFilter(jMenuItemOptionFilteredViewMode.isSelected());
 		annotationGlobalViewPanel.updatePanel();
 		return true;
 	}
@@ -2324,6 +2327,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.addSeparator();
 			jMenuOption.add(getJMenuItemOptionRecorderMode());
 			jMenuOption.add(getJMenuItemOptionViewSyncMode());
+			jMenuOption.add(getJMenuItemOptionFilterdViewMode());
 			jMenuOption.add(getJMenuItemOptionWaveform());
 		}
 		return jMenuOption;
@@ -2585,6 +2589,22 @@ public class MainFrame extends JFrame {
 	}
 
 
+	private JMenuItem getJMenuItemOptionFilterdViewMode() {
+		if (jMenuItemOptionFilteredViewMode == null) {
+			jMenuItemOptionFilteredViewMode = new JCheckBoxMenuItem("フィルタ連動描画");
+			jMenuItemOptionFilteredViewMode.setAccelerator(KeyStroke.getKeyStroke('V',
+					KeyEvent.CTRL_MASK, false));
+			jMenuItemOptionFilteredViewMode
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						annotationGlobalViewPanel.applyFilter(jMenuItemOptionFilteredViewMode.isSelected());
+					}
+				});
+		}
+		return jMenuItemOptionFilteredViewMode;
+	}
+
+	
 	private JMenuItem getJMenuItemOptionWaveform() {
 		if (jMenuItemOptionWaveform == null) {
 			jMenuItemOptionWaveform = new JCheckBoxMenuItem("波形データ読込み");
