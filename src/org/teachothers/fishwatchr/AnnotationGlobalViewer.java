@@ -116,7 +116,8 @@ public class AnnotationGlobalViewer extends JPanel {
 		init();
 	}
 
-	private void init(){
+	public void init(){
+		initScaleFactor();
 		updatePanel();
 	}
 	
@@ -228,7 +229,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		Collections.sort(commenterNames);
 
 		// update scaleFactor
-		initScaleFactor();
+		updateScaleFactor();
 		focusedRangeTick = (int)(focusedRange/scaleFactor/1000);
 		yScaleFactorHistogram = Y_SCALE_FACTOR_DEFAULT;
 		yScaleFactorHistogramNext = yScaleFactorHistogram;

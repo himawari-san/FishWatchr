@@ -853,7 +853,7 @@ public class MainFrame extends JFrame {
 		timeSlider.setEnabled(true);
 		timeEnd.setTime((int) soundPlayer.getSoundLength());
 		annotationGlobalViewPanel.applyFilter(jMenuItemOptionFilteredViewMode.isSelected());
-		annotationGlobalViewPanel.updatePanel();
+		annotationGlobalViewPanel.init();
 		return true;
 	}
 
