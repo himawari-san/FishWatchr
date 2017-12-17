@@ -46,7 +46,7 @@ import javax.swing.table.TableCellEditor;
 public class CommentTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
-	private static final String LABEL_FILTER_CANCEL = "[フィルタの解除]";
+	private static final String LABEL_FILTER_CANCEL = "[全フィルタの解除]";
 	private static final String LABEL_KEY_SET = "[検索文字列の指定]";
 	private static final int MAX_POPUP_ITEMS = 15;
 	public static final int UNDEFINED = -1;
@@ -507,7 +507,7 @@ public class CommentTable extends JTable {
 		public void mouseReleased(MouseEvent e) {
 			String selectedValue = ((JMenuItem) e.getSource()).getText();
 			if(selectedValue.equals(LABEL_FILTER_CANCEL)){
-				ctm.removeFilter(headerName);
+				ctm.clearFilter();
 			} else if(selectedValue.equals(LABEL_KEY_SET)){
 				String inputValue = JOptionPane.showInputDialog(
 						null, "正規表現: ", "検索文字列の入力",
