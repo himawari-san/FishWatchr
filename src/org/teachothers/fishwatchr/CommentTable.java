@@ -217,14 +217,14 @@ public class CommentTable extends JTable {
 			popupMenu.setPreferredSize(new Dimension(Math.min(400, popupMenu.getPreferredSize().width), popupMenu.getPreferredSize().height));
 			popupMenu.show(component, x, y);
 		} else {
-			JOptionPane op = new JOptionPane();
+			JOptionPane op = new JOptionPane("");
 			op.setMessageType(JOptionPane.INFORMATION_MESSAGE);
 			op.setOptionType(JOptionPane.OK_CANCEL_OPTION);
 			op.setSelectionValues(itemObjects);
 			op.setInitialSelectionValue(itemObjects[0]);
 			op.setWantsInput(true);
 			op.setIcon(null);
-			JDialog jd = op.createDialog(null, "test");
+			JDialog jd = op.createDialog(null, "絞り込み条件の指定");
 			jd.setLocation(x, (int)component.getLocationOnScreen().getY());
 			jd.setSize(new Dimension(Math.min(400, jd.getPreferredSize().width), Math.min(400, jd.getPreferredSize().height)));
 			jd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
