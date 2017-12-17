@@ -57,7 +57,7 @@ public class CommentTable extends JTable {
 	private int iCurrentComment = UNDEFINED;
 	private StringBuffer currentCommentBuffer = new StringBuffer();
 	
-	private JMenuItem menuItemStat = new JMenuItem("集計");
+	private JMenuItem menuItemStat = new JMenuItem("分析（頻度・選択項目）");
 	private JMenuItem menuItemDelete = new JMenuItem("行の削除");
 	private JMenuItem menuItemCellDelete = new JMenuItem("セル値の削除");
 
@@ -88,9 +88,30 @@ public class CommentTable extends JTable {
 		menuItemStat.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int a;
-//				StatFrame sf = invokeStatFrame(StatFrame.CHART_STYLE_UNIQ);
-//				sf.setSize(400,  200);
+				int[] iSelectedColumns = getSelectedColumns();
+				if(iSelectedColumns.length == 0){
+					JOptionPane.showMessageDialog(null,  "分析する列のセルを選択して下さい。");
+					return;
+				}
+				if(ctm.getFilteredCommentList().size() == 0){
+					JOptionPane.showMessageDialog(null,  "分析するデータがありません。");
+					return;
+				}
+				
+				String headers[] = new String[iSelectedColumns.length];
+				for(int i = 0; i < iSelectedColumns.length; i++){
+					headers[i] = ctm.getColumnName(iSelectedColumns[i]);
+				}
+
+				DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, "");
+				StatFrame sf = new StatFrame(dc.getSummary(DataCounter.SUMMARY_MODE_ALL_COMPARE), headers);
+				if(!sf.showChart(StatFrame.CHART_STYLE_UNIQ)){
+					JOptionPane.showMessageDialog(null,  "ラベルが数値でないデータが含まれています。");
+					return;
+				}
+				sf.pack();
+				sf.setTitle("集計結果/" + StatFrame.LABEL_STYLE_UNIQ + "/" + DataCounter.SUMMARY_MODE_ALL);
+				sf.setVisible(true);
 			}
 		});
 		
