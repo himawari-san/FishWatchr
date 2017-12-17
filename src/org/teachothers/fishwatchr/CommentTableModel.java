@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -33,7 +34,7 @@ public class CommentTableModel extends AbstractTableModel {
 	public ArrayList<User> discussers;
 	public ArrayList<CommentType> commentTypes;
 	private ArrayList<Comment> filteredCommentList = new ArrayList<Comment>();
-	private HashMap<String, String> filters = new HashMap<String, String>();
+	private HashMap<String, Pattern> filters = new HashMap<String, Pattern>();
 	private SimpleTimePeriod selectedPeriod = null;
 	
 	
@@ -190,7 +191,8 @@ public class CommentTableModel extends AbstractTableModel {
 
 	
 	void addFilter(String header, String value){
-		filters.put(header, value);
+		Pattern p = Pattern.compile(value);
+		filters.put(header, p);
 	}
 	
 	
@@ -220,14 +222,14 @@ public class CommentTableModel extends AbstractTableModel {
 		
 		for(Comment comment: commentList){
 			boolean flag = true;
-			for(Map.Entry<String, String> filter : filters.entrySet()){
+			for(Map.Entry<String, Pattern> filter : filters.entrySet()){
 				String headerName = filter.getKey();
 				String value = comment.getValueByHeaderName(headerName).toString();
-				String filterCond = filter.getValue();
-				if(value != null && !value.matches((String)filterCond)){
+				Pattern filterCond = filter.getValue();
+				if(value != null && !filterCond.matcher(value).find()){
 					flag = false;
 					break;
-				} else if(value == null && !((String)filterCond).isEmpty()){
+				} else if(value == null && !filterCond.matcher("").find()){
 					flag = false;
 					break;
 				}
