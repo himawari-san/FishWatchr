@@ -2302,6 +2302,7 @@ public class MainFrame extends JFrame {
 				StatFrame sf = new StatFrame(dc.getSummary(mode), headers);
 				if(!sf.showChart(chartStyle)){
 					JOptionPane.showMessageDialog(null,  "ラベルが数値でないデータが含まれています。");
+					return;
 				}
 				sf.pack();
 				sf.setTitle("集計結果/" + title + "/" + mode);
