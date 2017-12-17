@@ -225,7 +225,8 @@ public class CommentTable extends JTable {
 			op.setWantsInput(true);
 			op.setIcon(null);
 			JDialog jd = op.createDialog(null, "test");
-			jd.setSize(new Dimension(Math.min(400, jd.getPreferredSize().width), jd.getPreferredSize().height));
+			jd.setLocation(x, (int)component.getLocationOnScreen().getY());
+			jd.setSize(new Dimension(Math.min(400, jd.getPreferredSize().width), Math.min(400, jd.getPreferredSize().height)));
 			jd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			jd.setVisible(true);
 			selectedValue = (String) op.getInputValue();
