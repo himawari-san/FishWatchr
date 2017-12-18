@@ -149,8 +149,8 @@ public class AnnotationGlobalViewer extends JPanel {
 		});
 		p2.add(new JLabel("表示"));
 		p2.add(targetSelector);
-		p2.add(new JLabel("比較"));
-		p2.add(displayTypeSelector);
+//		p2.add(new JLabel("比較"));
+//		p2.add(displayTypeSelector);
 		p2.add(resetScaleButton);
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
