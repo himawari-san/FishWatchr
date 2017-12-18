@@ -61,6 +61,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -137,6 +138,7 @@ public class MainFrame extends JFrame {
 	private JButton soundBackwardButton;
 	private JButton soundStopButton;
 	private JButton soundRecordButton;
+	private JCheckBox listViewSyncCheckBox;
 
 	private TimeDisplay timeCurrent;
 	private TimeDisplay timeEnd;
@@ -548,6 +550,16 @@ public class MainFrame extends JFrame {
 			playerOperationPanel.add(soundForwardButton);
 			playerOperationPanel.add(soundStopButton);
 			playerOperationPanel.add(soundRecordButton);
+
+			listViewSyncCheckBox = new JCheckBox("注記連動");
+			listViewSyncCheckBox.setToolTipText("Ctrl+Y");
+			listViewSyncCheckBox.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					jMenuItemOptionViewSyncMode.doClick();
+				}
+			});
+			playerOperationPanel.add(listViewSyncCheckBox);
 
 			soundRecordButton.setMnemonic(KeyEvent.VK_R);
 			soundPlayButton.setMnemonic(KeyEvent.VK_P);
@@ -2577,8 +2589,10 @@ public class MainFrame extends JFrame {
 							try {
 								if(jMenuItemOptionViewSyncMode.isSelected()){
 									config.setValue("/settings/isViewSyncMode", "value", "true");
+									listViewSyncCheckBox.setSelected(true);
 								} else {
 									config.setValue("/settings/isViewSyncMode", "value", "false");
+									listViewSyncCheckBox.setSelected(false);
 								}
 							} catch (XPathExpressionException e1) {
 								e1.printStackTrace();
