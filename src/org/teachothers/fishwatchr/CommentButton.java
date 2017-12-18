@@ -87,6 +87,8 @@ public class CommentButton extends JButton {
 		this.isMultiAnnotation = isMultiAnnotation;
 
 		buttonType = BUTTON_TYPE_COMMENT;
+		getActionMap().put("normal", actNormal);
+		getActionMap().put("reverse", actReverse);
 	}
 
 	// 観察対象優先
@@ -101,6 +103,8 @@ public class CommentButton extends JButton {
 		this.isMultiAnnotation = isMultiAnnotation;
 		
 		buttonType = BUTTON_TYPE_DISCUSSER;
+		getActionMap().put("normal", actNormal);
+		getActionMap().put("reverse", actReverse);
 	}
 	
 	
@@ -122,8 +126,6 @@ public class CommentButton extends JButton {
 			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "normal");
 		}
 		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "reverse");
-		getActionMap().put("normal", actNormal);
-		getActionMap().put("reverse", actReverse);
 	}
 
 
