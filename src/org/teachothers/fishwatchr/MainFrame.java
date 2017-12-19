@@ -87,6 +87,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.teachothers.fishwatchr.AnnotationGlobalViewer.FilteredViewCheckBoxCallBack;
 import org.xml.sax.SAXException;
 
 
@@ -381,6 +382,7 @@ public class MainFrame extends JFrame {
 		jMenuItemOptionWaveform.setSelected(flagWaveform);
 		jMenuItemAnnotationMulti.setSelected(isAnnotationMulti);
 		jMenuItemOptionFilteredViewMode.setSelected(true);
+		
 
 		displayPanel = getDisplayPanel();
 		commentPanel = getCommentPanel(); // execute after getJMenuBar();
@@ -1132,6 +1134,13 @@ public class MainFrame extends JFrame {
 			timeLinePanel = getTimeLinePanel();
 			annotationGlobalViewPanel = new AnnotationGlobalViewer(ctm, soundPlayer, discussers, commentTypes);
 			annotationGlobalViewPanel.setFocusRange(focusRange);
+			annotationGlobalViewPanel.setCallBack(new FilteredViewCheckBoxCallBack() {
+				@Override
+				public void callback(boolean flag) {
+					jMenuItemOptionFilteredViewMode.doClick();
+				}
+			});
+			annotationGlobalViewPanel.applyFilter(jMenuItemOptionFilteredViewMode.isSelected());
 			annotationGlobalViewPanel.setExternalMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {

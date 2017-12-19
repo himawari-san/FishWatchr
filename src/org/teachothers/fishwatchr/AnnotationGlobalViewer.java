@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -104,7 +105,9 @@ public class AnnotationGlobalViewer extends JPanel {
 	private int selectionStartTime = 0;
 	private int selectionEndTime = 0;
 	
-	private boolean isFiltered = true;
+	private FilteredViewCheckBoxCallBack cb = null;
+	private JCheckBox filteredViewCheckBox; 
+
 	
 	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
 		this.ctm = ctm;
@@ -151,6 +154,15 @@ public class AnnotationGlobalViewer extends JPanel {
 		p2.add(targetSelector);
 //		p2.add(new JLabel("比較"));
 //		p2.add(displayTypeSelector);
+		filteredViewCheckBox = new JCheckBox("フィルタ連動");
+		filteredViewCheckBox.setToolTipText("Ctrl+V");
+		filteredViewCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cb.callback(filteredViewCheckBox.isSelected());
+			}
+		});
+		p2.add(filteredViewCheckBox);
 		p2.add(resetScaleButton);
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
@@ -286,7 +298,12 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	
 	public void applyFilter(boolean flag){
-		isFiltered = flag;
+		filteredViewCheckBox.setSelected(flag); 
+	}
+	
+	
+	public void setCallBack(FilteredViewCheckBoxCallBack cb){
+		this.cb = cb;
 	}
 	
 	class AnnotationViewerPanel extends JPanel implements MouseMotionListener, MouseListener {
@@ -349,7 +366,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			int heightMax = (int)(getHeight() * (1 - ratioPlotArea));
 			List<Comment> targetList = commentList;
 			
-			if(isFiltered){
+			if(filteredViewCheckBox.isSelected()){
 				targetList = filteredCommentList;
 			} else {
 				targetList = commentList;
@@ -452,7 +469,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			String commentType;
 			List<Comment> targetList;
 
-			if(isFiltered){
+			if(filteredViewCheckBox.isSelected()){
 				targetList = filteredCommentList;
 			} else {
 				targetList = commentList;
@@ -608,5 +625,10 @@ public class AnnotationGlobalViewer extends JPanel {
 				}
 			}
 		}
+	}
+	
+	
+	public interface FilteredViewCheckBoxCallBack {
+		void callback(boolean flag);
 	}
 }
