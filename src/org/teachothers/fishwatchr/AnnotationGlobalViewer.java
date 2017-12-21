@@ -146,6 +146,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		targetSelector = new JComboBox<String>(targets);
 		displayTypeSelector = new JComboBox<String>(displayTypes);
 		resetScaleButton = new JButton("リセット");
+		resetScaleButton.setToolTipText("全体表示の範囲を初期化します");
 		resetScaleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -159,7 +160,7 @@ public class AnnotationGlobalViewer extends JPanel {
 //		p2.add(new JLabel("比較"));
 //		p2.add(displayTypeSelector);
 		filteredViewCheckBox = new JCheckBox("フィルタ連動");
-		filteredViewCheckBox.setToolTipText("Ctrl+V");
+		filteredViewCheckBox.setToolTipText("Ctrl+V: 表示をフィルタと連動させます");
 		filteredViewCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

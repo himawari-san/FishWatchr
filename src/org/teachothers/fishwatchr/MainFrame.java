@@ -554,7 +554,7 @@ public class MainFrame extends JFrame {
 			playerOperationPanel.add(soundRecordButton);
 
 			listViewSyncCheckBox = new JCheckBox("注記連動");
-			listViewSyncCheckBox.setToolTipText("Ctrl+Y");
+			listViewSyncCheckBox.setToolTipText("Ctrl+Y: 注記と再生位置を連動させます");
 			listViewSyncCheckBox.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
