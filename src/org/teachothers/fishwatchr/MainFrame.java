@@ -2159,7 +2159,9 @@ public class MainFrame extends JFrame {
 									MainFrame.this, "現在の設定値: "
 											+ currentCommenterName, Comment.ITEM_ANNOTATOR + "名",
 									JOptionPane.PLAIN_MESSAGE);
-							if(inputValue == null || inputValue.isEmpty()){
+							if(inputValue == null){
+								// do nothing if canceled
+							} else if(inputValue.isEmpty()){
 								JOptionPane.showMessageDialog(null, Comment.ITEM_ANNOTATOR + "名が空です。");
 							} else if(inputValue.matches(".*[\\s<>/&'\"].*")){
 								JOptionPane.showMessageDialog(null, inputValue + "\nには，使用できない文字（<>/\"\'& および空白）が含まれているため，設定値を反映しませんでした。");
