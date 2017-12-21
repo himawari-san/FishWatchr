@@ -917,7 +917,10 @@ public class MainFrame extends JFrame {
 	}
 
 
-	public void updateMediaLengthUI(){
+	public void updateMediaLengthUI(int prevState){
+		if(prevState == SoundPlayer.PLAYER_STATE_RECORD){
+			annotationGlobalViewPanel.initScaleFactor();
+		}
 		annotationGlobalViewPanel.updatePanel();
 		timeSlider.setMaximum((int)soundPlayer.getSoundLength());
 		timeEnd.setTime((int)soundPlayer.getSoundLength());

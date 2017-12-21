@@ -621,7 +621,7 @@ public class SoundPlayer extends Thread {
 			@Override
 			public void run() {
 		        mainFrame.changeState(PLAYER_STATE_STOP);
-		        mainFrame.updateMediaLengthUI();
+		        mainFrame.updateMediaLengthUI(PLAYER_STATE_RECORD);
 			}
 		});
         System.err.println("initcall state stop");
