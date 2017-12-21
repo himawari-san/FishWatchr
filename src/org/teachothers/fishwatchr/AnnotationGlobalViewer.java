@@ -170,6 +170,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		p2.add(filteredViewCheckBox);
 		p2.add(resetScaleButton);
 		viewForwardButton.setToolTipText("表示を前に進める");
+		viewForwardButton.setPreferredSize(new Dimension(50, viewForwardButton.getPreferredSize().height));
 		viewForwardButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -189,6 +190,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			}
 		});
 		viewBackwardButton.setToolTipText("表示を後ろに戻す");
+		viewBackwardButton.setPreferredSize(new Dimension(50, viewBackwardButton.getPreferredSize().height));
 		viewBackwardButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
