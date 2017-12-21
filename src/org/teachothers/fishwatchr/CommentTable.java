@@ -34,9 +34,11 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -238,20 +240,28 @@ public class CommentTable extends JTable {
 			popupMenu.setPreferredSize(new Dimension(Math.min(400, popupMenu.getPreferredSize().width), popupMenu.getPreferredSize().height));
 			popupMenu.show(component, x, y);
 		} else {
-			JOptionPane op = new JOptionPane("");
+			JList<Object> list = new JList<Object>(itemObjects);
+			JOptionPane op = new JOptionPane(new JScrollPane(list));
 			op.setMessageType(JOptionPane.INFORMATION_MESSAGE);
 			op.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-			op.setSelectionValues(itemObjects);
-			op.setInitialSelectionValue(itemObjects[0]);
-			op.setWantsInput(true);
 			op.setIcon(null);
-			JDialog jd = op.createDialog(null, "絞り込み条件の指定");
+			final JDialog jd = op.createDialog(component, "絞り込み条件の指定");
+			list.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if(e.getClickCount() == 2){
+						jd.setVisible(false);
+					}
+				}
+			});
 			jd.setLocation(x, (int)component.getLocationOnScreen().getY());
-			jd.setSize(new Dimension(Math.min(400, jd.getPreferredSize().width), Math.min(400, jd.getPreferredSize().height)));
+			jd.setPreferredSize(new Dimension(Math.min(400, jd.getPreferredSize().width), Math.min(400, jd.getPreferredSize().height)));
 			jd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			jd.setVisible(true);
-			selectedValue = (String) op.getInputValue();
-			if(selectedValue.equals(LABEL_FILTER_CANCEL)){
+			selectedValue = (String) list.getSelectedValue();
+			if(selectedValue == null || selectedValue.equals(JOptionPane.UNINITIALIZED_VALUE)){
+				return;
+			} else if(selectedValue.equals(LABEL_FILTER_CANCEL)){
 				ctm.removeFilter(headerName);
 			} else if(selectedValue.equals(LABEL_KEY_SET)){
 				String inputValue = JOptionPane.showInputDialog(
@@ -260,9 +270,6 @@ public class CommentTable extends JTable {
 				if (inputValue != null) {
 					ctm.addFilter(headerName, inputValue);
 				}
-				
-			} else if(selectedValue == null || selectedValue.equals(JOptionPane.UNINITIALIZED_VALUE)){
-				return;
 			} else {
 				ctm.addFilter(headerName, selectedValue);
 			}
