@@ -59,6 +59,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private static final int COMPARISON_LABEL = 2; 
 	private static final int COMPARISON_DISCUSSER = 3; 
 
+	private static final double SKIP_RATE = 0.2; 
 	
 	private final int xTimeTickHeight = 5;	
 
@@ -89,6 +90,9 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JComboBox<String> targetSelector;
 	private JComboBox<String> displayTypeSelector;
 	private JButton resetScaleButton;
+	private JButton viewForwardButton = new JButton(">");
+	private JButton viewBackwardButton = new JButton("<");
+
 	private String[] targets = {Comment.ITEM_LABEL, Comment.ITEM_TARGET, Comment.ITEM_ANNOTATOR};
 	private String[] displayTypes = {"なし", Comment.ITEM_ANNOTATOR, Comment.ITEM_LABEL, Comment.ITEM_TARGET};
 	private ArrayList<User> discussers;
@@ -164,6 +168,45 @@ public class AnnotationGlobalViewer extends JPanel {
 		});
 		p2.add(filteredViewCheckBox);
 		p2.add(resetScaleButton);
+		viewForwardButton.setToolTipText("表示を前に進める");
+		viewForwardButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int currentPeriod = selectionEndTime - selectionStartTime;
+				int skippedPeriod = (int)(currentPeriod * SKIP_RATE);
+				float totalTime = soundPlayer.getSoundLength() * 1000;
+				
+				if(totalTime > selectionEndTime + skippedPeriod){
+					selectionEndTime += skippedPeriod;
+					selectionStartTime += skippedPeriod;
+				} else {
+					selectionEndTime = (int)totalTime;
+					selectionStartTime = selectionEndTime - currentPeriod;
+				}
+				ctm.selectTimePeriod(new SimpleTimePeriod(selectionStartTime, selectionEndTime));
+				ctm.refreshFilter();
+			}
+		});
+		viewBackwardButton.setToolTipText("表示を後ろに戻す");
+		viewBackwardButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int currentPeriod = selectionEndTime - selectionStartTime;
+				int skippedPeriod = (int)(currentPeriod * SKIP_RATE);
+				
+				if(selectionStartTime - skippedPeriod > 0){
+					selectionEndTime -= skippedPeriod;
+					selectionStartTime -= skippedPeriod;
+				} else {
+					selectionEndTime = currentPeriod;
+					selectionStartTime = 0;
+				}
+				ctm.selectTimePeriod(new SimpleTimePeriod(selectionStartTime, selectionEndTime));
+				ctm.refreshFilter();
+			}
+		});
+		p2.add(viewBackwardButton);
+		p2.add(viewForwardButton);
 
 		displayPanel.add(annotationViewerPanel, BorderLayout.CENTER);
 		
