@@ -106,6 +106,8 @@ public class MainFrame extends JFrame {
 	
 	private static final String COMMENTER_NAME_GLUE1 = "_";
 	private static final String COMMENTER_NAME_GLUE2 = "_in_";
+	private static String[] mergeModes = {"通常", "時刻指定"};
+	
 	public static final String USER_NOT_SPECIFIED = "noname";
 	
 	public static final int MAX_DISCUSSERS = 8;
@@ -2451,8 +2453,6 @@ public class MainFrame extends JFrame {
 
 	
 	private JMenuItem getJMenuItemOptionMergeMode() {
-		String[] mergeModes = {"通常(経過時間)", "収録時刻"};
-
 		if (jMenuItemOptionMergeMode == null) {
 			jMenuItemOptionMergeMode = new JMenu("合併時同期モード");
 			ButtonGroup itemGroup = new ButtonGroup();
