@@ -1611,7 +1611,6 @@ public class MainFrame extends JFrame {
 
 	
 	private boolean mergeAnnotationFiles(String directoryName){
-//	    int option = JOptionPane.showConfirmDialog(MainFrame.this, "収録日時の指定をしますか？");
 	    Date recordingDate = null;
 	    if(iMergeMode > 0){
 			String inputValue = JOptionPane.showInputDialog(
@@ -1647,10 +1646,19 @@ public class MainFrame extends JFrame {
 		    	commentList.sortByTime();
 		    }
 
-			JOptionPane.showMessageDialog(MainFrame.this,
-					"マージ後の設定ファイルは，" + xf + " です。\n"
-					+ "マージしたファイルは，次のとおりです。\n"
-					+ StringUtils.join(results, "\n"));
+		    String message = 
+		    		mergeModes[iMergeMode] + "モードでマージしました。\n" 
+					+ "マージ後の設定ファイルは，\n"
+		    		+ xf + " です。\n"
+					+ "マージしたファイルは，次の" + results.size() + "ファイルです。"
+		    		+ "\n\n"
+					+ StringUtils.join(results, "\n");
+		    JTextArea messageArea = new JTextArea();
+		    messageArea.setText(message);
+		    JScrollPane scrollPane = new JScrollPane(messageArea);
+		    scrollPane.setPreferredSize(new Dimension(550, 400));
+		    messageArea.setCaretPosition(0);
+			JOptionPane.showMessageDialog(MainFrame.this, scrollPane);
 
 			if(!flagSyncCondition){
 				JOptionPane.showMessageDialog(MainFrame.this,
