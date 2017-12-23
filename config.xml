@@ -9,6 +9,9 @@
   <!-- [オプション]⇒[注釈連動再生] -->
   <isViewSyncMode value="false" />
 
+  <!-- [オプション]⇒[フォント] -->
+  <tableFontSize value="12" />
+  
   <!-- マニュアルのURL -->
   <manual_url value="http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0" />;
 

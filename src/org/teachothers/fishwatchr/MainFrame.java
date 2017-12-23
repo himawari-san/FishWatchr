@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
@@ -191,6 +192,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionSkipTime;
 	private JMenuItem jMenuItemOptionJumpAdjustment;
 	private JMenuItem jMenuItemOptionFocusRange;
+	private JMenuItem jMenuItemOptionFontSize;
 	private JMenuItem jMenuItemOptionRecorderMode;
 	private JMenuItem jMenuItemOptionViewSyncMode;
 	private JMenuItem jMenuItemOptionFilteredViewMode;
@@ -264,6 +266,7 @@ public class MainFrame extends JFrame {
 	private int iSelectedVideoDevice = 0;
 	private int iSelectedAudioDevice = 0;
 	
+	private int tableFontSize = FishWatchr.DEFAULT_FONT_SIZE;
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -318,6 +321,17 @@ public class MainFrame extends JFrame {
 				isViewSyncMode = true;
 			} else {
 				isViewSyncMode = false;
+			}
+		}
+		configValue = config.getFirstNodeAsString("/settings/tableFontSize/@value");
+		if(configValue != null){
+			try {
+				int newSize = Integer.parseInt(configValue);
+				if(newSize > 0){
+					tableFontSize = newSize;
+				}
+			} catch(NumberFormatException e){
+				System.err.println("Warning(MainFrame): invalid font size setting > " + configValue);
 			}
 		}
 		configValue = config.getFirstNodeAsString("/settings/manual_url/@value");
@@ -449,6 +463,8 @@ public class MainFrame extends JFrame {
 			commentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 			commentTable = new CommentTable(ctm);
+			commentTable.setFont(new Font(Font.DIALOG, Font.PLAIN, tableFontSize));
+			commentTable.getTableHeader().setFont(new Font(Font.DIALOG, Font.PLAIN, tableFontSize));
 			commentTable.addMouseListener(new java.awt.event.MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					int row = commentTable.getSelectedRow();
@@ -2356,6 +2372,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.add(getJMenuItemOptionJumpAdjustment());
 //			jMenuOption.add(getJMenuItemAnnotationTimeCorrection());
 			jMenuOption.add(getJMenuItemOptionFocusRange());
+			jMenuOption.add(getJMenuItemOptionChangeFontSize());
 			jMenuOption.addSeparator();
 			jMenuOption.add(getJMenuItemOptionRecorderMode());
 			jMenuOption.add(getJMenuItemOptionViewSyncMode());
@@ -2576,6 +2593,27 @@ public class MainFrame extends JFrame {
 	}
 
 	
+	private JMenuItem getJMenuItemOptionChangeFontSize() {
+		if (jMenuItemOptionFontSize == null) {
+			jMenuItemOptionFontSize = new JMenuItem("フォントサイズ");
+			jMenuItemOptionFontSize
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							Integer sizeList[] = {10, 11, 12, 13, 14, 15, 16, 17, 18};
+							Object inputValue = JOptionPane.showInputDialog(
+									MainFrame.this, "現在の設定値:", "フォントサイズ",
+									JOptionPane.PLAIN_MESSAGE, null, sizeList, tableFontSize);
+							if (inputValue != null) {
+								tableFontSize = (int)inputValue;
+							}
+							commentTable.setFont(new Font(Font.DIALOG, Font.PLAIN, tableFontSize));
+							commentTable.getTableHeader().setFont(new Font(Font.DIALOG, Font.PLAIN, tableFontSize));
+						}
+					});
+		}
+		return jMenuItemOptionFontSize;
+	}
+
 	
 	private JMenuItem getJMenuItemOptionRecorderMode() {
 		if (jMenuItemOptionRecorderMode == null) {
