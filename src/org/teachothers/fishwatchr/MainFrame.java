@@ -2325,7 +2325,12 @@ public class MainFrame extends JFrame {
 				}
 
 				DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, commenter.getName());
-				StatFrame sf = new StatFrame(dc.getSummary(mode), headers);
+				ArrayList<Object[]> results = dc.getSummary(mode);
+				if(results.size() == 0){
+					JOptionPane.showMessageDialog(null,  "表示するデータがありません。");
+					return;
+				}
+				StatFrame sf = new StatFrame(results, headers);
 				if(!sf.showChart(chartStyle)){
 					JOptionPane.showMessageDialog(null,  "ラベルが数値でないデータが含まれています。");
 					return;
