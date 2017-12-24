@@ -205,4 +205,22 @@ public class Comment {
 		return isFocused;
 	}
 	
+	
+	public String toString(){
+		StringBuffer str = new StringBuffer();
+		
+		str.append(getCommenter());
+		str.append("\t");
+		str.append(getDate());
+		str.append("\t");
+		str.append(getDiscusser());
+		str.append("\t");
+		str.append(getCommentType());
+		str.append("\t");
+		str.append(getSetName());
+		str.append("\t");
+		str.append(getContentBody());
+		
+		return str.toString();
+	}
 }

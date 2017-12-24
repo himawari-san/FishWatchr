@@ -77,6 +77,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
 import javax.swing.border.EtchedBorder;
@@ -1633,7 +1634,20 @@ public class MainFrame extends JFrame {
 	    }
 
 	    try {
+	    	// merge
 			ArrayList<String> results = commentList.merge(directoryName, commentTypes, discussers);
+			ArrayList<String> deletedResults = null;
+			String deleteMessage = "";
+			if(commentList.isDuplicated()){
+				int optionValue = JOptionPane.showConfirmDialog(this, "重複する注釈を削除しますか？", "注釈結果の重複", JOptionPane.YES_NO_OPTION);
+				if(optionValue == JOptionPane.YES_OPTION){
+					deletedResults = commentList.uniq();
+					deleteMessage = "<li>重複する注釈が，" + deletedResults.size() + "件削除されました（リストはウィンドウ末尾）。</li>";
+				} else {
+					deleteMessage = "<li>重複する注釈が存在しますが，削除せず取り込みました。</li>";
+				}
+			}
+			
 			mf = results.remove(0); // mediafilename
 			xf = CommentList.getUniqueFilename(mf + CommentList.MERGED_FILE_SUFFIX);
 			commentList.setModified(true);
@@ -1647,17 +1661,29 @@ public class MainFrame extends JFrame {
 		    }
 
 		    String message = 
-		    		mergeModes[iMergeMode] + "モードでマージしました。\n" 
-					+ "マージ後の設定ファイルは，\n"
-		    		+ xf + " です。\n"
-					+ "マージしたファイルは，次の" + results.size() + "ファイルです。"
-		    		+ "\n\n"
-					+ StringUtils.join(results, "\n");
-		    JTextArea messageArea = new JTextArea();
-		    messageArea.setText(message);
-		    JScrollPane scrollPane = new JScrollPane(messageArea);
+		    		"<html>"
+		    		+ "<h1>マージの概要</h1>"
+		    		+ "<ul>" 
+		    		+ "<li>" + mergeModes[iMergeMode] + "モードでマージしました。</li>" 
+					+ "<li>マージ後の設定ファイル:<br />" + xf + "</li>"
+					+ "<li>マージしたファイルは，" + results.size() + "ファイルです。</li>"
+					+ "<li>マージした注釈は，" + commentList.size() + "件です。</li>"
+		    		+ deleteMessage
+		    		+ "</ul>" 
+					+ "<h1>マージしたファイル</h1>"
+		    		+ "<ul><li>" + StringUtils.join(results, "</li><li>") + "</li></ul>";
+		    if(deletedResults != null){
+		    	message +=
+						"<h1>削除した注釈</h1>"
+					    + "<ul><li>" + StringUtils.join(deletedResults, "</li><li>") + "</li></ul>";
+		    			
+		    }
+		    JTextPane messagePane = new JTextPane();
+			messagePane.setContentType("text/html");
+		    messagePane.setText(message);
+		    JScrollPane scrollPane = new JScrollPane(messagePane);
 		    scrollPane.setPreferredSize(new Dimension(550, 400));
-		    messageArea.setCaretPosition(0);
+		    messagePane.setCaretPosition(0);
 			JOptionPane.showMessageDialog(MainFrame.this, scrollPane);
 
 			if(!flagSyncCondition){

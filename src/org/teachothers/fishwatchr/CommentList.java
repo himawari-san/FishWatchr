@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -510,6 +512,44 @@ public class CommentList extends LinkedList<Comment> {
 		results.add(0, mediaFilename);
 		
 		return results;
+	}
+	
+	
+	public boolean isDuplicated(){
+		HashSet<String> set = new HashSet<String>();
+		
+		for(Comment comment : this){
+			String key = comment.toString();
+			if(set.contains(key)){
+				return true;
+			}
+			set.add(key);
+		}
+		
+		return false;
+	}
+	
+	
+	public ArrayList<String> uniq(){
+		HashSet<String> set = new HashSet<String>();
+		ArrayList<String> deletedKeys = new ArrayList<>();
+		
+		Iterator<Comment> it = iterator();
+		
+		while(it.hasNext()){
+			Comment comment = it.next();
+			
+			String key = comment.toString();
+			if(set.contains(key)){
+				it.remove();
+				deletedKeys.add(key);
+			} else {
+				set.add(key);
+			}
+		}
+		
+		refreshID();
+		return deletedKeys;
 	}
 	
 	
