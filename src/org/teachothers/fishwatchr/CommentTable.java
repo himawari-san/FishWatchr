@@ -262,7 +262,7 @@ public class CommentTable extends JTable {
 			if(selectedValue == null || selectedValue.equals(JOptionPane.UNINITIALIZED_VALUE)){
 				return;
 			} else if(selectedValue.equals(LABEL_FILTER_CANCEL)){
-				ctm.removeFilter(headerName);
+				ctm.clearFilter();
 			} else if(selectedValue.equals(LABEL_KEY_SET)){
 				String inputValue = JOptionPane.showInputDialog(
 						null, "正規表現: ", "検索文字列の入力",
