@@ -1719,6 +1719,7 @@ public class MainFrame extends JFrame {
 		timeSlider.setEnabled(true);
 		timeEnd.setTime((int) soundPlayer.getSoundLength());
 		annotationGlobalViewPanel.updatePanel();
+		annotationGlobalViewPanel.init();
 
 		soundPlayer.myStop();
 		changeStateStop();
