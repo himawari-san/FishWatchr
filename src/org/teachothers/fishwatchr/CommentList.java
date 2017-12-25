@@ -498,6 +498,7 @@ public class CommentList extends LinkedList<Comment> {
 		// the basetime file must be loaded at the end for setting startTime
 		if(baseTimeFileCandidates.size() > 0){
 			String filename = baseTimeFileCandidates.get(0).getCanonicalPath();
+			results.add(0, new File(filename).getName());
 			if(baseTimeFileCandidates.size() != 1){
 				System.err.println("Warning(CommentList): " + filename + "will be used, although more than 2 basetime files were found.");
 			}
