@@ -61,6 +61,7 @@ public class CommentList extends LinkedList<Comment> {
 	private static final long serialVersionUID = 1L;
 	private static final String NOT_DEFINED = "(未定義)";
 	private static final int maxElapsedTime = 1000 * 60 * 60 * 2; // 2 hours
+	private static final String LINEBREAK = "__/FW+LINEBREAK/__";
 	
 	public static final String FILE_SUFFIX = ".xml";
 	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
@@ -223,7 +224,8 @@ public class CommentList extends LinkedList<Comment> {
 					+ " comment_type=\""
 					+ comment.getCommentType().getType() + "\""
 					+ " comment_time=\"" + comment.getCommentTime() + "\""
-					+ " comment_time_end=\"" + comment.getCommentTimeEnd()
+					+ " comment_time_end=\"" + comment.getCommentTimeEnd() + "\""
+					+ " aux=\"" + comment.getAux().replaceAll("\n", LINEBREAK)
 					+ "\"" + ">"
 					+ StringEscapeUtils.escapeXml11(comment.getCommentBody())
 					+ "</comment>\n");
@@ -391,6 +393,7 @@ public class CommentList extends LinkedList<Comment> {
 				User discusser = new User(commentNode.getAttribute("discusser"));
 				User commenter = new User(commentNode.getAttribute("commenter"));
 				String strCommentType = commentNode.getAttribute("comment_type");
+				String aux = commentNode.getAttribute("aux").replaceAll(LINEBREAK, "\n");
 
 				// コメントタイプ登録
 				CommentType commentType = new CommentType("", Color.gray); // default
@@ -411,7 +414,7 @@ public class CommentList extends LinkedList<Comment> {
 
 				Comment comment = new Comment();
 				comment.set(contentBody, commentType, commenter, discusser,
-						commentDate, commentTime, setName);
+						commentDate, commentTime, setName, aux);
 
 				if (commentTimeEnd != Comment.COMMENT_TIME_END_UNDEFINED)
 					comment.setCommentTimeEnd(commentTimeEnd);
@@ -543,7 +546,7 @@ public class CommentList extends LinkedList<Comment> {
 			String key = comment.catCommentInfo();
 			if(keyMap.containsKey(key)){
 				Comment storedComment = keyMap.get(key);
-				storedComment.mergeBody(comment);
+				storedComment.mergeContents(comment);
 				it.remove();
 				deletedKeys.add(key);
 			} else {

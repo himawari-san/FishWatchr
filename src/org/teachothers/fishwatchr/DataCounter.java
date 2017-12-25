@@ -93,7 +93,8 @@ public class DataCounter {
 						comment.getDiscusser(),
 						new Date(comment.getDate()),
 						comment.getCommentTime(),
-						comment.getSetName());
+						comment.getSetName(),
+						comment.getAux());
 				comment = newComment;
 			} else if(mode == SUMMARY_MODE_SELF_COMPARE){
 				Comment newComment = new Comment();
@@ -112,7 +113,8 @@ public class DataCounter {
 						comment.getDiscusser(),
 						new Date(comment.getDate()),
 						comment.getCommentTime(),
-						comment.getSetName());
+						comment.getSetName(),
+						comment.getAux());
 				comment = newComment;
 			} else if(mode == SUMMARY_MODE_ALL_COMPARE){
 			}

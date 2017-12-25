@@ -23,16 +23,17 @@ import java.util.HashMap;
 
 
 public class Comment {
-	public static final int N_Field = 9;
+	public static final int N_Field = 10;
 	public static final int F_ID = 0; // コメントid
 	public static final int F_COMMENT_TIME = 1; // 開始からの経過時間(msec)
 	public static final int F_COMMENTER = 2;
 	public static final int F_DISCUSSER = 3;
 	public static final int F_COMMENT_TYPE = 4;
 	public static final int F_COMMENT = 6;
-	public static final int F_DATE = 7; // コメントした日時
+	public static final int F_DATE = 8; // コメントした日時
 	public static final int F_SET_NAME = 5; // コメントセット名
-	public static final int F_COMMENT_TIME_END = 8; // 範囲型のコメントの終了時間
+	public static final int F_AUX = 7; // コメント補助情報
+	public static final int F_COMMENT_TIME_END = 9; // 範囲型のコメントの終了時間
 //	public static final int F_COMMENT_TIME_OFFSET = 9; // 経過時間に対するオフセット
 	
 	public static final String ITEM_NUMBER = "番号";
@@ -42,8 +43,9 @@ public class Comment {
 	public static final String ITEM_LABEL = "ラベル";
 	public static final String ITEM_SET = "セット";
 	public static final String ITEM_COMMENT = "コメント";
+	public static final String ITEM_AUX = "補助情報";
 
-	public static final String headers[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT};
+	public static final String headers[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
 	public static final int COMMENT_TIME_END_UNDEFINED = -1; // 範囲型でない場合，終了時間は-1とする
 
 	public static final String COMMENT_DELIMITER = " // ";
@@ -81,7 +83,7 @@ public class Comment {
 	
 	
 	public void set(String contentBody, CommentType commentType, User commenter, User discusser,
-			Date commentDate, int commentTime, String setName){
+			Date commentDate, int commentTime, String setName, String aux){
 		// for testing
 		if(discusser.getName().isEmpty()){
 			discusser.setName(defaultDiscusserName);
@@ -95,6 +97,7 @@ public class Comment {
 		data[F_SET_NAME] = setName;
 		data[F_COMMENT_TIME_END] = COMMENT_TIME_END_UNDEFINED;
 		data[F_ID] = id;
+		data[F_AUX] = aux;
 //		data[F_COMMENT_TIME_OFFSET] = offset;
 	}
 	
@@ -182,6 +185,14 @@ public class Comment {
 		return (String)data[F_SET_NAME];
 	}
 	
+	public String getAux(){
+		return (String)data[F_AUX];
+	}
+
+	public void setAux(String aux){
+		data[F_AUX] = aux;
+	}
+
 	public Object getAt(int i){
 		return data[i];
 	}
@@ -232,22 +243,26 @@ public class Comment {
 	}
 
 	
-	public boolean mergeBody(Comment comment){
+	public boolean mergeContents(Comment comment){
 
 		String commentBody = getCommentBody();
 		String targetCommentBody = comment.getCommentBody();
+		String commentAux = getAux();
+		String targetCommentAux = comment.getAux();
 		
 		if(!catCommentInfo().equals(comment.catCommentInfo())){
 			return false;
 		}
 		
-		if(commentBody.contains(COMMENT_DELIMITER)
-				&& Arrays.asList(commentBody.split(COMMENT_DELIMITER)).contains(targetCommentBody)){
-				// already contained
-				return true;
+		if(!commentBody.contains(COMMENT_DELIMITER)
+				|| !Arrays.asList(commentBody.split(COMMENT_DELIMITER)).contains(targetCommentBody)){
+			setCommentBody(Util.catStrings(commentBody, targetCommentBody, COMMENT_DELIMITER));
 		}
 
-		setCommentBody(Util.catStrings(commentBody, targetCommentBody, COMMENT_DELIMITER));
+		if(!commentAux.contains(COMMENT_DELIMITER)
+				|| !Arrays.asList(commentAux.split(COMMENT_DELIMITER)).contains(targetCommentAux)){
+			setAux(Util.catStrings(commentAux, targetCommentAux, COMMENT_DELIMITER));
+		}
 
 		return true;
 	}

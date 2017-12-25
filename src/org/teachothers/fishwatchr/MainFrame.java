@@ -234,7 +234,7 @@ public class MainFrame extends JFrame {
 	private boolean isAnnotationMulti = false;
 
 	// コメントテーブルの幅
-	private int columnWidth[] = { 35, 150, 150, 150, 150, 2048 };
+	private int columnWidth[] = {120, 250, 250, 250, 250, 250, 1500, 250};
 
 	// 録音+アノテーション or アノテーションのみ
 	private boolean isRecorderMode = true;
@@ -523,10 +523,9 @@ public class MainFrame extends JFrame {
 			scrollCommentTablePane = new JScrollPane(commentTable);
 			commentPanel.add(scrollCommentTablePane, BorderLayout.CENTER);
 			for (int i = 0; i < columnWidth.length; i++) {
-				commentTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+				commentTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 				commentTable.getColumn(Comment.headers[i]).setMinWidth(0);
-				commentTable.getColumn(Comment.headers[i]).setMaxWidth(
-						columnWidth[i]);
+				commentTable.getColumn(Comment.headers[i]).setPreferredWidth(columnWidth[i]);
 			}
 
 			commentArea = new JTextArea();

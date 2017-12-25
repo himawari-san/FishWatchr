@@ -167,7 +167,7 @@ public class CommentButton extends JButton {
 				}
 				selectedDiscusser = discussers.get(iSelectedValue);
 			}
-			addedComment = ctm.addComment("", commentType, commenter, selectedDiscusser, now, currentTime);
+			addedComment = ctm.addComment("", commentType, commenter, selectedDiscusser, now, currentTime, "");
 		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
 			CommentType commentType = new CommentType("", Color.BLACK);
 			if (isTempMultiAnnotation) {
@@ -182,7 +182,7 @@ public class CommentButton extends JButton {
 				}
 				commentType = commentTypes.get(iSelectedValue);
 			}
-			addedComment = ctm.addComment("", commentType, commenter, discusser, now, currentTime);
+			addedComment = ctm.addComment("", commentType, commenter, discusser, now, currentTime, "");
 		}
 		isWorking = false;
 

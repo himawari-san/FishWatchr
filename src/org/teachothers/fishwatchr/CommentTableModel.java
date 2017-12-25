@@ -113,6 +113,7 @@ public class CommentTableModel extends AbstractTableModel {
 	
 	public boolean isCellEditable(int row, int column){
 		if(column == Comment.F_COMMENT ||
+				column == Comment.F_AUX ||
 				column == Comment.F_DISCUSSER ||
 				column == Comment.F_COMMENT_TYPE ||
 				column == Comment.F_COMMENTER){
@@ -150,12 +151,12 @@ public class CommentTableModel extends AbstractTableModel {
 
 	
 	public Comment addComment(String contentBody, CommentType commentType, User commenter, User discusser,
-			Date commentDate, int commentTime){
+			Date commentDate, int commentTime, String aux){
 		Comment comment = new Comment();
 		String setName = commentList.getSetName();
 		
 		int originalTime = commentTime - commentList.getCommentTimeOffset(setName);
-		comment.set("", commentType, commenter, discusser, commentDate, originalTime, setName);
+		comment.set("", commentType, commenter, discusser, commentDate, originalTime, setName, aux);
 
 		if(commentList.size() == 0) {
 			commentList.add(comment);
