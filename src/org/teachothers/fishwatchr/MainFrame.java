@@ -1639,12 +1639,12 @@ public class MainFrame extends JFrame {
 			ArrayList<String> deletedResults = null;
 			String deleteMessage = "";
 			if(commentList.isDuplicated()){
-				int optionValue = JOptionPane.showConfirmDialog(this, "重複する注釈を削除しますか？", "注釈結果の重複", JOptionPane.YES_NO_OPTION);
+				int optionValue = JOptionPane.showConfirmDialog(this, "重複する注釈を統合しますか？\n統合すると，コメント，補助列をそれぞれ連結した上で\n一つの注釈としてまとめられます。", "注釈結果の重複", JOptionPane.YES_NO_OPTION);
 				if(optionValue == JOptionPane.YES_OPTION){
-					deletedResults = commentList.uniq();
-					deleteMessage = "<li>重複する注釈が，" + deletedResults.size() + "件削除されました（リストはウィンドウ末尾）。</li>";
+					deletedResults = commentList.mergeComments();
+					deleteMessage = "<li>重複する注釈が，" + deletedResults.size() + "件統合されました（リストはウィンドウ末尾）。</li>";
 				} else {
-					deleteMessage = "<li>重複する注釈が存在しますが，削除せず取り込みました。</li>";
+					deleteMessage = "<li>重複する注釈が存在しますが，統合せず取り込みました。</li>";
 				}
 			}
 			
@@ -1667,14 +1667,14 @@ public class MainFrame extends JFrame {
 		    		+ "<li>" + mergeModes[iMergeMode] + "モードでマージしました。</li>" 
 					+ "<li>マージ後の設定ファイル:<br />" + xf + "</li>"
 					+ "<li>マージしたファイルは，" + results.size() + "ファイルです。</li>"
-					+ "<li>マージした注釈は，" + commentList.size() + "件です。</li>"
+					+ "<li>マージ後の注釈数は，" + commentList.size() + "件です。</li>"
 		    		+ deleteMessage
 		    		+ "</ul>" 
 					+ "<h1>マージしたファイル</h1>"
 		    		+ "<ul><li>" + StringUtils.join(results, "</li><li>") + "</li></ul>";
 		    if(deletedResults != null){
 		    	message +=
-						"<h1>削除した注釈</h1>"
+						"<h1>統合された注釈</h1>"
 					    + "<ul><li>" + StringUtils.join(deletedResults, "</li><li>") + "</li></ul>";
 		    			
 		    }

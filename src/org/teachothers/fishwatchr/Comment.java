@@ -17,8 +17,10 @@
 
 package org.teachothers.fishwatchr;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+
 
 public class Comment {
 	public static final int N_Field = 9;
@@ -43,6 +45,9 @@ public class Comment {
 
 	public static final String headers[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT};
 	public static final int COMMENT_TIME_END_UNDEFINED = -1; // 範囲型でない場合，終了時間は-1とする
+
+	public static final String COMMENT_DELIMITER = " // ";
+	
 	private static String defaultDiscusserName = "不特定";
 
 	private static int currentID = 1;
@@ -143,6 +148,10 @@ public class Comment {
 		return (String)data[F_COMMENT];
 	}
 	
+	public void setCommentBody(String body){
+		data[F_COMMENT] = body;
+	}
+	
 	public User getDiscusser(){
 		return (User)data[F_DISCUSSER];
 	}
@@ -206,7 +215,7 @@ public class Comment {
 	}
 	
 	
-	public String toString(){
+	public String catCommentInfo(){
 		StringBuffer str = new StringBuffer();
 		
 		str.append(getCommenter());
@@ -218,9 +227,28 @@ public class Comment {
 		str.append(getCommentType());
 		str.append("\t");
 		str.append(getSetName());
-		str.append("\t");
-		str.append(getContentBody());
 		
 		return str.toString();
+	}
+
+	
+	public boolean mergeBody(Comment comment){
+
+		String commentBody = getContentBody();
+		String targetCommentBody = comment.getContentBody();
+		
+		if(!catCommentInfo().equals(comment.catCommentInfo())){
+			return false;
+		}
+		
+		if(commentBody.contains(COMMENT_DELIMITER)
+				&& Arrays.asList(commentBody.split(COMMENT_DELIMITER)).contains(targetCommentBody)){
+				// already contained
+				return true;
+		}
+
+		setCommentBody(Util.catStrings(commentBody, targetCommentBody, COMMENT_DELIMITER));
+
+		return true;
 	}
 }

@@ -520,7 +520,7 @@ public class CommentList extends LinkedList<Comment> {
 		HashSet<String> set = new HashSet<String>();
 		
 		for(Comment comment : this){
-			String key = comment.toString();
+			String key = comment.catCommentInfo();
 			if(set.contains(key)){
 				return true;
 			}
@@ -531,28 +531,30 @@ public class CommentList extends LinkedList<Comment> {
 	}
 	
 	
-	public ArrayList<String> uniq(){
-		HashSet<String> set = new HashSet<String>();
-		ArrayList<String> deletedKeys = new ArrayList<>();
+	public ArrayList<String> mergeComments(){
+		HashMap<String, Comment> keyMap = new HashMap<String, Comment>();
+		ArrayList<String> deletedKeys = new ArrayList<String>();
 		
 		Iterator<Comment> it = iterator();
 		
 		while(it.hasNext()){
 			Comment comment = it.next();
 			
-			String key = comment.toString();
-			if(set.contains(key)){
+			String key = comment.catCommentInfo();
+			if(keyMap.containsKey(key)){
+				Comment storedComment = keyMap.get(key);
+				storedComment.mergeBody(comment);
 				it.remove();
 				deletedKeys.add(key);
 			} else {
-				set.add(key);
+				keyMap.put(key, comment);
 			}
 		}
 		
 		refreshID();
 		return deletedKeys;
 	}
-	
+
 	
 	public boolean syncByStartTime(){
 		boolean flagSyncCondition = true;
