@@ -341,7 +341,7 @@ public class CommentTable extends JTable {
 			currentCommentBuffer.append(currentComment.getDiscusser().getName() + "(");
 			currentCommentBuffer.append(currentComment.getCommentType().getType() + "), ");
 			currentCommentBuffer.append(currentComment.getCommenter().getName() + ": ");
-			currentCommentBuffer.append(currentComment.getContentBody());
+			currentCommentBuffer.append(currentComment.getCommentBody());
 			return currentCommentBuffer.toString();
 		} else {
 			return "";

@@ -87,7 +87,7 @@ public class DataCounter {
 			} else if(mode == SUMMARY_MODE_ALL){
 				Comment newComment = new Comment();
 				newComment.set(
-						comment.getContentBody(),
+						comment.getCommentBody(),
 						comment.getCommentType(),
 						new User(SUMMARY_MODE_ALL),
 						comment.getDiscusser(),
@@ -106,7 +106,7 @@ public class DataCounter {
 				}
 					
 				newComment.set(
-						comment.getContentBody(),
+						comment.getCommentBody(),
 						comment.getCommentType(),
 						newUser,
 						comment.getDiscusser(),

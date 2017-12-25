@@ -144,7 +144,7 @@ public class Comment {
 		return (int)data[F_ID];
 	}
 	
-	public String getContentBody(){
+	public String getCommentBody(){
 		return (String)data[F_COMMENT];
 	}
 	
@@ -234,8 +234,8 @@ public class Comment {
 	
 	public boolean mergeBody(Comment comment){
 
-		String commentBody = getContentBody();
-		String targetCommentBody = comment.getContentBody();
+		String commentBody = getCommentBody();
+		String targetCommentBody = comment.getCommentBody();
 		
 		if(!catCommentInfo().equals(comment.catCommentInfo())){
 			return false;

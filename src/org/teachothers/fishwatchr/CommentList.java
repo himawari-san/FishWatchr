@@ -225,7 +225,7 @@ public class CommentList extends LinkedList<Comment> {
 					+ " comment_time=\"" + comment.getCommentTime() + "\""
 					+ " comment_time_end=\"" + comment.getCommentTimeEnd()
 					+ "\"" + ">"
-					+ StringEscapeUtils.escapeXml11(comment.getContentBody())
+					+ StringEscapeUtils.escapeXml11(comment.getCommentBody())
 					+ "</comment>\n");
 		}
 
