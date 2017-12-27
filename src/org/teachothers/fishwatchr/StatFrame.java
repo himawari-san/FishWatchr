@@ -3,6 +3,8 @@ package org.teachothers.fishwatchr;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TreeSet;
 
@@ -91,12 +93,28 @@ public class StatFrame extends JFrame {
 	    if(style == CHART_STYLE_UNIQ){
 	    	String categoryName = StringUtils.join(headers, "/");
 	    	
+	    	Collections.sort(data, new Comparator<Object[]>() {
+	    	    public int compare(Object[] a, Object[] b) {
+	    	    	String key1 = StringUtils.join(a, "/").replaceFirst("/[^/]*$", "");
+	    	    	String key2 = StringUtils.join(b, "/").replaceFirst("/[^/]*$", "");
+	    	    	return key1.compareToIgnoreCase(key2);
+	    	    }
+			});
+	    	
 		    for(Object[] record : data){
 		    	String categoryValue = StringUtils.join(record, "/").replaceFirst("/[^/]*$", "");
 		    	dataSet.addValue(Double.parseDouble(record[iFreq].toString()), categoryName, categoryValue);
 		    }
 	    } else if(style == CHART_STYLE_TARGET || style == CHART_STYLE_LABEL){
 	    	flagLegend = true;
+	    	Collections.sort(data, new Comparator<Object[]>() {
+	    	    public int compare(Object[] a, Object[] b) {
+	    	    	String key1 = a[1].toString() + "\t" + a[0].toString();
+	    	    	String key2 = b[1].toString() + "\t" + b[0].toString();
+	    	    	return key1.compareToIgnoreCase(key2);
+	    	    }
+			});
+	    	
 		    for(Object[] record : data){
 		    	dataSet.addValue(Double.parseDouble(record[iFreq].toString()), record[0].toString(), record[1].toString());
 		    }
@@ -132,8 +150,14 @@ public class StatFrame extends JFrame {
 		    	}
 		    }
 		    
-	    	// generate all target/label combinations  
-	    	TreeSet<String> keys = new TreeSet<String>(); // for sorting keys
+	    	// generate all target/label combinations
+	    	// use TreeSet to sort keys
+	    	TreeSet<String> keys = new TreeSet<String>(new Comparator<String>() {
+				@Override
+				public int compare(String o1, String o2) {
+					return o1.compareToIgnoreCase(o2);
+				}
+			});
 	    	for(String target : setTargets){
 		    	for(String label : setLabels){
 		    		keys.add(target + "\t" + label);
