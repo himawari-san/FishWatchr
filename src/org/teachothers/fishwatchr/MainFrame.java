@@ -381,7 +381,7 @@ public class MainFrame extends JFrame {
 		ginit();
 	}
 
-	public void timerStart() {
+	public synchronized void timerStart() {
 		if (timer != null) {
 			timer.cancel();
 		}
