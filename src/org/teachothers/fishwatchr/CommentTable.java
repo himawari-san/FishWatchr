@@ -519,6 +519,7 @@ public class CommentTable extends JTable {
 				Object value, boolean isSelected, int row, int column) {
 
 			textField.setText((String) value);
+			textField.setFont(table.getFont());
 			
 			return textField;
 		}
@@ -559,6 +560,7 @@ public class CommentTable extends JTable {
      
 			JComboBox<T> comboBox = new JComboBox<T>();
 			comboBox.setBorder(BorderFactory.createEmptyBorder());
+			comboBox.setFont(table.getFont());
 			
 			int iSelectedItem = 0;
 			int i = 0;
