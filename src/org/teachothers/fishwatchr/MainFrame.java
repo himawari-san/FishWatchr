@@ -923,6 +923,11 @@ public class MainFrame extends JFrame {
 		default:
 		}
 
+		// stop cell editing before exit
+		if(commentTable.getCellEditor() != null){
+			commentTable.getCellEditor().stopCellEditing();
+		}
+		
 		try {
 			saveCommentList();
 		} catch (IOException e) {
