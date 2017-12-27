@@ -23,6 +23,8 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -84,6 +88,8 @@ public class CommentTable extends JTable {
 		setDefaultRenderer(Number.class, new CellRenderer(SwingConstants.RIGHT));
 		getColumn(Comment.ITEM_TARGET).setCellEditor(new ListCellEditor<User>(ctm.discussers));
 		getColumn(Comment.ITEM_LABEL).setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
+		getColumn(Comment.ITEM_COMMENT).setCellEditor(new TextCellEditor());
+		getColumn(Comment.ITEM_AUX).setCellEditor(new TextCellEditor());
 		setCellSelectionEnabled(true);
 		
 		
@@ -438,6 +444,85 @@ public class CommentTable extends JTable {
 	}
 
 	
+	public class TextCellEditor extends AbstractCellEditor implements TableCellEditor {
+
+		private static final long serialVersionUID = 1L;
+		private Object value;
+		JTextField textField;
+		
+		public TextCellEditor(){
+			textField = new JTextField();
+			textField.setBorder(BorderFactory.createEmptyBorder());
+			textField.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if(e.getClickCount() == 2){
+						showTextAreaDialog();
+					}
+				}
+				
+			});
+			textField.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if(e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER){
+						showTextAreaDialog();
+					}
+				}
+			});
+		}
+		
+		public void showTextAreaDialog(){
+			JScrollPane scrollPane = new JScrollPane();
+			final JTextArea textArea = new JTextArea(textField.getText().replaceAll(Comment.COMMENT_DELIMITER, "\n"), 20, 50);
+			scrollPane.add(textArea);
+
+			JOptionPane op = new JOptionPane(new JScrollPane(textArea), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION){
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void selectInitialValue() {
+					// cancel super.selectInitialValue() to focus on the textArea
+					// see http://www.ne.jp/asahi/hishidama/home/tech/java/swing/JOptionPane.html
+				}
+			};
+			JDialog d = op.createDialog("コメントの入力");
+			d.setVisible(true);
+			Object selectedValue = op.getValue();
+			
+			if(selectedValue != null && ((Integer)selectedValue) == JOptionPane.OK_OPTION){
+				textField.setText(textArea.getText().replaceAll("\n", Comment.COMMENT_DELIMITER));
+			}
+		}
+		
+		@Override
+		public Object getCellEditorValue() {
+			return value;
+		}
+
+		@Override
+		public boolean isCellEditable(EventObject e) {
+			if(!(e instanceof MouseEvent)|| ((MouseEvent)e).getClickCount() >= 2){
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public boolean stopCellEditing() {
+			value = textField.getText();
+			return super.stopCellEditing();
+		}
+
+		@Override
+		public Component getTableCellEditorComponent(JTable table,
+				Object value, boolean isSelected, int row, int column) {
+
+			textField.setText((String) value);
+			
+			return textField;
+		}
+	}
 
 	
 	public class ListCellEditor<T> extends AbstractCellEditor implements TableCellEditor, ActionListener {
