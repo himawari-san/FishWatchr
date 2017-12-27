@@ -474,7 +474,7 @@ public class CommentTable extends JTable {
 		
 		public void showTextAreaDialog(){
 			JScrollPane scrollPane = new JScrollPane();
-			final JTextArea textArea = new JTextArea(textField.getText().replaceAll(Comment.COMMENT_DELIMITER, "\n"), 20, 50);
+			final JTextArea textArea = new JTextArea(textField.getText().replaceAll(Comment.LINEBREAK, "\n"), 20, 50);
 			scrollPane.add(textArea);
 
 			JOptionPane op = new JOptionPane(new JScrollPane(textArea), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION){
@@ -491,7 +491,7 @@ public class CommentTable extends JTable {
 			Object selectedValue = op.getValue();
 			
 			if(selectedValue != null && ((Integer)selectedValue) == JOptionPane.OK_OPTION){
-				textField.setText(textArea.getText().replaceAll("\n", Comment.COMMENT_DELIMITER));
+				textField.setText(textArea.getText().replaceAll("\n", Comment.LINEBREAK));
 			}
 		}
 		

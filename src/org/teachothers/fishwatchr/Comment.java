@@ -48,7 +48,8 @@ public class Comment {
 	public static final String headers[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
 	public static final int COMMENT_TIME_END_UNDEFINED = -1; // 範囲型でない場合，終了時間は-1とする
 
-	public static final String COMMENT_DELIMITER = "_//_";
+	public static final String COMMENT_DELIMITER = " || ";
+	public static final String LINEBREAK = " // ";
 	
 	private static String defaultDiscusserName = "不特定";
 

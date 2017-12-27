@@ -61,7 +61,6 @@ public class CommentList extends LinkedList<Comment> {
 	private static final long serialVersionUID = 1L;
 	private static final String NOT_DEFINED = "(未定義)";
 	private static final int maxElapsedTime = 1000 * 60 * 60 * 2; // 2 hours
-	private static final String LINEBREAK = "__/FW+LINEBREAK/__";
 	
 	public static final String FILE_SUFFIX = ".xml";
 	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
@@ -225,7 +224,7 @@ public class CommentList extends LinkedList<Comment> {
 					+ comment.getCommentType().getType() + "\""
 					+ " comment_time=\"" + comment.getCommentTime() + "\""
 					+ " comment_time_end=\"" + comment.getCommentTimeEnd() + "\""
-					+ " aux=\"" + comment.getAux().replaceAll("\n", LINEBREAK)
+					+ " aux=\"" + comment.getAux()
 					+ "\"" + ">"
 					+ StringEscapeUtils.escapeXml11(comment.getCommentBody())
 					+ "</comment>\n");
@@ -393,7 +392,7 @@ public class CommentList extends LinkedList<Comment> {
 				User discusser = new User(commentNode.getAttribute("discusser"));
 				User commenter = new User(commentNode.getAttribute("commenter"));
 				String strCommentType = commentNode.getAttribute("comment_type");
-				String aux = commentNode.getAttribute("aux").replaceAll(LINEBREAK, "\n");
+				String aux = commentNode.getAttribute("aux");
 
 				// コメントタイプ登録
 				CommentType commentType = new CommentType("", Color.gray); // default
