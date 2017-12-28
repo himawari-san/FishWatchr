@@ -19,6 +19,7 @@ package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -79,6 +80,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
@@ -108,7 +110,11 @@ public class MainFrame extends JFrame {
 	private static final String COMMENTER_NAME_GLUE1 = "_";
 	private static final String COMMENTER_NAME_GLUE2 = "_in_";
 	private static String[] mergeModes = {"通常", "時刻指定"};
-	
+
+	private static final int DRAGGABLE_RANGE = 5;
+	private static int COMMENT_PANEL_MIN_HEIGHT = 50;
+	private static int DISPLAY_PANEL_MIN_HEIGHT = 80;
+
 	public static final String USER_NOT_SPECIFIED = "noname";
 	
 	public static final int MAX_DISCUSSERS = 8;
@@ -271,6 +277,8 @@ public class MainFrame extends JFrame {
 	
 	private int tableFontSize = FishWatchr.DEFAULT_FONT_SIZE;
 	
+	private int draggedY = 0; // used for changing the commentPanel size
+	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
 
@@ -400,9 +408,66 @@ public class MainFrame extends JFrame {
 		jMenuItemAnnotationMulti.setSelected(isAnnotationMulti);
 		jMenuItemOptionFilteredViewMode.setSelected(true);
 		
-
 		displayPanel = getDisplayPanel();
 		commentPanel = getCommentPanel(); // execute after getJMenuBar();
+		commentPanel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseExited(MouseEvent e) {
+				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+
+			@Override
+			public void mouseReleased(final MouseEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						int newY;
+						if(commentPanel.getPreferredSize().height - draggedY <= COMMENT_PANEL_MIN_HEIGHT){
+							// minimize commentPanel
+							newY = COMMENT_PANEL_MIN_HEIGHT;
+						} else if(MainFrame.this.getMousePosition().y > DISPLAY_PANEL_MIN_HEIGHT){
+							if(MainFrame.this.getSize().height - MainFrame.this.getMousePosition().y > COMMENT_PANEL_MIN_HEIGHT){
+								// user-specified size
+								newY = commentPanel.getPreferredSize().height - draggedY;
+							} else {
+								// minimize commentPanel
+								newY = COMMENT_PANEL_MIN_HEIGHT;
+							}
+						} else {
+							// maximize commentPanel
+							newY = MainFrame.this.getSize().height - DISPLAY_PANEL_MIN_HEIGHT;
+						}
+						
+						setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						commentPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, newY));
+						getContentPane().doLayout();
+						commentPanel.doLayout();
+						displayPanel.doLayout();
+					}
+				});
+			}
+		});
+		commentPanel.addMouseMotionListener(new MouseAdapter() {
+			boolean flag = false; 
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				if(e.getY() < DRAGGABLE_RANGE){
+					flag = true;
+					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+				} else {
+					flag = false;
+					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				}
+			}
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if(flag){
+					draggedY = e.getY();
+					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+				}
+			}
+		});
+
 		commentPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE,
 				COMMENT_PANEL_HEIGHT));
 		getContentPane().add(displayPanel, BorderLayout.CENTER);
