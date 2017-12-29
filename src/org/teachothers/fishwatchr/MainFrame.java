@@ -1958,7 +1958,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemControlSkipBackward == null) {
 			jMenuItemControlSkipBackward = new JMenuItem("スキップ（◀◀）");
 			jMenuItemControlSkipBackward.setAccelerator(KeyStroke.getKeyStroke(
-					KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK, false));
+					KeyEvent.VK_K, InputEvent.CTRL_DOWN_MASK, false));
 			jMenuItemControlSkipBackward
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -1973,7 +1973,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemControlSkipForward == null) {
 			jMenuItemControlSkipForward = new JMenuItem("スキップ（▶▶）");
 			jMenuItemControlSkipForward.setAccelerator(KeyStroke.getKeyStroke(
-					KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK, false));
+					KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false));
 			jMenuItemControlSkipForward
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -1991,7 +1991,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemControlJumpToPrevComment == null) {
 			jMenuItemControlJumpToPrevComment = new JMenuItem("前のコメント");
 			jMenuItemControlJumpToPrevComment.setAccelerator(KeyStroke
-					.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK,
+					.getKeyStroke(KeyEvent.VK_K, InputEvent.CTRL_DOWN_MASK|InputEvent.SHIFT_DOWN_MASK,
 							false));
 			jMenuItemControlJumpToPrevComment
 					.addActionListener(new java.awt.event.ActionListener() {
@@ -2046,7 +2046,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemControlJumpToNextComment == null) {
 			jMenuItemControlJumpToNextComment = new JMenuItem("次のコメント");
 			jMenuItemControlJumpToNextComment.setAccelerator(KeyStroke
-					.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK,
+					.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK|InputEvent.SHIFT_DOWN_MASK,
 							false));
 			jMenuItemControlJumpToNextComment
 					.addActionListener(new java.awt.event.ActionListener() {
