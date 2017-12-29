@@ -112,8 +112,8 @@ public class MainFrame extends JFrame {
 	private static String[] mergeModes = {"通常", "時刻指定"};
 
 	private static final int DRAGGABLE_RANGE = 5;
-	private static int COMMENT_PANEL_MIN_HEIGHT = 50;
-	private static int DISPLAY_PANEL_MIN_HEIGHT = 80;
+	private static int COMMENT_PANEL_MIN_HEIGHT = 80;
+	private static int DISPLAY_PANEL_MIN_HEIGHT = 100;
 
 	public static final String USER_NOT_SPECIFIED = "noname";
 	
