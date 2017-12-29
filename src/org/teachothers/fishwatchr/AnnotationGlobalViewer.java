@@ -60,7 +60,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	private static final int COMPARISON_DISCUSSER = 3; 
 
 	private static final double SKIP_RATE = 0.2; 
-	private static final double PLOT_AREA_RATIO = 0.9; // plot area of annotation data / viewer
+	private static final double PLOT_AREA_RATIO = 0.85; // plot area of annotation data / viewer
 
 	private static final double MARK_HEIGHT_RATIO = 0.7; // marker height / item height
 	
