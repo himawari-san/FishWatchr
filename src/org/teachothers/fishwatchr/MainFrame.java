@@ -278,6 +278,7 @@ public class MainFrame extends JFrame {
 	private int tableFontSize = FishWatchr.DEFAULT_FONT_SIZE;
 	
 	private int draggedY = 0; // used for changing the commentPanel size
+	private boolean flagDragged = false;
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -418,6 +419,11 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void mouseReleased(final MouseEvent e) {
+				if(!flagDragged){
+					return;
+				} else {
+					flagDragged = false;
+				}
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -464,6 +470,7 @@ public class MainFrame extends JFrame {
 				if(flag){
 					draggedY = e.getY();
 					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+					flagDragged = true;
 				}
 			}
 		});
