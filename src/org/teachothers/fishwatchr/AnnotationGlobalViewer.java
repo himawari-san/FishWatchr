@@ -60,11 +60,14 @@ public class AnnotationGlobalViewer extends JPanel {
 	private static final int COMPARISON_DISCUSSER = 3; 
 
 	private static final double SKIP_RATE = 0.2; 
+	private static final double PLOT_AREA_RATIO = 0.9; // plot area of annotation data / viewer
+
+	private static final double MARK_HEIGHT_RATIO = 0.7; // marker height / item height
 	
 	private final int xTimeTickHeight = 5;	
 
 	private final int x0NamePanel = 4; // x origin of namePanel
-	private final int y0NamePanel = xTimeTickHeight + 1; // y origin of namePanel
+	private final int y0NamePanel = xTimeTickHeight*2; // y origin of namePanel
 	private final int widthNamePanel = 50;
 
 	private final int x0AnnotationViewerPanel = 2;
@@ -74,14 +77,13 @@ public class AnnotationGlobalViewer extends JPanel {
 	private final int y0MarginHistogram = 2;
 	private int y0Histogram = 0;
 	
-	private int itemHeight = 25;
+	private int itemHeight = -1;
+	private int fontSize = FishWatchr.DEFAULT_FONT_SIZE;
 	
 	private int markWidth = 1;
-	private int markHeight = 20;
 	
 	private float scaleFactor = SCALE_FACTOR_DEFAULT; // x scaleFactor (1/x)
 	private float yScaleFactorHistogram = Y_SCALE_FACTOR_DEFAULT;
-	private float ratioPlotArea = 0.9f;
 	private float yScaleFactorHistogramNext = yScaleFactorHistogram;
 	
 	private JPanel namePanel;
@@ -123,9 +125,18 @@ public class AnnotationGlobalViewer extends JPanel {
 		init();
 	}
 
+	
+	@Override
+	public void doLayout() {
+		updateItemHeight();
+		super.doLayout();
+	}
+	
+	
 	public void init(){
 		initScaleFactor();
 		updatePanel();
+		updateItemHeight();
 	}
 	
 
@@ -144,6 +155,12 @@ public class AnnotationGlobalViewer extends JPanel {
 		annotationViewerPanel.setBorder(new EtchedBorder());
 		
 		targetSelector = new JComboBox<String>(targets);
+		targetSelector.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateItemHeight();
+			}
+		});
 		displayTypeSelector = new JComboBox<String>(displayTypes);
 		resetScaleButton = new JButton("リセット");
 		resetScaleButton.setToolTipText("全体表示の範囲を初期化します");
@@ -234,31 +251,64 @@ public class AnnotationGlobalViewer extends JPanel {
 		
 		return namePanel;
 	}
+
 	
+	private void updateItemHeight(){
+		double r = 1.2;
+		Graphics g = namePanel.getGraphics();
+		if(g == null){
+			return;
+		}
+		g.setFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
+		fontSize = g.getFont().getSize();
+		int newItemHeight = (int) Math.ceil((double)(g.getFontMetrics(g.getFont()).getHeight() * r));
 
-	private int getItemHeight(Graphics g, int panelHeight){
-		int nItemP1 = commenterNames.size()+1;
-		int newItemHeight = g.getFontMetrics(g.getFont()).getHeight();
-		int fontSize = g.getFont().getSize();
-		int yButtom = y0NamePanel + nItemP1 * newItemHeight;
-		while(yButtom > panelHeight * ratioPlotArea){
-			fontSize--;
-			if(fontSize < 1){
-				break;
+		int nItem = 0;
+		switch(targetSelector.getSelectedIndex()){
+		case VIEW_TYPE_SPEAKER:
+			for(String str : discusserNames){
+				if(!str.isEmpty()){
+					nItem++;
+				}
 			}
-			g.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
-			newItemHeight = g.getFontMetrics(g.getFont()).getHeight();
-			yButtom = y0NamePanel + nItemP1 * newItemHeight;
+			break;
+		case VIEW_TYPE_LABEL:
+			for(CommentType commentType : commentTypes){
+				if(!commentType.getType().isEmpty()){
+					nItem++;
+				}
+			}
+			break;
+		case VIEW_TYPE_COMMENTER:
+			nItem = commenterNames.size();
 		}
-		if(fontSize == FishWatchr.DEFAULT_FONT_SIZE){
-			newItemHeight = itemHeight;
-			g.setFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
-		}
+		nItem+=2;
 
-		return newItemHeight;
+		int yButtom = y0NamePanel + nItem * newItemHeight;
+		int namePanelHeight = getHeight();
+		// find the best font size
+		while(yButtom > namePanelHeight * PLOT_AREA_RATIO && fontSize > 1){
+			fontSize--;
+			g.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
+			newItemHeight = (int) Math.ceil((double)(g.getFontMetrics(g.getFont()).getHeight() * r));
+			yButtom = y0NamePanel + nItem * newItemHeight;
+		}
+		itemHeight = newItemHeight;
+
+		// find the best r
+		while(yButtom < namePanelHeight * PLOT_AREA_RATIO && r < 2){
+			r += 0.05;
+			newItemHeight = (int) Math.ceil((double)(g.getFontMetrics(g.getFont()).getHeight() * r));
+			yButtom = y0NamePanel + nItem * newItemHeight;
+			if(yButtom < namePanelHeight * PLOT_AREA_RATIO){
+				itemHeight = newItemHeight;
+			}
+		} 
+		
+		return;
 	}
 	
-	
+
 	public void updatePanel(){
 		discusserNames.clear();
 		for(User discusser: discussers){
@@ -353,6 +403,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	}
 	
 	class AnnotationViewerPanel extends JPanel implements MouseMotionListener, MouseListener {
+
 		private static final long serialVersionUID = 1L;
 		private ToolTipManager ttm = ToolTipManager.sharedInstance();
 		private int defaultDelay = ttm.getInitialDelay();
@@ -409,7 +460,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			String targetCond = null;
 			String cond = null;
 			int selector = displayTypeSelector.getSelectedIndex();
-			int heightMax = (int)(getHeight() * (1 - ratioPlotArea));
+			int heightMax = (int)(getHeight() * (1 - PLOT_AREA_RATIO));
 			List<Comment> targetList = commentList;
 			
 			if(filteredViewCheckBox.isSelected()){
@@ -510,6 +561,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		
 		protected void plotData(Graphics g, ArrayList<Comment> filteredCommentList, CommentList commentList) {
 			int x;
+			int markHeight = (int)((itemHeight) * MARK_HEIGHT_RATIO);
 			String discusserName;
 			String commenterName;
 			String commentType;
@@ -530,17 +582,15 @@ public class AnnotationGlobalViewer extends JPanel {
 				switch (targetSelector.getSelectedIndex()){
 				case VIEW_TYPE_SPEAKER:
 					discusserName = comment.getDiscusser().getName();
-					g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight , markWidth, markHeight);
+					g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight, markWidth, markHeight);
 					break;
 				case VIEW_TYPE_LABEL:
 					commentType = comment.getCommentType().getType();
 					g.fillRect(x, y0AnnotationViewerPanel + types.indexOf(commentType)*itemHeight , markWidth, markHeight);
 					break;
 				case VIEW_TYPE_COMMENTER:
-					int newItemHeight = getItemHeight(g, getHeight());
-					int newMarkHeight = newItemHeight < 2 ? newItemHeight : newItemHeight - 1;
 					commenterName = comment.getCommenter().getName();
-					g.fillRect(x, y0AnnotationViewerPanel + commenterNames.indexOf(commenterName)*newItemHeight , markWidth, newMarkHeight);
+					g.fillRect(x, y0AnnotationViewerPanel + commenterNames.indexOf(commenterName)*itemHeight , markWidth, markHeight);
 					break;
 				}
 			}
@@ -628,40 +678,37 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	class AnnotationNamePanel extends JPanel {
 		private static final long serialVersionUID = 1L;
-		private final int fontHeight = getFontMetrics(getFont()).getHeight();
+		private int fontHeight = getFontMetrics(getFont()).getHeight();
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			
 		    ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
                     RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+			g.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
 
 			int i = 0;
 			switch (targetSelector.getSelectedIndex()){
 			case VIEW_TYPE_SPEAKER:
 				for(String name: discusserNames){
 					g.setColor(Color.black);
-					g.drawString(name, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
+					g.drawString(name, x0NamePanel, y0NamePanel + i * itemHeight + itemHeight/2);
 					i++;
 				}
 				break;
 			case VIEW_TYPE_LABEL:
 				for(String type: types){
 					g.setColor(Color.black);
-					g.drawString(type, x0NamePanel, y0NamePanel + i * itemHeight + fontHeight);
+					g.drawString(type, x0NamePanel, y0NamePanel + i * itemHeight + itemHeight/2);
 					i++;
 				}
 				break;
 			case VIEW_TYPE_COMMENTER:
-				int newItemHeight = getItemHeight(g, getHeight());
-				int newFontHeight = g.getFontMetrics(g.getFont()).getHeight();
-
 				for(String commenterName: commenterNames){
 					g.setColor(Color.black);
-					g.drawString(commenterName , x0NamePanel, y0NamePanel + i * newItemHeight + newFontHeight);
+					g.drawString(commenterName , x0NamePanel, y0NamePanel + i * itemHeight + itemHeight/2);
 					i++;
 				}
-				g.setFont(new Font(Font.DIALOG, Font.PLAIN, FishWatchr.DEFAULT_FONT_SIZE));
 				break;
 			default:
 				for(String name: discusserNames){
