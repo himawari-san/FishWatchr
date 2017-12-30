@@ -714,6 +714,7 @@ public class MainFrame extends JFrame {
 									jMenuItemOptionRecorderMode.isSelected(),
 									videoDevice, audioDevice);
 							annotationGlobalViewPanel.updatePanel();
+							timeLineTabbedPane.setSelectedComponent(timeLinePanel);
 							timerStart();
 							commentList.setStartTime(soundPlayer.getStartTime());
 						}
