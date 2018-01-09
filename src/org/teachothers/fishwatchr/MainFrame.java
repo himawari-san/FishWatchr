@@ -459,7 +459,7 @@ public class MainFrame extends JFrame {
 			public void mouseMoved(MouseEvent e) {
 				if(e.getY() < DRAGGABLE_RANGE){
 					flag = true;
-					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+					setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
 				} else {
 					flag = false;
 					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -469,7 +469,7 @@ public class MainFrame extends JFrame {
 			public void mouseDragged(MouseEvent e) {
 				if(flag){
 					draggedY = e.getY();
-					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+					setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
 					flagDragged = true;
 				}
 			}
