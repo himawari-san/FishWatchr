@@ -525,6 +525,16 @@ public class MainFrame extends JFrame {
 					}
 				});
 	}
+	
+	
+	public void play(String filename, long msec){
+		setTargetFile(filename);
+		changeStatePlay();
+		soundPlayer.myPlay();
+		soundPlayer.setPlayPoint(msec);
+		timerStart();
+	}
+	
 
 	private JPanel getCommentPanel() {
 		if (commentPanel == null) {

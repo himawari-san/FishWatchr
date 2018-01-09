@@ -21,6 +21,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import com.sun.jna.NativeLibrary;
@@ -65,12 +66,27 @@ public class FishWatchr {
 		
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		
-		MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
+		final MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
 		mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 		mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
 		mainFrame.init();
 		mainFrame.setVisible(true);
 		mainFrame.revalidate();
+		
+		if(arg.length != 0){
+			if(arg.length == 2){
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						try{
+							mainFrame.play(arg[0], (long)(Double.parseDouble(arg[1])*1000));
+						} catch(NullPointerException e) {
+							System.err.println("Error(FishWatchr): invalid number format => " + arg[1]);
+						}
+					}
+				});
+			}
+		}
 	}
 }
 
