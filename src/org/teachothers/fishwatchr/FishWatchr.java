@@ -19,6 +19,8 @@ package org.teachothers.fishwatchr;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -26,6 +28,7 @@ import javax.swing.UIManager;
 
 import com.sun.jna.NativeLibrary;
 
+import uk.co.caprica.vlcj.binding.LibC;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
@@ -44,11 +47,28 @@ public class FishWatchr {
 		if(libVlcDir == null || libVlcDir.isEmpty()){
 			boolean isDiscovered = new NativeDiscovery().discover();
 			if(!isDiscovered){
-				NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
-				NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "VLC.app/Contents/MacOS/lib");
-				NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
-				NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
-				NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
+				String osName = System.getProperty("os.name");
+				if(osName.toLowerCase().startsWith("windows")){
+					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
+					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
+					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
+					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
+				} else if(osName.toLowerCase().startsWith("mac")){
+					File jarPath = new File(System.getProperty("java.class.path"));
+					String jarParent = "";
+					try {
+						jarParent = new File(jarPath.getCanonicalPath()).getParent();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					
+					if(new File(jarParent + "/VLC.app/Contents/MacOS/lib").exists()){
+						LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/VLC.app/Contents/MacOS/plugins", 1);
+						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/VLC.app/Contents/MacOS/lib/");
+					} else {
+						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
+					}
+				}
 			}
 		} else {
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), libVlcDir);
