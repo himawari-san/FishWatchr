@@ -532,6 +532,7 @@ public class MainFrame extends JFrame {
 		changeStatePlay();
 		soundPlayer.myPlay();
 		soundPlayer.setPlayPoint(msec);
+		commentTable.setViewCenterByTime(msec);
 		timerStart();
 	}
 	
