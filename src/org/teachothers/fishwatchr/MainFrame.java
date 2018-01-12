@@ -527,13 +527,17 @@ public class MainFrame extends JFrame {
 	}
 	
 	
-	public void play(String filename, long msec){
+	public void play(String filename, final long msec){
 		setTargetFile(filename);
-		changeStatePlay();
 		soundPlayer.myPlay();
 		soundPlayer.setPlayPoint(msec);
-		commentTable.setViewCenterByTime(msec);
-		timerStart();
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				changeStatePlay();
+				commentTable.setViewCenterByTime(msec);
+			}
+		});
 	}
 	
 
