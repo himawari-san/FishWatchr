@@ -55,7 +55,7 @@ public class SysConfig {
 	
 	
 	public void load(ArrayList<CommentType> commentTypes, ArrayList<User> discussers) {
-		File configFile = new File(CONFIG_FILENAME);
+		File configFile = new File(Util.getCurrentDir() + "/" + CONFIG_FILENAME);
 
 		if(!configFile.exists()){
 			try {
@@ -66,6 +66,8 @@ public class SysConfig {
 				System.err.println("Error(SysConfig): Can not copy the default config file.");
 				e.printStackTrace();
 			}
+		} else {
+			System.err.println("loaded config:" + Util.getCurrentDir() + "/" + CONFIG_FILENAME);
 		}
 
 		setDefault(commentTypes, discussers);
@@ -158,7 +160,7 @@ public class SysConfig {
 	
 	public void save() throws IOException, TransformerException {
 		
-		File configFile = new File(CONFIG_FILENAME);
+		File configFile = new File(Util.getCurrentDir() + "/" + CONFIG_FILENAME);
 		if (configFile.exists()) {
 			String filename = configFile.getName();
 			
