@@ -528,7 +528,9 @@ public class MainFrame extends JFrame {
 	
 	
 	public void play(String filename, final long msec){
-		setTargetFile(filename);
+		if(!setTargetFile(filename)){
+			return;
+		}
 		soundPlayer.myPlay();
 		soundPlayer.setPlayPoint(msec);
 		SwingUtilities.invokeLater(new Runnable() {
@@ -813,6 +815,11 @@ public class MainFrame extends JFrame {
 		//	""		=> ファイル 選択
 		//	otherwise	=> ファイル
 		
+		if(filename != null && !new File(filename).exists() && !filename.isEmpty()){
+			JOptionPane.showMessageDialog(MainFrame.this, "ファイルが見つかりませんでした。\n" + filename);
+			return false;
+		}
+		
 		try {
 			saveCommentList();
 		} catch (IOException e) {
@@ -927,6 +934,16 @@ public class MainFrame extends JFrame {
 			xf = selectedFilename;
 			try {
 				mf = commentList.load(selectedFilename, commentTypes, discussers, false);
+				if(!new File(mf).exists()){
+					mf = "";
+					xf = "";
+					JOptionPane.showMessageDialog(MainFrame.this, "メディアファイルが見つかりませんでした。\n" + mf);
+					ctm.refreshFilter();
+					updateButtonPanel(buttonType);
+					ctm.fireTableDataChanged();
+					setWindowTitle(xf);
+					return false;
+				}
 			} catch (XPathExpressionException | ParseException
 					| ParserConfigurationException
 					| SAXException | IOException e2) {
@@ -1011,10 +1028,15 @@ public class MainFrame extends JFrame {
 		default:
 		}
 
-		// stop cell editing before exit
-		if(commentTable.getCellEditor() != null){
-			commentTable.getCellEditor().stopCellEditing();
-		}
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				// stop cell editing before exit
+				if(commentTable.getCellEditor() != null){
+					commentTable.getCellEditor().stopCellEditing();
+				}
+			}
+		});
 		
 		try {
 			saveCommentList();
