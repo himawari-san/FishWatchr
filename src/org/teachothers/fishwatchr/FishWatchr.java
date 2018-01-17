@@ -95,6 +95,13 @@ public class FishWatchr {
 		if(arg.length != 0){
 			if(arg.length == 2){
 				try{
+					try {
+						// wait for generating soundplayer
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
 					mainFrame.play(arg[0], (long)(Double.parseDouble(arg[1])*1000));
 				} catch(NullPointerException e) {
 					System.err.println("Error(FishWatchr): invalid number format => " + arg[1]);
