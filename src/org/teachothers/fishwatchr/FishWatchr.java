@@ -45,8 +45,8 @@ public class FishWatchr {
 		String libVlcDir = System.getProperty("libvlcdir");
 		if(libVlcDir == null || libVlcDir.isEmpty()){
 			boolean isDiscovered = new NativeDiscovery().discover();
+			String osName = System.getProperty("os.name");
 			if(!isDiscovered){
-				String osName = System.getProperty("os.name");
 				if(osName.toLowerCase().startsWith("windows")){
 					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
 					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
@@ -63,11 +63,17 @@ public class FishWatchr {
 					
 					if(new File(jarParent + "/VLC.app/Contents/MacOS/lib").exists()){
 						LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/VLC.app/Contents/MacOS/plugins", 1);
+						// for Youtube videos
+						LibC.INSTANCE.setenv("VLC_DATA_PATH", jarParent + "/VLC.app/Contents/MacOS/share", 1);
 						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/VLC.app/Contents/MacOS/lib/");
 					} else {
 						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
 					}
 				}
+			} else if(osName.toLowerCase().startsWith("mac")){
+				// vlcj bug?
+				// can not play Youtube videos when using VLC in /Application 
+				LibC.INSTANCE.setenv("VLC_DATA_PATH", "/Applications/VLC.app/Contents/MacOS/share", 1);
 			}
 		} else {
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), libVlcDir);
