@@ -2792,17 +2792,28 @@ public class MainFrame extends JFrame {
 			jMenuItemOptionViewSyncMode
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							try {
-								if(jMenuItemOptionViewSyncMode.isSelected()){
-									config.setValue("/settings/isViewSyncMode", "value", "true");
-									listViewSyncCheckBox.setSelected(true);
-								} else {
-									config.setValue("/settings/isViewSyncMode", "value", "false");
-									listViewSyncCheckBox.setSelected(false);
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									try {
+										if (jMenuItemOptionViewSyncMode
+												.isSelected()) {
+											config.setValue(
+													"/settings/isViewSyncMode",
+													"value", "true");
+											listViewSyncCheckBox
+													.setSelected(true);
+										} else {
+											config.setValue(
+													"/settings/isViewSyncMode",
+													"value", "false");
+											listViewSyncCheckBox
+													.setSelected(false);
+										}
+									} catch (XPathExpressionException e1) {
+										e1.printStackTrace();
+									}
 								}
-							} catch (XPathExpressionException e1) {
-								e1.printStackTrace();
-							}
+							});
 						}
 					});
 		}
@@ -2818,7 +2829,12 @@ public class MainFrame extends JFrame {
 			jMenuItemOptionFilteredViewMode
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						annotationGlobalViewPanel.applyFilter(jMenuItemOptionFilteredViewMode.isSelected());
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								annotationGlobalViewPanel.applyFilter(jMenuItemOptionFilteredViewMode.isSelected());
+							}
+						});
 					}
 				});
 		}
