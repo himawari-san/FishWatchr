@@ -112,7 +112,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	private int selectionEndTime = 0;
 	
 	private FilteredViewCheckBoxCallBack cb = null;
-	private JCheckBox filteredViewCheckBox; 
+	private JCheckBox filteredViewCheckBox;
+	private boolean flagFilteredViewMode = true;
 
 	
 	public AnnotationGlobalViewer(CommentTableModel ctm, SoundPlayer soundPlayer, ArrayList<User> discussers, ArrayList<CommentType> commentTypes) {
@@ -181,7 +182,8 @@ public class AnnotationGlobalViewer extends JPanel {
 		filteredViewCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				cb.callback(filteredViewCheckBox.isSelected());
+				flagFilteredViewMode = filteredViewCheckBox.isSelected();
+				cb.callback(flagFilteredViewMode);
 			}
 		});
 		p2.add(filteredViewCheckBox);
@@ -394,7 +396,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	
 	
 	public void applyFilter(boolean flag){
-		filteredViewCheckBox.setSelected(flag); 
+		filteredViewCheckBox.setSelected(flag);
+		flagFilteredViewMode = flag;
 	}
 	
 	
@@ -463,7 +466,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			int heightMax = (int)(getHeight() * (1 - PLOT_AREA_RATIO));
 			List<Comment> targetList = commentList;
 			
-			if(filteredViewCheckBox.isSelected()){
+			if(flagFilteredViewMode){
 				targetList = filteredCommentList;
 			} else {
 				targetList = commentList;
@@ -567,7 +570,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			String commentType;
 			List<Comment> targetList;
 
-			if(filteredViewCheckBox.isSelected()){
+			if(flagFilteredViewMode){
 				targetList = filteredCommentList;
 			} else {
 				targetList = commentList;
