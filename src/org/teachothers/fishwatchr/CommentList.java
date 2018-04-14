@@ -37,7 +37,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,7 +55,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class CommentList extends LinkedList<Comment> {
+public class CommentList extends ArrayList<Comment> {
 
 	private static final long serialVersionUID = 1L;
 	private static final String NOT_DEFINED = "(未定義)";

@@ -161,7 +161,7 @@ public class CommentTableModel extends AbstractTableModel {
 		if(commentList.size() == 0) {
 			commentList.add(comment);
 		} else {
-			Comment lastComment = commentList.getLast();
+			Comment lastComment = commentList.get(commentList.size()-1);
 			int frame = commentList.unifiedCommentTime(comment);
 			if (commentList.unifiedCommentTime(lastComment) <= frame) {
 //				System.err.println("append: " + frame);
