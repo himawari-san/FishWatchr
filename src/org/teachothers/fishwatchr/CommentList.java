@@ -74,6 +74,7 @@ public class CommentList extends ArrayList<Comment> {
 	private HashMap<String, Integer> mapCommentTimeOffset = new HashMap<String, Integer>();
 	private HashMap<String, String> mapStartTime = new HashMap<String, String>();
 	private String mediaFilename = "";
+	private String mediaFilenameOriginal = "";
 	private String setName = "";
 
 	
@@ -187,8 +188,8 @@ public class CommentList extends ArrayList<Comment> {
 		String newMediaFilename = mediaFilename;
 		if(mediaFilename.matches("^https?://.+")){
 			newMediaFilename = URLEncoder.encode(mediaFilename, "utf-8");
-		} else {
-			newMediaFilename = new File(mediaFilename).getName();
+		} else if(!mediaFilenameOriginal.isEmpty()){
+			newMediaFilename = mediaFilenameOriginal;
 		}
 		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + newMediaFilename + "\">\n");
 
@@ -306,6 +307,7 @@ public class CommentList extends ArrayList<Comment> {
 		// media_file
 		expr = xpath.compile("/comment_list/@media_file");
 		mediaFilename = (String) expr.evaluate(doc, XPathConstants.STRING);
+		mediaFilenameOriginal = mediaFilename;
 		if(mediaFilename == null){
 			System.err.println("warning:(MainFrame.java): " + targetFilename + " には，/comment_list/@media_file がありません。");
 			mediaFilename = "";
@@ -715,8 +717,10 @@ public class CommentList extends ArrayList<Comment> {
 	public void setMediaFilename(String filename){
 		if(filename.matches("^https?://.+")){
 			mediaFilename = filename;
+			mediaFilenameOriginal = mediaFilename;
 		} else {
 			mediaFilename = new File(filename).getName();
+			mediaFilenameOriginal = mediaFilename;
 		}
 	}
 
