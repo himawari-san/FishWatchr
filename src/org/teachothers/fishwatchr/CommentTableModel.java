@@ -72,11 +72,9 @@ public class CommentTableModel extends AbstractTableModel {
 	
 	public Object getValueAt(int row, int column) {
 		if(filteredCommentList.size() <= row) {
-			System.err.println("row:" + row);
 			return ""; 
 		}
 		Comment comment = filteredCommentList.get(row);
-//		Comment comment = commentList.get(row);
 		
 		if(comment == null) return null;
 		if(column == Comment.F_COMMENTER || column == Comment.F_DISCUSSER){
@@ -92,7 +90,7 @@ public class CommentTableModel extends AbstractTableModel {
 		}
 	}
 	
-	// time ミリ秒
+	// time (millisec)
 	private String formatTime(int msec){
 		int time = (int) (msec / 1000);
 		int hour = time / 3600;
@@ -133,9 +131,6 @@ public class CommentTableModel extends AbstractTableModel {
 		return filteredCommentList;
 	}
 
-//	public int getFilteredCommentListSize(){
-//		return filteredCommentList.size();
-//	}
 	
 	public ArrayList<String> getItemList(String headerName){
 		ArrayList<String> itemList = new ArrayList<String>();
@@ -164,7 +159,6 @@ public class CommentTableModel extends AbstractTableModel {
 			Comment lastComment = commentList.get(commentList.size()-1);
 			int frame = commentList.unifiedCommentTime(comment);
 			if (commentList.unifiedCommentTime(lastComment) <= frame) {
-//				System.err.println("append: " + frame);
 				commentList.add(comment);
 			} else {
 				boolean fragInsert = false;
@@ -283,7 +277,7 @@ public class CommentTableModel extends AbstractTableModel {
 	}
 	
 	
-	// 全データから探す
+	// search comment from all data
 	public int findComment(Comment comment){
 		for(int i = 0; i < commentList.size(); i++){
 			if(commentList.get(i).equals(comment)){
