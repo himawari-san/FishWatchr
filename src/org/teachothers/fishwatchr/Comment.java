@@ -24,17 +24,16 @@ import java.util.HashMap;
 
 public class Comment {
 	public static final int N_Field = 10;
-	public static final int F_ID = 0; // コメントid
-	public static final int F_COMMENT_TIME = 1; // 開始からの経過時間(msec)
+	public static final int F_ID = 0; // comment id
+	public static final int F_COMMENT_TIME = 1; // elapsed time from the beginning of media file (msec)
 	public static final int F_COMMENTER = 2;
 	public static final int F_DISCUSSER = 3;
 	public static final int F_COMMENT_TYPE = 4;
 	public static final int F_COMMENT = 6;
-	public static final int F_DATE = 8; // コメントした日時
-	public static final int F_SET_NAME = 5; // コメントセット名
-	public static final int F_AUX = 7; // コメント補助情報
-	public static final int F_COMMENT_TIME_END = 9; // 範囲型のコメントの終了時間
-//	public static final int F_COMMENT_TIME_OFFSET = 9; // 経過時間に対するオフセット
+	public static final int F_DATE = 8; // comment date
+	public static final int F_SET_NAME = 5; // comment set name
+	public static final int F_AUX = 7; // auxiliary information
+	public static final int F_COMMENT_TIME_END = 9; // the end time (ellapsed time ) of an time-range annotation)
 	
 	public static final String ITEM_NUMBER = "番号";
 	public static final String ITEM_ANNOTATOR = "注釈者";
@@ -46,7 +45,7 @@ public class Comment {
 	public static final String ITEM_AUX = "補助情報";
 
 	public static final String headers[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
-	public static final int COMMENT_TIME_END_UNDEFINED = -1; // 範囲型でない場合，終了時間は-1とする
+	public static final int COMMENT_TIME_END_UNDEFINED = -1; // the end time of non time-range annotations
 
 	public static final String COMMENT_DELIMITER = " || ";
 	public static final String LINEBREAK = " // ";
@@ -99,12 +98,11 @@ public class Comment {
 		data[F_COMMENT_TIME_END] = COMMENT_TIME_END_UNDEFINED;
 		data[F_ID] = id;
 		data[F_AUX] = aux;
-//		data[F_COMMENT_TIME_OFFSET] = offset;
 	}
 	
 	
 	public void setAt(int i, Object obj){
-		// 同じ値なら変更しない
+		// no change if the same value
 		if(data[i].equals(obj)){
 			return;
 		} else if(data[i] != null && obj != null && data[i].toString().equals(obj.toString())){
@@ -129,11 +127,6 @@ public class Comment {
 		data[F_ID] = i;
 	}
 	
-//	public void setCommentTimeOffset(int msec){
-//		data[F_COMMENT_TIME_OFFSET] = msec;
-//		isModified = true;
-//	}
-	
 	public boolean isModified(){
 		return isModified;
 	}
@@ -142,8 +135,6 @@ public class Comment {
 		isModified = flag;
 	}
 
-	
-	
 	public int getID(){
 		return (int)data[F_ID];
 	}
@@ -164,7 +155,7 @@ public class Comment {
 		return (User)data[F_COMMENTER];
 	}
 	
-	// コメントした日時（非補正）
+	// comment date (no correction)
 	public long getDate(){
 		return ((Date)data[F_DATE]).getTime();
 	}
