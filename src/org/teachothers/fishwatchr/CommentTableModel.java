@@ -30,7 +30,7 @@ import javax.swing.table.AbstractTableModel;
 public class CommentTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	private CommentList commentList;
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
 	public ArrayList<User> discussers;
 	public ArrayList<CommentType> commentTypes;
 	private ArrayList<Comment> filteredCommentList = new ArrayList<Comment>();
@@ -72,7 +72,7 @@ public class CommentTableModel extends AbstractTableModel {
 	
 	public Object getValueAt(int row, int column) {
 		if(filteredCommentList.size() <= row) {
-			return ""; 
+			return "";  //$NON-NLS-1$
 		}
 		Comment comment = filteredCommentList.get(row);
 		
@@ -98,7 +98,7 @@ public class CommentTableModel extends AbstractTableModel {
 		int minute = time / 60;
 		int sec = time - minute * 60;
 
-		return String.format("%02d:%02d:%02d", hour, minute, sec);
+		return String.format("%02d:%02d:%02d", hour, minute, sec); //$NON-NLS-1$
 	}
 	
 	
@@ -151,7 +151,7 @@ public class CommentTableModel extends AbstractTableModel {
 		String setName = commentList.getSetName();
 		
 		int originalTime = commentTime - commentList.getCommentTimeOffset(setName);
-		comment.set("", commentType, commenter, discusser, commentDate, originalTime, setName, aux);
+		comment.set("", commentType, commenter, discusser, commentDate, originalTime, setName, aux); //$NON-NLS-1$
 
 		if(commentList.size() == 0) {
 			commentList.add(comment);
@@ -224,7 +224,7 @@ public class CommentTableModel extends AbstractTableModel {
 				if(value != null && !filterCond.matcher(value).find()){
 					flag = false;
 					break;
-				} else if(value == null && !filterCond.matcher("").find()){
+				} else if(value == null && !filterCond.matcher("").find()){ //$NON-NLS-1$
 					flag = false;
 					break;
 				}
