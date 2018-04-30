@@ -27,6 +27,6 @@ public class TimeDisplay extends JLabel {
 		time -= hour * 3600;
 		int minute = time / 60;
 		int sec = time - minute * 60;
-		setText(String.format("%02d:%02d:%02d", hour, minute, sec));
+		setText(String.format("%02d:%02d:%02d", hour, minute, sec)); //$NON-NLS-1$
 	}
 }

@@ -98,17 +98,17 @@ import org.xml.sax.SAXException;
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final String VERSION = "Ver.0.9.11.1 [20180117]";
-	private static final String COPYRIGHT = "Copyright(c) 2014-2018 Masaya YAMAGUCHI";
+	private static final String VERSION = "Ver.0.9.11.1 [20180117]"; //$NON-NLS-1$
+	private static final String COPYRIGHT = "Copyright(c) 2014-2018 Masaya YAMAGUCHI"; //$NON-NLS-1$
 	private static final int TASK_INTERVAL = 250;
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
 	private static final int TAB_STATUS_GLOBAL_VIEW = 0;
 	private static final int TAB_STATUS_DETAIL_VIEW = 1;
-	private static final String FILE_PREFIX = "fw";
-	private static final String FILENAME_GRUE =".";
+	private static final String FILE_PREFIX = "fw"; //$NON-NLS-1$
+	private static final String FILENAME_GRUE ="."; //$NON-NLS-1$
 	
-	private static final String COMMENTER_NAME_GLUE1 = "_";
-	private static final String COMMENTER_NAME_GLUE2 = "_in_";
+	private static final String COMMENTER_NAME_GLUE1 = "_"; //$NON-NLS-1$
+	private static final String COMMENTER_NAME_GLUE2 = "_in_"; //$NON-NLS-1$
 	private static String[] mergeModes = {"通常", "時刻指定"};
 
 	private static final int DRAGGABLE_RANGE = 5;
@@ -214,8 +214,8 @@ public class MainFrame extends JFrame {
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<CommentButton> commentButtons;
 
-	private String xf = "";
-	private String mf = "";
+	private String xf = ""; //$NON-NLS-1$
+	private String mf = ""; //$NON-NLS-1$
 
 	private DiscussersPanel discussersPanel;
 
@@ -252,23 +252,23 @@ public class MainFrame extends JFrame {
 
 	private boolean isSoundPanelEnable = false;
 	
-	private String userHomeDir = "";
+	private String userHomeDir = ""; //$NON-NLS-1$
 	
 	// 強調表示の範囲（現在再生中のコメントから前後 x msec）
 	private int focusRange = 10000; // msec
 	
 	private SysConfig config = new SysConfig();
 	
-	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0";
+	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0"; //$NON-NLS-1$
 	
-	private ImageIcon iconPlay = new ImageIcon(getClass().getResource("resources/images/play.png"));
-	private ImageIcon iconForward = new ImageIcon(getClass().getResource("resources/images/forward.png"));
-	private ImageIcon iconBackward = new ImageIcon(getClass().getResource("resources/images/backward.png"));
-	private ImageIcon iconStop = new ImageIcon(getClass().getResource("resources/images/stop.png"));
-	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png"));
-	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png"));
-	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png"));
-	private ImageIcon iconFishWatchr = new ImageIcon(getClass().getResource("resources/images/fw_icon.png"));
+	private ImageIcon iconPlay = new ImageIcon(getClass().getResource("resources/images/play.png")); //$NON-NLS-1$
+	private ImageIcon iconForward = new ImageIcon(getClass().getResource("resources/images/forward.png")); //$NON-NLS-1$
+	private ImageIcon iconBackward = new ImageIcon(getClass().getResource("resources/images/backward.png")); //$NON-NLS-1$
+	private ImageIcon iconStop = new ImageIcon(getClass().getResource("resources/images/stop.png")); //$NON-NLS-1$
+	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png")); //$NON-NLS-1$
+	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png")); //$NON-NLS-1$
+	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png")); //$NON-NLS-1$
+	private ImageIcon iconFishWatchr = new ImageIcon(getClass().getResource("resources/images/fw_icon.png")); //$NON-NLS-1$
 
 	private List<CaptureDevice> videoDeviceList = null;
 	private List<CaptureDevice> audioDeviceList = null;
@@ -283,7 +283,7 @@ public class MainFrame extends JFrame {
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
 
-		setWindowTitle("");
+		setWindowTitle(""); //$NON-NLS-1$
 
 		// コメントリスト
 		commentList = new CommentList();
@@ -298,10 +298,10 @@ public class MainFrame extends JFrame {
 
 		ctm = new CommentTableModel(commentList, discussers, commentTypes);
 		
-		userHomeDir = System.getProperty("user.home");
+		userHomeDir = System.getProperty("user.home"); //$NON-NLS-1$
 		if(userHomeDir == null) {
-			userHomeDir = "";
-			System.err.println("Warning(MainFrame): Can not get the user homedir.");
+			userHomeDir = ""; //$NON-NLS-1$
+			System.err.println("Warning(MainFrame): Can not get the user homedir."); //$NON-NLS-1$
 		}
 	}
 
@@ -311,7 +311,7 @@ public class MainFrame extends JFrame {
 		config.load(commentTypes, discussers);
 		String configValue = null;
 
-		configValue = config.getFirstNodeAsString("/settings/button_type/@value");
+		configValue = config.getFirstNodeAsString("/settings/button_type/@value"); //$NON-NLS-1$
 		if(configValue != null){
 			if(configValue.equals(CommentButton.BUTTON_TYPE_COMMENT_STR)){
 				buttonType = CommentButton.BUTTON_TYPE_COMMENT;
@@ -319,23 +319,23 @@ public class MainFrame extends JFrame {
 				buttonType = CommentButton.BUTTON_TYPE_DISCUSSER;				
 			}
 		}
-		configValue = config.getFirstNodeAsString("/settings/isAnnotationMulti/@value");
+		configValue = config.getFirstNodeAsString("/settings/isAnnotationMulti/@value"); //$NON-NLS-1$
 		if(configValue != null){
-			if(configValue.equals("true")){
+			if(configValue.equals("true")){ //$NON-NLS-1$
 				isAnnotationMulti = true;
 			} else {
 				isAnnotationMulti = false;
 			}
 		}
-		configValue = config.getFirstNodeAsString("/settings/isViewSyncMode/@value");
+		configValue = config.getFirstNodeAsString("/settings/isViewSyncMode/@value"); //$NON-NLS-1$
 		if(configValue != null){
-			if(configValue.equals("true")){
+			if(configValue.equals("true")){ //$NON-NLS-1$
 				isViewSyncMode = true;
 			} else {
 				isViewSyncMode = false;
 			}
 		}
-		configValue = config.getFirstNodeAsString("/settings/tableFontSize/@value");
+		configValue = config.getFirstNodeAsString("/settings/tableFontSize/@value"); //$NON-NLS-1$
 		if(configValue != null){
 			try {
 				int newSize = Integer.parseInt(configValue);
@@ -343,33 +343,33 @@ public class MainFrame extends JFrame {
 					tableFontSize = newSize;
 				}
 			} catch(NumberFormatException e){
-				System.err.println("Warning(MainFrame): invalid font size setting > " + configValue);
+				System.err.println("Warning(MainFrame): invalid font size setting > " + configValue); //$NON-NLS-1$
 			}
 		}
-		configValue = config.getFirstNodeAsString("/settings/manual_url/@value");
+		configValue = config.getFirstNodeAsString("/settings/manual_url/@value"); //$NON-NLS-1$
 		if(configValue != null){
 			manualURLStr = configValue;
 		}
-		configValue = config.getFirstNodeAsString("/settings/default_discusser/@value");
+		configValue = config.getFirstNodeAsString("/settings/default_discusser/@value"); //$NON-NLS-1$
 		if(configValue != null){
-			if(!configValue.matches("^\\s+$") && !configValue.matches(".*[<>&'\"\\s].*")){
+			if(!configValue.matches("^\\s+$") && !configValue.matches(".*[<>&'\"\\s].*")){ //$NON-NLS-1$ //$NON-NLS-2$
 				Comment.setDefaultDiscusserName(configValue);
 			} else {
-				System.err.println("Warning(MainFrame): Not used default_discusser, " + configValue);
+				System.err.println("Warning(MainFrame): Not used default_discusser, " + configValue); //$NON-NLS-1$
 			}
 		}
 
 		// set commenter's name
-		configValue = config.getFirstNodeAsString("/settings/commenter/@value");
+		configValue = config.getFirstNodeAsString("/settings/commenter/@value"); //$NON-NLS-1$
 		if(configValue == null
 				|| configValue.isEmpty()
-				|| configValue.matches("^\\s+$")){
-			String username = System.getProperty("user.name");
+				|| configValue.matches("^\\s+$")){ //$NON-NLS-1$
+			String username = System.getProperty("user.name"); //$NON-NLS-1$
 			String hostname;
 			try {
 				hostname = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e) {
-				hostname = "";
+				hostname = ""; //$NON-NLS-1$
 			}
 			if(hostname.isEmpty()){
 				if(username.isEmpty()){
@@ -381,9 +381,9 @@ public class MainFrame extends JFrame {
 				configValue = username + COMMENTER_NAME_GLUE2 + hostname;
 			}
 		}
-		String modifiedName = configValue.replaceAll("[/<>&'\"\\s]", COMMENTER_NAME_GLUE1);
+		String modifiedName = configValue.replaceAll("[/<>&'\"\\s]", COMMENTER_NAME_GLUE1); //$NON-NLS-1$
 		if(!configValue.equals(modifiedName)){
-			System.err.println("Warning(mainFrame): commenter's name was modified from " + configValue + " to " + modifiedName);
+			System.err.println("Warning(mainFrame): commenter's name was modified from " + configValue + " to " + modifiedName); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		commenter = new User(modifiedName);
 
@@ -499,7 +499,7 @@ public class MainFrame extends JFrame {
 					@Override
 					public boolean dispatchKeyEvent(KeyEvent e) {
 						if (e.getSource().getClass().getName()
-								.endsWith(".CommentTable")
+								.endsWith(".CommentTable") //$NON-NLS-1$
 								|| commentTable.isAncestorOf(e.getComponent())) {
 							if (e.isControlDown()
 									&& (e.getKeyCode() == KeyEvent.VK_UP
@@ -570,7 +570,7 @@ public class MainFrame extends JFrame {
 								+ adjustmentTimeAtJump; // msec
 
 						if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
-							if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){
+							if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){ //$NON-NLS-1$
 								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。\n" + mf);
 								return;
 							}
@@ -689,7 +689,7 @@ public class MainFrame extends JFrame {
 							CaptureDevice videoDevice = soundPlayer.getVideoDeviceList().get(iSelectedVideoDevice);
 							CaptureDevice audioDevice = soundPlayer.getAudioDeviceList().get(iSelectedAudioDevice);
 							
-							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
+							SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd"); //$NON-NLS-1$
 							String basename = userHomeDir + File.separator 
 									+ FILE_PREFIX + today.format(new Date()) + FILENAME_GRUE + commenter;
 
@@ -704,10 +704,10 @@ public class MainFrame extends JFrame {
 								xf = mf + CommentList.FILE_SUFFIX;
 								isSoundPanelEnable = true;
 							} else {
-								mf = "";
+								mf = ""; //$NON-NLS-1$
 								xf = CommentList.getUniqueFilename(basename + CommentList.FILE_SUFFIX);
 							}
-							System.err.println("mf: " + mf);
+							System.err.println("mf: " + mf); //$NON-NLS-1$
 							
 							setWindowTitle(xf);
 							// for testing
@@ -750,7 +750,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent arg0) {
 							if(!mf.isEmpty()
 									&& !SoundPlayer.isPlayable(mf)
-									&& !mf.matches("^https?://.+")){
+									&& !mf.matches("^https?://.+")){ //$NON-NLS-1$
 								JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。\n" + mf);
 								return;
 							}
@@ -765,7 +765,7 @@ public class MainFrame extends JFrame {
 								return;
 							} else {
 								if (mf.isEmpty() && xf.isEmpty()) {
-									if(!setTargetFile("")){
+									if(!setTargetFile("")){ //$NON-NLS-1$
 										return;
 									}
 								}
@@ -789,7 +789,7 @@ public class MainFrame extends JFrame {
 			soundForwardButton
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
-							System.err.println("forward!");
+							System.err.println("forward!"); //$NON-NLS-1$
 							if(soundPlayer.getSoundLength()*1000 - soundPlayer.getElapsedTime() > skipTime){
 								soundPlayer.forward(skipTime); // msec
 							}
@@ -799,7 +799,7 @@ public class MainFrame extends JFrame {
 			soundBackwardButton
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
-							System.err.println("backward!");
+							System.err.println("backward!"); //$NON-NLS-1$
 							soundPlayer.backward(skipTime); // msec
 						}
 					});
@@ -841,7 +841,7 @@ public class MainFrame extends JFrame {
 					"(CTRL + v キーでペースト）", JOptionPane.PLAIN_MESSAGE);
 			pane.setWantsInput(true);
 			pane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-			pane.setInputValue("");
+			pane.setInputValue(""); //$NON-NLS-1$
 			JDialog dialog = pane.createDialog(this, "URLの入力");
 			dialog.setSize(500, 150);
 			dialog.setVisible(true);
@@ -855,7 +855,7 @@ public class MainFrame extends JFrame {
 			}
 			mf = selectedFilename;
 			xf = CommentList.getUniqueFilename(userHomeDir + File.separator
-					+ FILE_PREFIX + new SimpleDateFormat("yyyyMMdd").format(new Date()) + FILENAME_GRUE + commenter + CommentList.FILE_SUFFIX);
+					+ FILE_PREFIX + new SimpleDateFormat("yyyyMMdd").format(new Date()) + FILENAME_GRUE + commenter + CommentList.FILE_SUFFIX); //$NON-NLS-1$
 			commentList.clear();
 			commentList.setStartTime(new Date());
 			commentList.setMediaFilename(mf);
@@ -935,8 +935,8 @@ public class MainFrame extends JFrame {
 			try {
 				mf = commentList.load(selectedFilename, commentTypes, discussers, false);
 				if(!new File(mf).exists()){
-					mf = "";
-					xf = "";
+					mf = ""; //$NON-NLS-1$
+					xf = ""; //$NON-NLS-1$
 					JOptionPane.showMessageDialog(MainFrame.this, "メディアファイルが見つかりませんでした。\n" + mf);
 					ctm.refreshFilter();
 					updateButtonPanel(buttonType);
@@ -968,14 +968,14 @@ public class MainFrame extends JFrame {
 			timeSlider.setEnabled(false);
 			return false;
 		} else {
-			System.err.println("Warning(MainFrame): what?");
+			System.err.println("Warning(MainFrame): what?"); //$NON-NLS-1$
 		}
 		
-		System.err.println("set mf: " + mf);
+		System.err.println("set mf: " + mf); //$NON-NLS-1$
 		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 			JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
-			mf = "";
-			xf = "";
+			mf = ""; //$NON-NLS-1$
+			xf = ""; //$NON-NLS-1$
 			return false;
 		}
 		isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
@@ -1004,7 +1004,7 @@ public class MainFrame extends JFrame {
 
 		if (commentList.isModified() || (!xf.isEmpty() && !(new File(xf).exists()))) {
 			if(xf.isEmpty()){
-				xf = userHomeDir + File.separator + "fw_" + commenter.getName() + ".xml";
+				xf = userHomeDir + File.separator + "fw_" + commenter.getName() + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
 				System.err.println("Warning(MainFrame): ファイル名がつけられていません。\n" + xf + "として保存します。");
 			}
 			
@@ -1120,7 +1120,7 @@ public class MainFrame extends JFrame {
 		soundPanel.repaint();
 		discussersPanel.repaintComponents();
 		commentTable.initState();
-		soundPlayer.setOverlayText("");
+		soundPlayer.setOverlayText(""); //$NON-NLS-1$
 		
 		if (timer != null) {
 			timer.cancel();
@@ -1285,7 +1285,7 @@ public class MainFrame extends JFrame {
 					}
 
 					if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
-						if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){
+						if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){ //$NON-NLS-1$
 							JOptionPane.showMessageDialog(MainFrame.this, "再生できるファイルではありません。\n" + mf);
 							return;
 						}
@@ -1466,7 +1466,7 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							soundPlayer.myStop();
-							if(!setTargetFile("")){
+							if(!setTargetFile("")){ //$NON-NLS-1$
 								return;
 							}
 							changeStatePlay();
@@ -1522,7 +1522,7 @@ public class MainFrame extends JFrame {
 				e.printStackTrace();
 			}
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	
@@ -1530,7 +1530,7 @@ public class MainFrame extends JFrame {
 		JFileChooser jfc = new JFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		String allSuffix[] = Arrays.copyOf(SoundPlayer.getPlayableFileExtensions(), SoundPlayer.getPlayableFileExtensions().length+1);
-		allSuffix[SoundPlayer.getPlayableFileExtensions().length] = "xml";
+		allSuffix[SoundPlayer.getPlayableFileExtensions().length] = "xml"; //$NON-NLS-1$
 		
 		FileFilter fishWatchrFilter = new FishWatchrFileFilter("注記・音声・動画ファイル", FishWatchrFileFilter.TYPE_ALL);
 		FileFilter mediaFilter = new FishWatchrFileFilter("音声・動画ファイル", FishWatchrFileFilter.TYPE_MEDIA);
@@ -1549,7 +1549,7 @@ public class MainFrame extends JFrame {
 				e.printStackTrace();
 			}
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 	
 
@@ -1585,7 +1585,7 @@ public class MainFrame extends JFrame {
 			if(filename.endsWith(SoundPlayer.SOUNDFILE_EXTENSION) &&
 					(type == TYPE_ALL || type == TYPE_MEDIA)){
 				// 生成元のメディアファイルがないか調べる
-				String candidate = filename.replaceFirst(SoundPlayer.SOUNDFILE_EXTENSION + "$",  "");
+				String candidate = filename.replaceFirst(SoundPlayer.SOUNDFILE_EXTENSION + "$",  ""); //$NON-NLS-1$ //$NON-NLS-2$
 				if(SoundPlayer.isPlayable(candidate)){
 					for(String child: new File(f.getParent()).list()){
 						// 生成元の wav ファイルがある場合は，リストに表示しない
@@ -1620,7 +1620,7 @@ public class MainFrame extends JFrame {
 			jMenuItemFileSave
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							String message = "";
+							String message = ""; //$NON-NLS-1$
 							try {
 								if(xf.isEmpty()){
 									JOptionPane.showMessageDialog(MainFrame.this, "ファイル名が未指定のため，保存できません。\n新規に注釈をつける場合は，録音/録画状態で行ってください。");
@@ -1660,8 +1660,8 @@ public class MainFrame extends JFrame {
 								if(saveFilename.isEmpty()){
 									JOptionPane.showMessageDialog(MainFrame.this, "ファイルが指定されなかったので，処理を中止します。");
 									return;
-								} else if(!saveFilename.endsWith(".tsv")){
-									saveFilename += ".tsv";
+								} else if(!saveFilename.endsWith(".tsv")){ //$NON-NLS-1$
+									saveFilename += ".tsv"; //$NON-NLS-1$
 								}
 								File saveFile = new File(saveFilename);
 								if(saveFile.exists()){
@@ -1735,7 +1735,7 @@ public class MainFrame extends JFrame {
 					JOptionPane.PLAIN_MESSAGE);
 			if (inputValue != null) {
 				try{
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); //$NON-NLS-1$
 					recordingDate = dateFormat.parse(inputValue);
 				} catch (ParseException e) {
 					JOptionPane.showMessageDialog(MainFrame.this,
@@ -1751,7 +1751,7 @@ public class MainFrame extends JFrame {
 	    	// merge
 			ArrayList<String> results = commentList.merge(directoryName, commentTypes, discussers);
 			ArrayList<String> deletedResults = null;
-			String deleteMessage = "";
+			String deleteMessage = ""; //$NON-NLS-1$
 			if(commentList.isDuplicated()){
 				int optionValue = JOptionPane.showConfirmDialog(this, "重複する注釈を統合しますか？\n統合すると，コメント，補助列をそれぞれ連結した上で\n一つの注釈としてまとめられます。", "注釈結果の重複", JOptionPane.YES_NO_OPTION);
 				if(optionValue == JOptionPane.YES_OPTION){
@@ -1775,25 +1775,25 @@ public class MainFrame extends JFrame {
 		    }
 
 		    String message = 
-		    		"<html>"
+		    		"<html>" //$NON-NLS-1$
 		    		+ "<h1>マージの概要</h1>"
-		    		+ "<ul>" 
-		    		+ "<li>" + mergeModes[iMergeMode] + "モードでマージしました。</li>" 
-					+ "<li>マージ後の設定ファイル:<br />" + xf + "</li>"
+		    		+ "<ul>"  //$NON-NLS-1$
+		    		+ "<li>" + mergeModes[iMergeMode] + "モードでマージしました。</li>"  //$NON-NLS-1$
+					+ "<li>マージ後の設定ファイル:<br />" + xf + "</li>" //$NON-NLS-2$
 					+ "<li>マージしたファイルは，" + results.size() + "ファイルです。</li>"
 					+ "<li>マージ後の注釈数は，" + commentList.size() + "件です。</li>"
 		    		+ deleteMessage
-		    		+ "</ul>" 
+		    		+ "</ul>"  //$NON-NLS-1$
 					+ "<h1>マージしたファイル</h1>"
-		    		+ "<ul><li>" + StringUtils.join(results, "</li><li>") + "</li></ul>";
+		    		+ "<ul><li>" + StringUtils.join(results, "</li><li>") + "</li></ul>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		    if(deletedResults != null){
 		    	message +=
 						"<h1>統合された注釈</h1>"
-					    + "<ul><li>" + StringUtils.join(deletedResults, "</li><li>") + "</li></ul>";
+					    + "<ul><li>" + StringUtils.join(deletedResults, "</li><li>") + "</li></ul>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		    			
 		    }
 		    JTextPane messagePane = new JTextPane();
-			messagePane.setContentType("text/html");
+			messagePane.setContentType("text/html"); //$NON-NLS-1$
 		    messagePane.setText(message);
 		    JScrollPane scrollPane = new JScrollPane(messagePane);
 		    scrollPane.setPreferredSize(new Dimension(550, 400));
@@ -1819,8 +1819,8 @@ public class MainFrame extends JFrame {
 
 		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 			JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
-			mf = "";
-			xf = "";
+			mf = ""; //$NON-NLS-1$
+			xf = ""; //$NON-NLS-1$
 			return false;
 		}
 		isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
@@ -2150,7 +2150,7 @@ public class MainFrame extends JFrame {
 			jMenuItemControlScroll
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							System.err.println("jump!!");
+							System.err.println("jump!!"); //$NON-NLS-1$
 							commentTable.setViewCenterByTime(soundPlayer.getElapsedTime());
 						}
 					});
@@ -2262,7 +2262,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							updateButtonPanel(CommentButton.BUTTON_TYPE_DISCUSSER);
 							try {
-								config.setValue("/settings/button_type", "value", CommentButton.BUTTON_TYPE_DISCUSSER_STR);
+								config.setValue("/settings/button_type", "value", CommentButton.BUTTON_TYPE_DISCUSSER_STR); //$NON-NLS-1$ //$NON-NLS-2$
 							} catch (XPathExpressionException e1) {
 								e1.printStackTrace();
 							}
@@ -2280,7 +2280,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							updateButtonPanel(CommentButton.BUTTON_TYPE_COMMENT);
 							try {
-								config.setValue("/settings/button_type", "value", CommentButton.BUTTON_TYPE_COMMENT_STR);
+								config.setValue("/settings/button_type", "value", CommentButton.BUTTON_TYPE_COMMENT_STR); //$NON-NLS-1$ //$NON-NLS-2$
 							} catch (XPathExpressionException e1) {
 								e1.printStackTrace();
 							}
@@ -2303,9 +2303,9 @@ public class MainFrame extends JFrame {
 							}
 							try {
 								if(jMenuItemAnnotationMulti.isSelected()){
-									config.setValue("/settings/isAnnotationMulti", "value", "true");
+									config.setValue("/settings/isAnnotationMulti", "value", "true"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 								} else {
-									config.setValue("/settings/isAnnotationMulti", "value", "false");
+									config.setValue("/settings/isAnnotationMulti", "value", "false"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 								}
 							} catch (XPathExpressionException e1) {
 								e1.printStackTrace();
@@ -2333,7 +2333,7 @@ public class MainFrame extends JFrame {
 								// do nothing if canceled
 							} else if(inputValue.isEmpty()){
 								JOptionPane.showMessageDialog(null, Comment.ITEM_ANNOTATOR + "名が空です。");
-							} else if(inputValue.matches(".*[\\s<>/&'\"].*")){
+							} else if(inputValue.matches(".*[\\s<>/&'\"].*")){ //$NON-NLS-1$
 								JOptionPane.showMessageDialog(null, inputValue + "\nには，使用できない文字（<>/\"\'& および空白）が含まれているため，設定値を反映しませんでした。");
 							} else {
 								commenter.setName(inputValue);
@@ -2363,7 +2363,7 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（半角の <>\"\'& 空白文字）が含まれているため，設定値を反映しませんでした。");
 								return;
 							}
-							config.setDiscussers("/settings/discussers", "li", discussers);
+							config.setDiscussers("/settings/discussers", "li", discussers); //$NON-NLS-1$ //$NON-NLS-2$
 							discussersPanel.updateCompoments();
 							annotationGlobalViewPanel.updatePanel();
 							if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
@@ -2395,7 +2395,7 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(null, invalidItems + "\nには，使用できない文字（<>\"\'&）が含まれているため，設定値を反映しませんでした。");
 								return;
 							}
-							config.setCommentTypes("/settings/comment_types", "li", commentTypes);
+							config.setCommentTypes("/settings/comment_types", "li", commentTypes); //$NON-NLS-1$ //$NON-NLS-2$
 							discussersPanel.updateCompoments();
 							annotationGlobalViewPanel.updatePanel();
 							if (buttonType == CommentButton.BUTTON_TYPE_COMMENT) {
@@ -2567,7 +2567,7 @@ public class MainFrame extends JFrame {
 			ButtonGroup itemGroup = new ButtonGroup();
 			for (int i = 0; i < videoAspectRatios.length; i++) {
 				String strVideoAspectRatio = videoAspectRatios[i];
-				String[] strRatio = strVideoAspectRatio.split(":");
+				String[] strRatio = strVideoAspectRatio.split(":"); //$NON-NLS-1$
 				final float videoAspectRatio = Float.parseFloat(strRatio[0])
 						/ Float.parseFloat(strRatio[1]);
 				final int ii = i;
@@ -2588,8 +2588,8 @@ public class MainFrame extends JFrame {
 						iVideoAspectRate = ii;
 					}
 				});
-				strVideoAspectRatio.replaceAll("f", "");
-				strVideoAspectRatio.replaceAll("/", ":");
+				strVideoAspectRatio.replaceAll("f", ""); //$NON-NLS-1$ //$NON-NLS-2$
+				strVideoAspectRatio.replaceAll("/", ":"); //$NON-NLS-1$ //$NON-NLS-2$
 				jMenuItemOptionVideoRatio.add(item);
 				itemGroup.add(item);
 				if (i == iVideoAspectRate) {
@@ -2689,7 +2689,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							String inputValue = JOptionPane.showInputDialog(
 									MainFrame.this, "現在の設定値: " + skipTime
-											+ " (msec)", "スキップ時間",
+											+ " (msec)", "スキップ時間", //$NON-NLS-1$
 									JOptionPane.PLAIN_MESSAGE);
 							if (inputValue != null) {
 								skipTime = Integer.parseInt(inputValue);
@@ -2708,7 +2708,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							String inputValue = JOptionPane.showInputDialog(
 									MainFrame.this, "現在の設定値: "
-											+ adjustmentTimeAtJump + " (msec)",
+											+ adjustmentTimeAtJump + " (msec)", //$NON-NLS-1$
 									"再生位置の補正", JOptionPane.PLAIN_MESSAGE);
 							if (inputValue != null) {
 								adjustmentTimeAtJump = Integer
@@ -2729,7 +2729,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							String inputValue = JOptionPane.showInputDialog(
 									MainFrame.this, "現在の設定値: 前後 " + (double)focusRange / 1000
-											+ " (sec)", "強調表示範囲",
+											+ " (sec)", "強調表示範囲", //$NON-NLS-1$
 									JOptionPane.PLAIN_MESSAGE);
 							if (inputValue != null) {
 								focusRange = (int)(Double.parseDouble(inputValue) * 1000);
@@ -2798,14 +2798,14 @@ public class MainFrame extends JFrame {
 										if (jMenuItemOptionViewSyncMode
 												.isSelected()) {
 											config.setValue(
-													"/settings/isViewSyncMode",
-													"value", "true");
+													"/settings/isViewSyncMode", //$NON-NLS-1$
+													"value", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 											listViewSyncCheckBox
 													.setSelected(true);
 										} else {
 											config.setValue(
-													"/settings/isViewSyncMode",
-													"value", "false");
+													"/settings/isViewSyncMode", //$NON-NLS-1$
+													"value", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 											listViewSyncCheckBox
 													.setSelected(false);
 										}
@@ -2928,9 +2928,9 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							JOptionPane.showMessageDialog(MainFrame.this,
-									systemName + " " + VERSION + "\n"
-											+ System.getProperty("java.vm.name")
-											 + ", Ver." + System.getProperty("java.version")  + "\n"
+									systemName + " " + VERSION + "\n" //$NON-NLS-1$ //$NON-NLS-2$
+											+ System.getProperty("java.vm.name") //$NON-NLS-1$
+											 + ", Ver." + System.getProperty("java.version")  + "\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 												+ COPYRIGHT,
 											systemName + "について",
 									JOptionPane.INFORMATION_MESSAGE);
@@ -2944,7 +2944,7 @@ public class MainFrame extends JFrame {
 		if (filename == null || filename.isEmpty()) {
 			filename = "未指定";
 		}
-		setTitle("[" + filename + "] - " + systemName);
+		setTitle("[" + filename + "] - " + systemName); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	
@@ -2957,7 +2957,7 @@ public class MainFrame extends JFrame {
 			dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
 			if(!dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)){
-				System.err.println("Warning(MainFrame): not supported data");
+				System.err.println("Warning(MainFrame): not supported data"); //$NON-NLS-1$
 				return;
 			}
 			try {
@@ -2966,7 +2966,7 @@ public class MainFrame extends JFrame {
 
 				if(files.size() > 0){
 					File target = files.get(0);
-					System.err.println("dropped file: " + target.getCanonicalPath() + ", " + soundPlayer.getPlayerState());
+					System.err.println("dropped file: " + target.getCanonicalPath() + ", " + soundPlayer.getPlayerState()); //$NON-NLS-1$ //$NON-NLS-2$
 
 					if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP){
 						if(target.isDirectory()){
@@ -3019,7 +3019,7 @@ public class MainFrame extends JFrame {
 					commentTable.setViewCenterByTime(time);
 				}
 			} catch (Exception e) {
-				System.err.println("Error(MainFrame): some exception is caused in run() of DrawGraphTask.");
+				System.err.println("Error(MainFrame): some exception is caused in run() of DrawGraphTask."); //$NON-NLS-1$
 			}
 		}
 	}
@@ -3037,7 +3037,7 @@ public class MainFrame extends JFrame {
 					annotationGlobalViewPanel.repaint();
 				}
 			} catch (Exception e) {
-				System.err.println("Error(MainFrame): some exception is caused in run() of DrawAnnotationGlobalViewerTask.");
+				System.err.println("Error(MainFrame): some exception is caused in run() of DrawAnnotationGlobalViewerTask."); //$NON-NLS-1$
 			}
 		}
 	}

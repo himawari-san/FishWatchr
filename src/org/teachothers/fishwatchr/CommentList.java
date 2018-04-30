@@ -61,21 +61,21 @@ public class CommentList extends ArrayList<Comment> {
 	private static final String NOT_DEFINED = "(未定義)";
 	private static final int maxElapsedTime = 1000 * 60 * 60 * 2; // 2 hours
 	
-	public static final String FILE_SUFFIX = ".xml";
-	public static final String MERGED_FILE_SUFFIX = ".merged.xml";
-	public static final String BACKUP_DIR = "BAK";
-	public static final String BASE_TIME_FILE_PREFIX = "_sys_basetime";
+	public static final String FILE_SUFFIX = ".xml"; //$NON-NLS-1$
+	public static final String MERGED_FILE_SUFFIX = ".merged.xml"; //$NON-NLS-1$
+	public static final String BACKUP_DIR = "BAK"; //$NON-NLS-1$
+	public static final String BASE_TIME_FILE_PREFIX = "_sys_basetime"; //$NON-NLS-1$
 	
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");  //$NON-NLS-1$
 	private Date startTime = null;
 
 	private boolean isModified = false;
 //	private HashMap<String, Integer> mapStartTimeOffset = new HashMap<String, Integer>();
 	private HashMap<String, Integer> mapCommentTimeOffset = new HashMap<String, Integer>();
 	private HashMap<String, String> mapStartTime = new HashMap<String, String>();
-	private String mediaFilename = "";
-	private String mediaFilenameOriginal = "";
-	private String setName = "";
+	private String mediaFilename = ""; //$NON-NLS-1$
+	private String mediaFilenameOriginal = ""; //$NON-NLS-1$
+	private String setName = ""; //$NON-NLS-1$
 
 	
 	@Override
@@ -158,7 +158,7 @@ public class CommentList extends ArrayList<Comment> {
 		String startTimeStr = startTime != null ? dateFormat.format(startTime)
 				: NOT_DEFINED;
 		HashMap<String, String> setStr = new HashMap<String, String>();
-		String message = "";
+		String message = ""; //$NON-NLS-1$
 
 		File xmlFile = new File(xmlFilename);
 		if (xmlFile.exists()) {
@@ -169,7 +169,7 @@ public class CommentList extends ArrayList<Comment> {
 					getUniqueFilename(
 							parentPath + File.separatorChar
 							+ BACKUP_DIR + File.separatorChar
-							+ filename + ".bak");
+							+ filename + ".bak"); //$NON-NLS-1$
 			File backupDir = new File(parentPath + File.separatorChar + BACKUP_DIR);
 			if(!backupDir.exists()){
 				backupDir.mkdir();
@@ -181,62 +181,62 @@ public class CommentList extends ArrayList<Comment> {
 		}
 
 		OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(
-				xmlFilename), "utf-8");
+				xmlFilename), "utf-8"); //$NON-NLS-1$
 
 		// header
-		ow.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		ow.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"); //$NON-NLS-1$
 		String newMediaFilename = mediaFilename;
-		if(mediaFilename.matches("^https?://.+")){
-			newMediaFilename = URLEncoder.encode(mediaFilename, "utf-8");
+		if(mediaFilename.matches("^https?://.+")){ //$NON-NLS-1$
+			newMediaFilename = URLEncoder.encode(mediaFilename, "utf-8"); //$NON-NLS-1$
 		} else if(!mediaFilenameOriginal.isEmpty()){
 			newMediaFilename = mediaFilenameOriginal;
 		}
-		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + newMediaFilename + "\">\n");
+		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + newMediaFilename + "\">\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 		// commentTypes settings
-		ow.write("  <comment_types>\n");
+		ow.write("  <comment_types>\n"); //$NON-NLS-1$
 		for (int i = 0; i < commentTypes.size(); i++) {
-			ow.write("    <li name=\"" + commentTypes.get(i).getType()
-					+ "\" color=\"" + commentTypes.get(i).getColor().getRGB()
-					+ "\" />\n");
+			ow.write("    <li name=\"" + commentTypes.get(i).getType() //$NON-NLS-1$
+					+ "\" color=\"" + commentTypes.get(i).getColor().getRGB() //$NON-NLS-1$
+					+ "\" />\n"); //$NON-NLS-1$
 		}
-		ow.write("  </comment_types>\n");
+		ow.write("  </comment_types>\n"); //$NON-NLS-1$
 
 		// discussers settings
-		ow.write("  <discussers>\n");
+		ow.write("  <discussers>\n"); //$NON-NLS-1$
 		for (int i = 0; i < discussers.size(); i++) {
-			ow.write("    <li name=\"" + discussers.get(i).getName()
-					+ "\" />\n");
+			ow.write("    <li name=\"" + discussers.get(i).getName() //$NON-NLS-1$
+					+ "\" />\n"); //$NON-NLS-1$
 		}
-		ow.write("  </discussers>\n");
+		ow.write("  </discussers>\n"); //$NON-NLS-1$
 
 		for (Comment comment : this) {
 			String setName = comment.getSetName();
-			String setValue = "";
+			String setValue = ""; //$NON-NLS-1$
 			if (setStr.containsKey(setName)) {
 				setValue = setStr.get(setName);
 			}
-			setStr.put(setName, setValue + "    <comment" + " date=\""
-					+ dateFormat.format(comment.getDate()) + "\""
-					+ " commenter=\"" + comment.getCommenter().getName() + "\""
-					+ " discusser=\"" + comment.getDiscusser().getName() + "\""
-					+ " comment_type=\""
-					+ comment.getCommentType().getType() + "\""
-					+ " comment_time=\"" + comment.getCommentTime() + "\""
-					+ " comment_time_end=\"" + comment.getCommentTimeEnd() + "\""
-					+ " aux=\"" + comment.getAux()
-					+ "\"" + ">"
+			setStr.put(setName, setValue + "    <comment" + " date=\"" //$NON-NLS-1$ //$NON-NLS-2$
+					+ dateFormat.format(comment.getDate()) + "\"" //$NON-NLS-1$
+					+ " commenter=\"" + comment.getCommenter().getName() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
+					+ " discusser=\"" + comment.getDiscusser().getName() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
+					+ " comment_type=\"" //$NON-NLS-1$
+					+ comment.getCommentType().getType() + "\"" //$NON-NLS-1$
+					+ " comment_time=\"" + comment.getCommentTime() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
+					+ " comment_time_end=\"" + comment.getCommentTimeEnd() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
+					+ " aux=\"" + comment.getAux() //$NON-NLS-1$
+					+ "\"" + ">" //$NON-NLS-1$ //$NON-NLS-2$
 					+ StringEscapeUtils.escapeXml11(comment.getCommentBody())
-					+ "</comment>\n");
+					+ "</comment>\n"); //$NON-NLS-1$
 		}
 
 		for (Map.Entry<String, String> item : setStr.entrySet()) {
 			String name = item.getKey();
 			int offset = getCommentTimeOffset(item.getKey());
-			ow.write("  <set name=\"" + name + "\" original_start_time=\""
-					+ startTimeStr + "\" correction_time=\"" + offset + "\">\n");
+			ow.write("  <set name=\"" + name + "\" original_start_time=\"" //$NON-NLS-1$ //$NON-NLS-2$
+					+ startTimeStr + "\" correction_time=\"" + offset + "\">\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			ow.write(item.getValue());
-			ow.write("  </set>\n");
+			ow.write("  </set>\n"); //$NON-NLS-1$
 		}
 
 		
@@ -246,18 +246,18 @@ public class CommentList extends ArrayList<Comment> {
 				String name = item.getKey();
 				if (!setStr.containsKey(name)) {
 					int offset = getCommentTimeOffset(item.getKey());
-					ow.write("  <set name=\"" + name
-							+ "\" original_start_time=\"" + startTimeStr
-							+ "\" correction_time=\"" + offset + "\">\n");
-					ow.write("  </set>\n");
+					ow.write("  <set name=\"" + name //$NON-NLS-1$
+							+ "\" original_start_time=\"" + startTimeStr //$NON-NLS-1$
+							+ "\" correction_time=\"" + offset + "\">\n"); //$NON-NLS-1$ //$NON-NLS-2$
+					ow.write("  </set>\n"); //$NON-NLS-1$
 				}
 			}
 		}
 
-		ow.write("</comment_list>\n");
+		ow.write("</comment_list>\n"); //$NON-NLS-1$
 		ow.close();
 		setModified(false);
-		message += "\n" + xmlFile.getCanonicalPath() + " に結果を保存しました。";
+		message += "\n" + xmlFile.getCanonicalPath() + " に結果を保存しました。"; //$NON-NLS-1$
 
 		return message;
 	}
@@ -272,12 +272,12 @@ public class CommentList extends ArrayList<Comment> {
 			
 			// commentTypes 初期化
 			for (CommentType commentType : commentTypes) {
-				commentType.set("", Color.gray);
+				commentType.set("", Color.gray); //$NON-NLS-1$
 			}
 
 			// discussers 初期化
 			for (User discusser : discussers) {
-				discusser.setName("");
+				discusser.setName(""); //$NON-NLS-1$
 			}
 		}
 		
@@ -290,7 +290,7 @@ public class CommentList extends ArrayList<Comment> {
 		XPath xpath = xPathFactory.newXPath();
 
 		// start_time
-		XPathExpression expr = xpath.compile("/comment_list/@start_time");
+		XPathExpression expr = xpath.compile("/comment_list/@start_time"); //$NON-NLS-1$
 		String strStartTime = (String) expr.evaluate(doc,
 				XPathConstants.STRING);
 
@@ -305,33 +305,33 @@ public class CommentList extends ArrayList<Comment> {
 		}
 
 		// media_file
-		expr = xpath.compile("/comment_list/@media_file");
+		expr = xpath.compile("/comment_list/@media_file"); //$NON-NLS-1$
 		mediaFilename = (String) expr.evaluate(doc, XPathConstants.STRING);
 		mediaFilenameOriginal = mediaFilename;
 		if(mediaFilename == null){
-			System.err.println("warning:(MainFrame.java): " + targetFilename + " には，/comment_list/@media_file がありません。");
-			mediaFilename = "";
-		} else if(URLDecoder.decode(mediaFilename, "utf-8").matches("^https?://.+")){
-			mediaFilename = URLDecoder.decode(mediaFilename, "utf-8");
+			System.err.println("warning:(MainFrame.java): " + targetFilename + " には，/comment_list/@media_file がありません。"); //$NON-NLS-1$
+			mediaFilename = ""; //$NON-NLS-1$
+		} else if(URLDecoder.decode(mediaFilename, "utf-8").matches("^https?://.+")){ //$NON-NLS-1$ //$NON-NLS-2$
+			mediaFilename = URLDecoder.decode(mediaFilename, "utf-8"); //$NON-NLS-1$
 		} else if(!mediaFilename.isEmpty()){
-			mediaFilename = new File(targetFilename).getParent() + "/" + mediaFilename;
+			mediaFilename = new File(targetFilename).getParent() + "/" + mediaFilename; //$NON-NLS-1$
 		}
 		
 		
 		// コメント読み込み
-		expr = xpath.compile("/comment_list");
+		expr = xpath.compile("/comment_list"); //$NON-NLS-1$
 		NodeList commentListNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 		if(commentListNodes.getLength() == 0){
 			throw new XPathExpressionException("ファイルの形式が不正です。comment_listがありません。");
 		}
 
 		// comment_types 要素
-		expr = xpath.compile("/comment_list/comment_types/li");
+		expr = xpath.compile("/comment_list/comment_types/li"); //$NON-NLS-1$
 		NodeList commentTypesNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 		boolean flagRegister = false;
 		for (int i = 0; i < commentTypesNodes.getLength(); i++) {
-			String commentTypeName = ((Element)commentTypesNodes.item(i)).getAttribute("name");
-			String commentTypeColor = ((Element)commentTypesNodes.item(i)).getAttribute("color");
+			String commentTypeName = ((Element)commentTypesNodes.item(i)).getAttribute("name"); //$NON-NLS-1$
+			String commentTypeColor = ((Element)commentTypesNodes.item(i)).getAttribute("color"); //$NON-NLS-1$
 
 			flagRegister = false;
 			for (int j = 0; j < commentTypes.size(); j++) {
@@ -347,15 +347,15 @@ public class CommentList extends ArrayList<Comment> {
 			}
 			
 			if(!flagRegister){
-				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + commentTypeName + " が登録できませんでした。");
+				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + commentTypeName + " が登録できませんでした。"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		
 		// discussers 要素
-		expr = xpath.compile("/comment_list/discussers/li");
+		expr = xpath.compile("/comment_list/discussers/li"); //$NON-NLS-1$
 		NodeList discussersNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 		for (int i = 0; i < discussersNodes.getLength(); i++) {
-			String discusserName = ((Element)discussersNodes.item(i)).getAttribute("name");
+			String discusserName = ((Element)discussersNodes.item(i)).getAttribute("name"); //$NON-NLS-1$
 
 			flagRegister = false;
 			for (int j = 0; j < discussers.size(); j++) {
@@ -370,33 +370,33 @@ public class CommentList extends ArrayList<Comment> {
 				}
 			}
 			if(!flagRegister){
-				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + discusserName + " が登録できませんでした。");
+				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + discusserName + " が登録できませんでした。"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		
 		
 		Element commentListElement = (Element) commentListNodes.item(0);
 		// set 要素
-		NodeList setNodes = commentListElement.getElementsByTagName("set");
+		NodeList setNodes = commentListElement.getElementsByTagName("set"); //$NON-NLS-1$
 		for (int i = 0; i < setNodes.getLength(); i++) {
 			Element setNode = (Element) setNodes.item(i);
-			String setName = setNode.getAttribute("name");
-			String originalStartTime = setNode.getAttribute("original_start_time");
-			int value = Integer.valueOf(setNode.getAttribute("correction_time"));
+			String setName = setNode.getAttribute("name"); //$NON-NLS-1$
+			String originalStartTime = setNode.getAttribute("original_start_time"); //$NON-NLS-1$
+			int value = Integer.valueOf(setNode.getAttribute("correction_time")); //$NON-NLS-1$
 			setCommentTimeOffset(setName, value);
 			mapStartTime.put(setName, originalStartTime);
 
-			NodeList commentNodes = setNode.getElementsByTagName("comment");
+			NodeList commentNodes = setNode.getElementsByTagName("comment"); //$NON-NLS-1$
 			for (int j = 0; j < commentNodes.getLength(); j++) {
 				Element commentNode = (Element) commentNodes.item(j);
 				String contentBody = commentNode.getTextContent();
-				User discusser = new User(commentNode.getAttribute("discusser"));
-				User commenter = new User(commentNode.getAttribute("commenter"));
-				String strCommentType = commentNode.getAttribute("comment_type");
-				String aux = commentNode.getAttribute("aux");
+				User discusser = new User(commentNode.getAttribute("discusser")); //$NON-NLS-1$
+				User commenter = new User(commentNode.getAttribute("commenter")); //$NON-NLS-1$
+				String strCommentType = commentNode.getAttribute("comment_type"); //$NON-NLS-1$
+				String aux = commentNode.getAttribute("aux"); //$NON-NLS-1$
 
 				// コメントタイプ登録
-				CommentType commentType = new CommentType("", Color.gray); // default
+				CommentType commentType = new CommentType("", Color.gray); // default //$NON-NLS-1$
 				for (CommentType ct : commentTypes) {
 					if (ct.getType().equals(strCommentType)) {
 						commentType = ct;
@@ -406,11 +406,11 @@ public class CommentList extends ArrayList<Comment> {
 
 
 				Date commentDate;
-				commentDate = dateFormat.parse(commentNode.getAttribute("date"));
+				commentDate = dateFormat.parse(commentNode.getAttribute("date")); //$NON-NLS-1$
 				int commentTime = Integer.parseInt(commentNode
-						.getAttribute("comment_time"));
+						.getAttribute("comment_time")); //$NON-NLS-1$
 				int commentTimeEnd = Integer.parseInt(commentNode
-						.getAttribute("comment_time_end"));
+						.getAttribute("comment_time_end")); //$NON-NLS-1$
 
 				Comment comment = new Comment();
 				comment.set(contentBody, commentType, commenter, discusser,
@@ -422,7 +422,7 @@ public class CommentList extends ArrayList<Comment> {
 			}
 		}
 
-		System.err.println("load end");
+		System.err.println("load end"); //$NON-NLS-1$
 
 		sortByTime();
 		refreshID();
@@ -447,29 +447,29 @@ public class CommentList extends ArrayList<Comment> {
 
 		File dir = new File(dirName);
 		boolean flagAdd = false;
-		String candMediafilename = "";
+		String candMediafilename = ""; //$NON-NLS-1$
 		File[] files = dir.listFiles();
 		ArrayList<String> results = new ArrayList<String>();
 		String mergedFileSuffix = MERGED_FILE_SUFFIX;
-		String backupFileSuffix = mergedFileSuffix.replaceFirst(FILE_SUFFIX, "");
+		String backupFileSuffix = mergedFileSuffix.replaceFirst(FILE_SUFFIX, ""); //$NON-NLS-1$
 		ArrayList<File> baseTimeFileCandidates = new ArrayList<File>();
 		
 		for (File file : files) {
 			String filename = file.getCanonicalPath();
-			String separator = File.separator.equals("\\") ? File.separator + File.separator : File.separator; 
+			String separator = File.separator.equals("\\") ? File.separator + File.separator : File.separator;  //$NON-NLS-1$
 
 			if (filename.endsWith(FILE_SUFFIX)){
-				if(filename.matches(".*" + separator +
+				if(filename.matches(".*" + separator + //$NON-NLS-1$
 						BASE_TIME_FILE_PREFIX +
-						"_[^" + separator + "]*"+
-						FILE_SUFFIX + "$")){ // basetime
+						"_[^" + separator + "]*"+ //$NON-NLS-1$ //$NON-NLS-2$
+						FILE_SUFFIX + "$")){ // basetime //$NON-NLS-1$
 					baseTimeFileCandidates.add(file);
-					System.err.println("Message(CommentList): found a basetime file " + filename);
+					System.err.println("Message(CommentList): found a basetime file " + filename); //$NON-NLS-1$
 					continue;
 				} else if(filename.endsWith(mergedFileSuffix) // merge file
-						|| filename.matches(".*" + backupFileSuffix + "\\.\\d\\d\\d" + FILE_SUFFIX + "$") // backup				
+						|| filename.matches(".*" + backupFileSuffix + "\\.\\d\\d\\d" + FILE_SUFFIX + "$") // backup				 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						){
-					System.err.println("Warning(CommentList): exclude " + filename);
+					System.err.println("Warning(CommentList): exclude " + filename); //$NON-NLS-1$
 					continue;
 				}
 				
@@ -485,7 +485,7 @@ public class CommentList extends ArrayList<Comment> {
 				} else if(!candMediafilename.equals(filename)){
 					throw new IllegalStateException("複数のメディアファイル（"
 							+ new File(candMediafilename).getName()
-							+ ",\n"
+							+ ",\n" //$NON-NLS-1$
 							+ new File(filename).getName()
 							+ "）があります。\nフォルダに含めるメディアファイルは一つにしてください。");
 				}
@@ -503,7 +503,7 @@ public class CommentList extends ArrayList<Comment> {
 			String filename = baseTimeFileCandidates.get(0).getCanonicalPath();
 			results.add(0, new File(filename).getName());
 			if(baseTimeFileCandidates.size() != 1){
-				System.err.println("Warning(CommentList): " + filename + "will be used, although more than 2 basetime files were found.");
+				System.err.println("Warning(CommentList): " + filename + "will be used, although more than 2 basetime files were found."); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			load(filename, commentTypes, discussers, true);
 			syncByStartTime();
@@ -567,10 +567,10 @@ public class CommentList extends ArrayList<Comment> {
 			long commentTime = comment.getDate();
 			long elasedTime = commentTime - startTimeLong;
 			if(elasedTime < 0){
-				System.err.println("Warning(CommentList): this comment was made before recording the video:" + dateFormat.format(commentTime));
+				System.err.println("Warning(CommentList): this comment was made before recording the video:" + dateFormat.format(commentTime)); //$NON-NLS-1$
 				flagSyncCondition = false;
 			} else if(elasedTime > maxElapsedTime){ // 2 hours
-				System.err.println("Warning(CommentList): The elapsed time of this comment exceeds 2hours:" + dateFormat.format(commentTime));
+				System.err.println("Warning(CommentList): The elapsed time of this comment exceeds 2hours:" + dateFormat.format(commentTime)); //$NON-NLS-1$
 				flagSyncCondition = false;
 			}
 			comment.setCommentTimeBegin((int)elasedTime);
@@ -594,9 +594,9 @@ public class CommentList extends ArrayList<Comment> {
 				} else {
 					value = comment.getAt(i).toString();
 				}
-				sb.append(value + "\t");
+				sb.append(value + "\t"); //$NON-NLS-1$
 			}
-			pw.println(sb.toString().replaceFirst("\t$", ""));
+			pw.println(sb.toString().replaceFirst("\t$", "")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		pw.close();
 	}
@@ -609,7 +609,7 @@ public class CommentList extends ArrayList<Comment> {
 		int minute = time / 60;
 		int sec = time - minute * 60;
 
-		return String.format("%02d:%02d:%02d", hour, minute, sec);
+		return String.format("%02d:%02d:%02d", hour, minute, sec); //$NON-NLS-1$
 	}
 
 	
@@ -659,7 +659,7 @@ public class CommentList extends ArrayList<Comment> {
 		if(mapStartTime.containsKey(setName)){
 			return mapStartTime.get(setName);
 		} else {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 	}
 	
@@ -674,26 +674,26 @@ public class CommentList extends ArrayList<Comment> {
 	
 	public void setSetName(String filename, User commenter){
 		setName = new File(filename).getName();
-		System.err.println("sn:" + setName);
+		System.err.println("sn:" + setName); //$NON-NLS-1$
 		if(setName.isEmpty()){
-			SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd");
+			SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd"); //$NON-NLS-1$
 			setName = today.format(new Date());
 		} else {
 			if(setName.endsWith(CommentList.FILE_SUFFIX)){
 				// 末尾の .xml を削除
-				setName = setName.replaceFirst("\\.xml$", "");
+				setName = setName.replaceFirst("\\.xml$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			if(SoundPlayer.isPlayable(setName)){
 				// 末尾の拡張子を削除
-				setName = setName.replaceFirst("\\.[^\\.]+$", "");
+				setName = setName.replaceFirst("\\.[^\\.]+$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
-		if(!setName.endsWith("_" + commenter.getName())){
+		if(!setName.endsWith("_" + commenter.getName())){ //$NON-NLS-1$
 			// 末尾にユーザ名がついていなければ，追加
-			setName += "_" + commenter.getName();
+			setName += "_" + commenter.getName(); //$NON-NLS-1$
 		}
 		// ファイル名冒頭のシステム名を削除
-		setName = setName.replaceFirst("^" + FishWatchr.SYSTEM_NAME.toLowerCase(), "");
+		setName = setName.replaceFirst("^" + FishWatchr.SYSTEM_NAME.toLowerCase(), ""); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		return;
 	}
@@ -715,7 +715,7 @@ public class CommentList extends ArrayList<Comment> {
 		
 
 	public void setMediaFilename(String filename){
-		if(filename.matches("^https?://.+")){
+		if(filename.matches("^https?://.+")){ //$NON-NLS-1$
 			mediaFilename = filename;
 			mediaFilenameOriginal = mediaFilename;
 		} else {
@@ -734,7 +734,7 @@ public class CommentList extends ArrayList<Comment> {
 	static public String getUniqueFilename(String filename){
 		String nameBody;
 		String suffix;
-		int p = filename.lastIndexOf(".");
+		int p = filename.lastIndexOf("."); //$NON-NLS-1$
 		int c = 1;
 		
 		if(p != -1){
@@ -742,12 +742,12 @@ public class CommentList extends ArrayList<Comment> {
 			suffix = filename.substring(p, filename.length());
 		} else {
 			nameBody = filename;
-			suffix = "";
+			suffix = ""; //$NON-NLS-1$
 		}
 
 		if(new File(filename).exists()){
 			while(true){
-				String newFilename = nameBody + String.format(".%03d", c++) + suffix;
+				String newFilename = nameBody + String.format(".%03d", c++) + suffix; //$NON-NLS-1$
 				if(new File(newFilename).exists()){
 					continue;
 				} else {

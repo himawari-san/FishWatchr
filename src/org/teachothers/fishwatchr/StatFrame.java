@@ -91,26 +91,26 @@ public class StatFrame extends JFrame {
 	    boolean flagSuccess = true;
 	    
 	    if(style == CHART_STYLE_UNIQ){
-	    	String categoryName = StringUtils.join(headers, "/");
+	    	String categoryName = StringUtils.join(headers, "/"); //$NON-NLS-1$
 	    	
 	    	Collections.sort(data, new Comparator<Object[]>() {
 	    	    public int compare(Object[] a, Object[] b) {
-	    	    	String key1 = StringUtils.join(a, "/").replaceFirst("/[^/]*$", "");
-	    	    	String key2 = StringUtils.join(b, "/").replaceFirst("/[^/]*$", "");
+	    	    	String key1 = StringUtils.join(a, "/").replaceFirst("/[^/]*$", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	    	    	String key2 = StringUtils.join(b, "/").replaceFirst("/[^/]*$", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	    	    	return key1.compareToIgnoreCase(key2);
 	    	    }
 			});
 	    	
 		    for(Object[] record : data){
-		    	String categoryValue = StringUtils.join(record, "/").replaceFirst("/[^/]*$", "");
+		    	String categoryValue = StringUtils.join(record, "/").replaceFirst("/[^/]*$", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		    	dataSet.addValue(Double.parseDouble(record[iFreq].toString()), categoryName, categoryValue);
 		    }
 	    } else if(style == CHART_STYLE_TARGET || style == CHART_STYLE_LABEL){
 	    	flagLegend = true;
 	    	Collections.sort(data, new Comparator<Object[]>() {
 	    	    public int compare(Object[] a, Object[] b) {
-	    	    	String key1 = a[1].toString() + "\t" + a[0].toString();
-	    	    	String key2 = b[1].toString() + "\t" + b[0].toString();
+	    	    	String key1 = a[1].toString() + "\t" + a[0].toString(); //$NON-NLS-1$
+	    	    	String key2 = b[1].toString() + "\t" + b[0].toString(); //$NON-NLS-1$
 	    	    	return key1.compareToIgnoreCase(key2);
 	    	    }
 			});
@@ -136,7 +136,7 @@ public class StatFrame extends JFrame {
 	    			continue;
 	    		}
 	    		
-		    	String key = record[0] + "\t" + record[1];
+		    	String key = record[0] + "\t" + record[1]; //$NON-NLS-1$
 		    	double addedValue = Double.parseDouble(record[2].toString()) * Double.parseDouble(record[3].toString());
 		    	setTargets.add(record[0].toString());
 		    	setLabels.add(record[1].toString());
@@ -160,12 +160,12 @@ public class StatFrame extends JFrame {
 			});
 	    	for(String target : setTargets){
 		    	for(String label : setLabels){
-		    		keys.add(target + "\t" + label);
+		    		keys.add(target + "\t" + label); //$NON-NLS-1$
 		    	}
 	    	}
 	    	
 		    for(String key : keys){
-		    	String[] keyArray = key.split("\t");
+		    	String[] keyArray = key.split("\t"); //$NON-NLS-1$
 		    	if(mapEvalSum.containsKey(key)){
 			    	dataSet.addValue(mapEvalSum.get(key) / mapFreqSum.get(key), keyArray[0].toString(), keyArray[1].toString());
 		    	} else {
@@ -175,8 +175,8 @@ public class StatFrame extends JFrame {
 	    }
 	    
 	    JFreeChart chart = 
-	    	      ChartFactory.createBarChart("", // title
-	    	                                  "",
+	    	      ChartFactory.createBarChart("", // title //$NON-NLS-1$
+	    	                                  "", //$NON-NLS-1$
 	    	                                  "頻度",
 	    	                                  dataSet,
 	    	                                  PlotOrientation.VERTICAL,

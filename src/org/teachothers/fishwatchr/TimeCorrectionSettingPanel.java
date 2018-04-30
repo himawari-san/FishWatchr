@@ -88,7 +88,7 @@ public class TimeCorrectionSettingPanel extends JPanel {
 			data[0] = jRadioButtonBase;
 			data[1] = setName;
 			data[2] = jCheckBoxSyncByTag;
-			data[3] = commentList.getStartTime(setName).replaceFirst("\\.\\d+$", "");
+			data[3] = commentList.getStartTime(setName).replaceFirst("\\.\\d+$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			data[4] = jComboMethod;
 			settings[i] = data;
 			buttonGroup.add(jRadioButtonBase);

@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class DiscusserSettingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-	public static final String USER_NOT_DEFINED = "";
+	public static final String USER_NOT_DEFINED = ""; //$NON-NLS-1$
 
 	private List<User> discussers;
 	private String newDiscussers[];
@@ -67,11 +67,11 @@ public class DiscusserSettingPanel extends JPanel {
 		int c = 0;
 		
 		for(int i = 0; i < discusserNames.length; i++){
-			if(discusserNames[i].getText().matches("^\\s+$")
+			if(discusserNames[i].getText().matches("^\\s+$") //$NON-NLS-1$
 				|| discusserNames[i].getText().equals(USER_NOT_DEFINED)){
 				// 空白のみ，無記入の場合はスキップ
 				continue;
-			} else if(discusserNames[i].getText().matches(".*[<>&'\"\\s].*")){
+			} else if(discusserNames[i].getText().matches(".*[<>&'\"\\s].*")){ //$NON-NLS-1$
 				// XML として不正な文字，ファイル名にした時に問題が起こりそうな文字は使用禁止
 				invalidItems.add(discusserNames[i].getText());
 				continue;
@@ -82,9 +82,9 @@ public class DiscusserSettingPanel extends JPanel {
 		
 		// 空欄の部分
 		for(int i = c; i < discussers.size(); i++){
-			discussers.get(i).setName("");
+			discussers.get(i).setName(""); //$NON-NLS-1$
 		}
 
-		return StringUtils.join(invalidItems, ", ");
+		return StringUtils.join(invalidItems, ", "); //$NON-NLS-1$
 	}
 }

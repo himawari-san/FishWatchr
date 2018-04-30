@@ -92,7 +92,7 @@ public class TimeSlider extends JSlider {
 		int minute = time / 60;
 		int sec = time - minute * 60;
 		
-		setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec));
+		setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec)); //$NON-NLS-1$
 	}
 
 	

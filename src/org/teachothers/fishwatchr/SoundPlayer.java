@@ -45,10 +45,10 @@ import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 
 public class SoundPlayer extends Thread {
 	public static final int LIMIT_RECODING_TIME = 60 * 60 * 2; // 7200sec = 2hours
-	public static String SOUNDFILE_EXTENSION = ".wav";
-	private static String[] videoAspectRates = {"16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"};
-	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mpg", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"};
-	private static String[] SOUND_FILE_EXTENSIONS = { "mp3", "oga", "wav", "wma"};
+	public static String SOUNDFILE_EXTENSION = ".wav"; //$NON-NLS-1$
+	private static String[] videoAspectRates = {"16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mpg", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$
+	private static String[] SOUND_FILE_EXTENSIONS = { "mp3", "oga", "wav", "wma"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private final static int MAX_RETRY_REFERRING_DATA = 100;  
 	private final static int RETRY_INTERVAL = 50; // msec  
 	
@@ -150,7 +150,7 @@ public class SoundPlayer extends Thread {
     	    		mainFrame.changeState(state);
     			}
     		});
-        	System.err.println("return: " + state);
+        	System.err.println("return: " + state); //$NON-NLS-1$
 			return;
 		}
 		
@@ -211,7 +211,7 @@ public class SoundPlayer extends Thread {
 	
 	// すべての設定を初期化
 	public void init(){
-		targetFilename = "";
+		targetFilename = ""; //$NON-NLS-1$
 		startTime = null;
 		state = PLAYER_STATE_STOP;
 		skippedFrame = 0;
@@ -254,17 +254,17 @@ public class SoundPlayer extends Thread {
 		isStreaming = false; // default
 		setSoundBufferEnable(false);
 		targetFilename = filename;
-		if(targetFilename.toLowerCase().endsWith(".xml")){
+		if(targetFilename.toLowerCase().endsWith(".xml")){ //$NON-NLS-1$
 			// ファイル名だけセットするということでいいか？
 			return true;
-		} else if(targetFilename.toLowerCase().endsWith(".wav")){
+		} else if(targetFilename.toLowerCase().endsWith(".wav")){ //$NON-NLS-1$
 			playerType = PLAYER_TYPE_VLC;
 			readWavInfo(targetFilename);
 			buf = new byte[maxDataSize]; 
 			readWav(targetFilename, buf);
 			setSoundBufferEnable(true);
 			mp.prepareMedia(targetFilename);
-		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){
+		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			isStreaming = true;
 			playerType = PLAYER_TYPE_VLC;
 			mp.startMedia(targetFilename);
@@ -293,7 +293,7 @@ public class SoundPlayer extends Thread {
 			playerType = PLAYER_TYPE_VLC;
 
 			// wav データの読み込み
-			String wavFilename = targetFilename + ".wav";
+			String wavFilename = targetFilename + ".wav"; //$NON-NLS-1$
 			if(flagWaveform){
 				if (new File(wavFilename).exists()) {
 					readWavInfo(wavFilename);
@@ -306,8 +306,8 @@ public class SoundPlayer extends Thread {
 					mp.removeMediaPlayerEventListener(mpEventListener);
 					mp.startMedia(
 							targetFilename,
-							":sout=#transcode{acodec=s16l,channels=2,samplerate=44100,ab=128}:standard{access=file,mux=wav,dst="
-									+ wavFilename + "}");
+							":sout=#transcode{acodec=s16l,channels=2,samplerate=44100,ab=128}:standard{access=file,mux=wav,dst=" //$NON-NLS-1$
+									+ wavFilename + "}"); //$NON-NLS-1$
 					while (true) {
 						if (!mp.isPlaying()) {
 							break;
@@ -403,8 +403,8 @@ public class SoundPlayer extends Thread {
 			isSigned = true;
 			soundLength = AudioSystem.getAudioFileFormat(mediaFile).getFrameLength() / sampleRate;
 			maxDataSize = (int)Math.ceil(sampleRate * sampleSizeInBits / 8 * channels * frameLength);
-			System.err.println("rate: " + sampleRate + ", " + "bits: " + sampleSizeInBits + ", " + 
-					"channels: " + channels + ", " + "maxDataSize: " + maxDataSize);
+			System.err.println("rate: " + sampleRate + ", " + "bits: " + sampleSizeInBits + ", " +  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					"channels: " + channels + ", " + "maxDataSize: " + maxDataSize); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		} catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();
 			return -1;
@@ -433,11 +433,11 @@ public class SoundPlayer extends Thread {
 	        int nRead;
 	        while((nRead = ais.read(buf)) > 0){
 	        	if(soundGraphBuf.add(buf, nRead, channels) < 0){
-	        		System.err.println("Warning(SoundPlayer): exceeded SoundGraphBuffer size");
+	        		System.err.println("Warning(SoundPlayer): exceeded SoundGraphBuffer size"); //$NON-NLS-1$
 	        		break;
 	        	}
 	        	if(nRead != buf.length){
-	        		System.err.println("nRead: " + nRead);
+	        		System.err.println("nRead: " + nRead); //$NON-NLS-1$
 	        	}
 	        }
 	        ais.close();
@@ -462,7 +462,7 @@ public class SoundPlayer extends Thread {
 	public void run() {
 //	public synchronized void run() {
 		if(state == PLAYER_STATE_RECORD){
-			System.err.println("record!");
+			System.err.println("record!"); //$NON-NLS-1$
 			record();
 		} else if(state == PLAYER_STATE_PLAY){
 			play();
@@ -473,7 +473,7 @@ public class SoundPlayer extends Thread {
 	public void record(){
 		saveFlag = false;
 
-		String tmpTargetFilename = targetFilename + ".tmp";
+		String tmpTargetFilename = targetFilename + ".tmp"; //$NON-NLS-1$
 		File tmpFile;
 		
 		try {
@@ -624,7 +624,7 @@ public class SoundPlayer extends Thread {
 		        mainFrame.updateMediaLengthUI(PLAYER_STATE_RECORD);
 			}
 		});
-        System.err.println("initcall state stop");
+        System.err.println("initcall state stop"); //$NON-NLS-1$
     	state = PLAYER_STATE_STOP;
 	}
 	
@@ -725,7 +725,7 @@ public class SoundPlayer extends Thread {
 		// STOP になるまで待つ
 		int c = 0;
 		while(state == PLAYER_STATE_STOPPING){
-			System.err.println("stopping");
+			System.err.println("stopping"); //$NON-NLS-1$
 			try {
 				Thread.sleep(RETRY_INTERVAL);
 			} catch (InterruptedException e) {
@@ -818,7 +818,7 @@ public class SoundPlayer extends Thread {
 
 	
 	public static boolean isPlayable(String filename){
-		if(filename.startsWith("http://") || filename.startsWith("file://") || filename.startsWith("https://")){
+		if(filename.startsWith("http://") || filename.startsWith("file://") || filename.startsWith("https://")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
 		}
 
@@ -832,7 +832,7 @@ public class SoundPlayer extends Thread {
 
 	
 	public static boolean isSoundFile(String filename){
-		if(filename.startsWith("http://") || filename.startsWith("https://")){
+		if(filename.startsWith("http://") || filename.startsWith("https://")){ //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 
@@ -912,7 +912,7 @@ public class SoundPlayer extends Thread {
     private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
 		public void finished(MediaPlayer mediaPlayer) {
         	if(playerType == PLAYER_TYPE_VLC){
-        		System.err.println("vlc finish!");
+        		System.err.println("vlc finish!"); //$NON-NLS-1$
         		if(mp.isSeekable()){
             		initCallback();
         		}
@@ -921,7 +921,7 @@ public class SoundPlayer extends Thread {
         
         public void stopped(MediaPlayer mediaPlayer){
         	if(playerType == PLAYER_TYPE_VLC){
-        		System.err.println("vlc stop");
+        		System.err.println("vlc stop"); //$NON-NLS-1$
         		initCallback();
         	}
         }

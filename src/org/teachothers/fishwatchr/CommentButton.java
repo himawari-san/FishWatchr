@@ -40,14 +40,14 @@ import javax.swing.KeyStroke;
 public class CommentButton extends JButton {
 	private static final long serialVersionUID = 1L;
 	private static boolean isWorking = false;
-    private static String os = System.getProperty("os.name").toLowerCase();
+    private static String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
 	
 	// 観察対象優先
 	public static final int BUTTON_TYPE_DISCUSSER = 0;
-	public static final String BUTTON_TYPE_DISCUSSER_STR = "discusser";
+	public static final String BUTTON_TYPE_DISCUSSER_STR = "discusser"; //$NON-NLS-1$
 	// コメント優先
 	public static final int BUTTON_TYPE_COMMENT = 1;
-	public static final String BUTTON_TYPE_COMMENT_STR = "label";
+	public static final String BUTTON_TYPE_COMMENT_STR = "label"; //$NON-NLS-1$
 	
 	private CommentTableModel ctm;
 	private SoundPlayer soundPlayer;
@@ -87,8 +87,8 @@ public class CommentButton extends JButton {
 		this.isMultiAnnotation = isMultiAnnotation;
 
 		buttonType = BUTTON_TYPE_COMMENT;
-		getActionMap().put("normal", actNormal);
-		getActionMap().put("reverse", actReverse);
+		getActionMap().put("normal", actNormal); //$NON-NLS-1$
+		getActionMap().put("reverse", actReverse); //$NON-NLS-1$
 	}
 
 	// 観察対象優先
@@ -103,8 +103,8 @@ public class CommentButton extends JButton {
 		this.isMultiAnnotation = isMultiAnnotation;
 		
 		buttonType = BUTTON_TYPE_DISCUSSER;
-		getActionMap().put("normal", actNormal);
-		getActionMap().put("reverse", actReverse);
+		getActionMap().put("normal", actNormal); //$NON-NLS-1$
+		getActionMap().put("reverse", actReverse); //$NON-NLS-1$
 	}
 	
 	
@@ -118,14 +118,14 @@ public class CommentButton extends JButton {
 		} else {
 			c++;
 		}
-		setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>");
+		setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		if(os.startsWith("mac")){
-			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.META_DOWN_MASK), "normal");
+		if(os.startsWith("mac")){ //$NON-NLS-1$
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.META_DOWN_MASK), "normal"); //$NON-NLS-1$
 		} else {
-			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "normal");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "normal"); //$NON-NLS-1$
 		}
-		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "reverse");
+		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "reverse"); //$NON-NLS-1$
 	}
 
 
@@ -154,9 +154,9 @@ public class CommentButton extends JButton {
 		}
 		
 		if(buttonType == BUTTON_TYPE_COMMENT){
-			User selectedDiscusser = new User("");
+			User selectedDiscusser = new User(""); //$NON-NLS-1$
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + "の選択(" + commentType.getType() + ")", discussers);
+				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + "の選択(" + commentType.getType() + ")", discussers); //$NON-NLS-2$
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);
@@ -167,11 +167,11 @@ public class CommentButton extends JButton {
 				}
 				selectedDiscusser = discussers.get(iSelectedValue);
 			}
-			addedComment = ctm.addComment("", commentType, commenter, selectedDiscusser, now, currentTime, "");
+			addedComment = ctm.addComment("", commentType, commenter, selectedDiscusser, now, currentTime, ""); //$NON-NLS-1$ //$NON-NLS-2$
 		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
-			CommentType commentType = new CommentType("", Color.BLACK);
+			CommentType commentType = new CommentType("", Color.BLACK); //$NON-NLS-1$
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + "の選択(" + discusser.getName() + ")", commentTypes);
+				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + "の選択(" + discusser.getName() + ")", commentTypes); //$NON-NLS-2$
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);
@@ -182,7 +182,7 @@ public class CommentButton extends JButton {
 				}
 				commentType = commentTypes.get(iSelectedValue);
 			}
-			addedComment = ctm.addComment("", commentType, commenter, discusser, now, currentTime, "");
+			addedComment = ctm.addComment("", commentType, commenter, discusser, now, currentTime, ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		isWorking = false;
 
@@ -278,18 +278,18 @@ public class CommentButton extends JButton {
 			} else {
 				c++;
 			}
-			setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>");
+			setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, 0), "key0");
-			if(os.startsWith("mac")){
-				imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.META_DOWN_MASK), "keyALT");
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, 0), "key0"); //$NON-NLS-1$
+			if(os.startsWith("mac")){ //$NON-NLS-1$
+				imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.META_DOWN_MASK), "keyALT"); //$NON-NLS-1$
 			} else {
-				imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "keyALT");
+				imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.ALT_DOWN_MASK), "keyALT"); //$NON-NLS-1$
 			}
-			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "keyCTRL");
-			getActionMap().put("key0", act);
-			getActionMap().put("keyALT", act);
-			getActionMap().put("keyCTRL", act);
+			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.CTRL_DOWN_MASK), "keyCTRL"); //$NON-NLS-1$
+			getActionMap().put("key0", act); //$NON-NLS-1$
+			getActionMap().put("keyALT", act); //$NON-NLS-1$
+			getActionMap().put("keyCTRL", act); //$NON-NLS-1$
 			setPreferredSize(CommentButton.this.getPreferredSize());
 		}
 		

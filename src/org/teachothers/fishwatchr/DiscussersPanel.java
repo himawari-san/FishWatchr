@@ -65,7 +65,7 @@ public class DiscussersPanel extends JPanel {
 				markPanels[i].setUserName(discussers.get(i).getName());
 			} else {
 				userNameLabels[i].setText(USER_NOT_UNDEFINED);
-				markPanels[i].setUserName("");
+				markPanels[i].setUserName(""); //$NON-NLS-1$
 				
 			}
 		}

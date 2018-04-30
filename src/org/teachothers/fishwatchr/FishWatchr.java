@@ -34,7 +34,7 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 
 public class FishWatchr {
-	public final static String SYSTEM_NAME = "FishWatchr";
+	public final static String SYSTEM_NAME = "FishWatchr"; //$NON-NLS-1$
 	public final static int SOUND_VIEWER_HEIGHT = 80;
 	public final static int WINDOW_WIDTH = 1024;
 	public final static int WINDOW_HEIGHT = 650;
@@ -42,54 +42,54 @@ public class FishWatchr {
 	
 	
 	public static void main(final String[] arg){
-		String libVlcDir = System.getProperty("libvlcdir");
+		String libVlcDir = System.getProperty("libvlcdir"); //$NON-NLS-1$
 		if(libVlcDir == null || libVlcDir.isEmpty()){
 			boolean isDiscovered = new NativeDiscovery().discover();
-			String osName = System.getProperty("os.name");
+			String osName = System.getProperty("os.name"); //$NON-NLS-1$
 			if(!isDiscovered){
-				if(osName.toLowerCase().startsWith("windows")){
-					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
-					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
-					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
-					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
-				} else if(osName.toLowerCase().startsWith("mac")){
-					File jarPath = new File(System.getProperty("java.class.path"));
-					String jarParent = "";
+				if(osName.toLowerCase().startsWith("windows")){ //$NON-NLS-1$
+					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc"); //$NON-NLS-1$
+					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib"); //$NON-NLS-1$
+					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC"); //$NON-NLS-1$
+					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC"); //$NON-NLS-1$
+				} else if(osName.toLowerCase().startsWith("mac")){ //$NON-NLS-1$
+					File jarPath = new File(System.getProperty("java.class.path")); //$NON-NLS-1$
+					String jarParent = ""; //$NON-NLS-1$
 					try {
 						jarParent = new File(jarPath.getCanonicalPath()).getParent();
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
 					
-					if(new File(jarParent + "/VLC.app/Contents/MacOS/lib").exists()){
-						LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/VLC.app/Contents/MacOS/plugins", 1);
+					if(new File(jarParent + "/VLC.app/Contents/MacOS/lib").exists()){ //$NON-NLS-1$
+						LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/VLC.app/Contents/MacOS/plugins", 1); //$NON-NLS-1$ //$NON-NLS-2$
 						// for Youtube videos
-						LibC.INSTANCE.setenv("VLC_DATA_PATH", jarParent + "/VLC.app/Contents/MacOS/share", 1);
-						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/VLC.app/Contents/MacOS/lib/");
+						LibC.INSTANCE.setenv("VLC_DATA_PATH", jarParent + "/VLC.app/Contents/MacOS/share", 1); //$NON-NLS-1$ //$NON-NLS-2$
+						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/VLC.app/Contents/MacOS/lib/"); //$NON-NLS-1$
 					} else {
-						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
+						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib"); //$NON-NLS-1$
 					}
 				}
-			} else if(osName.toLowerCase().startsWith("mac")){
+			} else if(osName.toLowerCase().startsWith("mac")){ //$NON-NLS-1$
 				// vlcj bug?
 				// can not play Youtube videos when using VLC in /Application 
-				LibC.INSTANCE.setenv("VLC_DATA_PATH", "/Applications/VLC.app/Contents/MacOS/share", 1);
+				LibC.INSTANCE.setenv("VLC_DATA_PATH", "/Applications/VLC.app/Contents/MacOS/share", 1); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} else {
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), libVlcDir);
 		}
 		
-		UIManager.put("Button.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
-		UIManager.put("Label.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
-		UIManager.put("List.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
-		UIManager.put("ComboBox.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
-		UIManager.put("Menu.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
-		UIManager.put("MenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
-		UIManager.put("CheckBoxMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
-		UIManager.put("RadioButtonMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
-		UIManager.put("RadioButtonMenuItem.acceleratorFont",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE));
+		UIManager.put("Button.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
+		UIManager.put("Label.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
+		UIManager.put("List.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
+		UIManager.put("ComboBox.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
+		UIManager.put("Menu.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
+		UIManager.put("MenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
+		UIManager.put("CheckBoxMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
+		UIManager.put("RadioButtonMenuItem.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
+		UIManager.put("RadioButtonMenuItem.acceleratorFont",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
 		
-		System.setProperty("awt.useSystemAAFontSettings", "on");
+		System.setProperty("awt.useSystemAAFontSettings", "on"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		final MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
 		mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -110,7 +110,7 @@ public class FishWatchr {
 
 					mainFrame.play(arg[0], (long)(Double.parseDouble(arg[1])*1000));
 				} catch(NullPointerException e) {
-					System.err.println("Error(FishWatchr): invalid number format => " + arg[1]);
+					System.err.println("Error(FishWatchr): invalid number format => " + arg[1]); //$NON-NLS-1$
 				}
 			}
 		}
