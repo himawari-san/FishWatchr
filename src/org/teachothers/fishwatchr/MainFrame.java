@@ -2355,7 +2355,7 @@ public class MainFrame extends JFrame {
 							int selectedValue = JOptionPane.showConfirmDialog(
 									null, discusserSettingPanel, Comment.ITEM_TARGET + "の設定",
 									JOptionPane.OK_CANCEL_OPTION);
-							if (selectedValue == JOptionPane.CANCEL_OPTION) {
+							if (selectedValue == -1 || selectedValue == JOptionPane.CANCEL_OPTION) {
 								return;
 							}
 							String invalidItems = discusserSettingPanel.updateNewValue();
@@ -2387,7 +2387,7 @@ public class MainFrame extends JFrame {
 							int selectedValue = JOptionPane.showConfirmDialog(
 									null, annotationSettingPanel, Comment.ITEM_LABEL + "の設定",
 									JOptionPane.OK_CANCEL_OPTION);
-							if (selectedValue == JOptionPane.CANCEL_OPTION) {
+							if (selectedValue == -1 || selectedValue == JOptionPane.CANCEL_OPTION) {
 								return;
 							}
 							String invalidItems = annotationSettingPanel.updateNewValue();
