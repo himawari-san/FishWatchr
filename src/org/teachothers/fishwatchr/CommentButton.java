@@ -156,7 +156,7 @@ public class CommentButton extends JButton {
 		if(buttonType == BUTTON_TYPE_COMMENT){
 			User selectedDiscusser = new User(""); //$NON-NLS-1$
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + "の選択(" + commentType.getType() + ")", discussers); //$NON-NLS-2$
+				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + Messages.getString("CommentButton.0") + commentType.getType() + ")", discussers);  //$NON-NLS-1$//$NON-NLS-2$
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);
@@ -171,7 +171,7 @@ public class CommentButton extends JButton {
 		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
 			CommentType commentType = new CommentType("", Color.BLACK); //$NON-NLS-1$
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + "の選択(" + discusser.getName() + ")", commentTypes); //$NON-NLS-2$
+				ButtonDialog dialog = new ButtonDialog(Comment.ITEM_LABEL + Messages.getString("CommentButton.1") + discusser.getName() + ")", commentTypes);  //$NON-NLS-1$//$NON-NLS-2$
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);
@@ -214,7 +214,7 @@ public class CommentButton extends JButton {
 			buttonPanel.setLayout(new FlowLayout());
 			messagePanel.setLayout(new BorderLayout());
 			
-			messagePanel.add(new JLabel(" キャンセルする場合は，ESC"), BorderLayout.WEST);
+			messagePanel.add(new JLabel(Messages.getString("CommentButton.2")), BorderLayout.WEST); //$NON-NLS-1$
 			
 			
 			int c = 0;

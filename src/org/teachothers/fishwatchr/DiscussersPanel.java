@@ -30,7 +30,7 @@ import javax.swing.border.EtchedBorder;
 public class DiscussersPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private static final String USER_NOT_UNDEFINED = "(未指定)";
+	private static final String USER_NOT_UNDEFINED = Messages.getString("DiscussersPanel.0"); //$NON-NLS-1$
 	private static final int DISCUSSION_PANEL_MAX_HEIGHT = 35;
 	private static final int USERNAME_LABEL_MAX_WIDTH = 80;
 	

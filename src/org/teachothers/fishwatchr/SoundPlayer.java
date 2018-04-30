@@ -301,8 +301,10 @@ public class SoundPlayer extends Thread {
 					readWav(wavFilename, buf);
 					setSoundBufferEnable(true);
 				} else {
-					JOptionPane.showMessageDialog(mainFrame, "wav ファイル（"
-							+ wavFilename + "）を生成します。\n生成には数分かかる場合があります。");
+					JOptionPane.showMessageDialog(mainFrame,
+							Messages.getString("SoundPlayer.0") + //$NON-NLS-1$
+							"(" + wavFilename + ")" + //$NON-NLS-1$ //$NON-NLS-2$
+							Messages.getString("SoundPlayer.3")); //$NON-NLS-1$
 					mp.removeMediaPlayerEventListener(mpEventListener);
 					mp.startMedia(
 							targetFilename,
@@ -320,7 +322,7 @@ public class SoundPlayer extends Thread {
 						}
 					}
 					JOptionPane.showMessageDialog(mainFrame, wavFilename
-							+ "が生成されました。");
+							+ Messages.getString("SoundPlayer.4")); //$NON-NLS-1$
 					try {
 						Thread.sleep(2000);
 					} catch (InterruptedException e) {
@@ -509,8 +511,6 @@ public class SoundPlayer extends Thread {
 			// マイク入力停止
 			// ターゲットデータラインをクローズする
 			targetDataLine.close();
-			System.out.println("マイク入力停止");
-			
 			
 			// wav ファイルへ書き出す
 			File audioFile = new File(targetFilename);
@@ -519,9 +519,7 @@ public class SoundPlayer extends Thread {
 			AudioSystem.write(audioStream2, AudioFileFormat.Type.WAVE, audioFile);
 			fis.close();
 			audioStream.close();
-			System.out.println("ファイル書き込み終了");
 			tmpFile.delete();
-			System.out.println("一時ファイル削除");
 			saveFlag = true;
 			initCallback();
 		} catch (LineUnavailableException e) {

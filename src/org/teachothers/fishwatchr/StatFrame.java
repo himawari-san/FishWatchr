@@ -34,10 +34,10 @@ public class StatFrame extends JFrame {
 	public static final int CHART_STYLE_LABEL = 2;
 	public static final int CHART_STYLE_EVAL = 3;
 
-	public static final String LABEL_STYLE_UNIQ = "頻度(選択項目)";
+	public static final String LABEL_STYLE_UNIQ = Messages.getString("StatFrame.0"); //$NON-NLS-1$
 	public static final String LABEL_STYLE_TARGET = Comment.ITEM_TARGET;
 	public static final String LABEL_STYLE_LABEL = Comment.ITEM_LABEL;
-	public static final String LABEL_STYLE_EVAL = "評価";
+	public static final String LABEL_STYLE_EVAL = Messages.getString("StatFrame.1"); //$NON-NLS-1$
 	
 	private JTabbedPane	figureTabbedPane;
 	private JPanel chartPanel;
@@ -64,8 +64,8 @@ public class StatFrame extends JFrame {
 		tablePanel.setLayout(new BorderLayout());
 		
 		figureTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		figureTabbedPane.addTab("グラフ", chartPanel);
-		figureTabbedPane.addTab("データ表", tablePanel);
+		figureTabbedPane.addTab(Messages.getString("StatFrame.2"), chartPanel); //$NON-NLS-1$
+		figureTabbedPane.addTab(Messages.getString("StatFrame.3"), tablePanel); //$NON-NLS-1$
 
 		table = new JTable(new StatTableModel());
 		table.getTableHeader().setReorderingAllowed(false);
@@ -177,7 +177,7 @@ public class StatFrame extends JFrame {
 	    JFreeChart chart = 
 	    	      ChartFactory.createBarChart("", // title //$NON-NLS-1$
 	    	                                  "", //$NON-NLS-1$
-	    	                                  "頻度",
+	    	                                  Messages.getString("StatFrame.4"), //$NON-NLS-1$
 	    	                                  dataSet,
 	    	                                  PlotOrientation.VERTICAL,
 	    	                                  true,
@@ -235,7 +235,7 @@ public class StatFrame extends JFrame {
 		
 		public String getColumnName(int i){
 			if(i == iFreq){
-				return "頻度";
+				return Messages.getString("StatFrame.5"); //$NON-NLS-1$
 			} else {
 				return headers[i];
 			}
