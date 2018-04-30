@@ -35,22 +35,22 @@ public class Comment {
 	public static final int F_AUX = 7; // auxiliary information
 	public static final int F_COMMENT_TIME_END = 9; // the end time (ellapsed time ) of an time-range annotation)
 	
-	public static final String ITEM_NUMBER = "番号";
-	public static final String ITEM_ANNOTATOR = "注釈者";
-	public static final String ITEM_TIME = "時間";
-	public static final String ITEM_TARGET = "観察対象";
-	public static final String ITEM_LABEL = "ラベル";
-	public static final String ITEM_SET = "セット";
-	public static final String ITEM_COMMENT = "コメント";
-	public static final String ITEM_AUX = "補助情報";
+	public static final String ITEM_NUMBER = Messages.getString("Comment.0"); //$NON-NLS-1$
+	public static final String ITEM_ANNOTATOR = Messages.getString("Comment.1"); //$NON-NLS-1$
+	public static final String ITEM_TIME = Messages.getString("Comment.2"); //$NON-NLS-1$
+	public static final String ITEM_TARGET = Messages.getString("Comment.3"); //$NON-NLS-1$
+	public static final String ITEM_LABEL = Messages.getString("Comment.4"); //$NON-NLS-1$
+	public static final String ITEM_SET = Messages.getString("Comment.5"); //$NON-NLS-1$
+	public static final String ITEM_COMMENT = Messages.getString("Comment.6"); //$NON-NLS-1$
+	public static final String ITEM_AUX = Messages.getString("Comment.7"); //$NON-NLS-1$
 
 	public static final String headers[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
 	public static final int COMMENT_TIME_END_UNDEFINED = -1; // the end time of non time-range annotations
 
-	public static final String COMMENT_DELIMITER = " || ";
-	public static final String LINEBREAK = " // ";
+	public static final String COMMENT_DELIMITER = " || "; //$NON-NLS-1$
+	public static final String LINEBREAK = " // "; //$NON-NLS-1$
 	
-	private static String defaultDiscusserName = "不特定";
+	private static String defaultDiscusserName = Messages.getString("Comment.10"); //$NON-NLS-1$
 
 	private static int currentID = 1;
 	private Object[] data = new Object[N_Field];
@@ -222,13 +222,13 @@ public class Comment {
 		StringBuffer str = new StringBuffer();
 		
 		str.append(getCommenter());
-		str.append("\t");
+		str.append("\t"); //$NON-NLS-1$
 		str.append(getDate());
-		str.append("\t");
+		str.append("\t"); //$NON-NLS-1$
 		str.append(getDiscusser());
-		str.append("\t");
+		str.append("\t"); //$NON-NLS-1$
 		str.append(getCommentType());
-		str.append("\t");
+		str.append("\t"); //$NON-NLS-1$
 		str.append(getSetName());
 		
 		return str.toString();
