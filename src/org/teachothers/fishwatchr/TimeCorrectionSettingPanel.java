@@ -47,13 +47,13 @@ public class TimeCorrectionSettingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int OFFSET_COLUMN_WIDTH = 120;
 	private static final int COLUMN_WIDTH_SETNAME = 120;
-	private static final String COLUMN_NAME_BASE_SET = "基準";
-	private static final String COLUMN_NAME_METHOD = "同期方法";
+	private static final String COLUMN_NAME_BASE_SET = Messages.getString("TimeCorrectionSettingPanel.0"); //$NON-NLS-1$
+	private static final String COLUMN_NAME_METHOD = Messages.getString("TimeCorrectionSettingPanel.1"); //$NON-NLS-1$
 	
 	private CommentList commentList;
 	private HashMap<String, JTextField> mapField = new HashMap<String, JTextField>();
-	private String columnNames[] = {COLUMN_NAME_BASE_SET, "データ名", "オフセット", "開始時間", COLUMN_NAME_METHOD};
-	private String methods[] = {"経過時間", "実時間", "マーク"};
+	private String columnNames[] = {COLUMN_NAME_BASE_SET, Messages.getString("TimeCorrectionSettingPanel.2"), Messages.getString("TimeCorrectionSettingPanel.3"), Messages.getString("TimeCorrectionSettingPanel.4"), COLUMN_NAME_METHOD}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	private String methods[] = {Messages.getString("TimeCorrectionSettingPanel.5"), Messages.getString("TimeCorrectionSettingPanel.6"), Messages.getString("TimeCorrectionSettingPanel.7")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	private Object settings[][];
 
 	public TimeCorrectionSettingPanel(CommentList commentList){
@@ -64,7 +64,7 @@ public class TimeCorrectionSettingPanel extends JPanel {
 	private void ginit(){
 		if(commentList.getSetSize() == 0){
 			setLayout(new GridLayout(1, 1));
-			add(new JLabel("データが読み込まれていません"));
+			add(new JLabel(Messages.getString("TimeCorrectionSettingPanel.8"))); //$NON-NLS-1$
 			return;
 		}
 

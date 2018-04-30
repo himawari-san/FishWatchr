@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class DataCounter {
-	public final static String SUMMARY_MODE_ALL = "全体";
-	public final static String SUMMARY_MODE_SELF = "本人";
-	public final static String SUMMARY_MODE_ALL_COMPARE = "全体(比較)";
-	public final static String SUMMARY_MODE_SELF_COMPARE = "本人(比較)";
+	public final static String SUMMARY_MODE_ALL = Messages.getString("DataCounter.0"); //$NON-NLS-1$
+	public final static String SUMMARY_MODE_SELF = Messages.getString("DataCounter.1"); //$NON-NLS-1$
+	public final static String SUMMARY_MODE_ALL_COMPARE = Messages.getString("DataCounter.2"); //$NON-NLS-1$
+	public final static String SUMMARY_MODE_SELF_COMPARE = Messages.getString("DataCounter.3"); //$NON-NLS-1$
 	
 	private ArrayList<Comment> comments;
 	private int[] iSelected;
@@ -51,7 +51,7 @@ public class DataCounter {
 		for(Comment comment : comments){
 			for(int i : iSelected){
 				key.append(comment.getAt(i));
-				key.append("\t");
+				key.append("\t"); //$NON-NLS-1$
 			}
 			
 			String keyStr = key.toString();
@@ -102,7 +102,7 @@ public class DataCounter {
 				if(comment.getCommenter().getName().equals(username)){
 					newUser = comment.getCommenter();
 				} else {
-					newUser = new User("他人");
+					newUser = new User(Messages.getString("DataCounter.5")); //$NON-NLS-1$
 					annotatorNameSet.add(comment.getCommenter().getName());
 				}
 					
@@ -121,7 +121,7 @@ public class DataCounter {
 			
 			for(int i : iSelected){
 				key.append(comment.getAt(i));
-				key.append("\t");
+				key.append("\t"); //$NON-NLS-1$
 			}
 
 			String keyStr = key.toString();
@@ -141,7 +141,7 @@ public class DataCounter {
 
 		if(mode == SUMMARY_MODE_SELF_COMPARE){
 			for(String keyStr : map.keySet()){
-				if(keyStr.startsWith("他人")){
+				if(keyStr.startsWith(Messages.getString("DataCounter.5"))){ //$NON-NLS-1$
 					Object[] data = map.get(keyStr);
 					data[iSelected.length] = Double.parseDouble(data[iSelected.length].toString()) / (double)annotatorNameSet.size();
 				}
