@@ -38,7 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 public class AnnotationSettingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int MAX_COMMENT_TYPE = 12;
-	public static final String USER_NOT_DEFINED = "";
+	public static final String USER_NOT_DEFINED = ""; //$NON-NLS-1$
 	
 	private List<CommentType> commentTypes;
 	private JTextField annotationNames[];
@@ -55,9 +55,9 @@ public class AnnotationSettingPanel extends JPanel {
 	
 	private void ginit(){
 		setLayout(new GridLayout(MAX_COMMENT_TYPE + 1, 3));
-		JLabel a1 = new JLabel("注記名");
+		JLabel a1 = new JLabel(Messages.getString("AnnotationSettingPanel.1")); //$NON-NLS-1$
 		a1.setHorizontalAlignment(JLabel.CENTER);
-		JLabel a2 = new JLabel("マーク色");
+		JLabel a2 = new JLabel(Messages.getString("AnnotationSettingPanel.2")); //$NON-NLS-1$
 		a2.setHorizontalAlignment(JLabel.CENTER);
 		add(a1);
 		add(a2);
@@ -87,10 +87,10 @@ public class AnnotationSettingPanel extends JPanel {
 		ArrayList<String> invalidItems = new ArrayList<String>();
 		
 		for (int i = 0; i < MAX_COMMENT_TYPE; i++) {
-			if(annotationNames[i].getText().matches(".*[<>&'\"].*")){
+			if(annotationNames[i].getText().matches(".*[<>&'\"].*")){ //$NON-NLS-1$
 				invalidItems.add(annotationNames[i].getText());
 				continue;
-			} else if(annotationNames[i].getText().matches(".*\\s.*")){
+			} else if(annotationNames[i].getText().matches(".*\\s.*")){ //$NON-NLS-1$
 				continue;
 			} else if (i < commentTypes.size()) {
 				commentTypes.get(i).set(annotationNames[i].getText(),
@@ -101,7 +101,7 @@ public class AnnotationSettingPanel extends JPanel {
 			}
 		}
 		
-		return StringUtils.join(invalidItems, ", ");
+		return StringUtils.join(invalidItems, ", "); //$NON-NLS-1$
 	}
 	
 	
@@ -112,7 +112,7 @@ public class AnnotationSettingPanel extends JPanel {
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Color selectedColor = JColorChooser.showDialog(new JFrame(), "色を選択してください", ColorButton.this.getBackground());
+					Color selectedColor = JColorChooser.showDialog(new JFrame(), Messages.getString("AnnotationSettingPanel.6"), ColorButton.this.getBackground()); //$NON-NLS-1$
 					if(selectedColor != null){
 						ColorButton.this.setBackground(selectedColor);
 					}

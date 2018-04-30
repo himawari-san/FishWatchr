@@ -56,13 +56,13 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 	private MediaPlayerFactory factory;
     private DirectMediaPlayer mediaPlayer;
     
-    private String overlayStyles[] = {"なし", "上部", "中央", "下部"};
+    private String overlayStyles[] = {Messages.getString("VLCDirectMediaPlayerComponent.0"), Messages.getString("VLCDirectMediaPlayerComponent.1"), Messages.getString("VLCDirectMediaPlayerComponent.2"), Messages.getString("VLCDirectMediaPlayerComponent.3")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     private int iOverlaidTextStyle = 0;
     private Font overlaidTextFont = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
     private int textHeight = 0;
     private int textDescent = 0;
     private FontMetrics fm;
-    private String overlaidText = "";
+    private String overlaidText = ""; //$NON-NLS-1$
     private Color bgColor;
     
     public VLCDirectMediaPlayerComponent() throws InterruptedException, InvocationTargetException {
@@ -83,7 +83,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 
     
     public void init(){
-    	System.err.println("imageWidth, imageHeight: " + imageWidth + "," + imageHeight);
+    	System.err.println("imageWidth, imageHeight: " + imageWidth + "," + imageHeight); //$NON-NLS-1$ //$NON-NLS-2$
     	image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(imageWidth, imageHeight);
         image.setAccelerationPriority(1.0f);
         imageWidth = image.getWidth();
@@ -203,7 +203,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 
     public List<CaptureDevice> getAudioDeviceList(){
         ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
-    	CaptureDevice captureDevice = new CaptureDevice("", "Default", CaptureDevice.TYPE_AUDIO);
+    	CaptureDevice captureDevice = new CaptureDevice("", "Default", CaptureDevice.TYPE_AUDIO); //$NON-NLS-1$ //$NON-NLS-2$
     	captureDevices.add(captureDevice);
     	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));
 
