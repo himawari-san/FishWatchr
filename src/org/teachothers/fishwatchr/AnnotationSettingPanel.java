@@ -87,10 +87,10 @@ public class AnnotationSettingPanel extends JPanel {
 		ArrayList<String> invalidItems = new ArrayList<String>();
 		
 		for (int i = 0; i < MAX_COMMENT_TYPE; i++) {
-			if(annotationNames[i].getText().matches(".*[<>&'\"].*")){ //$NON-NLS-1$
+		    if(annotationNames[i].getText().matches(".*\\s.*")){ //$NON-NLS-1$
+		    	continue;
+		    } else if(annotationNames[i].getText().matches(".*[<>/&'\"\\s].*")){ //$NON-NLS-1$
 				invalidItems.add(annotationNames[i].getText());
-				continue;
-			} else if(annotationNames[i].getText().matches(".*\\s.*")){ //$NON-NLS-1$
 				continue;
 			} else if (i < commentTypes.size()) {
 				commentTypes.get(i).set(annotationNames[i].getText(),

@@ -71,7 +71,7 @@ public class DiscusserSettingPanel extends JPanel {
 				|| discusserNames[i].getText().equals(USER_NOT_DEFINED)){
 				// 空白のみ，無記入の場合はスキップ
 				continue;
-			} else if(discusserNames[i].getText().matches(".*[<>&'\"\\s].*")){ //$NON-NLS-1$
+			} else if(discusserNames[i].getText().matches(".*[<>&/'\"\\s].*")){ //$NON-NLS-1$
 				// XML として不正な文字，ファイル名にした時に問題が起こりそうな文字は使用禁止
 				invalidItems.add(discusserNames[i].getText());
 				continue;
