@@ -1753,9 +1753,9 @@ public class MainFrame extends JFrame {
 				int optionValue = JOptionPane.showConfirmDialog(this, Messages.getString("MainFrame.57"), Messages.getString("MainFrame.58"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
 				if(optionValue == JOptionPane.YES_OPTION){
 					deletedResults = commentList.mergeComments();
-					deleteMessage = deletedResults.size() + Messages.getString("MainFrame.59"); //$NON-NLS-1$
+					deleteMessage = "<li>" + deletedResults.size() + Messages.getString("MainFrame.59") + "</li>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				} else {
-					deleteMessage = Messages.getString("MainFrame.61"); //$NON-NLS-1$
+					deleteMessage = "<li>" + Messages.getString("MainFrame.61") + "</li>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 			
@@ -1779,7 +1779,7 @@ public class MainFrame extends JFrame {
 					+ "<li>" + Messages.getString("MainFrame.64") + "<br />" + xf + "</li>"  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					+ "<li>" + results.size() + Messages.getString("MainFrame.65") + "</li>" //$NON-NLS-1$ //$NON-NLS-2$  //$NON-NLS-3$
 					+ "<li>" + Messages.getString("MainFrame.67") + commentList.size() + Messages.getString("MainFrame.68") + "</li>" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		    		+ "<li>" + deleteMessage + "</li>" //$NON-NLS-1$ //$NON-NLS-2$
+		    		+ deleteMessage
 		    		+ "</ul>"  //$NON-NLS-1$
 		    		+ "<h1>" + Messages.getString("MainFrame.69") + "</h1>" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		    		+ "<ul><li>" + StringUtils.join(results, "</li><li>") + "</li></ul>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
