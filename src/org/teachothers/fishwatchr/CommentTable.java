@@ -52,8 +52,8 @@ import javax.swing.table.TableCellEditor;
 public class CommentTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
-	private static final String LABEL_FILTER_CANCEL = "[全フィルタの解除]";
-	private static final String LABEL_KEY_SET = "[検索文字列の指定]";
+	private static final String LABEL_FILTER_CANCEL = Messages.getString("CommentTable.0"); //$NON-NLS-1$
+	private static final String LABEL_KEY_SET = Messages.getString("CommentTable.1"); //$NON-NLS-1$
 	private static final int MAX_POPUP_ITEMS = 15;
 	public static final int UNDEFINED = -1;
 
@@ -63,9 +63,9 @@ public class CommentTable extends JTable {
 	private int iCurrentComment = UNDEFINED;
 	private StringBuffer currentCommentBuffer = new StringBuffer();
 	
-	private JMenuItem menuItemStat = new JMenuItem("分析（頻度・選択項目）");
-	private JMenuItem menuItemDelete = new JMenuItem("行の削除");
-	private JMenuItem menuItemCellDelete = new JMenuItem("セル値の削除");
+	private JMenuItem menuItemStat = new JMenuItem(Messages.getString("CommentTable.2")); //$NON-NLS-1$
+	private JMenuItem menuItemDelete = new JMenuItem(Messages.getString("CommentTable.3")); //$NON-NLS-1$
+	private JMenuItem menuItemCellDelete = new JMenuItem(Messages.getString("CommentTable.4")); //$NON-NLS-1$
 
 	public CommentTable(CommentTableModel ctm){
 		super(ctm);
@@ -98,11 +98,11 @@ public class CommentTable extends JTable {
 			public void actionPerformed(ActionEvent e) {
 				int[] iSelectedColumns = getSelectedColumns();
 				if(iSelectedColumns.length == 0){
-					JOptionPane.showMessageDialog(null,  "分析する列のセルを選択して下さい。");
+					JOptionPane.showMessageDialog(null,  Messages.getString("CommentTable.5")); //$NON-NLS-1$
 					return;
 				}
 				if(ctm.getFilteredCommentList().size() == 0){
-					JOptionPane.showMessageDialog(null,  "分析するデータがありません。");
+					JOptionPane.showMessageDialog(null,  Messages.getString("CommentTable.6")); //$NON-NLS-1$
 					return;
 				}
 				
@@ -111,14 +111,14 @@ public class CommentTable extends JTable {
 					headers[i] = ctm.getColumnName(iSelectedColumns[i]);
 				}
 
-				DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, "");
+				DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, ""); //$NON-NLS-1$
 				StatFrame sf = new StatFrame(dc.getSummary(DataCounter.SUMMARY_MODE_ALL_COMPARE), headers);
 				if(!sf.showChart(StatFrame.CHART_STYLE_UNIQ)){
-					JOptionPane.showMessageDialog(null,  "ラベルが数値でないデータが含まれています。");
+					JOptionPane.showMessageDialog(null,  Messages.getString("CommentTable.8")); //$NON-NLS-1$
 					return;
 				}
 				sf.pack();
-				sf.setTitle("集計結果/" + StatFrame.LABEL_STYLE_UNIQ + "/" + DataCounter.SUMMARY_MODE_ALL);
+				sf.setTitle(Messages.getString("CommentTable.9") + StatFrame.LABEL_STYLE_UNIQ + "/" + DataCounter.SUMMARY_MODE_ALL); //$NON-NLS-1$ //$NON-NLS-2$
 				sf.setVisible(true);
 			}
 		});
@@ -128,8 +128,8 @@ public class CommentTable extends JTable {
 			public void actionPerformed(ActionEvent arg0) {
 				int selectedRow = CommentTable.this.getSelectedRow();
 				int selectedValue = JOptionPane.showConfirmDialog(null,
-						(selectedRow+1) + 
-						"行目を削除してもよいですか？", "削除の確認", JOptionPane.OK_CANCEL_OPTION);
+						Messages.getString("CommentTable.16") + (selectedRow+1) + Messages.getString("CommentTable.11"),
+						Messages.getString("CommentTable.12"), JOptionPane.OK_CANCEL_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
 				if(selectedValue == JOptionPane.OK_OPTION){
 					deleteComment(selectedRow);
 				}
@@ -142,18 +142,18 @@ public class CommentTable extends JTable {
 				int selectedColumn = CommentTable.this.getSelectedColumn();
 				
 				if(!ctm.isCellEditable(selectedRow, selectedColumn)){
-					JOptionPane.showMessageDialog(CommentTable.this, "このセルは編集できません。");
+					JOptionPane.showMessageDialog(CommentTable.this, Messages.getString("CommentTable.13")); //$NON-NLS-1$
 					return;
 				}
-				int selectedValue = JOptionPane.showConfirmDialog(null, "セルの値を削除してもよいですか？", "削除の確認", JOptionPane.OK_CANCEL_OPTION);
+				int selectedValue = JOptionPane.showConfirmDialog(null, Messages.getString("CommentTable.14"), Messages.getString("CommentTable.15"), JOptionPane.OK_CANCEL_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
 				if(selectedValue == JOptionPane.OK_OPTION){
 					Object o = getValueAt(selectedRow, selectedColumn);
 					if(o instanceof User){
-						setValueAt(new User(""),  selectedRow, selectedColumn);
+						setValueAt(new User(""),  selectedRow, selectedColumn); //$NON-NLS-1$
 					} else if(o instanceof CommentType){
-						setValueAt(new CommentType("", Color.BLACK),  selectedRow, selectedColumn);
+						setValueAt(new CommentType("", Color.BLACK),  selectedRow, selectedColumn); //$NON-NLS-1$
 					} else if(o instanceof String){
-						setValueAt("",  selectedRow, selectedColumn);
+						setValueAt("",  selectedRow, selectedColumn); //$NON-NLS-1$
 					}
 				}
 			}
@@ -194,11 +194,11 @@ public class CommentTable extends JTable {
 			headers[i] = ctm.getColumnName(iSelectedColumns[i]);
 		}
 
-		DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, "");
+		DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, ""); //$NON-NLS-1$
 		StatFrame sf = new StatFrame(dc.getSummary(), headers);
 		sf.showChart(style);
 		sf.setSize(400,  200);
-		sf.setTitle("集計結果");
+		sf.setTitle(Messages.getString("CommentTable.20")); //$NON-NLS-1$
 		sf.setVisible(true);
 		
 		return sf;
@@ -251,7 +251,7 @@ public class CommentTable extends JTable {
 			op.setMessageType(JOptionPane.INFORMATION_MESSAGE);
 			op.setOptionType(JOptionPane.OK_CANCEL_OPTION);
 			op.setIcon(null);
-			final JDialog jd = op.createDialog(component, "絞り込み条件の指定");
+			final JDialog jd = op.createDialog(component, Messages.getString("CommentTable.21")); //$NON-NLS-1$
 			list.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -271,7 +271,7 @@ public class CommentTable extends JTable {
 				ctm.clearFilter();
 			} else if(selectedValue.equals(LABEL_KEY_SET)){
 				String inputValue = JOptionPane.showInputDialog(
-						null, "正規表現: ", "検索文字列の入力",
+						null, Messages.getString("CommentTable.22"), Messages.getString("CommentTable.23"), //$NON-NLS-1$ //$NON-NLS-2$
 						JOptionPane.PLAIN_MESSAGE);
 				if (inputValue != null) {
 					ctm.addFilter(headerName, inputValue);
@@ -344,13 +344,13 @@ public class CommentTable extends JTable {
 		if(iCurrentComment != -1 && ctm.getFilteredCommentList().size() > iCurrentComment){
 			currentCommentBuffer.setLength(0);
 			Comment currentComment = ctm.getFilteredCommentList().get(iCurrentComment);
-			currentCommentBuffer.append(currentComment.getDiscusser().getName() + "(");
-			currentCommentBuffer.append(currentComment.getCommentType().getType() + "), ");
-			currentCommentBuffer.append(currentComment.getCommenter().getName() + ": ");
+			currentCommentBuffer.append(currentComment.getDiscusser().getName() + "("); //$NON-NLS-1$
+			currentCommentBuffer.append(currentComment.getCommentType().getType() + "), "); //$NON-NLS-1$
+			currentCommentBuffer.append(currentComment.getCommenter().getName() + ": "); //$NON-NLS-1$
 			currentCommentBuffer.append(currentComment.getCommentBody());
 			return currentCommentBuffer.toString();
 		} else {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 	}
 	
@@ -474,7 +474,7 @@ public class CommentTable extends JTable {
 		
 		public void showTextAreaDialog(){
 			JScrollPane scrollPane = new JScrollPane();
-			final JTextArea textArea = new JTextArea(textField.getText().replaceAll(Comment.LINEBREAK, "\n"), 20, 50);
+			final JTextArea textArea = new JTextArea(textField.getText().replaceAll(Comment.LINEBREAK, "\n"), 20, 50); //$NON-NLS-1$
 			scrollPane.add(textArea);
 
 			JOptionPane op = new JOptionPane(new JScrollPane(textArea), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION){
@@ -486,12 +486,12 @@ public class CommentTable extends JTable {
 					// see http://www.ne.jp/asahi/hishidama/home/tech/java/swing/JOptionPane.html
 				}
 			};
-			JDialog d = op.createDialog("コメントの入力");
+			JDialog d = op.createDialog(Messages.getString("CommentTable.29")); //$NON-NLS-1$
 			d.setVisible(true);
 			Object selectedValue = op.getValue();
 			
 			if(selectedValue != null && ((Integer)selectedValue) == JOptionPane.OK_OPTION){
-				textField.setText(textArea.getText().replaceAll("\n", Comment.LINEBREAK));
+				textField.setText(textArea.getText().replaceAll("\n", Comment.LINEBREAK)); //$NON-NLS-1$
 			}
 		}
 		
@@ -625,7 +625,7 @@ public class CommentTable extends JTable {
 				ctm.clearFilter();
 			} else if(selectedValue.equals(LABEL_KEY_SET)){
 				String inputValue = JOptionPane.showInputDialog(
-						null, "正規表現: ", "検索文字列の入力",
+						null, Messages.getString("CommentTable.31"), Messages.getString("CommentTable.32"), //$NON-NLS-1$ //$NON-NLS-2$
 						JOptionPane.PLAIN_MESSAGE);
 				if (inputValue != null) {
 					ctm.addFilter(headerName, inputValue);
