@@ -517,6 +517,8 @@ public class CommentList extends ArrayList<Comment> {
 		}
 
 		mediaFilename = candMediafilename;
+		// set the path relative to the config file
+		mediaFilenameOriginal = new File(mediaFilename).getName();
 		results.add(0, mediaFilename);
 		
 		return results;
