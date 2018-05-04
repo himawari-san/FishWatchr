@@ -314,7 +314,11 @@ public class CommentList extends ArrayList<Comment> {
 		} else if(URLDecoder.decode(mediaFilename, "utf-8").matches("^https?://.+")){ //$NON-NLS-1$ //$NON-NLS-2$
 			mediaFilename = URLDecoder.decode(mediaFilename, "utf-8"); //$NON-NLS-1$
 		} else if(!mediaFilename.isEmpty()){
-			mediaFilename = new File(targetFilename).getParent() + "/" + mediaFilename; //$NON-NLS-1$
+			if(new File(mediaFilename).isAbsolute()){
+				// do nothing
+			} else {
+				mediaFilename = new File(targetFilename).getParent() + "/" + mediaFilename; //$NON-NLS-1$
+			}
 		}
 		
 		
