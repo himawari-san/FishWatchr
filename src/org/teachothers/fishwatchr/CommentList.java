@@ -58,7 +58,7 @@ import org.xml.sax.SAXException;
 public class CommentList extends ArrayList<Comment> {
 
 	private static final long serialVersionUID = 1L;
-	private static final String NOT_DEFINED = "(未定義)";
+	private static final String NOT_DEFINED = Messages.getString("CommentList.0"); //$NON-NLS-1$
 	private static final int maxElapsedTime = 1000 * 60 * 60 * 2; // 2 hours
 	
 	public static final String FILE_SUFFIX = ".xml"; //$NON-NLS-1$
@@ -133,7 +133,7 @@ public class CommentList extends ArrayList<Comment> {
 	public void setStartTime(Date startTime){
 		this.startTime = startTime;
 		if(setName.isEmpty()){
-			System.err.println("Error(CommentList): セット名がつけられていません！！！");
+			System.err.println("Warning(CommentList): no set name."); //$NON-NLS-1$
 		}
 		mapStartTime.put(setName, dateFormat.format(startTime));
 	}
@@ -153,7 +153,7 @@ public class CommentList extends ArrayList<Comment> {
 			throws IOException {
 
 		if (!xmlFilename.endsWith(FILE_SUFFIX)) {
-			return xmlFilename + "は拡張子が .xml ではないため，保存の処理を中止します。";
+			return xmlFilename + Messages.getString("CommentList.2"); //$NON-NLS-1$
 		}
 		String startTimeStr = startTime != null ? dateFormat.format(startTime)
 				: NOT_DEFINED;
@@ -176,8 +176,8 @@ public class CommentList extends ArrayList<Comment> {
 			}
 			File backupFile = new File(backupFilename);
 			Files.copy(xmlFile.toPath(), backupFile.toPath());
-			message += xmlFile.toPath().getFileName() + " は，すでに存在するため，\n"
-					+ backupFile.getAbsolutePath() + "へバックアップしました。";
+			message += xmlFile.toPath().getFileName() + Messages.getString("CommentList.3") //$NON-NLS-1$
+					+ backupFile.getAbsolutePath() + Messages.getString("CommentList.4"); //$NON-NLS-1$
 		}
 
 		OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(
@@ -257,7 +257,7 @@ public class CommentList extends ArrayList<Comment> {
 		ow.write("</comment_list>\n"); //$NON-NLS-1$
 		ow.close();
 		setModified(false);
-		message += "\n" + xmlFile.getCanonicalPath() + " に結果を保存しました。"; //$NON-NLS-1$
+		message += "\n" + Messages.getString("CommentList.5") + xmlFile.getCanonicalPath(); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return message;
 	}
@@ -296,8 +296,7 @@ public class CommentList extends ArrayList<Comment> {
 
 		Date newStartTime = dateFormat.parse(strStartTime);
 		if(newStartTime == null){
-			throw new XPathExpressionException(targetFilename + "はファイルの形式が不正です。\n" +
-					"/comment_list/@start_time が正しく読み込めませんでした。");
+			throw new XPathExpressionException(Messages.getString("CommentList.6") + targetFilename); //$NON-NLS-1$
 		} else if(startTime == null){
 			startTime = newStartTime;
 		} else {
@@ -309,7 +308,7 @@ public class CommentList extends ArrayList<Comment> {
 		mediaFilename = (String) expr.evaluate(doc, XPathConstants.STRING);
 		mediaFilenameOriginal = mediaFilename;
 		if(mediaFilename == null){
-			System.err.println("warning:(MainFrame.java): " + targetFilename + " には，/comment_list/@media_file がありません。"); //$NON-NLS-1$
+			System.err.println("Warning:(MainFrame.java): " + targetFilename + Messages.getString("CommentList.8")); //$NON-NLS-1$ //$NON-NLS-2$
 			mediaFilename = ""; //$NON-NLS-1$
 		} else if(URLDecoder.decode(mediaFilename, "utf-8").matches("^https?://.+")){ //$NON-NLS-1$ //$NON-NLS-2$
 			mediaFilename = URLDecoder.decode(mediaFilename, "utf-8"); //$NON-NLS-1$
@@ -326,7 +325,7 @@ public class CommentList extends ArrayList<Comment> {
 		expr = xpath.compile("/comment_list"); //$NON-NLS-1$
 		NodeList commentListNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 		if(commentListNodes.getLength() == 0){
-			throw new XPathExpressionException("ファイルの形式が不正です。comment_listがありません。");
+			throw new XPathExpressionException(Messages.getString("CommentList.9")); //$NON-NLS-1$
 		}
 
 		// comment_types 要素
@@ -351,7 +350,7 @@ public class CommentList extends ArrayList<Comment> {
 			}
 			
 			if(!flagRegister){
-				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + commentTypeName + " が登録できませんでした。"); //$NON-NLS-1$ //$NON-NLS-2$
+				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + commentTypeName + Messages.getString("CommentList.10")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		
@@ -374,7 +373,7 @@ public class CommentList extends ArrayList<Comment> {
 				}
 			}
 			if(!flagRegister){
-				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + discusserName + " が登録できませんでした。"); //$NON-NLS-1$ //$NON-NLS-2$
+				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + discusserName + Messages.getString("CommentList.11")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		
@@ -487,17 +486,17 @@ public class CommentList extends ArrayList<Comment> {
 				if(candMediafilename.isEmpty()){
 					candMediafilename = filename;
 				} else if(!candMediafilename.equals(filename)){
-					throw new IllegalStateException("複数のメディアファイル（"
+					throw new IllegalStateException(Messages.getString("CommentList.12") //$NON-NLS-1$
 							+ new File(candMediafilename).getName()
 							+ ",\n" //$NON-NLS-1$
 							+ new File(filename).getName()
-							+ "）があります。\nフォルダに含めるメディアファイルは一つにしてください。");
+							+ Messages.getString("CommentList.13")); //$NON-NLS-1$
 				}
 			}
 		}
 		
 		if(!flagAdd){
-			throw new IllegalStateException("マージ対象のファイルが一つも見つかりませんでした。");
+			throw new IllegalStateException(Messages.getString("CommentList.14")); //$NON-NLS-1$
 		}
 		
 

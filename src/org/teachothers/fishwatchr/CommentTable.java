@@ -128,7 +128,7 @@ public class CommentTable extends JTable {
 			public void actionPerformed(ActionEvent arg0) {
 				int selectedRow = CommentTable.this.getSelectedRow();
 				int selectedValue = JOptionPane.showConfirmDialog(null,
-						Messages.getString("CommentTable.16") + (selectedRow+1) + Messages.getString("CommentTable.11"),
+						Messages.getString("CommentTable.16") + (selectedRow+1) + Messages.getString("CommentTable.11"), //$NON-NLS-1$ //$NON-NLS-2$
 						Messages.getString("CommentTable.12"), JOptionPane.OK_CANCEL_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
 				if(selectedValue == JOptionPane.OK_OPTION){
 					deleteComment(selectedRow);
