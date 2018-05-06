@@ -99,19 +99,19 @@ public class SysConfig {
 						ct.set(commentTypeName,
 								new Color(Integer.parseInt(commentTypeColor)));
 					} else if(i == 0){
-						ct.set("汎用", Color.RED);
+						ct.set(Messages.getString("SysConfig.0"), Color.RED); //$NON-NLS-1$
 					} else {
 						ct.set("", Color.LIGHT_GRAY); //$NON-NLS-1$
 					}
 				}
 				if(commentTypesNodes.getLength() == 0){
-					commentTypes.get(0).set("汎用", Color.RED);
+					commentTypes.get(0).set(Messages.getString("SysConfig.1"), Color.RED); //$NON-NLS-1$
 				} else if(commentTypesNodes.getLength() > commentTypes.size()){
 					for(int i = commentTypes.size(); i < commentTypesNodes.getLength(); i++){
 						String commentTypeName = ((Element) commentTypesNodes
 								.item(i)).getAttribute("name"); //$NON-NLS-1$
-						System.err.println("Warning(SysConfig): 登録数を越えたため，" + Comment.ITEM_LABEL + " " //$NON-NLS-2$
-										+ commentTypeName + " が登録できませんでした。");
+						System.err.println(Messages.getString("SysConfig.2") + Comment.ITEM_LABEL + " "  //$NON-NLS-1$//$NON-NLS-2$
+										+ commentTypeName + Messages.getString("SysConfig.3")); //$NON-NLS-1$
 					}
 				}
 
@@ -126,7 +126,7 @@ public class SysConfig {
 								.getAttribute("name"); //$NON-NLS-1$
 						discusser.setName(discusserName);
 					} else if(i == 0){
-						discusser.setName("不特定");
+						discusser.setName(Messages.getString("SysConfig.4")); //$NON-NLS-1$
 					} else {
 						discusser.setName(""); //$NON-NLS-1$
 					}
@@ -136,23 +136,22 @@ public class SysConfig {
 					for(int i = discussers.size(); i < discussersNodes.getLength(); i++){
 						String discusserName = ((Element) discussersNodes.item(i))
 								.getAttribute("name"); //$NON-NLS-1$
-						System.err.println("Warning(SysConfig): 登録数を越えたため，" + Comment.ITEM_TARGET + " " //$NON-NLS-2$
-								+ discusserName + " が登録できませんでした。");
+						System.err.println(Messages.getString("SysConfig.5") + Comment.ITEM_TARGET + " "  //$NON-NLS-1$//$NON-NLS-2$
+								+ discusserName + Messages.getString("SysConfig.6")); //$NON-NLS-1$
 					}
 				}
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null,
-						"設定ファイル("
+						Messages.getString("SysConfig.7") //$NON-NLS-1$
 						+ CONFIG_FILENAME
-						+ ")の読み込み中にエラーが発生したため，デフォルトの設定が読み込まれました。"
-						+ "\nエラーメッセージ：\n" + e.getLocalizedMessage());
-				System.err.println("Error(SysConfig): " + "設定ファイルの読み込み中にエラーが発生したため，デフォルトの設定が読み込まれました。"); //$NON-NLS-1$
+						+ Messages.getString("SysConfig.8") //$NON-NLS-1$
+						+ Messages.getString("SysConfig.9") + e.getLocalizedMessage()); //$NON-NLS-1$
 				e.printStackTrace();
 				setDefault(commentTypes, discussers);
 			}
 
 		} else {
-			System.err.println("Warning(SysConfig): " + CONFIG_FILENAME + "が見つからなかったため，デフォルトの設定を使用します。"); //$NON-NLS-1$
+			System.err.println("Warning(SysConfig): " + CONFIG_FILENAME + Messages.getString("SysConfig.11")); //$NON-NLS-1$ //$NON-NLS-2$
 			setDefault(commentTypes, discussers);
 		}
 	}
@@ -186,19 +185,19 @@ public class SysConfig {
 		discussers.add(new User(Comment.ITEM_TARGET + "２")); //$NON-NLS-1$
 		discussers.add(new User(Comment.ITEM_TARGET + "３")); //$NON-NLS-1$
 		discussers.add(new User(Comment.ITEM_TARGET + "４")); //$NON-NLS-1$
-		discussers.add(new User("不特定"));
-		discussers.add(new User("誤り"));
+		discussers.add(new User(Messages.getString("SysConfig.12"))); //$NON-NLS-1$
+		discussers.add(new User(Messages.getString("SysConfig.13"))); //$NON-NLS-1$
 		discussers.add(new User("")); //$NON-NLS-1$
 		discussers.add(new User("")); //$NON-NLS-1$
 
 		commentTypes.clear();
-		commentTypes.add(new CommentType("意見", Color.red));
-		commentTypes.add(new CommentType("質問", Color.ORANGE));
-		commentTypes.add(new CommentType("管理", Color.blue));
-		commentTypes.add(new CommentType("相づち", Color.green));
-		commentTypes.add(new CommentType("確認", Color.cyan));
-		commentTypes.add(new CommentType("その他", Color.yellow));
-		commentTypes.add(new CommentType("誤り", Color.magenta));
+		commentTypes.add(new CommentType(Messages.getString("SysConfig.14"), Color.red)); //$NON-NLS-1$
+		commentTypes.add(new CommentType(Messages.getString("SysConfig.15"), Color.ORANGE)); //$NON-NLS-1$
+		commentTypes.add(new CommentType(Messages.getString("SysConfig.16"), Color.blue)); //$NON-NLS-1$
+		commentTypes.add(new CommentType(Messages.getString("SysConfig.17"), Color.green)); //$NON-NLS-1$
+		commentTypes.add(new CommentType(Messages.getString("SysConfig.18"), Color.cyan)); //$NON-NLS-1$
+		commentTypes.add(new CommentType(Messages.getString("SysConfig.19"), Color.yellow)); //$NON-NLS-1$
+		commentTypes.add(new CommentType(Messages.getString("SysConfig.20"), Color.magenta)); //$NON-NLS-1$
 		commentTypes.add(new CommentType("", new Color(10, 10, 10))); //$NON-NLS-1$
 		commentTypes.add(new CommentType("", new Color(60, 60, 60))); //$NON-NLS-1$
 		commentTypes.add(new CommentType("", new Color(110, 110, 110))); //$NON-NLS-1$

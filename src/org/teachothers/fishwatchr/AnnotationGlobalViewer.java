@@ -92,11 +92,11 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JComboBox<String> targetSelector;
 	private JComboBox<String> displayTypeSelector;
 	private JButton resetScaleButton;
-	private JButton viewForwardButton = new JButton(">");
-	private JButton viewBackwardButton = new JButton("<");
+	private JButton viewForwardButton = new JButton(">"); //$NON-NLS-1$
+	private JButton viewBackwardButton = new JButton("<"); //$NON-NLS-1$
 
 	private String[] targets = {Comment.ITEM_LABEL, Comment.ITEM_TARGET, Comment.ITEM_ANNOTATOR};
-	private String[] displayTypes = {"なし", Comment.ITEM_ANNOTATOR, Comment.ITEM_LABEL, Comment.ITEM_TARGET};
+	private String[] displayTypes = {Messages.getString("AnnotationGlobalViewer.2"), Comment.ITEM_ANNOTATOR, Comment.ITEM_LABEL, Comment.ITEM_TARGET}; //$NON-NLS-1$
 	private ArrayList<User> discussers;
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<String> discusserNames = new ArrayList<String>();
@@ -163,8 +163,8 @@ public class AnnotationGlobalViewer extends JPanel {
 			}
 		});
 		displayTypeSelector = new JComboBox<String>(displayTypes);
-		resetScaleButton = new JButton("リセット");
-		resetScaleButton.setToolTipText("全体表示の範囲を初期化します");
+		resetScaleButton = new JButton(Messages.getString("AnnotationGlobalViewer.3")); //$NON-NLS-1$
+		resetScaleButton.setToolTipText(Messages.getString("AnnotationGlobalViewer.4")); //$NON-NLS-1$
 		resetScaleButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -173,12 +173,12 @@ public class AnnotationGlobalViewer extends JPanel {
 				ctm.refreshFilter();
 			}
 		});
-		p2.add(new JLabel("表示"));
+		p2.add(new JLabel(Messages.getString("AnnotationGlobalViewer.5"))); //$NON-NLS-1$
 		p2.add(targetSelector);
 //		p2.add(new JLabel("比較"));
 //		p2.add(displayTypeSelector);
-		filteredViewCheckBox = new JCheckBox("フィルタ連動");
-		filteredViewCheckBox.setToolTipText("Ctrl+V: 表示をフィルタと連動させます");
+		filteredViewCheckBox = new JCheckBox(Messages.getString("AnnotationGlobalViewer.6")); //$NON-NLS-1$
+		filteredViewCheckBox.setToolTipText(Messages.getString("AnnotationGlobalViewer.7")); //$NON-NLS-1$
 		filteredViewCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -188,7 +188,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		});
 		p2.add(filteredViewCheckBox);
 		p2.add(resetScaleButton);
-		viewForwardButton.setToolTipText("表示を前に進める");
+		viewForwardButton.setToolTipText(Messages.getString("AnnotationGlobalViewer.8")); //$NON-NLS-1$
 		viewForwardButton.setPreferredSize(new Dimension(50, viewForwardButton.getPreferredSize().height));
 		viewForwardButton.addActionListener(new ActionListener() {
 			@Override
@@ -208,7 +208,7 @@ public class AnnotationGlobalViewer extends JPanel {
 				ctm.refreshFilter();
 			}
 		});
-		viewBackwardButton.setToolTipText("表示を後ろに戻す");
+		viewBackwardButton.setToolTipText(Messages.getString("AnnotationGlobalViewer.9")); //$NON-NLS-1$
 		viewBackwardButton.setPreferredSize(new Dimension(50, viewBackwardButton.getPreferredSize().height));
 		viewBackwardButton.addActionListener(new ActionListener() {
 			@Override
@@ -645,7 +645,7 @@ public class AnnotationGlobalViewer extends JPanel {
 			int minute = time / 60;
 			int sec = time - minute * 60;
 				
-			annotationViewerPanel.setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec));
+			annotationViewerPanel.setToolTipText(String.format("%02d:%02d:%02d", hour, minute, sec)); //$NON-NLS-1$
 			cursorX = e.getX();
 		}
 
