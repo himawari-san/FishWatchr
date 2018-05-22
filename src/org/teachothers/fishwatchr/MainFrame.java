@@ -23,6 +23,7 @@ import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
@@ -268,7 +269,7 @@ public class MainFrame extends JFrame {
 	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png")); //$NON-NLS-1$
 	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png")); //$NON-NLS-1$
 	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png")); //$NON-NLS-1$
-	private ImageIcon iconFishWatchr = new ImageIcon(getClass().getResource("resources/images/fw_icon.png")); //$NON-NLS-1$
+	private String iconSizes[] = {"16", "32", "64", "128", "256"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
 	private List<CaptureDevice> videoDeviceList = null;
 	private List<CaptureDevice> audioDeviceList = null;
@@ -399,7 +400,18 @@ public class MainFrame extends JFrame {
 	}
 
 	public void ginit() {
-		setIconImage(iconFishWatchr.getImage());
+		// icon
+		ArrayList<Image> iconList = new ArrayList<Image>();
+		for(String size: iconSizes){
+			try{
+				ImageIcon icon = new ImageIcon(getClass().getResource("resources/images/fw_icon" + size + ".png")); //$NON-NLS-1$ //$NON-NLS-2$
+				iconList.add(icon.getImage());
+			}catch(Exception e){
+				
+			}
+		}
+		setIconImages(iconList);
+		
 		jMenuBar = getJMenuBar();
 		setJMenuBar(jMenuBar);
 		// execute after getJMenuBar()
