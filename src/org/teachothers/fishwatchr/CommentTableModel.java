@@ -97,7 +97,7 @@ public class CommentTableModel extends AbstractTableModel {
 		Comment comment = filteredCommentList.get(row);
 		
 		if(comment == null) return null;
-		if(column == Comment.F_COMMENTER || column == Comment.F_DISCUSSER){
+		if(column == Comment.F_ANNOTATOR || column == Comment.F_COMMENT_TARGET){
 			return comment.getAt(column);
 		} else if(column == Comment.F_COMMENT_TIME){
 			return formatTime(commentList.unifiedCommentTime(comment));
@@ -132,9 +132,9 @@ public class CommentTableModel extends AbstractTableModel {
 	public boolean isCellEditable(int row, int column){
 		if(column == Comment.F_COMMENT ||
 				column == Comment.F_AUX ||
-				column == Comment.F_DISCUSSER ||
-				column == Comment.F_COMMENT_TYPE ||
-				column == Comment.F_COMMENTER){
+				column == Comment.F_COMMENT_TARGET ||
+				column == Comment.F_COMMENT_LABEL ||
+				column == Comment.F_ANNOTATOR){
 			return true;
 		} else {
 			return false;

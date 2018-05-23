@@ -85,8 +85,8 @@ public class CommentTable extends JTable {
 		setOpaque(false);
 		setDefaultRenderer(Object.class, new CellRenderer());
 		setDefaultRenderer(Number.class, new CellRenderer(SwingConstants.RIGHT));
-		getColumn(ctm.getColumnName(Comment.F_DISCUSSER)).setCellEditor(new ListCellEditor<User>(ctm.discussers));
-		getColumn(ctm.getColumnName(Comment.F_COMMENT_TYPE)).setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
+		getColumn(ctm.getColumnName(Comment.F_COMMENT_TARGET)).setCellEditor(new ListCellEditor<User>(ctm.discussers));
+		getColumn(ctm.getColumnName(Comment.F_COMMENT_LABEL)).setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
 		getColumn(ctm.getColumnName(Comment.F_COMMENT)).setCellEditor(new TextCellEditor());
 		getColumn(ctm.getColumnName(Comment.F_AUX)).setCellEditor(new TextCellEditor());
 		setCellSelectionEnabled(true);

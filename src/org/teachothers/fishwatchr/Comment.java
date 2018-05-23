@@ -25,9 +25,9 @@ public class Comment {
 	public static final int N_Field = 10;
 	public static final int F_ID = 0; // comment id
 	public static final int F_COMMENT_TIME = 1; // elapsed time from the beginning of media file (msec)
-	public static final int F_COMMENTER = 2;
-	public static final int F_DISCUSSER = 3;
-	public static final int F_COMMENT_TYPE = 4;
+	public static final int F_ANNOTATOR = 2;
+	public static final int F_COMMENT_TARGET = 3;
+	public static final int F_COMMENT_LABEL = 4;
 	public static final int F_COMMENT = 6;
 	public static final int F_DATE = 8; // comment date
 	public static final int F_SET_NAME = 5; // comment set name
@@ -71,10 +71,10 @@ public class Comment {
 		if(discusser.getName().isEmpty()){
 			discusser.setName(defaultDiscusserName);
 		}
-		data[F_COMMENTER] = commenter;
+		data[F_ANNOTATOR] = commenter;
 		data[F_COMMENT] = contentBody;
-		data[F_COMMENT_TYPE] = commentType;
-		data[F_DISCUSSER] = discusser;
+		data[F_COMMENT_LABEL] = commentType;
+		data[F_COMMENT_TARGET] = discusser;
 		data[F_DATE] = commentDate;
 		data[F_COMMENT_TIME] = commentTime;
 		data[F_SET_NAME] = setName;
@@ -131,11 +131,11 @@ public class Comment {
 	}
 	
 	public User getDiscusser(){
-		return (User)data[F_DISCUSSER];
+		return (User)data[F_COMMENT_TARGET];
 	}
 
 	public User getCommenter(){
-		return (User)data[F_COMMENTER];
+		return (User)data[F_ANNOTATOR];
 	}
 	
 	// comment date (no correction)
@@ -153,7 +153,7 @@ public class Comment {
 	}
 	
 	public CommentType getCommentType(){
-		return (CommentType)data[F_COMMENT_TYPE];
+		return (CommentType)data[F_COMMENT_LABEL];
 	}
 	
 	public String getSetName(){

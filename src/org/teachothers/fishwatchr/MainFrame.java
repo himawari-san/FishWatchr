@@ -2265,7 +2265,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationOrderDiscusser() {
 		if (jMenuItemAnnotationOrderDiscusser == null) {
-			jMenuItemAnnotationOrderDiscusser = new JRadioButtonMenuItem(ctm.getColumnName(Comment.F_DISCUSSER) + Messages.getString("MainFrame.97")); //$NON-NLS-1$
+			jMenuItemAnnotationOrderDiscusser = new JRadioButtonMenuItem(ctm.getColumnName(Comment.F_COMMENT_TARGET) + Messages.getString("MainFrame.97")); //$NON-NLS-1$
 			jMenuItemAnnotationOrderDiscusser
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2283,7 +2283,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationOrderType() {
 		if (jMenuItemAnnotationOrderType == null) {
-			jMenuItemAnnotationOrderType = new JRadioButtonMenuItem(ctm.getColumnName(Comment.F_COMMENT_TYPE) + Messages.getString("MainFrame.98")); //$NON-NLS-1$
+			jMenuItemAnnotationOrderType = new JRadioButtonMenuItem(ctm.getColumnName(Comment.F_COMMENT_LABEL) + Messages.getString("MainFrame.98")); //$NON-NLS-1$
 			jMenuItemAnnotationOrderType
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2328,7 +2328,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationYourName() {
 		if (jMenuItemAnnotationYourName == null) {
-			jMenuItemAnnotationYourName = new JMenuItem(ctm.getColumnName(Comment.F_COMMENTER) + Messages.getString("MainFrame.100")); //$NON-NLS-1$
+			jMenuItemAnnotationYourName = new JMenuItem(ctm.getColumnName(Comment.F_ANNOTATOR) + Messages.getString("MainFrame.100")); //$NON-NLS-1$
 			jMenuItemAnnotationYourName
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2336,12 +2336,12 @@ public class MainFrame extends JFrame {
 									: commenter.getName();
 							String inputValue = JOptionPane.showInputDialog(
 									MainFrame.this, Messages.getString("MainFrame.102") //$NON-NLS-1$
-											+ currentCommenterName, ctm.getColumnName(Comment.F_COMMENTER) + Messages.getString("MainFrame.103"), //$NON-NLS-1$
+											+ currentCommenterName, ctm.getColumnName(Comment.F_ANNOTATOR) + Messages.getString("MainFrame.103"), //$NON-NLS-1$
 									JOptionPane.PLAIN_MESSAGE);
 							if(inputValue == null){
 								// do nothing if canceled
 							} else if(inputValue.isEmpty()){
-								JOptionPane.showMessageDialog(null, ctm.getColumnName(Comment.F_COMMENTER) + Messages.getString("MainFrame.104")); //$NON-NLS-1$
+								JOptionPane.showMessageDialog(null, ctm.getColumnName(Comment.F_ANNOTATOR) + Messages.getString("MainFrame.104")); //$NON-NLS-1$
 							} else if(inputValue.matches(".*[\\s<>/&'\"].*")){ //$NON-NLS-1$
 								JOptionPane.showMessageDialog(null, inputValue + Messages.getString("MainFrame.105")); //$NON-NLS-1$
 							} else {
@@ -2355,14 +2355,14 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationDiscussers() {
 		if (jMenuItemAnnotationDiscussers == null) {
-			jMenuItemAnnotationDiscussers = new JMenuItem(ctm.getColumnName(Comment.F_DISCUSSER));
+			jMenuItemAnnotationDiscussers = new JMenuItem(ctm.getColumnName(Comment.F_COMMENT_TARGET));
 			jMenuItemAnnotationDiscussers
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							DiscusserSettingPanel discusserSettingPanel = new DiscusserSettingPanel(
 									discussers, MAX_DISCUSSERS);
 							int selectedValue = JOptionPane.showConfirmDialog(
-									null, discusserSettingPanel, ctm.getColumnName(Comment.F_DISCUSSER) + Messages.getString("MainFrame.106"), //$NON-NLS-1$
+									null, discusserSettingPanel, ctm.getColumnName(Comment.F_COMMENT_TARGET) + Messages.getString("MainFrame.106"), //$NON-NLS-1$
 									JOptionPane.OK_CANCEL_OPTION);
 							if (selectedValue == -1 || selectedValue == JOptionPane.CANCEL_OPTION) {
 								return;
@@ -2386,7 +2386,7 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemAnnotationAnnotation() {
 		if (jMenuItemAnnotationAnnotation == null) {
-			jMenuItemAnnotationAnnotation = new JMenuItem(ctm.getColumnName(Comment.F_COMMENT_TYPE));
+			jMenuItemAnnotationAnnotation = new JMenuItem(ctm.getColumnName(Comment.F_COMMENT_LABEL));
 			jMenuItemAnnotationAnnotation
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2394,7 +2394,7 @@ public class MainFrame extends JFrame {
 							AnnotationSettingPanel annotationSettingPanel = new AnnotationSettingPanel(
 									commentTypes);
 							int selectedValue = JOptionPane.showConfirmDialog(
-									null, annotationSettingPanel, ctm.getColumnName(Comment.F_COMMENT_TYPE) + Messages.getString("MainFrame.108"), //$NON-NLS-1$
+									null, annotationSettingPanel, ctm.getColumnName(Comment.F_COMMENT_LABEL) + Messages.getString("MainFrame.108"), //$NON-NLS-1$
 									JOptionPane.OK_CANCEL_OPTION);
 							if (selectedValue == -1 || selectedValue == JOptionPane.CANCEL_OPTION) {
 								return;
@@ -2423,8 +2423,8 @@ public class MainFrame extends JFrame {
 		if (jMenuAnalysis == null) {
 			jMenuAnalysis = new JMenu();
 			jMenuAnalysis.setText(Messages.getString("MainFrame.110")); //$NON-NLS-1$
-			jMenuAnalysisTarget = new JMenu(ctm.getColumnName(Comment.F_DISCUSSER));
-			jMenuAnalysisLabel = new JMenu(ctm.getColumnName(Comment.F_COMMENT_TYPE));
+			jMenuAnalysisTarget = new JMenu(ctm.getColumnName(Comment.F_COMMENT_TARGET));
+			jMenuAnalysisLabel = new JMenu(ctm.getColumnName(Comment.F_COMMENT_LABEL));
 			jMenuAnalysisEval = new JMenu(StatFrame.LABEL_STYLE_EVAL);
 			jMenuAnalysisFreq = new JMenu(StatFrame.LABEL_STYLE_UNIQ);
 			jMenuAnalysis.add(jMenuAnalysisTarget);
@@ -2458,16 +2458,16 @@ public class MainFrame extends JFrame {
 		
 		switch(chartStyle){
 		case StatFrame.CHART_STYLE_TARGET:
-			title = ctm.getColumnName(Comment.F_DISCUSSER);
-			iColumns = new int[]{Comment.F_COMMENTER, Comment.F_DISCUSSER};
+			title = ctm.getColumnName(Comment.F_COMMENT_TARGET);
+			iColumns = new int[]{Comment.F_ANNOTATOR, Comment.F_COMMENT_TARGET};
 			break;
 		case StatFrame.CHART_STYLE_LABEL:
-			title = ctm.getColumnName(Comment.F_COMMENT_TYPE);
-			iColumns = new int[]{Comment.F_COMMENTER, Comment.F_COMMENT_TYPE};
+			title = ctm.getColumnName(Comment.F_COMMENT_LABEL);
+			iColumns = new int[]{Comment.F_ANNOTATOR, Comment.F_COMMENT_LABEL};
 			break;
 		case StatFrame.CHART_STYLE_EVAL:
 			title = StatFrame.LABEL_STYLE_EVAL;
-			iColumns = new int[]{Comment.F_COMMENTER, Comment.F_DISCUSSER, Comment.F_COMMENT_TYPE};
+			iColumns = new int[]{Comment.F_ANNOTATOR, Comment.F_COMMENT_TARGET, Comment.F_COMMENT_LABEL};
 			break;
 		case StatFrame.CHART_STYLE_UNIQ:
 			title = StatFrame.LABEL_STYLE_UNIQ;

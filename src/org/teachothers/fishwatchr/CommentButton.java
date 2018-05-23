@@ -156,7 +156,7 @@ public class CommentButton extends JButton {
 		if(buttonType == BUTTON_TYPE_COMMENT){
 			User selectedDiscusser = new User(""); //$NON-NLS-1$
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog(ctm.getColumnName(Comment.F_COMMENT_TYPE) + Messages.getString("CommentButton.0") + commentType.getType() + ")", discussers);  //$NON-NLS-1$//$NON-NLS-2$
+				ButtonDialog dialog = new ButtonDialog(ctm.getColumnName(Comment.F_COMMENT_LABEL) + Messages.getString("CommentButton.0") + commentType.getType() + ")", discussers);  //$NON-NLS-1$//$NON-NLS-2$
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);
@@ -171,7 +171,7 @@ public class CommentButton extends JButton {
 		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
 			CommentType commentType = new CommentType("", Color.BLACK); //$NON-NLS-1$
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog(ctm.getColumnName(Comment.F_DISCUSSER) + Messages.getString("CommentButton.1") + discusser.getName() + ")", commentTypes);  //$NON-NLS-1$//$NON-NLS-2$
+				ButtonDialog dialog = new ButtonDialog(ctm.getColumnName(Comment.F_COMMENT_TARGET) + Messages.getString("CommentButton.1") + discusser.getName() + ")", commentTypes);  //$NON-NLS-1$//$NON-NLS-2$
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);
