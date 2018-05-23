@@ -57,7 +57,6 @@ public class CommentTable extends JTable {
 	private static final int MAX_POPUP_ITEMS = 15;
 	public static final int UNDEFINED = -1;
 
-
 	public CommentTableModel ctm;
 	private JPopupMenu popupMenu = new JPopupMenu();
 	private int iCurrentComment = UNDEFINED;
@@ -86,10 +85,10 @@ public class CommentTable extends JTable {
 		setOpaque(false);
 		setDefaultRenderer(Object.class, new CellRenderer());
 		setDefaultRenderer(Number.class, new CellRenderer(SwingConstants.RIGHT));
-		getColumn(Comment.ITEM_TARGET).setCellEditor(new ListCellEditor<User>(ctm.discussers));
-		getColumn(Comment.ITEM_LABEL).setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
-		getColumn(Comment.ITEM_COMMENT).setCellEditor(new TextCellEditor());
-		getColumn(Comment.ITEM_AUX).setCellEditor(new TextCellEditor());
+		getColumn(ctm.getColumnName(Comment.F_DISCUSSER)).setCellEditor(new ListCellEditor<User>(ctm.discussers));
+		getColumn(ctm.getColumnName(Comment.F_COMMENT_TYPE)).setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
+		getColumn(ctm.getColumnName(Comment.F_COMMENT)).setCellEditor(new TextCellEditor());
+		getColumn(ctm.getColumnName(Comment.F_AUX)).setCellEditor(new TextCellEditor());
 		setCellSelectionEnabled(true);
 		
 		

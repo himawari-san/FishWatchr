@@ -19,7 +19,6 @@ package org.teachothers.fishwatchr;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 
 
 public class Comment {
@@ -35,16 +34,6 @@ public class Comment {
 	public static final int F_AUX = 7; // auxiliary information
 	public static final int F_COMMENT_TIME_END = 9; // the end time (ellapsed time ) of an time-range annotation)
 	
-	public static final String ITEM_NUMBER = Messages.getString("Comment.0"); //$NON-NLS-1$
-	public static final String ITEM_ANNOTATOR = Messages.getString("Comment.1"); //$NON-NLS-1$
-	public static final String ITEM_TIME = Messages.getString("Comment.2"); //$NON-NLS-1$
-	public static final String ITEM_TARGET = Messages.getString("Comment.3"); //$NON-NLS-1$
-	public static final String ITEM_LABEL = Messages.getString("Comment.4"); //$NON-NLS-1$
-	public static final String ITEM_SET = Messages.getString("Comment.5"); //$NON-NLS-1$
-	public static final String ITEM_COMMENT = Messages.getString("Comment.6"); //$NON-NLS-1$
-	public static final String ITEM_AUX = Messages.getString("Comment.7"); //$NON-NLS-1$
-
-	public static final String headers[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
 	public static final int COMMENT_TIME_END_UNDEFINED = -1; // the end time of non time-range annotations
 
 	public static final String COMMENT_DELIMITER = " || "; //$NON-NLS-1$
@@ -56,7 +45,6 @@ public class Comment {
 	private Object[] data = new Object[N_Field];
 	private boolean isModified = false;
 	private int id;
-	private static HashMap<String, Integer> headerMap = new HashMap<String, Integer>();
 	private boolean isExcluded = false;
 	private boolean isFocused = false;
 	
@@ -66,11 +54,6 @@ public class Comment {
 		id = currentID++;
 	}
 
-	static {
-		for(int i = 0; i < headers.length; i++){
-			headerMap.put(headers[i], i);
-		}
-	}
 
 	public static void resetID(){
 		currentID = 1;
@@ -189,16 +172,6 @@ public class Comment {
 		return data[i];
 	}
 	
-	
-	public Object getValueByHeaderName(String headerName){
-		if(!headerMap.containsKey(headerName)){
-			return null;
-		}
-		
-		return data[headerMap.get(headerName)];
-	}
-
-
 	public boolean isExcluded(){
 		return isExcluded;
 	}

@@ -110,7 +110,7 @@ public class SysConfig {
 					for(int i = commentTypes.size(); i < commentTypesNodes.getLength(); i++){
 						String commentTypeName = ((Element) commentTypesNodes
 								.item(i)).getAttribute("name"); //$NON-NLS-1$
-						System.err.println(Messages.getString("SysConfig.2") + Comment.ITEM_LABEL + " "  //$NON-NLS-1$//$NON-NLS-2$
+						System.err.println(Messages.getString("SysConfig.2") + CommentTableModel.ITEM_LABEL + " "  //$NON-NLS-1$//$NON-NLS-2$
 										+ commentTypeName + Messages.getString("SysConfig.3")); //$NON-NLS-1$
 					}
 				}
@@ -136,7 +136,7 @@ public class SysConfig {
 					for(int i = discussers.size(); i < discussersNodes.getLength(); i++){
 						String discusserName = ((Element) discussersNodes.item(i))
 								.getAttribute("name"); //$NON-NLS-1$
-						System.err.println(Messages.getString("SysConfig.5") + Comment.ITEM_TARGET + " "  //$NON-NLS-1$//$NON-NLS-2$
+						System.err.println(Messages.getString("SysConfig.5") + CommentTableModel.ITEM_TARGET + " "  //$NON-NLS-1$//$NON-NLS-2$
 								+ discusserName + Messages.getString("SysConfig.6")); //$NON-NLS-1$
 					}
 				}
@@ -181,10 +181,10 @@ public class SysConfig {
 	
 	public void setDefault(ArrayList<CommentType> commentTypes, ArrayList<User> discussers){
 		discussers.clear();
-		discussers.add(new User(Comment.ITEM_TARGET + "１")); //$NON-NLS-1$
-		discussers.add(new User(Comment.ITEM_TARGET + "２")); //$NON-NLS-1$
-		discussers.add(new User(Comment.ITEM_TARGET + "３")); //$NON-NLS-1$
-		discussers.add(new User(Comment.ITEM_TARGET + "４")); //$NON-NLS-1$
+		discussers.add(new User(CommentTableModel.ITEM_TARGET + "1")); //$NON-NLS-1$
+		discussers.add(new User(CommentTableModel.ITEM_TARGET + "2")); //$NON-NLS-1$
+		discussers.add(new User(CommentTableModel.ITEM_TARGET + "3")); //$NON-NLS-1$
+		discussers.add(new User(CommentTableModel.ITEM_TARGET + "4")); //$NON-NLS-1$
 		discussers.add(new User(Messages.getString("SysConfig.12"))); //$NON-NLS-1$
 		discussers.add(new User(Messages.getString("SysConfig.13"))); //$NON-NLS-1$
 		discussers.add(new User("")); //$NON-NLS-1$

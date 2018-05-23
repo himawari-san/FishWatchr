@@ -37,6 +37,26 @@ public class CommentTableModel extends AbstractTableModel {
 	private HashMap<String, Pattern> filters = new HashMap<String, Pattern>();
 	private SimpleTimePeriod selectedPeriod = null;
 	
+	public static final String ITEM_NUMBER = Messages.getString("Comment.0"); //$NON-NLS-1$
+	public static final String ITEM_ANNOTATOR = Messages.getString("Comment.1"); //$NON-NLS-1$
+	public static final String ITEM_TIME = Messages.getString("Comment.2"); //$NON-NLS-1$
+	public static final String ITEM_TARGET = Messages.getString("Comment.3"); //$NON-NLS-1$
+	public static final String ITEM_LABEL = Messages.getString("Comment.4"); //$NON-NLS-1$
+	public static final String ITEM_SET = Messages.getString("Comment.5"); //$NON-NLS-1$
+	public static final String ITEM_COMMENT = Messages.getString("Comment.6"); //$NON-NLS-1$
+	public static final String ITEM_AUX = Messages.getString("Comment.7"); //$NON-NLS-1$
+
+	private static String columnNames[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
+	
+
+	private static HashMap<String, Integer> columnNameMap = new HashMap<String, Integer>();
+	// initialize columnNameMap
+	static {
+		for(int i = 0; i < columnNames.length; i++){
+			columnNameMap.put(columnNames[i], i);
+		}
+	}
+
 	
 	public CommentTableModel(CommentList commentList, ArrayList<User> discussers, ArrayList<CommentType> commentTypes){
 		this.commentList = commentList;
@@ -47,12 +67,12 @@ public class CommentTableModel extends AbstractTableModel {
 	
 	
 	public String getColumnName(int i){
-		return Comment.headers[i];
+		return columnNames[i];
 	}
 	
 	
 	public int getColumnCount() {
-		return Comment.headers.length;
+		return columnNames.length;
 	}
 
 	
@@ -135,7 +155,7 @@ public class CommentTableModel extends AbstractTableModel {
 	public ArrayList<String> getItemList(String headerName){
 		ArrayList<String> itemList = new ArrayList<String>();
 		for(Comment comment: filteredCommentList){
-			String item = comment.getValueByHeaderName(headerName).toString();
+			String item = comment.getAt(columnNameMap.get(headerName)).toString();
 			if(!itemList.contains(item)){
 				itemList.add(item);
 			}
@@ -219,7 +239,7 @@ public class CommentTableModel extends AbstractTableModel {
 			boolean flag = true;
 			for(Map.Entry<String, Pattern> filter : filters.entrySet()){
 				String headerName = filter.getKey();
-				String value = comment.getValueByHeaderName(headerName).toString();
+				String value = comment.getAt(columnNameMap.get(headerName)).toString();
 				Pattern filterCond = filter.getValue();
 				if(value != null && !filterCond.matcher(value).find()){
 					flag = false;
@@ -260,7 +280,7 @@ public class CommentTableModel extends AbstractTableModel {
 		this.selectedPeriod = period;
 		
 		for(Comment comment: filteredCommentList){
-			int commentTime = (int)comment.getValueByHeaderName(timeFieldName);
+			int commentTime = (int)comment.getAt(columnNameMap.get(timeFieldName));
 			if(period == null || period.includes(commentTime)){
 				tempCommentList.add(comment);
 			}

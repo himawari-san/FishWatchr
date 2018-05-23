@@ -35,8 +35,8 @@ public class StatFrame extends JFrame {
 	public static final int CHART_STYLE_EVAL = 3;
 
 	public static final String LABEL_STYLE_UNIQ = Messages.getString("StatFrame.0"); //$NON-NLS-1$
-	public static final String LABEL_STYLE_TARGET = Comment.ITEM_TARGET;
-	public static final String LABEL_STYLE_LABEL = Comment.ITEM_LABEL;
+//	public static final String LABEL_STYLE_TARGET = Comment.ITEM_TARGET;
+//	public static final String LABEL_STYLE_LABEL = Comment.ITEM_LABEL;
 	public static final String LABEL_STYLE_EVAL = Messages.getString("StatFrame.1"); //$NON-NLS-1$
 	
 	private JTabbedPane	figureTabbedPane;

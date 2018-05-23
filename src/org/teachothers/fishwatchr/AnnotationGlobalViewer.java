@@ -95,8 +95,8 @@ public class AnnotationGlobalViewer extends JPanel {
 	private JButton viewForwardButton = new JButton(">"); //$NON-NLS-1$
 	private JButton viewBackwardButton = new JButton("<"); //$NON-NLS-1$
 
-	private String[] targets = {Comment.ITEM_LABEL, Comment.ITEM_TARGET, Comment.ITEM_ANNOTATOR};
-	private String[] displayTypes = {Messages.getString("AnnotationGlobalViewer.2"), Comment.ITEM_ANNOTATOR, Comment.ITEM_LABEL, Comment.ITEM_TARGET}; //$NON-NLS-1$
+	private String targets[] = new String[3];
+	private String displayTypes[] = new String[4];
 	private ArrayList<User> discussers;
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<String> discusserNames = new ArrayList<String>();
@@ -122,10 +122,23 @@ public class AnnotationGlobalViewer extends JPanel {
 		this.commentTypes = commentTypes;
 		this.soundPlayer = soundPlayer;
 		
+		setLabels();
+		
 		ginit();
 		init();
 	}
 
+	
+	public void setLabels(){
+		targets[0] = ctm.getColumnName(Comment.F_COMMENT_TYPE);
+		targets[1] = ctm.getColumnName(Comment.F_DISCUSSER);
+		targets[2] = ctm.getColumnName(Comment.F_COMMENTER);
+		
+		displayTypes[0] = Messages.getString("AnnotationGlobalViewer.2");
+		displayTypes[1] = ctm.getColumnName(Comment.F_COMMENTER);
+		displayTypes[2] = ctm.getColumnName(Comment.F_COMMENT_TYPE);
+		displayTypes[3] = ctm.getColumnName(Comment.F_DISCUSSER);
+	}
 	
 	@Override
 	public void doLayout() {

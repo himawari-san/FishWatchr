@@ -350,7 +350,7 @@ public class CommentList extends ArrayList<Comment> {
 			}
 			
 			if(!flagRegister){
-				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + commentTypeName + Messages.getString("CommentList.10")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				System.err.println("Warning(CommentList): " + CommentTableModel.ITEM_LABEL + " " + commentTypeName + Messages.getString("CommentList.10")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		
@@ -373,7 +373,7 @@ public class CommentList extends ArrayList<Comment> {
 				}
 			}
 			if(!flagRegister){
-				System.err.println("Warning(CommentList): " + Comment.ITEM_LABEL + " " + discusserName + Messages.getString("CommentList.11")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				System.err.println("Warning(CommentList): " + CommentTableModel.ITEM_LABEL + " " + discusserName + Messages.getString("CommentList.11")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		
