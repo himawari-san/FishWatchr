@@ -46,16 +46,9 @@ public class CommentTableModel extends AbstractTableModel {
 	public static final String ITEM_COMMENT = Messages.getString("Comment.6"); //$NON-NLS-1$
 	public static final String ITEM_AUX = Messages.getString("Comment.7"); //$NON-NLS-1$
 
-	private static String columnNames[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
+	private String columnNames[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
 	private boolean readonlyFlags[] = {true, true, false, false, false, false, false, false, false};
-
-	private static HashMap<String, Integer> columnNameMap = new HashMap<String, Integer>();
-	// initialize columnNameMap
-	static {
-		for(int i = 0; i < columnNames.length; i++){
-			columnNameMap.put(columnNames[i], i);
-		}
-	}
+	private HashMap<String, Integer> columnNameMap = new HashMap<String, Integer>();
 
 	
 	public CommentTableModel(CommentList commentList, ArrayList<User> discussers, ArrayList<CommentType> commentTypes){
@@ -63,6 +56,11 @@ public class CommentTableModel extends AbstractTableModel {
 		this.discussers = discussers;
 		this.commentTypes = commentTypes;
 		refreshFilter();
+
+		// initialize columnNameMap
+		for(int i = 0; i < columnNames.length; i++){
+			columnNameMap.put(columnNames[i], i);
+		}
 	}
 	
 	
