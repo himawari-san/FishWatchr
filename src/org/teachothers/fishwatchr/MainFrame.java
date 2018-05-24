@@ -311,10 +311,19 @@ public class MainFrame extends JFrame {
 		// load config.xml
 		config.load(commentTypes, discussers);
 
+
+		// set column names
 		String newColumnNames[] = config.getColumnNames(ctm.getColumnCount());
 		if(newColumnNames != null){
 			ctm.setColumnNames(newColumnNames);
 		}
+		
+		// set readonly flags 
+		boolean readonlyFlags[] = config.getColumnReadOnlyFlags(ctm.getColumnCount());
+		if(readonlyFlags != null){
+			ctm.setColumnReadOnlyFlags(readonlyFlags);
+		}
+		
 
 		// configure GUIs based on config
 		String configValue = config.getFirstNodeAsString("/settings/button_type/@value"); //$NON-NLS-1$

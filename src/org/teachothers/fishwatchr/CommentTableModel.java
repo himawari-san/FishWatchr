@@ -47,7 +47,7 @@ public class CommentTableModel extends AbstractTableModel {
 	public static final String ITEM_AUX = Messages.getString("Comment.7"); //$NON-NLS-1$
 
 	private static String columnNames[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
-	
+	private boolean readonlyFlags[] = {true, true, false, false, false, false, false, false, false};
 
 	private static HashMap<String, Integer> columnNameMap = new HashMap<String, Integer>();
 	// initialize columnNameMap
@@ -130,15 +130,7 @@ public class CommentTableModel extends AbstractTableModel {
 	
 	
 	public boolean isCellEditable(int row, int column){
-		if(column == Comment.F_COMMENT ||
-				column == Comment.F_AUX ||
-				column == Comment.F_COMMENT_TARGET ||
-				column == Comment.F_COMMENT_LABEL ||
-				column == Comment.F_ANNOTATOR){
-			return true;
-		} else {
-			return false;
-		}
+		return !readonlyFlags[column];
 	}
 	
 	
@@ -325,5 +317,10 @@ public class CommentTableModel extends AbstractTableModel {
 		for(int i = 0; i < columnNames.length; i++){
 			columnNameMap.put(columnNames[i], i);
 		}
+	}
+
+	
+	public void setColumnReadOnlyFlags(boolean[] flags){
+		readonlyFlags = flags;
 	}
 }

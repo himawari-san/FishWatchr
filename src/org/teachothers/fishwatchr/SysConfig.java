@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -272,6 +273,55 @@ public class SysConfig {
 		}
 
 		return columnNames;
+	}
+
+	
+	public boolean[] getColumnReadOnlyFlags(int nColumns){
+		if(doc == null || xpath == null){
+			return null;
+		}
+
+		boolean[] flags = new boolean[nColumns];
+		HashSet<String> idSet = new HashSet<String>();
+		
+		try {
+			XPathExpression expr = xpath.compile("/settings/column_names/li");
+			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+			if(nColumns == 0 || nodes.getLength() != nColumns){
+				System.err.println("Error(SysConfig): The number of columns is not " + nColumns + ".");
+				return null;
+			}
+			
+			for (int i = 0; i < nodes.getLength(); i++) {
+				Element element = (Element)nodes.item(i);
+				String id = element.getAttribute("id");
+				String readonly = element.getAttribute("readonly");
+
+				Matcher m = patternColumnID.matcher(id);
+				if(m.find() && !idSet.contains(id)){
+					int n = new Integer(m.group(1));
+					if(n <= nColumns  && !readonly.isEmpty()){
+						// always true if n == 1 or 2 
+						if(n > 2){
+							if(readonly.equalsIgnoreCase("true")){
+								flags[n-1] = true;
+							} else {
+								flags[n-1] = false;
+							}
+						} else {
+							flags[n-1] = true;
+						}
+						continue;
+					}
+				}
+				System.err.println("Error(SysConfig): invalid node ->  " + Util.prettyPrintXML(element));
+				return null;
+			}
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+
+		return flags;
 	}
 
 	
