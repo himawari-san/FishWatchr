@@ -308,11 +308,16 @@ public class MainFrame extends JFrame {
 
 
 	public void init() {
-		// 初期値の設定
+		// load config.xml
 		config.load(commentTypes, discussers);
-		String configValue = null;
 
-		configValue = config.getFirstNodeAsString("/settings/button_type/@value"); //$NON-NLS-1$
+		String newColumnNames[] = config.getColumnNames(ctm.getColumnCount());
+		if(newColumnNames != null){
+			ctm.setColumnNames(newColumnNames);
+		}
+
+		// configure GUIs based on config
+		String configValue = config.getFirstNodeAsString("/settings/button_type/@value"); //$NON-NLS-1$
 		if(configValue != null){
 			if(configValue.equals(CommentButton.BUTTON_TYPE_COMMENT_STR)){
 				buttonType = CommentButton.BUTTON_TYPE_COMMENT;

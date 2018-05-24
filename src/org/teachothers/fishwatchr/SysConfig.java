@@ -24,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
@@ -44,10 +46,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+
 public class SysConfig {
 	public final static String CONFIG_FILENAME = "config.xml"; //$NON-NLS-1$
+	public final static String COLUMN_ID_BASE = "column";
+	
 	private Document doc = null;
 	private XPath xpath = null;
+	private Pattern patternColumnID = Pattern.compile("^" + COLUMN_ID_BASE + "(\\d+)$");
 	
 	public SysConfig(){
 		
@@ -226,6 +232,46 @@ public class SysConfig {
 		}
 		
 		return nodeValue;
+	}
+	
+	
+	public String[] getColumnNames(int nColumns){
+		if(doc == null || xpath == null){
+			return null;
+		}
+
+		String[] columnNames = new String[nColumns];
+		
+		try {
+			XPathExpression expr = xpath.compile("/settings/column_names/li");
+			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+			if(nColumns == 0 || nodes.getLength() != nColumns){
+				System.err.println("Error(SysConfig): The number of columns is not " + nColumns + ".");
+				return null;
+			}
+			
+			
+			for (int i = 0; i < nodes.getLength(); i++) {
+				Element element = (Element)nodes.item(i);
+				String id = element.getAttribute("id");
+				String name = element.getAttribute("name");
+
+				Matcher m = patternColumnID.matcher(id);
+				if(m.find()){
+					int n = new Integer(m.group(1));
+					if(n <= nColumns && columnNames[n-1] == null && !name.isEmpty()){
+						columnNames[n-1] = name;
+						continue;
+					}
+				}
+				System.err.println("Error(SysConfig): invalid node ->  " + Util.prettyPrintXML(element));
+				return null;
+			}
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+
+		return columnNames;
 	}
 
 	

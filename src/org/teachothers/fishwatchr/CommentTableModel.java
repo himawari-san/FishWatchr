@@ -316,4 +316,14 @@ public class CommentTableModel extends AbstractTableModel {
 		}
 		return -1;
 	}
+	
+	
+	public void setColumnNames(String[] newColumnNames){
+		columnNames = newColumnNames;
+
+		// update columnNameMap
+		for(int i = 0; i < columnNames.length; i++){
+			columnNameMap.put(columnNames[i], i);
+		}
+	}
 }
