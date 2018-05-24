@@ -40,17 +40,21 @@
   -->
   <commenter value="" />
 
-  <!-- setting of column names -->
+  <!-- setting of column names
+       Attention:
+       li[@id='column1' or @id='column2']/@readonly are alwalys true
+       and can't be changed
+  -->
   <!--
 　<column_names>
-    <li id="column1" name="番号" />
-    <li id="column2" name="時間" />
+    <li id="column1" name="番号" readonly="true" />
+    <li id="column2" name="時間" readonly="true" />
     <li id="column3" name="注釈者" readonly="false" />
     <li id="column4" name="観察対象" readonly="false" />
     <li id="column5" name="ラベル" readonly="false" />
     <li id="column6" name="セット" readonly="false" />
     <li id="column7" name="コメント" readonly="false" />
-    <li id="column7" name="補助情報" readonly="false" />
+    <li id="column8" name="補助情報" readonly="false" />
   </column_names>
   -->
 </settings>
