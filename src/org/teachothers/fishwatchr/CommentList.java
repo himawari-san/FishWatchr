@@ -65,11 +65,13 @@ public class CommentList extends ArrayList<Comment> {
 	public static final String MERGED_FILE_SUFFIX = ".merged.xml"; //$NON-NLS-1$
 	public static final String BACKUP_DIR = "BAK"; //$NON-NLS-1$
 	public static final String BASE_TIME_FILE_PREFIX = "_sys_basetime"; //$NON-NLS-1$
+	public static final String LOCKFILE_SUFFIX =".lock"; //$NON-NLS-1$
 	
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");  //$NON-NLS-1$
 	private Date startTime = null;
 
 	private boolean isModified = false;
+	private File lockFile =  null;
 //	private HashMap<String, Integer> mapStartTimeOffset = new HashMap<String, Integer>();
 	private HashMap<String, Integer> mapCommentTimeOffset = new HashMap<String, Integer>();
 	private HashMap<String, String> mapStartTime = new HashMap<String, String>();
@@ -285,6 +287,7 @@ public class CommentList extends ArrayList<Comment> {
 
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(new File(targetFilename));
+		
 
 		XPathFactory xPathFactory = XPathFactory.newInstance();
 		XPath xpath = xPathFactory.newXPath();
@@ -431,10 +434,41 @@ public class CommentList extends ArrayList<Comment> {
 		refreshID();
 		setModified(false);
 
-		
 		return mediaFilename;
 	}
 	
+	
+	public File lock(String filename){
+		if(lockFile == null){
+			if(new File(filename + LOCKFILE_SUFFIX).exists()){
+				return null;
+			}
+		} else {
+			lockFile.delete();
+		}
+
+		lockFile = new File(filename + LOCKFILE_SUFFIX);
+		lockFile.deleteOnExit();
+
+		try {
+			FileWriter fw = new FileWriter(lockFile);
+			fw.write(""); //$NON-NLS-1$
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return lockFile;
+	}
+
+	
+	public void unlock(){
+		if(lockFile != null){
+			lockFile.delete();
+			lockFile = null;
+		}
+	}
+
 	
 	public void sortByTime(){
 		Collections.sort(this, new Comparator<Comment>() {

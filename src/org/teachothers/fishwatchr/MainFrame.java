@@ -281,6 +281,9 @@ public class MainFrame extends JFrame {
 	private int draggedY = 0; // used for changing the commentPanel size
 	private boolean flagDragged = false;
 	
+	private boolean isReadOnlyMode = false;
+	
+	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
 
@@ -854,6 +857,7 @@ public class MainFrame extends JFrame {
 
 		playRate = 1.0f;
 		iVideoAspectRate = 0;
+		isReadOnlyMode = false;
 
 		commentTable.initState();
 		ctm.clearFilter();
@@ -925,6 +929,7 @@ public class MainFrame extends JFrame {
 
 						try {
 							commentList.load(selectedFilename, commentTypes, discussers, false);
+							checkLockFile(selectedFilename);
 						} catch (XPathExpressionException | ParseException
 								| ParserConfigurationException
 								| SAXException | IOException e2) {
@@ -958,6 +963,8 @@ public class MainFrame extends JFrame {
 			xf = selectedFilename;
 			try {
 				mf = commentList.load(selectedFilename, commentTypes, discussers, false);
+				checkLockFile(xf);
+				
 				if(!new File(mf).exists()){
 					mf = ""; //$NON-NLS-1$
 					xf = ""; //$NON-NLS-1$
@@ -1018,6 +1025,20 @@ public class MainFrame extends JFrame {
 		return true;
 	}
 
+	
+	private void checkLockFile(String filename){
+		File lockFile = commentList.lock(filename);
+		if(lockFile == null){
+			JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.2") + //$NON-NLS-1$
+					Messages.getString("MainFrame.47") + //$NON-NLS-1$
+					Messages.getString("MainFrame.51") + //$NON-NLS-1$
+					filename + CommentList.LOCKFILE_SUFFIX);
+			isReadOnlyMode = true;
+			boolean[] newReadOnlyFlags = {true, true, true, true, true, true, true, true};
+			ctm.setColumnReadOnlyFlags(newReadOnlyFlags);
+		}
+	}
+	
 	
 	private void saveCommentList() throws IOException {
 		// 編集中のセルはキャンセル
@@ -2226,6 +2247,9 @@ public class MainFrame extends JFrame {
 					newCommentButton.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
+							if(isReadOnlyMode){
+								return;
+							}
 							Comment newComment = newCommentButton.addComment(e.getModifiers());
 							int row = ctm.findFilteredComment(newComment);
 							if(row != -1){
@@ -2253,6 +2277,9 @@ public class MainFrame extends JFrame {
 					newCommentButton.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
+							if(isReadOnlyMode){
+								return;
+							}
 							Comment newComment = newCommentButton.addComment(e.getModifiers());
 							int row = ctm.findFilteredComment(newComment);
 							if(row != -1){
@@ -2967,7 +2994,13 @@ public class MainFrame extends JFrame {
 		if (filename == null || filename.isEmpty()) {
 			filename = Messages.getString("MainFrame.151"); //$NON-NLS-1$
 		}
-		setTitle("[" + filename + "] - " + systemName); //$NON-NLS-1$ //$NON-NLS-2$
+
+		if(isReadOnlyMode){
+			setTitle("[" + filename + "] - " + systemName + Messages.getString("MainFrame.54")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			
+		} else {
+			setTitle("[" + filename + "] - " + systemName); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
 
 	
