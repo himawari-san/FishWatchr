@@ -178,8 +178,8 @@ public class CommentList extends ArrayList<Comment> {
 			}
 			File backupFile = new File(backupFilename);
 			Files.copy(xmlFile.toPath(), backupFile.toPath());
-			message += xmlFile.toPath().getFileName() + Messages.getString("CommentList.3") //$NON-NLS-1$
-					+ backupFile.getAbsolutePath() + Messages.getString("CommentList.4"); //$NON-NLS-1$
+			message += xmlFile.toPath().getFileName() + "\n" + Messages.getString("CommentList.3") //$NON-NLS-1$ //$NON-NLS-2$
+					+ "\n" + backupFile.getAbsolutePath() + "\n" + Messages.getString("CommentList.4") + "\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 
 		OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(
@@ -259,7 +259,8 @@ public class CommentList extends ArrayList<Comment> {
 		ow.write("</comment_list>\n"); //$NON-NLS-1$
 		ow.close();
 		setModified(false);
-		message += "\n" + Messages.getString("CommentList.5") + xmlFile.getCanonicalPath(); //$NON-NLS-1$ //$NON-NLS-2$
+		message += "\n" + Messages.getString("CommentList.5") //$NON-NLS-1$ //$NON-NLS-2$
+				+ "\n" + xmlFile.getCanonicalPath(); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return message;
 	}

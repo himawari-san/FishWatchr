@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -282,7 +283,7 @@ public class MainFrame extends JFrame {
 	private boolean flagDragged = false;
 	
 	private boolean isReadOnlyMode = false;
-	
+	private boolean noOverwriteConfirmation = false;
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -858,6 +859,7 @@ public class MainFrame extends JFrame {
 		playRate = 1.0f;
 		iVideoAspectRate = 0;
 		isReadOnlyMode = false;
+		noOverwriteConfirmation = false;
 
 		commentTable.initState();
 		ctm.clearFilter();
@@ -1684,7 +1686,15 @@ public class MainFrame extends JFrame {
 							}
 							
 							if(!message.isEmpty()){
-								JOptionPane.showMessageDialog(MainFrame.this, message);
+								if(!noOverwriteConfirmation){
+									JCheckBox cb = new JCheckBox(Messages.getString("MainFrame.60")); //$NON-NLS-1$
+									Object[] obj = {message, Box.createVerticalStrut(10), cb};
+									JOptionPane.showMessageDialog(MainFrame.this, obj, Messages.getString("MainFrame.66"), JOptionPane.OK_OPTION); //$NON-NLS-1$
+									
+									if(cb.isSelected()){
+										noOverwriteConfirmation = true;
+									}
+								}
 							}
 						}
 					});
