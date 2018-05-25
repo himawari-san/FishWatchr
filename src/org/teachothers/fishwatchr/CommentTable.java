@@ -160,6 +160,7 @@ public class CommentTable extends JTable {
 
 		
 		popupMenu.add(menuItemStat);
+		popupMenu.addSeparator();
 		popupMenu.add(menuItemDelete);
 		popupMenu.add(menuItemCellDelete);
 		addMouseListener(new MouseAdapter() {
@@ -183,6 +184,19 @@ public class CommentTable extends JTable {
 				invokeDialogForFiltering(headerName, e.getComponent(), e.getX(), e.getY());
 			}
 		});
+	}
+	
+	
+	public JPopupMenu getPopupMenu(){
+		return popupMenu;
+	}
+	
+	
+	public void setPopupMenuEnable(boolean flag){
+		popupMenu.getComponent(1).setEnabled(flag);
+		// 2: separator
+		popupMenu.getComponent(3).setEnabled(flag);
+		popupMenu.getComponent(4).setEnabled(flag);
 	}
 
 	

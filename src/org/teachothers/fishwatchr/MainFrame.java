@@ -75,6 +75,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -116,6 +117,8 @@ public class MainFrame extends JFrame {
 	private static final int DRAGGABLE_RANGE = 5;
 	private static int COMMENT_PANEL_MIN_HEIGHT = 80;
 	private static int DISPLAY_PANEL_MIN_HEIGHT = 100;
+	
+	private static int ANNOTATION_ADDITION_INTERVAL = 100; // msec
 
 	public static final String USER_NOT_SPECIFIED = "noname"; //$NON-NLS-1$
 	
@@ -636,6 +639,19 @@ public class MainFrame extends JFrame {
 					}
 				}
 			});
+			JPopupMenu commentTablePopupMenu = commentTable.getPopupMenu();
+			JMenuItem item = new JMenuItem(Messages.getString("MainFrame.78")); //$NON-NLS-1$
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Comment selectedComment = ctm.getCommentAt(commentTable.getSelectedRow());
+					ctm.addComment("", //$NON-NLS-1$
+							new CommentType("", Color.BLACK), //$NON-NLS-1$
+							commenter,
+							new User(""), //$NON-NLS-1$
+							new Date(selectedComment.getDate() + ANNOTATION_ADDITION_INTERVAL),
+							selectedComment.getCommentTime() + ANNOTATION_ADDITION_INTERVAL, ""); //$NON-NLS-1$
+				}});
+			commentTablePopupMenu.add(item, 1);
 
 			scrollCommentTablePane = new JScrollPane(commentTable);
 			commentPanel.add(scrollCommentTablePane, BorderLayout.CENTER);
@@ -860,6 +876,8 @@ public class MainFrame extends JFrame {
 		iVideoAspectRate = 0;
 		isReadOnlyMode = false;
 		noOverwriteConfirmation = false;
+		commentTable.setPopupMenuEnable(true);
+
 
 		commentTable.initState();
 		ctm.clearFilter();
@@ -1038,6 +1056,7 @@ public class MainFrame extends JFrame {
 			isReadOnlyMode = true;
 			boolean[] newReadOnlyFlags = {true, true, true, true, true, true, true, true};
 			ctm.setColumnReadOnlyFlags(newReadOnlyFlags);
+			commentTable.setPopupMenuEnable(false);
 		}
 	}
 	
