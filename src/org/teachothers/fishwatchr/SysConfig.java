@@ -50,11 +50,11 @@ import org.w3c.dom.NodeList;
 
 public class SysConfig {
 	public final static String CONFIG_FILENAME = "config.xml"; //$NON-NLS-1$
-	public final static String COLUMN_ID_BASE = "column";
+	public final static String COLUMN_ID_BASE = "column"; //$NON-NLS-1$
 	
 	private Document doc = null;
 	private XPath xpath = null;
-	private Pattern patternColumnID = Pattern.compile("^" + COLUMN_ID_BASE + "(\\d+)$");
+	private Pattern patternColumnID = Pattern.compile("^" + COLUMN_ID_BASE + "(\\d+)$"); //$NON-NLS-1$ //$NON-NLS-2$
 	
 	public SysConfig(){
 		
@@ -244,18 +244,18 @@ public class SysConfig {
 		String[] columnNames = new String[nColumns];
 		
 		try {
-			XPathExpression expr = xpath.compile("/settings/column_names/li");
+			XPathExpression expr = xpath.compile("/settings/column_names/li"); //$NON-NLS-1$
 			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 			if(nColumns == 0 || nodes.getLength() != nColumns){
-				System.err.println("Error(SysConfig): The number of columns is not " + nColumns + ".");
+				System.err.println("Error(SysConfig): The number of columns is not " + nColumns + "."); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
 			
 			
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Element element = (Element)nodes.item(i);
-				String id = element.getAttribute("id");
-				String name = element.getAttribute("name");
+				String id = element.getAttribute("id"); //$NON-NLS-1$
+				String name = element.getAttribute("name"); //$NON-NLS-1$
 
 				Matcher m = patternColumnID.matcher(id);
 				if(m.find()){
@@ -265,7 +265,7 @@ public class SysConfig {
 						continue;
 					}
 				}
-				System.err.println("Error(SysConfig): invalid node ->  " + Util.prettyPrintXML(element));
+				System.err.println("Error(SysConfig): invalid node ->  " + Util.prettyPrintXML(element)); //$NON-NLS-1$
 				return null;
 			}
 		} catch (XPathExpressionException e) {
@@ -285,17 +285,17 @@ public class SysConfig {
 		HashSet<String> idSet = new HashSet<String>();
 		
 		try {
-			XPathExpression expr = xpath.compile("/settings/column_names/li");
+			XPathExpression expr = xpath.compile("/settings/column_names/li"); //$NON-NLS-1$
 			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 			if(nColumns == 0 || nodes.getLength() != nColumns){
-				System.err.println("Error(SysConfig): The number of columns is not " + nColumns + ".");
+				System.err.println("Error(SysConfig): The number of columns is not " + nColumns + "."); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
 			
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Element element = (Element)nodes.item(i);
-				String id = element.getAttribute("id");
-				String readonly = element.getAttribute("readonly");
+				String id = element.getAttribute("id"); //$NON-NLS-1$
+				String readonly = element.getAttribute("readonly"); //$NON-NLS-1$
 
 				Matcher m = patternColumnID.matcher(id);
 				if(m.find() && !idSet.contains(id)){
@@ -303,7 +303,7 @@ public class SysConfig {
 					if(n <= nColumns  && !readonly.isEmpty()){
 						// always true if n == 1 or 2 
 						if(n > 2){
-							if(readonly.equalsIgnoreCase("true")){
+							if(readonly.equalsIgnoreCase("true")){ //$NON-NLS-1$
 								flags[n-1] = true;
 							} else {
 								flags[n-1] = false;
@@ -314,7 +314,7 @@ public class SysConfig {
 						continue;
 					}
 				}
-				System.err.println("Error(SysConfig): invalid node ->  " + Util.prettyPrintXML(element));
+				System.err.println("Error(SysConfig): invalid node ->  " + Util.prettyPrintXML(element)); //$NON-NLS-1$
 				return null;
 			}
 		} catch (XPathExpressionException e) {

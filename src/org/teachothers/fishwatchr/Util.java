@@ -42,8 +42,8 @@ public class Util {
 		Transformer transformer;
 		try {
 			transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2"); //$NON-NLS-1$ //$NON-NLS-2$
 			//initialize StreamResult with File object to save to file
 			StreamResult result = new StreamResult(new StringWriter());
 			DOMSource source = new DOMSource(doc);
@@ -52,7 +52,7 @@ public class Util {
 			return result.getWriter().toString();
 		} catch (TransformerFactoryConfigurationError | TransformerException e1) {
 			e1.printStackTrace();
-			return "";
+			return ""; //$NON-NLS-1$
 		}
     }
 }

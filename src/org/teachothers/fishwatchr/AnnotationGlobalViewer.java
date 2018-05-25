@@ -134,7 +134,7 @@ public class AnnotationGlobalViewer extends JPanel {
 		targets[1] = ctm.getColumnName(Comment.F_COMMENT_TARGET);
 		targets[2] = ctm.getColumnName(Comment.F_ANNOTATOR);
 		
-		displayTypes[0] = Messages.getString("AnnotationGlobalViewer.2");
+		displayTypes[0] = Messages.getString("AnnotationGlobalViewer.2"); //$NON-NLS-1$
 		displayTypes[1] = ctm.getColumnName(Comment.F_ANNOTATOR);
 		displayTypes[2] = ctm.getColumnName(Comment.F_COMMENT_LABEL);
 		displayTypes[3] = ctm.getColumnName(Comment.F_COMMENT_TARGET);
