@@ -949,7 +949,6 @@ public class MainFrame extends JFrame {
 
 						try {
 							commentList.load(selectedFilename, commentTypes, discussers, false);
-							checkLockFile(selectedFilename);
 						} catch (XPathExpressionException | ParseException
 								| ParserConfigurationException
 								| SAXException | IOException e2) {
@@ -959,6 +958,7 @@ public class MainFrame extends JFrame {
 						}
 						ctm.refreshFilter();
 						updateButtonPanel(buttonType);
+						checkLockFile(selectedFilename);
 						ctm.fireTableDataChanged();
 						
 						break;
@@ -983,7 +983,6 @@ public class MainFrame extends JFrame {
 			xf = selectedFilename;
 			try {
 				mf = commentList.load(selectedFilename, commentTypes, discussers, false);
-				checkLockFile(xf);
 				
 				if(!new File(mf).exists()){
 					mf = ""; //$NON-NLS-1$
@@ -1004,6 +1003,7 @@ public class MainFrame extends JFrame {
 			}
 			ctm.refreshFilter();
 			updateButtonPanel(buttonType);
+			checkLockFile(xf);
 			ctm.fireTableDataChanged();
 
 			if(mf.isEmpty()){
@@ -1057,6 +1057,10 @@ public class MainFrame extends JFrame {
 			boolean[] newReadOnlyFlags = {true, true, true, true, true, true, true, true};
 			ctm.setColumnReadOnlyFlags(newReadOnlyFlags);
 			commentTable.setPopupMenuEnable(false);
+			// disable all CommentButtons
+			for(CommentButton b : commentButtons){
+				b.setEnabled(false);
+			}
 		}
 	}
 	
@@ -2276,9 +2280,6 @@ public class MainFrame extends JFrame {
 					newCommentButton.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							if(isReadOnlyMode){
-								return;
-							}
 							Comment newComment = newCommentButton.addComment(e.getModifiers());
 							int row = ctm.findFilteredComment(newComment);
 							if(row != -1){
@@ -2306,9 +2307,6 @@ public class MainFrame extends JFrame {
 					newCommentButton.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							if(isReadOnlyMode){
-								return;
-							}
 							Comment newComment = newCommentButton.addComment(e.getModifiers());
 							int row = ctm.findFilteredComment(newComment);
 							if(row != -1){
