@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import com.sun.jna.NativeLibrary;
@@ -40,44 +41,47 @@ public class FishWatchr {
 	public final static int WINDOW_HEIGHT = 650;
 	public final static int DEFAULT_FONT_SIZE = 12;
 	
+	private final static String LOCAL_VLC_DIR_WINDOWS = "vlc";  //$NON-NLS-1$
+	private final static String LOCAL_VLC_DIR_MACOS = "VLC.app/Contents/MacOS";  //$NON-NLS-1$
+	
 	
 	public static void main(final String[] arg){
-		String libVlcDir = System.getProperty("libvlcdir"); //$NON-NLS-1$
-		if(libVlcDir == null || libVlcDir.isEmpty()){
+		String osName = System.getProperty("os.name"); //$NON-NLS-1$
+
+		File jarPath = new File(System.getProperty("java.class.path")); //$NON-NLS-1$
+		String jarParent = ""; //$NON-NLS-1$
+		try {
+			jarParent = new File(jarPath.getCanonicalPath()).getParent();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		// find vlc libs
+		if(osName.toLowerCase().startsWith("windows") && new File(LOCAL_VLC_DIR_WINDOWS).exists()){ //$NON-NLS-1$
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$
+			LibC.INSTANCE._putenv("VLC_PLUGIN_PATH=" + jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$ //$NON-NLS-2$
+			System.err.println("Warning(FishWatchr): using the local vlc library, " + jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$ //$NON-NLS-2$
+		} else if(osName.toLowerCase().startsWith("mac") && new File(LOCAL_VLC_DIR_MACOS).exists()){ //$NON-NLS-1$
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib"); //$NON-NLS-1$ //$NON-NLS-2$
+
+			LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/plugins", 1); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			// for Youtube videos
+			LibC.INSTANCE.setenv("VLC_DATA_PATH", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/share", 1); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+			System.err.println("Warning(FishWatchr): using the local vlc library, " + jarParent + "/" + LOCAL_VLC_DIR_MACOS); //$NON-NLS-1$ //$NON-NLS-2$
+		} else {
 			boolean isDiscovered = new NativeDiscovery().discover();
-			String osName = System.getProperty("os.name"); //$NON-NLS-1$
 			if(!isDiscovered){
-				if(osName.toLowerCase().startsWith("windows")){ //$NON-NLS-1$
-					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc"); //$NON-NLS-1$
-					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib"); //$NON-NLS-1$
-					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC"); //$NON-NLS-1$
-					NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC"); //$NON-NLS-1$
-				} else if(osName.toLowerCase().startsWith("mac")){ //$NON-NLS-1$
-					File jarPath = new File(System.getProperty("java.class.path")); //$NON-NLS-1$
-					String jarParent = ""; //$NON-NLS-1$
-					try {
-						jarParent = new File(jarPath.getCanonicalPath()).getParent();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					
-					if(new File(jarParent + "/VLC.app/Contents/MacOS/lib").exists()){ //$NON-NLS-1$
-						LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/VLC.app/Contents/MacOS/plugins", 1); //$NON-NLS-1$ //$NON-NLS-2$
-						// for Youtube videos
-						LibC.INSTANCE.setenv("VLC_DATA_PATH", jarParent + "/VLC.app/Contents/MacOS/share", 1); //$NON-NLS-1$ //$NON-NLS-2$
-						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/VLC.app/Contents/MacOS/lib/"); //$NON-NLS-1$
-					} else {
-						NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib"); //$NON-NLS-1$
-					}
-				}
-			} else if(osName.toLowerCase().startsWith("mac")){ //$NON-NLS-1$
-				// vlcj bug?
-				// can not play Youtube videos when using VLC in /Application 
+				JOptionPane.showMessageDialog(null, Messages.getString("FishWatchr.0")); //$NON-NLS-1$
+				System.exit(-1);
+			}
+
+			if(osName.toLowerCase().startsWith("mac")){ //$NON-NLS-1$
+				// for Youtube videos (bug?)
 				LibC.INSTANCE.setenv("VLC_DATA_PATH", "/Applications/VLC.app/Contents/MacOS/share", 1); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-		} else {
-			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), libVlcDir);
-		}
+			System.err.println("Warning(FishWatchr): using the system vlc library, " + isDiscovered); //$NON-NLS-1$
+		}	
 		
 		UIManager.put("Button.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
 		UIManager.put("Label.font",new Font(Font.DIALOG, Font.PLAIN, DEFAULT_FONT_SIZE)); //$NON-NLS-1$
