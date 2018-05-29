@@ -984,7 +984,9 @@ public class MainFrame extends JFrame {
 			try {
 				mf = commentList.load(selectedFilename, commentTypes, discussers, false);
 				
-				if(!new File(mf).exists()){
+				if(!new File(mf).exists()
+						&& !mf.matches("^https?://.*")
+						&& !mf.isEmpty()){
 					mf = ""; //$NON-NLS-1$
 					xf = ""; //$NON-NLS-1$
 					JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.23") + mf); //$NON-NLS-1$
@@ -1006,7 +1008,15 @@ public class MainFrame extends JFrame {
 			checkLockFile(xf);
 			ctm.fireTableDataChanged();
 
+			commentList.setSetName(xf, commenter);
+
 			if(mf.isEmpty()){
+				setWindowTitle(xf);
+				timeSlider.setMinimum(0);
+				timeSlider.setMaximum(0);
+				timeSlider.setEnabled(false);
+				annotationGlobalViewPanel.applyFilter(jMenuItemOptionFilteredViewMode.isSelected());
+				annotationGlobalViewPanel.init();
 				return false;
 			}
 		} else if (selectedFilename.isEmpty()) {
