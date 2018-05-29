@@ -118,7 +118,7 @@ public class MainFrame extends JFrame {
 	private static int COMMENT_PANEL_MIN_HEIGHT = 80;
 	private static int DISPLAY_PANEL_MIN_HEIGHT = 100;
 	
-	private static int ANNOTATION_ADDITION_INTERVAL = 100; // msec
+	private static int ANNOTATION_ADDITION_INTERVAL = 10; // msec
 
 	public static final String USER_NOT_SPECIFIED = "noname"; //$NON-NLS-1$
 	
