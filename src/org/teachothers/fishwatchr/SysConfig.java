@@ -246,8 +246,10 @@ public class SysConfig {
 		try {
 			XPathExpression expr = xpath.compile("/settings/column_names/li"); //$NON-NLS-1$
 			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-			if(nColumns == 0 || nodes.getLength() != nColumns){
-				System.err.println("Error(SysConfig): The number of columns is not " + nColumns + "."); //$NON-NLS-1$ //$NON-NLS-2$
+			if(nColumns == 0 || nodes.getLength() == 0){
+				return null;
+			} else if(nodes.getLength() != nColumns){
+				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " + nColumns + ", but it is " + nodes.getLength() +"."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				return null;
 			}
 			
@@ -287,8 +289,10 @@ public class SysConfig {
 		try {
 			XPathExpression expr = xpath.compile("/settings/column_names/li"); //$NON-NLS-1$
 			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-			if(nColumns == 0 || nodes.getLength() != nColumns){
-				System.err.println("Error(SysConfig): The number of columns is not " + nColumns + "."); //$NON-NLS-1$ //$NON-NLS-2$
+			if(nColumns == 0 || nodes.getLength() == 0){
+				return null;
+			} else if(nodes.getLength() != nColumns){
+				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " + nColumns + ", but it is " + nodes.getLength() +"."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				return null;
 			}
 			
