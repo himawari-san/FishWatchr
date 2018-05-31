@@ -49,6 +49,7 @@ public class FishWatchr {
 		String osName = System.getProperty("os.name"); //$NON-NLS-1$
 
 		File jarPath = new File(System.getProperty("java.class.path")); //$NON-NLS-1$
+		// the directory that includes fishwatchr.jar
 		String jarParent = ""; //$NON-NLS-1$
 		try {
 			jarParent = new File(jarPath.getCanonicalPath()).getParent();
@@ -57,11 +58,11 @@ public class FishWatchr {
 		}
 
 		// find vlc libs
-		if(osName.toLowerCase().startsWith("windows") && new File(LOCAL_VLC_DIR_WINDOWS).exists()){ //$NON-NLS-1$
+		if(osName.toLowerCase().startsWith("windows") && new File(jarParent + "/" + LOCAL_VLC_DIR_WINDOWS).exists()){ //$NON-NLS-1$
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$
 			LibC.INSTANCE._putenv("VLC_PLUGIN_PATH=" + jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$ //$NON-NLS-2$
 			System.err.println("Warning(FishWatchr): using the local vlc library, " + jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$ //$NON-NLS-2$
-		} else if(osName.toLowerCase().startsWith("mac") && new File(LOCAL_VLC_DIR_MACOS).exists()){ //$NON-NLS-1$
+		} else if(osName.toLowerCase().startsWith("mac") && new File(jarParent + "/" + LOCAL_VLC_DIR_MACOS).exists()){ //$NON-NLS-1$
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/plugins", 1); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
