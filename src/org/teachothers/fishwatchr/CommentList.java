@@ -497,7 +497,9 @@ public class CommentList extends ArrayList<Comment> {
 			String separator = File.separator.equals("\\") ? File.separator + File.separator : File.separator;  //$NON-NLS-1$
 
 			if (filename.endsWith(FILE_SUFFIX)){
-				if(filename.matches(".*" + separator + //$NON-NLS-1$
+				if(file.getName().startsWith(".")) {
+					continue;
+				} else if(filename.matches(".*" + separator + //$NON-NLS-1$
 						BASE_TIME_FILE_PREFIX +
 						"_[^" + separator + "]*"+ //$NON-NLS-1$ //$NON-NLS-2$
 						FILE_SUFFIX + "$")){ // basetime //$NON-NLS-1$
