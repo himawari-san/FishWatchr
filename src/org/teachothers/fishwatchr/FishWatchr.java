@@ -43,6 +43,7 @@ public class FishWatchr {
 	
 	private final static String LOCAL_VLC_DIR_WINDOWS = "vlc";  //$NON-NLS-1$
 	private final static String LOCAL_VLC_DIR_MACOS = "VLC.app/Contents/MacOS";  //$NON-NLS-1$
+//	private final static String SYSTEM_VLC_DIR_UBUNTU = "/usr/lib/x86_64-linux-gnu";  //$NON-NLS-1$
 	
 	
 	public static void main(final String[] arg){
@@ -70,6 +71,9 @@ public class FishWatchr {
 			LibC.INSTANCE.setenv("VLC_DATA_PATH", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/share", 1); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 			System.err.println("Warning(FishWatchr): using the local vlc library, " + jarParent + "/" + LOCAL_VLC_DIR_MACOS); //$NON-NLS-1$ //$NON-NLS-2$
+		} else if(osName.toLowerCase().startsWith("linux")){ //$NON-NLS-1$
+			// skip NativeDiscovery().discover() because it returns wrong answers. 
+			
 		} else {
 			boolean isDiscovered = new NativeDiscovery().discover();
 			if(!isDiscovered){
