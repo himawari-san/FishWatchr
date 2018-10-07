@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -497,7 +498,7 @@ public class CommentList extends ArrayList<Comment> {
 			String separator = File.separator.equals("\\") ? File.separator + File.separator : File.separator;  //$NON-NLS-1$
 
 			if (filename.endsWith(FILE_SUFFIX)){
-				if(file.getName().startsWith(".")) {
+				if(file.getName().startsWith(".")) { //$NON-NLS-1$
 					continue;
 				} else if(filename.matches(".*" + separator + //$NON-NLS-1$
 						BASE_TIME_FILE_PREFIX +
@@ -541,10 +542,32 @@ public class CommentList extends ArrayList<Comment> {
 		// the basetime file must be loaded at the end for setting startTime
 		if(baseTimeFileCandidates.size() > 0){
 			String filename = baseTimeFileCandidates.get(0).getCanonicalPath();
-			results.add(0, new File(filename).getName());
 			if(baseTimeFileCandidates.size() != 1){
+				String[] timeCandidates = new String[baseTimeFileCandidates.size()];
+				int i = 0;
+				for(File timeFile : baseTimeFileCandidates) {
+					timeCandidates[i++] = timeFile.getName().
+							replaceFirst("^" + BASE_TIME_FILE_PREFIX + "_?", ""). //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							replaceFirst(FILE_SUFFIX + "$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+				Object selectedValue = JOptionPane.showInputDialog(
+						null, Messages.getString("CommentList.19"), Messages.getString("CommentList.20"), //$NON-NLS-1$ //$NON-NLS-2$
+						JOptionPane.PLAIN_MESSAGE, null, timeCandidates, timeCandidates[0]);
+				if (selectedValue != null) {
+					i = 0;
+					for(String timeCandidate : timeCandidates) {
+						if(timeCandidate.equals((String)selectedValue)) {
+							filename = baseTimeFileCandidates.get(i).getCanonicalPath();
+						}
+						i++;
+					}
+				} else {
+					throw new IllegalStateException(Messages.getString("CommentList.21")); //$NON-NLS-1$
+				}
+
 				System.err.println("Warning(CommentList): " + filename + "will be used, although more than 2 basetime files were found."); //$NON-NLS-1$ //$NON-NLS-2$
 			}
+			results.add(0, new File(filename).getName());
 			load(filename, commentTypes, discussers, true);
 			syncByStartTime();
 			sortByTime();
