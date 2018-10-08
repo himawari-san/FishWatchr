@@ -2654,9 +2654,13 @@ public class MainFrame extends JFrame {
 			ButtonGroup itemGroup = new ButtonGroup();
 			for (int i = 0; i < videoAspectRatios.length; i++) {
 				String strVideoAspectRatio = videoAspectRatios[i];
-				String[] strRatio = strVideoAspectRatio.split(":"); //$NON-NLS-1$
-				final float videoAspectRatio = Float.parseFloat(strRatio[0])
-						/ Float.parseFloat(strRatio[1]);
+				final float videoAspectRatio;
+				if(strVideoAspectRatio.equals(SoundPlayer.DEFAULT_VIDEO_ASPECT_RATE)) {
+					videoAspectRatio = 0;
+				} else {
+					String[] strRatio = strVideoAspectRatio.split(":"); //$NON-NLS-1$
+					videoAspectRatio = Float.parseFloat(strRatio[0]) / Float.parseFloat(strRatio[1]);
+				}
 				final int ii = i;
 				JMenuItem item = new JRadioButtonMenuItem(strVideoAspectRatio);
 				item.addActionListener(new java.awt.event.ActionListener() {
@@ -2664,7 +2668,11 @@ public class MainFrame extends JFrame {
 						if(timer != null){
 							timer.cancel();
 						}
-						soundPlayer.setVideoAspectRatio(videoAspectRatio);
+						if(videoAspectRatio == 0) { // default rate of the video file
+							soundPlayer.setVideoAspectRatio(soundPlayer.getDefaultVideoAspectRate());
+						} else {
+							soundPlayer.setVideoAspectRatio(videoAspectRatio);
+						}
 						timerStart();
 						int playerState = soundPlayer.getPlayerState();
 						if(playerState == SoundPlayer.PLAYER_STATE_PAUSE){
