@@ -1,11 +1,11 @@
-観察支援ツール『FishWatchr』 ver.0.9.12.1 (2018-09-20)
+観察支援ツール『FishWatchr』 ver.0.9.13 (2018-10-31)
 Copyright 2014-2018 山口昌也
 (大学共同利用機関法人 人間文化研究機構 国立国語研究所)
 
 １．本パッケージの内容
   - vlc/            ... VLC ライブラリ，および，プラグイン
-                        (ver.2.2.1, Windows 32bit版)
-  - jre/            ... JRE ver.1.8.0_181 (Windows 32bit版)
+                        (ver.3.0.4, Windows 32bit版)
+  - jre/            ... JRE ver.1.8.0_191 (Windows 32bit版)
   - FishWatchr.exe  ... FishWatchr プログラム(Windows 専用)
   - fishwatchr.jar  ... FishWatchr プログラム(Mac, Linux, Windows 共用)
   - config.xml      ... 設定ファイル
