@@ -235,7 +235,7 @@ public class MainFrame extends JFrame {
 	private int adjustmentTimeAtJump = -2000; // ジャンプ時補正（再生，msec）
 	// private int adjustmentJumpAtComment = 5; // ジャンプ時補正（コメント，行）
 	private float playRate = 1.0f; // 再生速度
-	private int iVideoAspectRate = 0;
+	private int iVideoAspectRatio = 0;
 	private int iTextOverlayStyle = 0;
 	private int iMergeMode = 0;
 	
@@ -873,7 +873,7 @@ public class MainFrame extends JFrame {
 		}
 
 		playRate = 1.0f;
-		iVideoAspectRate = 0;
+		iVideoAspectRatio = 0;
 		isReadOnlyMode = false;
 		noOverwriteConfirmation = false;
 		commentTable.setPopupMenuEnable(true);
@@ -2655,7 +2655,7 @@ public class MainFrame extends JFrame {
 			for (int i = 0; i < videoAspectRatios.length; i++) {
 				String strVideoAspectRatio = videoAspectRatios[i];
 				final float videoAspectRatio;
-				if(strVideoAspectRatio.equals(SoundPlayer.DEFAULT_VIDEO_ASPECT_RATE)) {
+				if(strVideoAspectRatio.equals(SoundPlayer.DEFAULT_VIDEO_ASPECT_RATIO)) {
 					videoAspectRatio = 0;
 				} else {
 					String[] strRatio = strVideoAspectRatio.split(":"); //$NON-NLS-1$
@@ -2668,8 +2668,8 @@ public class MainFrame extends JFrame {
 						if(timer != null){
 							timer.cancel();
 						}
-						if(videoAspectRatio == 0) { // default rate of the video file
-							soundPlayer.setVideoAspectRatio(soundPlayer.getDefaultVideoAspectRate());
+						if(videoAspectRatio == 0) { // default ratio of the video file
+							soundPlayer.setVideoAspectRatio(soundPlayer.getDefaultVideoAspectRatio());
 						} else {
 							soundPlayer.setVideoAspectRatio(videoAspectRatio);
 						}
@@ -2680,14 +2680,14 @@ public class MainFrame extends JFrame {
 						} else if(playerState == SoundPlayer.PLAYER_STATE_PLAY){
 							changeStatePlay();
 						}
-						iVideoAspectRate = ii;
+						iVideoAspectRatio = ii;
 					}
 				});
 				strVideoAspectRatio.replaceAll("f", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				strVideoAspectRatio.replaceAll("/", ":"); //$NON-NLS-1$ //$NON-NLS-2$
 				jMenuItemOptionVideoRatio.add(item);
 				itemGroup.add(item);
-				if (i == iVideoAspectRate) {
+				if (i == iVideoAspectRatio) {
 					item.setSelected(true);
 				}
 			}

@@ -47,9 +47,9 @@ import uk.co.caprica.vlcj.player.VideoTrackInfo;
 
 public class SoundPlayer extends Thread {
 	public static final int LIMIT_RECODING_TIME = 60 * 60 * 2; // 7200sec = 2hours
-	public static final String DEFAULT_VIDEO_ASPECT_RATE = "default";
+	public static final String DEFAULT_VIDEO_ASPECT_RATIO = "default";
 	public static String SOUNDFILE_EXTENSION = ".wav"; //$NON-NLS-1$
-	private static String[] videoAspectRates = {DEFAULT_VIDEO_ASPECT_RATE, "16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+	private static String[] videoAspectRatios = {DEFAULT_VIDEO_ASPECT_RATIO, "16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mpg", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$
 	private static String[] SOUND_FILE_EXTENSIONS = { "mp3", "oga", "wav", "wma"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private final static int MAX_RETRY_REFERRING_DATA = 100;  
@@ -114,9 +114,8 @@ public class SoundPlayer extends Thread {
 
 	private MyMediaPlayerEventListener mpEventListener;
 	
-//	private float videoAspectRate = 4f/3f;
-	private float videoAspectRate = 16f/9f;
-	private float defaultVideoAspectRate = 16f/9f; // default rate of the video file
+	private float videoAspectRatio = 16f/9f;
+	private float defaultVideoAspectRatio = 16f/9f; // default ratio of the video file
 	
 	private boolean isStreaming = false;
 	
@@ -144,7 +143,7 @@ public class SoundPlayer extends Thread {
 
 		if(mp != null) mp.release();
 		
-		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
         mp.addMediaPlayerEventListener(mpEventListener);
 
         if(playerType == PLAYER_TYPE_DEFAULT){
@@ -195,12 +194,12 @@ public class SoundPlayer extends Thread {
 	
 	public void setVideoAspectRatio(float videoAspectRatio){
 		Dimension componentSize = mediaPlayerComponent.getSize();
-		this.videoAspectRate = videoAspectRatio;
+		this.videoAspectRatio = videoAspectRatio;
 		resizeMediaPlayer(componentSize.width, componentSize.height);
 	}
 	
 	public String[] getAvailableVideoAspectRatio(){
-		return videoAspectRates;
+		return videoAspectRatios;
 	}
 
 	
@@ -277,9 +276,9 @@ public class SoundPlayer extends Thread {
 				videoDimension = mp.getVideoDimension();
 				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
 					soundLength = (float)(mp.getLength()/1000);
-					setDefaultVideoAspectRate();
+					setDefaultVideoAspectRatio();
 					mp.release();
-					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
 			        mp.addMediaPlayerEventListener(mpEventListener);
 			        break;
 				} else {
@@ -353,7 +352,7 @@ public class SoundPlayer extends Thread {
 				soundLength = (float) (mp.getLength() / 1000);
 				mp.stop();
 				mp.release();
-				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
 				mp.addMediaPlayerEventListener(mpEventListener);
 				mp.prepareMedia(targetFilename);
 			} else {
@@ -364,10 +363,10 @@ public class SoundPlayer extends Thread {
 					if (videoDimension != null && videoDimension.height != 0
 							&& videoDimension.width != 0) {
 						soundLength = (float) (mp.getLength() / 1000);
-						setDefaultVideoAspectRate();
+						setDefaultVideoAspectRatio();
 						mp.release();
 						mp = mediaPlayerComponent
-								.getMediaPlayer(videoAspectRate);
+								.getMediaPlayer(videoAspectRatio);
 						mp.addMediaPlayerEventListener(mpEventListener);
 						mp.prepareMedia(targetFilename);
 						break;
@@ -382,7 +381,7 @@ public class SoundPlayer extends Thread {
 				if (videoDimension == null) {
 					soundLength = (float) (mp.getLength() / 1000);
 					mp.release();
-					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
 					mp.addMediaPlayerEventListener(mpEventListener);
 					mp.prepareMedia(targetFilename);
 					if(!mp.isMediaParsed()){
@@ -614,7 +613,7 @@ public class SoundPlayer extends Thread {
 		if(playerType == PLAYER_TYPE_VLC){
 			if(state == PLAYER_STATE_RECORD){
 				if(mp != null) mp.release();
-				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
 		        mp.addMediaPlayerEventListener(mpEventListener);
 		        setFile(targetFilename, false);
 		        mp.stop();
@@ -690,7 +689,7 @@ public class SoundPlayer extends Thread {
         String[] options = CaptureDevice.getOption(videoDevice, audioDevice, targetFilename);
 
 		if(mp != null) mp.release();
-		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRate);
+		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
         mp.addMediaPlayerEventListener(mpEventListener);
         mp.startMedia(mrl, options);
 	}
@@ -912,7 +911,7 @@ public class SoundPlayer extends Thread {
     	return mediaPlayerComponent.getAudioDeviceList();
     }
 	
-    public void setDefaultVideoAspectRate() {
+    public void setDefaultVideoAspectRatio() {
     	Dimension videoDimension = mp.getVideoDimension();
 
     	int pixelAspectRatio = 1; // default
@@ -931,18 +930,18 @@ public class SoundPlayer extends Thread {
     	}
     	
     	if(videoDimension != null) {
-        	videoAspectRate =  (float)videoDimension.width / (float)videoDimension.height
+        	videoAspectRatio =  (float)videoDimension.width / (float)videoDimension.height
         			* (float)pixelAspectRatio / (float)pixelAspectRatioBase; 
     	} else {
-    		// use videoAspectRates[1] (= 16:9) 
-    		String[] strRate = videoAspectRates[1].split(":");
-        	videoAspectRate = Float.parseFloat(strRate[0]) / Float.parseFloat(strRate[1]); 
+    		// use videoAspectRatios[1] (= 16:9) 
+    		String[] strRatio = videoAspectRatios[1].split(":");
+        	videoAspectRatio = Float.parseFloat(strRatio[0]) / Float.parseFloat(strRatio[1]); 
     	}
-    	defaultVideoAspectRate = videoAspectRate;
+    	defaultVideoAspectRatio = videoAspectRatio;
     }
     
-    public float getDefaultVideoAspectRate() {
-    	return defaultVideoAspectRate;
+    public float getDefaultVideoAspectRatio() {
+    	return defaultVideoAspectRatio;
     }
     
 	
