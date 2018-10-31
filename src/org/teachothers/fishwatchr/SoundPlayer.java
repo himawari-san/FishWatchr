@@ -41,6 +41,8 @@ import javax.swing.SwingUtilities;
 
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.TrackType;
+import uk.co.caprica.vlcj.player.VideoTrackInfo;
 
 
 public class SoundPlayer extends Thread {
@@ -911,10 +913,26 @@ public class SoundPlayer extends Thread {
     }
 	
     public void setDefaultVideoAspectRate() {
-    	Dimension videoDimension = mp.getVideoDimension(); 
+    	Dimension videoDimension = mp.getVideoDimension();
+
+    	int pixelAspectRatio = 1; // default
+    	int pixelAspectRatioBase = 1; // default
+    	
+    	if(mp.getTrackInfo(TrackType.VIDEO).size() > 0) {
+        	VideoTrackInfo videoTrackInfo = (VideoTrackInfo)mp.getTrackInfo(TrackType.VIDEO).get(0);
+        	
+        	pixelAspectRatio = videoTrackInfo.sampleAspectRatio();
+        	pixelAspectRatioBase = videoTrackInfo.sampleAspectRatioBase();
+
+        	if(pixelAspectRatio == 0 || pixelAspectRatioBase == 0) {
+        		pixelAspectRatio = 1;
+        		pixelAspectRatioBase = 1;
+        	}
+    	}
     	
     	if(videoDimension != null) {
-        	videoAspectRate =  (float)videoDimension.width / (float)videoDimension.height; 
+        	videoAspectRate =  (float)videoDimension.width / (float)videoDimension.height
+        			* (float)pixelAspectRatio / (float)pixelAspectRatioBase; 
     	} else {
     		// use videoAspectRates[1] (= 16:9) 
     		String[] strRate = videoAspectRates[1].split(":");
