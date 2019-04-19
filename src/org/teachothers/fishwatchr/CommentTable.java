@@ -515,6 +515,7 @@ public class CommentTable extends JTable {
 			}
 			
 			final JTextArea textArea = new JTextArea(cellText.replaceAll(Comment.LINEBREAK, "\n"), 20, 50); //$NON-NLS-1$
+			textArea.setLineWrap(true);
 			scrollPane.add(textArea);
 			textArea.setCaretPosition(textArea.getText().length());
 
