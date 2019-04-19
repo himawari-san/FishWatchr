@@ -128,7 +128,7 @@ public class MainFrame extends JFrame {
 	public static final int TIMELINE_PANEL_WIDTH = 512;
 	public static final int TIMELINE_PANEL_HEIGHT = 360;
 	
-	
+	public static final boolean FLAG_AutoFillAnnotatorName = false;
 	
 	private SoundPlayer soundPlayer;
 	private SoundPanel soundPanel;
@@ -210,6 +210,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionRecorderMode;
 	private JMenuItem jMenuItemOptionViewSyncMode;
 	private JMenuItem jMenuItemOptionFilteredViewMode;
+	private JMenuItem jMenuItemOptionAutoFillAnnotatorName;
 	private JMenuItem jMenuItemOptionWaveform;
 	private JMenu jMenuHelp;
 	private JMenuItem jMenuItemHelpVersion;
@@ -438,6 +439,7 @@ public class MainFrame extends JFrame {
 		// execute after getJMenuBar()
 		jMenuItemOptionRecorderMode.setSelected(isRecorderMode);
 		jMenuItemOptionViewSyncMode.setSelected(isViewSyncMode);
+		jMenuItemOptionAutoFillAnnotatorName.setSelected(FLAG_AutoFillAnnotatorName);
 		jMenuItemOptionWaveform.setSelected(flagWaveform);
 		jMenuItemAnnotationMulti.setSelected(isAnnotationMulti);
 		jMenuItemOptionFilteredViewMode.setSelected(true);
@@ -513,6 +515,17 @@ public class MainFrame extends JFrame {
 		getContentPane().add(displayPanel, BorderLayout.CENTER);
 		getContentPane().add(commentPanel, BorderLayout.SOUTH);
 		soundRecordButton.setForeground(Color.red);
+		commentTable.setAnnotator(commenter.getName());
+		
+		String strIsAutoFillAnnotatorName = config.getFirstNodeAsString("/settings/isAutoFillAnnotatorName/@value"); //$NON-NLS-1$
+		if(strIsAutoFillAnnotatorName == null
+				|| strIsAutoFillAnnotatorName.isEmpty()
+				|| strIsAutoFillAnnotatorName.equalsIgnoreCase("false")) { //$NON-NLS-1$
+			jMenuItemOptionAutoFillAnnotatorName.setSelected(false);
+		} else {
+			jMenuItemOptionAutoFillAnnotatorName.setSelected(true);
+		}
+		commentTable.setAutoFillAnnotatorName(jMenuItemOptionAutoFillAnnotatorName.isSelected());
 		
 		changeStateStop();
 
@@ -985,7 +998,7 @@ public class MainFrame extends JFrame {
 				mf = commentList.load(selectedFilename, commentTypes, discussers, false);
 				
 				if(!new File(mf).exists()
-						&& !mf.matches("^https?://.*")
+						&& !mf.matches("^https?://.*") //$NON-NLS-1$
 						&& !mf.isEmpty()){
 					mf = ""; //$NON-NLS-1$
 					xf = ""; //$NON-NLS-1$
@@ -2424,6 +2437,7 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(null, inputValue + Messages.getString("MainFrame.105")); //$NON-NLS-1$
 							} else {
 								commenter.setName(inputValue);
+								commentTable.setAnnotator(commenter.getName());
 							}
 						}
 					});
@@ -2615,6 +2629,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.add(getJMenuItemOptionRecorderMode());
 			jMenuOption.add(getJMenuItemOptionViewSyncMode());
 			jMenuOption.add(getJMenuItemOptionFilterdViewMode());
+			jMenuOption.add(getJMenuItemOptionAutoFillAnnotatorName());
 			jMenuOption.add(getJMenuItemOptionWaveform());
 		}
 		return jMenuOption;
@@ -2934,6 +2949,24 @@ public class MainFrame extends JFrame {
 				});
 		}
 		return jMenuItemOptionFilteredViewMode;
+	}
+
+
+	private JMenuItem getJMenuItemOptionAutoFillAnnotatorName() {
+		if (jMenuItemOptionAutoFillAnnotatorName == null) {
+			jMenuItemOptionAutoFillAnnotatorName = new JCheckBoxMenuItem(Messages.getString("MainFrame.155")); //$NON-NLS-1$
+			jMenuItemOptionAutoFillAnnotatorName.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							commentTable.setAutoFillAnnotatorName(jMenuItemOptionAutoFillAnnotatorName.isSelected());
+						}
+					});
+				}
+			});
+		}
+		return jMenuItemOptionAutoFillAnnotatorName;
 	}
 
 	

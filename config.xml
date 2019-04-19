@@ -9,6 +9,9 @@
   <!-- [オプション]⇒[注釈連動再生] -->
   <isViewSyncMode value="false" />
 
+  <!-- [オプション]⇒[注釈者名補完] -->
+  <isAutoFillAnnotatorName value="false" />
+
   <!-- [オプション]⇒[フォント] -->
   <tableFontSize value="12" />
   

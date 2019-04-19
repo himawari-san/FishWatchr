@@ -65,6 +65,9 @@ public class CommentTable extends JTable {
 	private JMenuItem menuItemStat = new JMenuItem(Messages.getString("CommentTable.2")); //$NON-NLS-1$
 	private JMenuItem menuItemDelete = new JMenuItem(Messages.getString("CommentTable.3")); //$NON-NLS-1$
 	private JMenuItem menuItemCellDelete = new JMenuItem(Messages.getString("CommentTable.4")); //$NON-NLS-1$
+	
+	private String currentAnnotator = ""; //$NON-NLS-1$
+	private boolean isAutoFillAnnotatorName = false;
 
 	public CommentTable(CommentTableModel ctm){
 		super(ctm);
@@ -417,6 +420,16 @@ public class CommentTable extends JTable {
 	}
 	
 	
+	public void setAnnotator(String annotator) {
+		currentAnnotator = annotator;
+	}
+	
+	
+	public void setAutoFillAnnotatorName(boolean flag) {
+		isAutoFillAnnotatorName = flag;
+	}
+
+	
 	public class CellRenderer extends DefaultTableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -486,9 +499,24 @@ public class CommentTable extends JTable {
 		}
 		
 		public void showTextAreaDialog(){
+			if(currentAnnotator.isEmpty() && isAutoFillAnnotatorName) {
+				JOptionPane.showMessageDialog(CommentTable.this, Messages.getString("CommentTable.10")); //$NON-NLS-1$
+				currentAnnotator = MainFrame.USER_NOT_SPECIFIED;
+			}
+			
 			JScrollPane scrollPane = new JScrollPane();
-			final JTextArea textArea = new JTextArea(textField.getText().replaceAll(Comment.LINEBREAK, "\n"), 20, 50); //$NON-NLS-1$
+			String cellText = textField.getText();
+			
+			if(isAutoFillAnnotatorName) {
+				if(!cellText.isEmpty()) {
+					cellText += Comment.LINEBREAK;
+				}
+				cellText += "[[" + currentAnnotator + "]] "; //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			
+			final JTextArea textArea = new JTextArea(cellText.replaceAll(Comment.LINEBREAK, "\n"), 20, 50); //$NON-NLS-1$
 			scrollPane.add(textArea);
+			textArea.setCaretPosition(textArea.getText().length());
 
 			JOptionPane op = new JOptionPane(new JScrollPane(textArea), JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION){
 				private static final long serialVersionUID = 1L;
