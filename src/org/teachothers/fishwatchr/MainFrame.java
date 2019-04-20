@@ -2960,7 +2960,14 @@ public class MainFrame extends JFrame {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							commentTable.setAutoFillAnnotatorName(jMenuItemOptionAutoFillAnnotatorName.isSelected());
+							boolean flag = jMenuItemOptionAutoFillAnnotatorName.isSelected();
+							commentTable.setAutoFillAnnotatorName(flag);
+							try {
+								config.setValue("/settings/isAutoFillAnnotatorName", "value",
+										flag ? "true" : "false");
+							} catch (XPathExpressionException e) {
+								e.printStackTrace();
+							}
 						}
 					});
 				}
