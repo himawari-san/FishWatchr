@@ -329,6 +329,34 @@ public class SysConfig {
 	}
 
 	
+	public String[] getColumnConstraints(int nColumns){
+		if(doc == null || xpath == null){
+			return null;
+		}
+		String[] constraints = new String[nColumns];
+		
+		try {
+			XPathExpression expr = xpath.compile("/settings/column_names/li"); //$NON-NLS-1$
+			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+			if(nColumns == 0 || nodes.getLength() == 0){
+				return null;
+			} else if(nodes.getLength() != nColumns){
+				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " + nColumns + ", but it is " + nodes.getLength() +"."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				return null;
+			}
+			
+			for (int i = 0; i < nodes.getLength(); i++) {
+				Element element = (Element)nodes.item(i);
+				constraints[i] = element.getAttribute("constraint"); //$NON-NLS-1$
+			}
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+
+		return constraints;
+	}
+
+	
 	public void setCommentTypes(String path, String nodeName, List<CommentType> commentTypes){
 
 		XPathExpression expr;

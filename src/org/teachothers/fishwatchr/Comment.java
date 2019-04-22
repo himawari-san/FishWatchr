@@ -17,6 +17,7 @@
 
 package org.teachothers.fishwatchr;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -230,5 +231,28 @@ public class Comment {
 		}
 
 		return true;
+	}
+	
+	
+	public int[] validate(String[] constraints) {
+		ArrayList<Integer> invalidColumnNumbers = new ArrayList<Integer>();
+		
+		for(int i = 0; i < constraints.length; i++) {
+			String value = getAt(i).toString();
+			value = value == null ? "" : value; //$NON-NLS-1$
+			
+			if(constraints[i] == null) {
+				continue;
+			} else if(!value.matches(constraints[i])){
+				invalidColumnNumbers.add(i);
+			}
+		}
+		
+		int invalidColumns[] = new int[invalidColumnNumbers.size()];
+		for(int i = 0; i < invalidColumnNumbers.size(); i++) {
+			invalidColumns[i] = invalidColumnNumbers.get(i);
+		}
+		
+		return invalidColumns;
 	}
 }

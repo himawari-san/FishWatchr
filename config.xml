@@ -12,6 +12,9 @@
   <!-- [オプション]⇒[注釈者名補完] -->
   <isAutoFillAnnotatorName value="false" />
 
+  <!-- [オプション]⇒[形式チェック] -->
+  <enableValidateAnnotations value="false" />
+
   <!-- [オプション]⇒[フォント] -->
   <tableFontSize value="12" />
   
@@ -48,17 +51,16 @@
        li[@id='column1' or @id='column2']/@readonly are alwalys true
        and can't be changed
   -->
-  <!--
-　<column_names>
-    <li id="column1" name="番号" readonly="true" />
-    <li id="column2" name="時間" readonly="true" />
-    <li id="column3" name="注釈者" readonly="false" />
-    <li id="column4" name="観察対象" readonly="false" />
-    <li id="column5" name="ラベル" readonly="false" />
-    <li id="column6" name="セット" readonly="false" />
-    <li id="column7" name="コメント" readonly="false" />
-    <li id="column8" name="補助情報" readonly="false" />
+
+  <column_names>
+    <li id="column1" name="番号" readonly="true" constraint="^\d+$" />
+    <li id="column2" name="時間" readonly="true" constraint="^.+$" />
+    <li id="column3" name="注釈者" readonly="false" constraint="^.*$" />
+    <li id="column4" name="観察対象" readonly="false" constraint="^.*$" />
+    <li id="column5" name="ラベル" readonly="false" constraint="^.*$" />
+    <li id="column6" name="セット" readonly="false" constraint="^.+$" />
+    <li id="column7" name="コメント" readonly="false" constraint="^.+$" />
+    <li id="column8" name="補助情報" readonly="false" constraint="^.+$" />
   </column_names>
-  -->
 </settings>
 

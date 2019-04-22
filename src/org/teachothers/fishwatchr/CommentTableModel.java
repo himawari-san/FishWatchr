@@ -48,6 +48,7 @@ public class CommentTableModel extends AbstractTableModel {
 
 	private String columnNames[] = {ITEM_NUMBER, ITEM_TIME, ITEM_ANNOTATOR, ITEM_TARGET, ITEM_LABEL, ITEM_SET, ITEM_COMMENT, ITEM_AUX};
 	private boolean readonlyFlags[] = {true, true, false, false, false, false, false, false, false};
+	private String constraints[] = {"\\d+", null, null, null, null, null, null, null}; //$NON-NLS-1$
 	private HashMap<String, Integer> columnNameMap = new HashMap<String, Integer>();
 
 	
@@ -320,5 +321,35 @@ public class CommentTableModel extends AbstractTableModel {
 	
 	public void setColumnReadOnlyFlags(boolean[] flags){
 		readonlyFlags = flags;
+	}
+	
+	
+	public void setColumnConstraints(String[] constraints){
+		this.constraints = constraints;
+	}
+	
+	
+	public HashMap<Integer, Integer> validateAnnotations() {
+		
+		HashMap<Integer, Integer> invalidCoumnSummary = new HashMap<Integer, Integer>();
+
+		if(constraints != null) {
+			for(Comment comment : commentList) {
+				int[] invalidColumns = comment.validate(constraints);
+				if(invalidColumns == null) {
+					continue;
+				} else {
+					for(int i : invalidColumns) {
+						if(invalidCoumnSummary.containsKey(i)) {
+							invalidCoumnSummary.put(i, invalidCoumnSummary.get(i) + 1);
+						} else {
+							invalidCoumnSummary.put(i,  1);
+						}
+					}
+				}
+			}
+		}
+
+		return invalidCoumnSummary;
 	}
 }

@@ -56,7 +56,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -129,6 +131,7 @@ public class MainFrame extends JFrame {
 	public static final int TIMELINE_PANEL_HEIGHT = 360;
 	
 	public static final boolean FLAG_AutoFillAnnotatorName = false;
+	public static final boolean FLAG_VALIDATE_ANNOTATIONS = false;
 	
 	private SoundPlayer soundPlayer;
 	private SoundPanel soundPanel;
@@ -211,6 +214,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionViewSyncMode;
 	private JMenuItem jMenuItemOptionFilteredViewMode;
 	private JMenuItem jMenuItemOptionAutoFillAnnotatorName;
+	private JMenuItem jMenuItemOptionValidateAnnotations;
 	private JMenuItem jMenuItemOptionWaveform;
 	private JMenu jMenuHelp;
 	private JMenuItem jMenuItemHelpVersion;
@@ -332,7 +336,11 @@ public class MainFrame extends JFrame {
 			ctm.setColumnReadOnlyFlags(readonlyFlags);
 		}
 		
-
+		String constraints[] = config.getColumnConstraints(ctm.getColumnCount());
+		if(constraints != null){
+			ctm.setColumnConstraints(constraints);
+		}
+		
 		// configure GUIs based on config
 		String configValue = config.getFirstNodeAsString("/settings/button_type/@value"); //$NON-NLS-1$
 		if(configValue != null){
@@ -440,6 +448,7 @@ public class MainFrame extends JFrame {
 		jMenuItemOptionRecorderMode.setSelected(isRecorderMode);
 		jMenuItemOptionViewSyncMode.setSelected(isViewSyncMode);
 		jMenuItemOptionAutoFillAnnotatorName.setSelected(FLAG_AutoFillAnnotatorName);
+		jMenuItemOptionValidateAnnotations.setSelected(FLAG_VALIDATE_ANNOTATIONS);
 		jMenuItemOptionWaveform.setSelected(flagWaveform);
 		jMenuItemAnnotationMulti.setSelected(isAnnotationMulti);
 		jMenuItemOptionFilteredViewMode.setSelected(true);
@@ -526,6 +535,15 @@ public class MainFrame extends JFrame {
 			jMenuItemOptionAutoFillAnnotatorName.setSelected(true);
 		}
 		commentTable.setAutoFillAnnotatorName(jMenuItemOptionAutoFillAnnotatorName.isSelected());
+
+		String strEnableValidateAnnotations = config.getFirstNodeAsString("/settings/enableValidateAnnotations/@value"); //$NON-NLS-1$
+		if(strEnableValidateAnnotations == null
+				|| strEnableValidateAnnotations.isEmpty()
+				|| strEnableValidateAnnotations.equalsIgnoreCase("false")) { //$NON-NLS-1$
+			jMenuItemOptionValidateAnnotations.setSelected(false);
+		} else {
+			jMenuItemOptionValidateAnnotations.setSelected(true);
+		}		
 		
 		changeStateStop();
 
@@ -1103,6 +1121,26 @@ public class MainFrame extends JFrame {
 			
 			String message = commentList.save(xf, commentTypes, discussers);
 			JOptionPane.showMessageDialog(this, message);
+			
+			// invalid column
+			if(jMenuItemOptionValidateAnnotations.isSelected()) {
+				HashMap<Integer, Integer> invalidColumnSummary = ctm.validateAnnotations();
+				if(invalidColumnSummary.size() > 0) {
+					message = "<html>"  //$NON-NLS-1$
+							+ "<p>" + Messages.getString("MainFrame.154") + "</p>" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							+ "<ul>"; //$NON-NLS-1$
+					
+					for(Entry<Integer, Integer> i : invalidColumnSummary.entrySet()) {
+						message += "<li>"  //$NON-NLS-1$
+								+ ctm.getColumnName(i.getKey())
+								+ " (" + i.getValue() + ")" + "</li>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					}
+					
+					message += "</ul></html>"; //$NON-NLS-1$
+					JOptionPane.showMessageDialog(this, message);
+				}
+			}
+			
 			return;
 		}
 	}
@@ -2630,6 +2668,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.add(getJMenuItemOptionViewSyncMode());
 			jMenuOption.add(getJMenuItemOptionFilterdViewMode());
 			jMenuOption.add(getJMenuItemOptionAutoFillAnnotatorName());
+			jMenuOption.add(getJMenuItemOptionValidateAnnotations());
 			jMenuOption.add(getJMenuItemOptionWaveform());
 		}
 		return jMenuOption;
@@ -2974,6 +3013,30 @@ public class MainFrame extends JFrame {
 			});
 		}
 		return jMenuItemOptionAutoFillAnnotatorName;
+	}
+
+	
+	private JMenuItem getJMenuItemOptionValidateAnnotations() {
+		if (jMenuItemOptionValidateAnnotations == null) {
+			jMenuItemOptionValidateAnnotations = new JCheckBoxMenuItem(Messages.getString("MainFrame.167")); //$NON-NLS-1$
+			jMenuItemOptionValidateAnnotations.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							boolean flag = jMenuItemOptionValidateAnnotations.isSelected();
+							try {
+								config.setValue("/settings/enableValidateAnnotations", "value", //$NON-NLS-1$ //$NON-NLS-2$
+										flag ? "true" : "false"); //$NON-NLS-1$ //$NON-NLS-2$
+							} catch (XPathExpressionException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+			});
+		}
+		return jMenuItemOptionValidateAnnotations;
 	}
 
 	
