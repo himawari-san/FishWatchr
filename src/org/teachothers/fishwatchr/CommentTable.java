@@ -69,7 +69,7 @@ public class CommentTable extends JTable {
 	private JMenuItem menuItemCellDelete = new JMenuItem(Messages.getString("CommentTable.4")); //$NON-NLS-1$
 	
 	private String currentAnnotator = ""; //$NON-NLS-1$
-	private boolean isAutoFillAnnotatorName = false;
+	private boolean enableAutoFillAnnotatorName = false;
 
 	public CommentTable(CommentTableModel ctm){
 		super(ctm);
@@ -428,7 +428,7 @@ public class CommentTable extends JTable {
 	
 	
 	public void setAutoFillAnnotatorName(boolean flag) {
-		isAutoFillAnnotatorName = flag;
+		enableAutoFillAnnotatorName = flag;
 	}
 
 	
@@ -501,7 +501,7 @@ public class CommentTable extends JTable {
 		}
 		
 		public void showTextAreaDialog(){
-			if(currentAnnotator.isEmpty() && isAutoFillAnnotatorName) {
+			if(currentAnnotator.isEmpty() && enableAutoFillAnnotatorName) {
 				JOptionPane.showMessageDialog(CommentTable.this, Messages.getString("CommentTable.10")); //$NON-NLS-1$
 				currentAnnotator = MainFrame.USER_NOT_SPECIFIED;
 			}
@@ -509,7 +509,7 @@ public class CommentTable extends JTable {
 			JScrollPane scrollPane = new JScrollPane();
 			String cellText = textField.getText();
 			
-			if(isAutoFillAnnotatorName) {
+			if(enableAutoFillAnnotatorName) {
 				if(!cellText.isEmpty()) {
 					cellText += Comment.LINEBREAK;
 				}

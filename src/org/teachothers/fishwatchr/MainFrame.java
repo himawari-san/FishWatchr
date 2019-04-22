@@ -526,10 +526,10 @@ public class MainFrame extends JFrame {
 		soundRecordButton.setForeground(Color.red);
 		commentTable.setAnnotator(commenter.getName());
 		
-		String strIsAutoFillAnnotatorName = config.getFirstNodeAsString("/settings/isAutoFillAnnotatorName/@value"); //$NON-NLS-1$
-		if(strIsAutoFillAnnotatorName == null
-				|| strIsAutoFillAnnotatorName.isEmpty()
-				|| strIsAutoFillAnnotatorName.equalsIgnoreCase("false")) { //$NON-NLS-1$
+		String strEnableAutoFillAnnotatorName = config.getFirstNodeAsString("/settings/enableAutoFillAnnotatorName/@value"); //$NON-NLS-1$
+		if(strEnableAutoFillAnnotatorName == null
+				|| strEnableAutoFillAnnotatorName.isEmpty()
+				|| strEnableAutoFillAnnotatorName.equalsIgnoreCase("false")) { //$NON-NLS-1$
 			jMenuItemOptionAutoFillAnnotatorName.setSelected(false);
 		} else {
 			jMenuItemOptionAutoFillAnnotatorName.setSelected(true);
@@ -3002,7 +3002,7 @@ public class MainFrame extends JFrame {
 							boolean flag = jMenuItemOptionAutoFillAnnotatorName.isSelected();
 							commentTable.setAutoFillAnnotatorName(flag);
 							try {
-								config.setValue("/settings/isAutoFillAnnotatorName", "value",
+								config.setValue("/settings/enableAutoFillAnnotatorName", "value",
 										flag ? "true" : "false");
 							} catch (XPathExpressionException e) {
 								e.printStackTrace();

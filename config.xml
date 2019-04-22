@@ -10,7 +10,7 @@
   <isViewSyncMode value="false" />
 
   <!-- [オプション]⇒[注釈者名補完] -->
-  <isAutoFillAnnotatorName value="false" />
+  <enableAutoFillAnnotatorName value="false" />
 
   <!-- [オプション]⇒[形式チェック] -->
   <enableValidateAnnotations value="false" />
