@@ -1,11 +1,11 @@
-観察支援ツール『FishWatchr』 ver.0.9.13 (2018-10-31)
-Copyright 2014-2018 山口昌也
+観察支援ツール『FishWatchr』 ver.0.9.14 (2019-05-10)
+Copyright 2014-2019 山口昌也
 (大学共同利用機関法人 人間文化研究機構 国立国語研究所)
 
 １．本パッケージの内容
   - vlc/            ... VLC ライブラリ，および，プラグイン
                         (ver.3.0.4, Windows 32bit版)
-  - jre/            ... JRE ver.1.8.0_191 (Windows 32bit版)
+  - jre/            ... JRE (OpenJDK jdk8u212-b03-jre, Windows 32bit版)
   - FishWatchr.exe  ... FishWatchr プログラム(Windows 専用)
   - fishwatchr.jar  ... FishWatchr プログラム(Mac, Linux, Windows 共用)
   - config.xml      ... 設定ファイル
@@ -29,9 +29,8 @@ Copyright 2014-2018 山口昌也
     願いいたします。お返事の約束はいたしかねますが，今後の開発に活用
     させていただきます。
 
-　- 本パッケージの jre フォルダには，Windows 版 JRE が含まれています。
-    これらのフォルダ中のファイルの著作権は，Oracle が保持しています。
-    詳しくは，jre フォルダ 中の LICENSE, README.txt などをご覧ください。
+　- 本パッケージの jre フォルダには，https://adoptopenjdk.net/ で配布
+    されている Windows 版 JRE が含まれています。
 
 　- 本パッケージの vlc フォルダには，VLC media player のライブラリ，お
     よび，プラグインが含まれています。これらのフォルダ中のファイルの著

@@ -58,9 +58,12 @@
     <li id="column3" name="注釈者" readonly="false" constraint="^.*$" />
     <li id="column4" name="観察対象" readonly="false" constraint="^.*$" />
     <li id="column5" name="ラベル" readonly="false" constraint="^.*$" />
-    <li id="column6" name="セット" readonly="false" constraint="^.+$" />
-    <li id="column7" name="コメント" readonly="false" constraint="^.+$" />
-    <li id="column8" name="補助情報" readonly="false" constraint="^.+$" />
+    <li id="column6" name="セット" readonly="false" constraint="^.*$" />
+    <li id="column7" name="コメント" readonly="false" constraint="^.*$" />
+    <!-- sample constraint
+    <li id="column7" name="コメント" readonly="false" constraint="^.*\[\[.+?\]\]\s*(?=[\p{InCJKUnifiedIdeographs}\p{InHiragana}\p{InKatakana}\p{IsLatin}\p{N}]).+$" />
+    --> 
+    <li id="column8" name="補助情報" readonly="false" constraint="^.*$" />
   </column_names>
 </settings>
 

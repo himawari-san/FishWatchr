@@ -1,5 +1,5 @@
-観察支援ツール『FishWatchr』 ver.0.9.13 (2018-10-31)
-Copyright 2014-2018 山口昌也
+観察支援ツール『FishWatchr』 ver.0.9.14 (2019-05-10)
+Copyright 2014-2019 山口昌也
 (大学共同利用機関法人 人間文化研究機構 国立国語研究所)
 
 １．本パッケージの内容
@@ -24,8 +24,8 @@ Copyright 2014-2018 山口昌也
     願いいたします。お返事の約束はいたしかねますが，今後の開発に活用
     させていただきます。
 
-　- FishWatchr 本体には，Mac OS X 版 JRE が含まれています。
-    JRE に関連するファイルの著作権は，Oracle が保持しています。
+　- FishWatchr 本体には，https://adoptopenjdk.net/ で配布
+    されている macOS 版 JRE が含まれています。
 
 　- FishWatchr 本体には，VLC media player のライブラリ，および，プラグ
     インが含まれています。これらに関連するファイルの著作権は，VLC
