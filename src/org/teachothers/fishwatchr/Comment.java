@@ -20,6 +20,7 @@ package org.teachothers.fishwatchr;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 
 public class Comment {
@@ -220,13 +221,11 @@ public class Comment {
 			return false;
 		}
 		
-		if(!commentBody.contains(COMMENT_DELIMITER)
-				|| !Arrays.asList(commentBody.split(COMMENT_DELIMITER)).contains(targetCommentBody)){
+		if(!Arrays.asList(commentBody.split(Pattern.quote(COMMENT_DELIMITER))).contains(targetCommentBody)){
 			setCommentBody(Util.catStrings(commentBody, targetCommentBody, COMMENT_DELIMITER));
 		}
 
-		if(!commentAux.contains(COMMENT_DELIMITER)
-				|| !Arrays.asList(commentAux.split(COMMENT_DELIMITER)).contains(targetCommentAux)){
+		if(!Arrays.asList(commentAux.split(Pattern.quote(COMMENT_DELIMITER))).contains(targetCommentAux)){
 			setAux(Util.catStrings(commentAux, targetCommentAux, COMMENT_DELIMITER));
 		}
 
