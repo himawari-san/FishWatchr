@@ -55,8 +55,8 @@ public class CommentTable extends JTable {
 	private static final String LABEL_FILTER_CANCEL = Messages.getString("CommentTable.0"); //$NON-NLS-1$
 	private static final String LABEL_KEY_SET = Messages.getString("CommentTable.1"); //$NON-NLS-1$
 	private static final int MAX_POPUP_ITEMS = 15;
-	private static final String ANNOTATOR_MARKER_OPEN = "[["; //$NON-NLS-1$
-	private static final String ANNOTATOR_MARKER_CLOSE = "]]"; //$NON-NLS-1$
+	private static final String ANNOTATOR_MARKER_OPEN = "<<"; //$NON-NLS-1$
+	private static final String ANNOTATOR_MARKER_CLOSE = ">>"; //$NON-NLS-1$
 	public static final int UNDEFINED = -1;
 
 	public CommentTableModel ctm;
