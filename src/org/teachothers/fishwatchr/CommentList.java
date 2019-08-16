@@ -227,7 +227,7 @@ public class CommentList extends ArrayList<Comment> {
 					+ comment.getCommentType().getType() + "\"" //$NON-NLS-1$
 					+ " comment_time=\"" + comment.getCommentTime() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
 					+ " comment_time_end=\"" + comment.getCommentTimeEnd() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
-					+ " aux=\"" + comment.getAux() //$NON-NLS-1$
+					+ " aux=\"" + StringEscapeUtils.escapeXml11(comment.getAux()) //$NON-NLS-1$
 					+ "\"" + ">" //$NON-NLS-1$ //$NON-NLS-2$
 					+ StringEscapeUtils.escapeXml11(comment.getCommentBody())
 					+ "</comment>\n"); //$NON-NLS-1$
