@@ -13,6 +13,11 @@
   		<artifactId>commons-lang3</artifactId>
   		<version>3.4</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-nop</artifactId>
+  		<version>1.7.12</version>
+  	</dependency>
 	<!--
   	<dependency>
   		<groupId>org.openimaj</groupId>
