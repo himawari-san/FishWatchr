@@ -1481,8 +1481,12 @@ public class MainFrame extends JFrame {
 							if(timer != null){
 								timer.cancel();
 							}
-							soundPlayer.resizeMediaPlayer(size.width, size.height);
-							annotationGlobalViewPanel.updatePanel();
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									soundPlayer.resizeMediaPlayer(size.width, size.height);
+									annotationGlobalViewPanel.updatePanel();
+								}
+							});
 							timerStart();
 							System.err.println(ev.getComponent().getSize());
 						}
@@ -2341,16 +2345,20 @@ public class MainFrame extends JFrame {
 					newCommentButton.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							Comment newComment = newCommentButton.addComment(e.getModifiers());
-							int row = ctm.findFilteredComment(newComment);
-							if(row != -1){
-								if(commentTable.isEditing()){
-									commentTable.getCellEditor().stopCellEditing();
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									Comment newComment = newCommentButton.addComment(e.getModifiers());
+									int row = ctm.findFilteredComment(newComment);
+									if(row != -1){
+										if(commentTable.isEditing()){
+											commentTable.getCellEditor().stopCellEditing();
+										}
+										commentTable.editCellAt(row, Comment.F_COMMENT);
+										commentTable.getEditorComponent().requestFocusInWindow();
+										commentTable.setViewCenteraByIndex(row);
+									}
 								}
-								commentTable.editCellAt(row, Comment.F_COMMENT);
-								commentTable.getEditorComponent().requestFocusInWindow();
-								commentTable.setViewCenteraByIndex(row);
-							}
+							});
 						}
 					});
 					newCommentButton.setActionKey(i++);
@@ -2368,16 +2376,20 @@ public class MainFrame extends JFrame {
 					newCommentButton.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							Comment newComment = newCommentButton.addComment(e.getModifiers());
-							int row = ctm.findFilteredComment(newComment);
-							if(row != -1){
-								if(commentTable.isEditing()){
-									commentTable.getCellEditor().stopCellEditing();
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									Comment newComment = newCommentButton.addComment(e.getModifiers());
+									int row = ctm.findFilteredComment(newComment);
+									if(row != -1){
+										if(commentTable.isEditing()){
+											commentTable.getCellEditor().stopCellEditing();
+										}
+										commentTable.editCellAt(row, Comment.F_COMMENT);
+										commentTable.getEditorComponent().requestFocusInWindow();
+										commentTable.setViewCenteraByIndex(row);
+									}
 								}
-								commentTable.editCellAt(row, Comment.F_COMMENT);
-								commentTable.getEditorComponent().requestFocusInWindow();
-								commentTable.setViewCenteraByIndex(row);
-							}
+							});
 						}
 					});
 					newCommentButton.setActionKey(i++);

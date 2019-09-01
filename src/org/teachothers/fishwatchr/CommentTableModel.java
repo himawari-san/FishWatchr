@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 
@@ -189,8 +190,11 @@ public class CommentTableModel extends AbstractTableModel {
 		// なぜか２回実行しないと，CommentTable の scrollRectToVisible が正常に動作しない
 //		fireTableRowsInserted(getRowCount()-1, getRowCount()-1);
 //		fireTableRowsInserted(getRowCount()-1, getRowCount()-1);
-		refreshFilter();
-		fireTableDataChanged();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				refreshFilter();
+				fireTableDataChanged();
+			}});
 
 		return comment;
 	}
