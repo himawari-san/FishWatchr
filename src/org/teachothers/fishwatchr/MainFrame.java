@@ -292,6 +292,7 @@ public class MainFrame extends JFrame {
 	
 	private boolean isReadOnlyMode = false;
 	private boolean noOverwriteConfirmation = false;
+	private boolean isMoviePanelResizable = true;
 	
 	public MainFrame(String systemName) {
 		this.systemName = systemName;
@@ -592,6 +593,7 @@ public class MainFrame extends JFrame {
 	
 	
 	public void play(String filename, final long msec){
+		isMoviePanelResizable = false;
 		if(!setTargetFile(filename)){
 			return;
 		}
@@ -602,6 +604,7 @@ public class MainFrame extends JFrame {
 			public void run() {
 				changeStatePlay();
 				commentTable.setViewCenterByTime(msec);
+				isMoviePanelResizable = true;
 			}
 		});
 	}
@@ -1470,7 +1473,7 @@ public class MainFrame extends JFrame {
 			soundPlayer.getMediaplayerComponent().setOpaque(false); // これがないと背景がおかしくなる
 			moviePanel.addComponentListener(new ComponentAdapter() {
 				public void componentResized(final ComponentEvent ev) {
-					if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD){
+					if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD || isMoviePanelResizable){
 						return;
 					}
 					if(t != null) t.cancel();
