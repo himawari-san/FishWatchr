@@ -107,14 +107,14 @@ public class FishWatchr {
 		mainFrame.setVisible(true);
 		mainFrame.revalidate();
 		
-		if(arg.length != 0){
-			if(arg.length == 2){
-				try{
-					mainFrame.play(arg[0], (long)(Double.parseDouble(arg[1])*1000));
-				} catch(NullPointerException e) {
-					System.err.println("Error(FishWatchr): invalid number format => " + arg[1]); //$NON-NLS-1$
-				}
+		if(arg.length == 2){
+			try{
+				mainFrame.play(arg[0], (long)(Double.parseDouble(arg[1])*1000));
+			} catch(NullPointerException e) {
+				System.err.println("Error(FishWatchr): invalid number format => " + arg[1]); //$NON-NLS-1$
 			}
+		} else if(arg.length == 1){
+			mainFrame.play(arg[0], 0);
 		}
 	}
 }
