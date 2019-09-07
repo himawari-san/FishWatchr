@@ -96,11 +96,6 @@
     	<artifactId>jfreechart</artifactId>
     	<version>1.0.19</version>
 	</dependency>
-	<dependency>
-    	<groupId>org.jfree</groupId>
-    	<artifactId>jcommon</artifactId>
-    	<version>1.0.23</version>
-	</dependency>
   </dependencies>
   <groupId>org.teachothers</groupId>
   <name>FishWatchr</name>
