@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import com.sun.jna.NativeLibrary;
@@ -100,22 +101,31 @@ public class FishWatchr {
 		
 		System.setProperty("awt.useSystemAAFontSettings", "on"); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		final MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
-		mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-		mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
-		mainFrame.init();
-		mainFrame.setVisible(true);
-		mainFrame.revalidate();
-		
-		if(arg.length == 2){
-			try{
-				mainFrame.play(arg[0], (long)(Double.parseDouble(arg[1])*1000));
-			} catch(NullPointerException e) {
-				System.err.println("Error(FishWatchr): invalid number format => " + arg[1]); //$NON-NLS-1$
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				System.err.println("hey start");
+				final MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
+				System.err.println("hey up mainframe");
+				mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+				mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
+				mainFrame.init();
+				mainFrame.setVisible(true);
+				mainFrame.revalidate();
+				System.err.println("hey end revalidate");
+				
+				if(arg.length == 2){
+					try{
+						mainFrame.play(arg[0], (long)(Double.parseDouble(arg[1])*1000));
+					} catch(NullPointerException e) {
+						System.err.println("Error(FishWatchr): invalid number format => " + arg[1]); //$NON-NLS-1$
+					}
+				} else if(arg.length == 1){
+					mainFrame.play(arg[0], 0);
+				}
+				System.err.println("hey end play");
 			}
-		} else if(arg.length == 1){
-			mainFrame.play(arg[0], 0);
-		}
+		});
 	}
 }
 
