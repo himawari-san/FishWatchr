@@ -1473,7 +1473,6 @@ public class MainFrame extends JFrame {
 			soundPlayer.getMediaplayerComponent().setOpaque(false); // これがないと背景がおかしくなる
 			moviePanel.addComponentListener(new ComponentAdapter() {
 				public void componentResized(final ComponentEvent ev) {
-					System.err.println("ev:" + ev.getSource().toString());
 					if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD || !isMoviePanelResizable){
 						return;
 					}

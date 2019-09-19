@@ -105,15 +105,12 @@ public class FishWatchr {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				System.err.println("hey start");
 				final MainFrame mainFrame = new MainFrame(SYSTEM_NAME);
-				System.err.println("hey up mainframe");
 				mainFrame.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 				mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
 				mainFrame.init();
 				mainFrame.setVisible(true);
 				mainFrame.revalidate();
-				System.err.println("hey end revalidate");
 				
 				if(arg.length == 2){
 					try{
@@ -124,7 +121,6 @@ public class FishWatchr {
 				} else if(arg.length == 1){
 					mainFrame.play(arg[0], 0);
 				}
-				System.err.println("hey end play");
 				System.err.println("startup time:" + (System.currentTimeMillis()-startupTime));
 			}
 		});
