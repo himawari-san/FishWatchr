@@ -48,6 +48,7 @@ public class FishWatchr {
 	
 	
 	public static void main(final String[] arg){
+		long startupTime = System.currentTimeMillis();
 		String osName = System.getProperty("os.name"); //$NON-NLS-1$
 
 		File jarPath = new File(System.getProperty("java.class.path")); //$NON-NLS-1$
@@ -124,6 +125,7 @@ public class FishWatchr {
 					mainFrame.play(arg[0], 0);
 				}
 				System.err.println("hey end play");
+				System.err.println("startup time:" + (System.currentTimeMillis()-startupTime));
 			}
 		});
 	}
