@@ -19,6 +19,7 @@ package org.teachothers.fishwatchr;
 
 import java.io.StringWriter;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -30,7 +31,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Node;
 
 public class Util {
-	
+
+	static DocumentBuilderFactory documentBuilderFactory = null;
+
 	public static String catStrings(String str1, String str2, String delimiter){
 		if(str1.isEmpty()){
 			return str2;
@@ -65,4 +68,13 @@ public class Util {
 			return ""; //$NON-NLS-1$
 		}
     }
+	
+	
+	public static DocumentBuilderFactory getDocumentBuilderFactory() {
+		if(documentBuilderFactory == null) {
+			documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		}
+		
+		return documentBuilderFactory;
+	}
 }
