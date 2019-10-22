@@ -80,7 +80,7 @@ public class SysConfig {
 		setDefault(commentTypes, discussers);
 		
 		if (configFile.exists()) {
-			DocumentBuilderFactory factory = Util.getDocumentBuilderFactory();
+			DocumentBuilderFactory factory = Util.getSimpleDocumentBuilderFactory();
 
 			DocumentBuilder builder;
 			try {

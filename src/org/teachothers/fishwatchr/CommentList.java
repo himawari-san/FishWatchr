@@ -285,7 +285,7 @@ public class CommentList extends ArrayList<Comment> {
 			}
 		}
 		
-		DocumentBuilderFactory factory = Util.getDocumentBuilderFactory();
+		DocumentBuilderFactory factory = Util.getSimpleDocumentBuilderFactory();
 
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(new File(targetFilename));

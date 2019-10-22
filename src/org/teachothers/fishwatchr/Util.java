@@ -20,6 +20,7 @@ package org.teachothers.fishwatchr;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -70,9 +71,20 @@ public class Util {
     }
 	
 	
-	public static DocumentBuilderFactory getDocumentBuilderFactory() {
+	public static DocumentBuilderFactory getSimpleDocumentBuilderFactory() {
 		if(documentBuilderFactory == null) {
 			documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			documentBuilderFactory.setNamespaceAware(false);
+			documentBuilderFactory.setValidating(false);
+			try {
+				documentBuilderFactory.setFeature("http://xml.org/sax/features/namespaces", false);
+				documentBuilderFactory.setFeature("http://xml.org/sax/features/validation", false);
+				documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+				documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+			
 		}
 		
 		return documentBuilderFactory;
