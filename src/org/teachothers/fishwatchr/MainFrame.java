@@ -132,6 +132,7 @@ public class MainFrame extends JFrame {
 	
 	public static final boolean FLAG_AutoFillAnnotatorName = false;
 	public static final boolean FLAG_VALIDATE_ANNOTATIONS = false;
+	public static final boolean FLAG_PAUSE_AFTER_ANNOTATION = false;
 	
 	private SoundPlayer soundPlayer;
 	private SoundPanel soundPanel;
@@ -215,6 +216,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionFilteredViewMode;
 	private JMenuItem jMenuItemOptionAutoFillAnnotatorName;
 	private JMenuItem jMenuItemOptionValidateAnnotations;
+	private JMenuItem jMenuItemOptionPauseAfterAnnotation;
 	private JMenuItem jMenuItemOptionWaveform;
 	private JMenu jMenuHelp;
 	private JMenuItem jMenuItemHelpVersion;
@@ -450,6 +452,7 @@ public class MainFrame extends JFrame {
 		jMenuItemOptionViewSyncMode.setSelected(isViewSyncMode);
 		jMenuItemOptionAutoFillAnnotatorName.setSelected(FLAG_AutoFillAnnotatorName);
 		jMenuItemOptionValidateAnnotations.setSelected(FLAG_VALIDATE_ANNOTATIONS);
+		jMenuItemOptionPauseAfterAnnotation.setSelected(FLAG_PAUSE_AFTER_ANNOTATION);
 		jMenuItemOptionWaveform.setSelected(flagWaveform);
 		jMenuItemAnnotationMulti.setSelected(isAnnotationMulti);
 		jMenuItemOptionFilteredViewMode.setSelected(true);
@@ -544,8 +547,17 @@ public class MainFrame extends JFrame {
 			jMenuItemOptionValidateAnnotations.setSelected(false);
 		} else {
 			jMenuItemOptionValidateAnnotations.setSelected(true);
-		}		
+		}
 		
+		String strEnablePauseAfterAnnotation = config.getFirstNodeAsString("/settings/enablePauseAfterAnnotation/@value"); //$NON-NLS-1$
+		if(strEnablePauseAfterAnnotation == null
+				|| strEnablePauseAfterAnnotation.isEmpty()
+				|| strEnablePauseAfterAnnotation.equalsIgnoreCase("false")) { //$NON-NLS-1$
+			jMenuItemOptionPauseAfterAnnotation.setSelected(false);
+		} else {
+			jMenuItemOptionPauseAfterAnnotation.setSelected(true);
+		}		
+
 		changeStateStop();
 
 		new DropTarget(this, new DropFileAdapter());
@@ -2350,6 +2362,10 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
+									if(soundPlayer.getPlayerState() == soundPlayer.PLAYER_STATE_PLAY && jMenuItemOptionPauseAfterAnnotation.isSelected()) {
+										soundPlayer.myPause();
+										changeStatePause();
+									}
 									Comment newComment = newCommentButton.addComment(e.getModifiers());
 									int row = ctm.findFilteredComment(newComment);
 									if(row != -1){
@@ -2380,6 +2396,10 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
+									if(soundPlayer.getPlayerState() == soundPlayer.PLAYER_STATE_PLAY && jMenuItemOptionPauseAfterAnnotation.isSelected() ) {
+										soundPlayer.myPause();
+										changeStatePause();
+									}
 									Comment newComment = newCommentButton.addComment(e.getModifiers());
 									int row = ctm.findFilteredComment(newComment);
 									if(row != -1){
@@ -2682,6 +2702,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.add(getJMenuItemOptionFilterdViewMode());
 			jMenuOption.add(getJMenuItemOptionAutoFillAnnotatorName());
 			jMenuOption.add(getJMenuItemOptionValidateAnnotations());
+			jMenuOption.add(getJMenuItemOptionPauseAfterAnnotation());
 			jMenuOption.add(getJMenuItemOptionWaveform());
 		}
 		return jMenuOption;
@@ -3050,6 +3071,30 @@ public class MainFrame extends JFrame {
 			});
 		}
 		return jMenuItemOptionValidateAnnotations;
+	}
+
+	
+	private JMenuItem getJMenuItemOptionPauseAfterAnnotation() {
+		if (jMenuItemOptionPauseAfterAnnotation == null) {
+			jMenuItemOptionPauseAfterAnnotation = new JCheckBoxMenuItem(Messages.getString("MainFrame.158")); //$NON-NLS-1$
+			jMenuItemOptionPauseAfterAnnotation.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							boolean flag = jMenuItemOptionPauseAfterAnnotation.isSelected();
+							try {
+								config.setValue("/settings/enablePauseAfterAnnotation", "value", //$NON-NLS-1$ //$NON-NLS-2$
+										flag ? "true" : "false"); //$NON-NLS-1$ //$NON-NLS-2$
+							} catch (XPathExpressionException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+			});
+		}
+		return jMenuItemOptionPauseAfterAnnotation;
 	}
 
 	

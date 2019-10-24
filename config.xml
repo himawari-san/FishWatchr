@@ -15,6 +15,9 @@
   <!-- [オプション]⇒[形式チェック] -->
   <enableValidateAnnotations value="false" />
 
+  <!-- [オプション]⇒[注釈後ポーズ] -->
+  <enablePauseAfterAnnotation value="false" />
+
   <!-- [オプション]⇒[フォント] -->
   <tableFontSize value="12" />
   
