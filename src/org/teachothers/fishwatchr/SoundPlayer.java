@@ -47,7 +47,7 @@ import uk.co.caprica.vlcj.player.VideoTrackInfo;
 
 public class SoundPlayer extends Thread {
 	public static final int LIMIT_RECODING_TIME = 60 * 60 * 2; // 7200sec = 2hours
-	public static final String DEFAULT_VIDEO_ASPECT_RATIO = "default";
+	public static final String DEFAULT_VIDEO_ASPECT_RATIO = "default"; //$NON-NLS-1$
 	public static String SOUNDFILE_EXTENSION = ".wav"; //$NON-NLS-1$
 	private static String[] videoAspectRatios = {DEFAULT_VIDEO_ASPECT_RATIO, "16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 	private static String[] MEDIA_FILE_EXTENSIONS = { "asf", "avi", "flv", "mov", "mp3", "mp4", "mpg", "mts", "oga", "ogg", "ogv", "ogx", "wav", "wma", "wmv"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$
@@ -934,7 +934,7 @@ public class SoundPlayer extends Thread {
         			* (float)pixelAspectRatio / (float)pixelAspectRatioBase; 
     	} else {
     		// use videoAspectRatios[1] (= 16:9) 
-    		String[] strRatio = videoAspectRatios[1].split(":");
+    		String[] strRatio = videoAspectRatios[1].split(":"); //$NON-NLS-1$
         	videoAspectRatio = Float.parseFloat(strRatio[0]) / Float.parseFloat(strRatio[1]); 
     	}
     	defaultVideoAspectRatio = videoAspectRatio;

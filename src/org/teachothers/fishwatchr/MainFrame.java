@@ -3036,8 +3036,8 @@ public class MainFrame extends JFrame {
 							boolean flag = jMenuItemOptionAutoFillAnnotatorName.isSelected();
 							commentTable.setAutoFillAnnotatorName(flag);
 							try {
-								config.setValue("/settings/enableAutoFillAnnotatorName", "value",
-										flag ? "true" : "false");
+								config.setValue("/settings/enableAutoFillAnnotatorName", "value", //$NON-NLS-1$ //$NON-NLS-2$
+										flag ? "true" : "false"); //$NON-NLS-1$ //$NON-NLS-2$
 							} catch (XPathExpressionException e) {
 								e.printStackTrace();
 							}

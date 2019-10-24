@@ -50,7 +50,7 @@ public class Util {
 	}
 	
 	public static String getCurrentDir(){
-		return System.getProperty("user.dir"); // the directory where fishwatchr.jar is placed
+		return System.getProperty("user.dir"); // the directory where fishwatchr.jar is placed //$NON-NLS-1$
 	}
 	
 
@@ -81,10 +81,10 @@ public class Util {
 			documentBuilderFactory.setNamespaceAware(false);
 			documentBuilderFactory.setValidating(false);
 			try {
-				documentBuilderFactory.setFeature("http://xml.org/sax/features/namespaces", false);
-				documentBuilderFactory.setFeature("http://xml.org/sax/features/validation", false);
-				documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-				documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+				documentBuilderFactory.setFeature("http://xml.org/sax/features/namespaces", false); //$NON-NLS-1$
+				documentBuilderFactory.setFeature("http://xml.org/sax/features/validation", false); //$NON-NLS-1$
+				documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false); //$NON-NLS-1$
+				documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false); //$NON-NLS-1$
 			} catch (ParserConfigurationException e) {
 				e.printStackTrace();
 			}

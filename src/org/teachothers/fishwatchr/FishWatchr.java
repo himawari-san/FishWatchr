@@ -61,11 +61,11 @@ public class FishWatchr {
 		}
 
 		// find vlc libs
-		if(osName.toLowerCase().startsWith("windows") && new File(jarParent + "/" + LOCAL_VLC_DIR_WINDOWS).exists()){ //$NON-NLS-1$
+		if(osName.toLowerCase().startsWith("windows") && new File(jarParent + "/" + LOCAL_VLC_DIR_WINDOWS).exists()){ //$NON-NLS-1$ //$NON-NLS-2$
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$
 			LibC.INSTANCE._putenv("VLC_PLUGIN_PATH=" + jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$ //$NON-NLS-2$
 			System.err.println("Warning(FishWatchr): using the local vlc library, " + jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$ //$NON-NLS-2$
-		} else if(osName.toLowerCase().startsWith("mac") && new File(jarParent + "/" + LOCAL_VLC_DIR_MACOS).exists()){ //$NON-NLS-1$
+		} else if(osName.toLowerCase().startsWith("mac") && new File(jarParent + "/" + LOCAL_VLC_DIR_MACOS).exists()){ //$NON-NLS-1$ //$NON-NLS-2$
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/plugins", 1); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -121,7 +121,7 @@ public class FishWatchr {
 				} else if(arg.length == 1){
 					mainFrame.play(arg[0], 0);
 				}
-				System.err.println("startup time:" + (System.currentTimeMillis()-startupTime));
+				System.err.println("startup time:" + (System.currentTimeMillis()-startupTime)); //$NON-NLS-1$
 			}
 		});
 	}
