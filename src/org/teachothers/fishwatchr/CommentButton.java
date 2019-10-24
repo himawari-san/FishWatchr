@@ -20,9 +20,14 @@ package org.teachothers.fishwatchr;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -41,13 +46,18 @@ public class CommentButton extends JButton {
 	private static final long serialVersionUID = 1L;
 	private static boolean isWorking = false;
     private static String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-	
+    private static final int MINIMUM_FONT_SIZE = 7;
+    
 	// 観察対象優先
 	public static final int BUTTON_TYPE_DISCUSSER = 0;
 	public static final String BUTTON_TYPE_DISCUSSER_STR = "discusser"; //$NON-NLS-1$
 	// コメント優先
 	public static final int BUTTON_TYPE_COMMENT = 1;
 	public static final String BUTTON_TYPE_COMMENT_STR = "label"; //$NON-NLS-1$
+
+	public static final int DEFAULT_WIDTH = 80;
+	public static final int DEFAULT_HEIGHT = 40;
+	public static final int DEFAULT_MARGIN = 0;
 	
 	private CommentTableModel ctm;
 	private SoundPlayer soundPlayer;
@@ -87,8 +97,7 @@ public class CommentButton extends JButton {
 		this.isMultiAnnotation = isMultiAnnotation;
 
 		buttonType = BUTTON_TYPE_COMMENT;
-		getActionMap().put("normal", actNormal); //$NON-NLS-1$
-		getActionMap().put("reverse", actReverse); //$NON-NLS-1$
+		init();
 	}
 
 	// 観察対象優先
@@ -103,10 +112,33 @@ public class CommentButton extends JButton {
 		this.isMultiAnnotation = isMultiAnnotation;
 		
 		buttonType = BUTTON_TYPE_DISCUSSER;
+		init();
+	}
+
+	
+	private void init() {
 		getActionMap().put("normal", actNormal); //$NON-NLS-1$
 		getActionMap().put("reverse", actReverse); //$NON-NLS-1$
+		setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+		setMaximumSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+		setMargin(new Insets(DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN));
+		addComponentListener(getAdapter());
 	}
-	
+
+	private ComponentAdapter getAdapter() {
+		return new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				Font font = getFont();
+			    int fontSize = font.getSize();
+
+			    while(getHeight() <= Util.getTextHeight(getText(), font, getWidth()) && fontSize > MINIMUM_FONT_SIZE) {
+			    	fontSize--;
+			    	font = new Font(font.getFamily(), font.getStyle(), fontSize);
+			    	setFont(font);
+			    }
+			}
+		};
+	}
 	
 	public void setActionKey(int c){
 		String label = getText();
@@ -118,7 +150,7 @@ public class CommentButton extends JButton {
 		} else {
 			c++;
 		}
-		setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		setText(label, c);
 		InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		if(os.startsWith("mac")){ //$NON-NLS-1$
 			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, KeyEvent.META_DOWN_MASK), "normal"); //$NON-NLS-1$
@@ -129,6 +161,11 @@ public class CommentButton extends JButton {
 	}
 
 
+	public void setText(String label, int keyNumber) {
+		setText("<html><div style=\"text-align:center;\">" + label + "<br />[" + Integer.toString(keyNumber) + "]</div></html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
+	
+	
 	public void setMultiAnnotation(boolean flag){
 		isMultiAnnotation = flag;
 	}
@@ -278,7 +315,7 @@ public class CommentButton extends JButton {
 			} else {
 				c++;
 			}
-			setText("<html><p style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			setText("<html><div style=\"text-align:center\">" + label + "<br />[" + Integer.toString(c) + "]</div></html>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 			imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + c, 0), "key0"); //$NON-NLS-1$
 			if(os.startsWith("mac")){ //$NON-NLS-1$
@@ -290,7 +327,21 @@ public class CommentButton extends JButton {
 			getActionMap().put("key0", act); //$NON-NLS-1$
 			getActionMap().put("keyALT", act); //$NON-NLS-1$
 			getActionMap().put("keyCTRL", act); //$NON-NLS-1$
-			setPreferredSize(CommentButton.this.getPreferredSize());
+			setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+			setMaximumSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+			setMargin(new Insets(DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN));
+			addComponentListener(new ComponentAdapter() {
+				public void componentResized(ComponentEvent e) {
+					Font font = getFont();
+				    int fontSize = font.getSize();
+
+				    while(getHeight() <= Util.getTextHeight(getText(), font, getWidth()) && fontSize > MINIMUM_FONT_SIZE) {
+				    	fontSize--;
+				    	font = new Font(font.getFamily(), font.getStyle(), fontSize);
+				    	setFont(font);
+				    }
+				}
+			});
 		}
 		
 		public int getNumber(){

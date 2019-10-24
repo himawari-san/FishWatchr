@@ -17,8 +17,12 @@
 
 package org.teachothers.fishwatchr;
 
+import java.awt.Font;
 import java.io.StringWriter;
 
+import javax.swing.JLabel;
+import javax.swing.plaf.basic.BasicHTML;
+import javax.swing.text.View;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -88,5 +92,15 @@ public class Util {
 		}
 		
 		return documentBuilderFactory;
+	}
+	
+
+	public static int getTextHeight(String html, Font font, int componentWidth) {
+	    JLabel renderer = new JLabel(html);
+	    renderer.setFont(font);
+	    View view = (View) renderer.getClientProperty(BasicHTML.propertyKey);
+	    view.setSize(componentWidth, 0.0f);
+	    
+	    return (int) Math.ceil(view.getPreferredSpan(View.Y_AXIS));
 	}
 }
