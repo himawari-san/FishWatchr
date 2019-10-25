@@ -64,6 +64,8 @@ public class AnnotationGlobalViewer extends JPanel {
 
 	private static final double MARK_HEIGHT_RATIO = 0.7; // marker height / item height
 	
+	private static final int MINIMUM_DRAG_RANGE = 10;
+	
 	private final int xTimeTickHeight = 5;	
 
 	private final int x0NamePanel = 4; // x origin of namePanel
@@ -672,7 +674,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if(isDragged){
+			if(isDragged && Math.abs(selectionEndX - selectionStartX) >= MINIMUM_DRAG_RANGE){
 				if(selectionEndX - selectionStartX < 0){ // swap
 					int t = selectionStartX;
 					selectionStartX = selectionEndX;
