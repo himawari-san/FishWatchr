@@ -676,7 +676,7 @@ public class CommentTable extends JTable {
 				}
 				
 			} else {
-				ctm.addFilter(headerName, selectedValue);
+				ctm.addFilter(headerName, "^" + selectedValue + "$");
 			}
 			
 			resetPosition();
