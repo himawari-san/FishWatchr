@@ -32,12 +32,13 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.direct.BufferFormat;
-import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
-import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
-import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
-import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormatCallback;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.RenderCallbackAdapter;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.format.RV32BufferFormat;
 
 public class VLCDirectMediaPlayerComponent extends JPanel {
 
@@ -54,7 +55,7 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 	private int imageHeight = componentHeight;
 	
 	private MediaPlayerFactory factory;
-    private DirectMediaPlayer mediaPlayer;
+    private EmbeddedMediaPlayer mediaPlayer;
     
     private String overlayStyles[] = {Messages.getString("VLCDirectMediaPlayerComponent.0"), Messages.getString("VLCDirectMediaPlayerComponent.1"), Messages.getString("VLCDirectMediaPlayerComponent.2"), Messages.getString("VLCDirectMediaPlayerComponent.3")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     private int iOverlaidTextStyle = 0;
@@ -94,8 +95,11 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
 
     	if(mediaPlayer != null)	mediaPlayer.release();
     	
-        mediaPlayer = factory.newDirectMediaPlayer(new VLCBufferFormatCallback(), new VLCRenderCallback());
-        mediaPlayer.setPlaySubItems(true); // <--- This is very important for YouTube
+        mediaPlayer = factory.mediaPlayers().newEmbeddedMediaPlayer();
+        // hey vlcj4 what is "true"?
+        mediaPlayer.videoSurface().set(factory.videoSurfaces().newVideoSurface(new VLCBufferFormatCallback(), new VLCRenderCallback(), true));
+// hey vlcj4
+        //        mediaPlayer.setPlaySubItems(true); // <--- This is very important for YouTube
         
         clearDisplay();
     }
@@ -147,12 +151,12 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
     }
 
     
-    public DirectMediaPlayer getMediaPlayer(){
+    public EmbeddedMediaPlayer getMediaPlayer(){
     	return mediaPlayer;
     }
     
 
-    public DirectMediaPlayer getMediaPlayer(float videoAspectRatio){
+    public EmbeddedMediaPlayer getMediaPlayer(float videoAspectRatio){
     	componentWidth = getWidth();
     	componentHeight = getHeight();
     	
@@ -256,10 +260,10 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
             super(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
         }
 
-        @Override
-        public void onDisplay(DirectMediaPlayer mediaPlayer, int[] data) {
+		@Override
+		protected void onDisplay(MediaPlayer mediaPlayer, int[] buffer) {
             VLCDirectMediaPlayerComponent.this.repaint();
-        }
+		}
     }
 
     class VLCBufferFormatCallback implements BufferFormatCallback {
