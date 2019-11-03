@@ -99,6 +99,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.teachothers.fishwatchr.AnnotationGlobalViewer.FilteredViewCheckBoxCallBack;
 import org.xml.sax.SAXException;
 
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
+
 
 public class MainFrame extends JFrame {
 
@@ -309,8 +313,18 @@ public class MainFrame extends JFrame {
 		// commentTypes 初期値
 		commentTypes = new ArrayList<CommentType>();
 		
-
-		soundPlayer = new SoundPlayer(this);
+		soundPlayer = new SoundPlayer(this, new MediaPlayerEventAdapter() {
+			@Override
+			public void finished(MediaPlayer mediaPlayer) {
+				System.err.println("vlc finish!"); //$NON-NLS-1$
+				mediaPlayerCallback();
+	        }
+	        
+	        public void stopped(MediaPlayer mediaPlayer){
+	        	System.err.println("vlc stop"); //$NON-NLS-1$
+				mediaPlayerCallback();
+	        }
+		});
 
 		ctm = new CommentTableModel(commentList, discussers, commentTypes);
 		
@@ -321,6 +335,24 @@ public class MainFrame extends JFrame {
 		}
 	}
 
+	private void mediaPlayerCallback() {
+// hey vlcj
+		//		skippedFrame = 0;
+//		soundGraphBuf.setPosition(0);
+		if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD){
+			soundPlayer.setFile(mf, false);
+			soundPlayer.myStop();
+		}
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+		        changeState(SoundPlayer.PLAYER_STATE_STOP);
+		        updateMediaLengthUI(SoundPlayer.PLAYER_STATE_RECORD);
+			}
+		});
+        System.err.println("initcall state stop"); //$NON-NLS-1$
+        soundPlayer.setPlayerState(SoundPlayer.PLAYER_STATE_STOP);
+	}
 
 	public void init() {
 		// load config.xml
@@ -847,14 +879,17 @@ public class MainFrame extends JFrame {
 							}
 
 							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
+								System.err.println("hey bp play");
 								changeStatePause();
 								soundPlayer.myPause();
 								return;
 							} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
+								System.err.println("hey bp pause");
 								changeStatePlay();
 								soundPlayer.myResume();
 								return;
 							} else {
+								System.err.println("hey bp else");
 								if (mf.isEmpty() && xf.isEmpty()) {
 									if(!setTargetFile("")){ //$NON-NLS-1$
 										return;
@@ -1071,6 +1106,7 @@ public class MainFrame extends JFrame {
 			timeSlider.setEnabled(false);
 			return false;
 		} else if (filename != null) {
+			System.err.println("hey open file");
 			// 関係ないファイルはここで止まるはず。null の場合は，url
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
@@ -1079,13 +1115,16 @@ public class MainFrame extends JFrame {
 			System.err.println("Warning(MainFrame): what?"); //$NON-NLS-1$
 		}
 		
+		System.err.println("hey main2");
 		System.err.println("set mf: " + mf); //$NON-NLS-1$
 		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 			JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.25") + mf); //$NON-NLS-1$
 			mf = ""; //$NON-NLS-1$
 			xf = ""; //$NON-NLS-1$
+			System.err.println("hey main1");
 			return false;
 		}
+		System.err.println("hey main0");
 		isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
 
 		
@@ -1482,8 +1521,9 @@ public class MainFrame extends JFrame {
 		if (moviePanel == null) {
 			moviePanel = new JPanel();
 			moviePanel.setLayout(new BorderLayout());
-			moviePanel.add(soundPlayer.getMediaplayerComponent());
-			soundPlayer.getMediaplayerComponent().setOpaque(false); // これがないと背景がおかしくなる
+			int a;
+			moviePanel.add(soundPlayer.getMediaplayerComponent(), BorderLayout.CENTER);
+//			soundPlayer.getMediaplayerComponent().setOpaque(false); // これがないと背景がおかしくなる
 			moviePanel.addComponentListener(new ComponentAdapter() {
 				public void componentResized(final ComponentEvent ev) {
 					if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD || !isMoviePanelResizable){

@@ -44,6 +44,8 @@ import uk.co.caprica.vlcj.media.TrackType;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
+import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
@@ -56,6 +58,7 @@ public class SoundPlayer extends Thread {
 	private static String[] SOUND_FILE_EXTENSIONS = { "mp3", "oga", "wav", "wma"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private final static int MAX_RETRY_REFERRING_DATA = 100;  
 	private final static int RETRY_INTERVAL = 50; // msec  
+    private final String overlayStyles[] = {Messages.getString("VLCDirectMediaPlayerComponent.0"), Messages.getString("VLCDirectMediaPlayerComponent.1"), Messages.getString("VLCDirectMediaPlayerComponent.2"), Messages.getString("VLCDirectMediaPlayerComponent.3")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	
 	public final static int PLAYER_STATE_STOP = 0;
 	public final static int PLAYER_STATE_RECORD = 1;
@@ -99,8 +102,8 @@ public class SoundPlayer extends Thread {
 	private TargetDataLine targetDataLine;
 	private SoundGraphBuffer soundGraphBuf;
 	
-	private VLCDirectMediaPlayerComponent mediaPlayerComponent;
-	private EmbeddedMediaPlayer mp;
+	private CallbackMediaPlayerComponent mediaPlayerComponent;
+	private MediaPlayer mp;
 
 	
 	private String targetFilename;
@@ -114,41 +117,37 @@ public class SoundPlayer extends Thread {
 	
 	private boolean saveFlag = false;
 
-	private MyMediaPlayerEventListener mpEventListener;
+//	private MediaPlayerEventListener mediaPlayerEventListener;
 	
 	private float videoAspectRatio = 16f/9f;
 	private float defaultVideoAspectRatio = 16f/9f; // default ratio of the video file
 	
 	private boolean isStreaming = false;
 	
-	public SoundPlayer(MainFrame mainFrame) {
+	public SoundPlayer(MainFrame mainFrame, MediaPlayerEventListener mediaPlayerEventListenerr) {
+		if(mediaPlayerEventListenerr==null)System.err.println("null");
 		this.mainFrame = mainFrame;
 		soundGraphBuf = new SoundGraphBuffer((int) Math.ceil(LIMIT_RECODING_TIME / frameLength));
-		try {
-			mediaPlayerComponent = new VLCDirectMediaPlayerComponent();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		init();
+		mediaPlayerComponent = new CallbackMediaPlayerComponent();
+		mp = mediaPlayerComponent.mediaPlayer();
+		mp.events().addMediaPlayerEventListener(mediaPlayerEventListenerr);
 	}
 	
+	public void release() {
+		mediaPlayerComponent.release();
+	}
 	
 	public void resizeMediaPlayer(int width, int height){
+		System.err.println("hey resize0");
 		long now = 0;
 		int currentState = getPlayerState();
-		if(mp != null){
-			now = mp.status().time();
-		}
+
+		now = mp.status().time();
 		mediaPlayerComponent.setSize(new Dimension(width, height));
 
-		if(mp != null) mp.release();
-		
-		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
-        mp.events().addMediaPlayerEventListener(mpEventListener);
-
         if(playerType == PLAYER_TYPE_DEFAULT){
+			System.err.println("hey resize default");
     		SwingUtilities.invokeLater(new Runnable() {
     			@Override
     			public void run() {
@@ -166,6 +165,7 @@ public class SoundPlayer extends Thread {
 			mp.controls().setTime(now);
 			mp.controls().pause();
 		} else if(currentState == PLAYER_STATE_PLAY){
+			System.err.println("hey resize3");
 			mp.media().start(targetFilename);
 			if (isStreaming) {
 				for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
@@ -182,9 +182,11 @@ public class SoundPlayer extends Thread {
 			}
 			mp.controls().setTime(now);
 		} else if(currentState == PLAYER_STATE_STOP){
+			System.err.println("hey resize4");
 			mp.media().prepare(targetFilename);
 		}
 
+		// hey vlcj4
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -206,16 +208,19 @@ public class SoundPlayer extends Thread {
 
 	
 	public void setTextOverlayStyle(int iStyle){
-		mediaPlayerComponent.setTextOverlayStyle(iStyle);
+		// hey vlcj4
+		int thiIStyle = iStyle;
+//		mediaPlayerComponent.setTextOverlayStyle(iStyle);
 	}
 	
 	public String[] getAvailableTextOverlayStyles(){
-		return mediaPlayerComponent.getAvailableTextOverlayStyles();
+		return overlayStyles;
 	}
 
 	
 	// すべての設定を初期化
 	public void init(){
+		System.err.println("hey ini0");
 		targetFilename = ""; //$NON-NLS-1$
 		startTime = null;
 		state = PLAYER_STATE_STOP;
@@ -223,10 +228,6 @@ public class SoundPlayer extends Thread {
 		soundGraphBuf.clear();
 		soundLength = -1;
 		saveFlag = false;
-//		if(mp != null) mp.release();
-		mp = mediaPlayerComponent.getMediaPlayer();
-		mediaPlayerComponent.clearDisplay();
-		mpEventListener = new MyMediaPlayerEventListener();
 	}
 
 	
@@ -255,6 +256,7 @@ public class SoundPlayer extends Thread {
 	
 	public boolean setFile(String filename, boolean flagWaveform){
 		init();
+		System.err.println("hey sf0");
 
 		isStreaming = false; // default
 		setSoundBufferEnable(false);
@@ -273,24 +275,26 @@ public class SoundPlayer extends Thread {
 			isStreaming = true;
 			playerType = PLAYER_TYPE_VLC;
 			mp.media().start(targetFilename);
-			Dimension videoDimension = null;
-			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
-				videoDimension = mp.video().videoDimension();
-				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
-					soundLength = (float)(mp.status().length()/1000);
-					setDefaultVideoAspectRatio();
-					mp.release();
-					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
-			        mp.events().addMediaPlayerEventListener(mpEventListener);
-			        break;
-				} else {
-					try {
-						Thread.sleep(RETRY_INTERVAL);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			Dimension videoDimension = mp.video().videoDimension();
+//			setDefaultVideoAspectRatio();
+//			for(int i = 0; i < MAX_RETRY_REFERRING_DATA; i++){
+//				videoDimension = mp.video().videoDimension();
+//				if(videoDimension != null && videoDimension.height != 0 && videoDimension.width != 0){
+//					soundLength = (float)(mp.status().length()/1000);
+//					setDefaultVideoAspectRatio();
+//					mp.release();
+//					// hey vlcj4
+////					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
+//			        mp.events().addMediaPlayerEventListener(mpEventListener);
+//			        break;
+//				} else {
+//					try {
+//						Thread.sleep(RETRY_INTERVAL);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
 			if(videoDimension == null){
 				mp.controls().stop();
 				return false;
@@ -311,7 +315,7 @@ public class SoundPlayer extends Thread {
 							Messages.getString("SoundPlayer.0") + //$NON-NLS-1$
 							"(" + wavFilename + ")" + //$NON-NLS-1$ //$NON-NLS-2$
 							Messages.getString("SoundPlayer.3")); //$NON-NLS-1$
-					mp.events().removeMediaPlayerEventListener(mpEventListener);
+//					mp.events().removeMediaPlayerEventListener(mpEventListener);
 					mp.media().start(
 							targetFilename,
 							":sout=#transcode{acodec=s16l,channels=2,samplerate=44100,ab=128}:standard{access=file,mux=wav,dst=" //$NON-NLS-1$
@@ -354,45 +358,15 @@ public class SoundPlayer extends Thread {
 				soundLength = (float) (mp.status().length() / 1000);
 				mp.controls().stop();
 				mp.release();
-				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
-				mp.events().addMediaPlayerEventListener(mpEventListener);
+				// hey vlcj4
+//				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
+//				mp.events().addMediaPlayerEventListener(mpEventListener);
 				mp.media().prepare(targetFilename);
 			} else {
-				mp.media().start(targetFilename);
-				Dimension videoDimension = null;
-				for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
-					videoDimension = mp.video().videoDimension();
-					if (videoDimension != null && videoDimension.height != 0
-							&& videoDimension.width != 0) {
-						soundLength = (float) (mp.status().length() / 1000);
-						setDefaultVideoAspectRatio();
-						mp.release();
-						mp = mediaPlayerComponent
-								.getMediaPlayer(videoAspectRatio);
-						mp.events().addMediaPlayerEventListener(mpEventListener);
-						mp.media().prepare(targetFilename);
-						break;
-					} else {
-						try {
-							Thread.sleep(RETRY_INTERVAL);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				if (videoDimension == null) {
-					soundLength = (float) (mp.status().length() / 1000);
-					mp.release();
-					mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
-					mp.events().addMediaPlayerEventListener(mpEventListener);
-					mp.media().prepare(targetFilename);
-					if(!mp.media().parsing().parse()){
-						mp.controls().stop();
-						mp.release();
-						return false;
-					}
-					// mp.stop();
-					// return false;
+//				mp.events().addMediaPlayerEventListener(mpEventListener);
+				System.err.println("hey1");
+				if(!readVideoInfo(targetFilename)) {
+					return false;
 				}
 			}
 		}
@@ -400,6 +374,7 @@ public class SoundPlayer extends Thread {
 		return true;
 	}
 
+	
 	
 	public int readWavInfo(String filename){
 		try {
@@ -528,7 +503,8 @@ public class SoundPlayer extends Thread {
 			audioStream.close();
 			tmpFile.delete();
 			saveFlag = true;
-			initCallback();
+			// hey vlcj4
+//			initCallback();
 		} catch (LineUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -595,7 +571,8 @@ public class SoundPlayer extends Thread {
 	        ais.close();
     		source.flush();
 	        source.close();
-	        initCallback();
+			// hey vlcj4
+//	        initCallback();
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -607,31 +584,6 @@ public class SoundPlayer extends Thread {
 		}
 	}
 
-
-	// 再生終了時に制御を mainFrame に戻す
-	private void initCallback(){
-		skippedFrame = 0;
-		soundGraphBuf.setPosition(0);
-		if(playerType == PLAYER_TYPE_VLC){
-			if(state == PLAYER_STATE_RECORD){
-				if(mp != null) mp.release();
-				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
-		        mp.events().addMediaPlayerEventListener(mpEventListener);
-		        setFile(targetFilename, false);
-		        mp.controls().stop();
-			}
-			mp.controls().setPosition(0);
-		}
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-		        mainFrame.changeState(PLAYER_STATE_STOP);
-		        mainFrame.updateMediaLengthUI(PLAYER_STATE_RECORD);
-			}
-		});
-        System.err.println("initcall state stop"); //$NON-NLS-1$
-    	state = PLAYER_STATE_STOP;
-	}
 	
 	public void playVlc(){
 		if(isStreaming){
@@ -655,7 +607,8 @@ public class SoundPlayer extends Thread {
 	public void stopVlc(){
 		if(mp != null && mp.status().isPlayable()){
 	        mp.controls().stop();
-			mediaPlayerComponent.clearDisplay();
+			// hey vlcj4
+//			mediaPlayerComponent.clearDisplay();
 		}
 	}
 
@@ -671,6 +624,10 @@ public class SoundPlayer extends Thread {
 	
 	public int getPlayerState(){
 		return state;
+	}
+
+	public void setPlayerState(int state){
+		this.state = state;
 	}
 
 	public void myRecord(String filename, boolean withSoundFile, CaptureDevice videoDevice, CaptureDevice audioDevice){
@@ -691,8 +648,9 @@ public class SoundPlayer extends Thread {
         String[] options = CaptureDevice.getOption(videoDevice, audioDevice, targetFilename);
 
 		if(mp != null) mp.release();
-		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
-        mp.events().addMediaPlayerEventListener(mpEventListener);
+		// hey vlcj4
+//		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
+//        mp.events().addMediaPlayerEventListener(mpEventListener);
         mp.media().start(mrl, options);
 	}
 	
@@ -888,7 +846,8 @@ public class SoundPlayer extends Thread {
 		return playerType;
 	}
 	
-	public VLCDirectMediaPlayerComponent getMediaplayerComponent(){
+	public CallbackMediaPlayerComponent getMediaplayerComponent(){
+		if(mediaPlayerComponent == null) {System.err.println("null");}
 		return mediaPlayerComponent;
 	}
 
@@ -901,21 +860,51 @@ public class SoundPlayer extends Thread {
 
 	
 	public void setOverlayText(String text){
-		mediaPlayerComponent.setMarquee(text);
+		// hey vlcj4
+//		mediaPlayerComponent.setMarquee(text);
 	}
 	
 	
     public List<CaptureDevice> getVideoDeviceList(){
-    	return mediaPlayerComponent.getVideoDeviceList();
+		// hey vlcj4
+    	return null;
+//    	return mediaPlayerComponent.getVideoDeviceList();
     }
 
     public List<CaptureDevice> getAudioDeviceList(){
-    	return mediaPlayerComponent.getAudioDeviceList();
+		// hey vlcj4
+    	return null;
+//    	return mediaPlayerComponent.getAudioDeviceList();
     }
 	
-    public void setDefaultVideoAspectRatio() {
-    	Dimension videoDimension = mp.video().videoDimension();
 
+	private boolean readVideoInfo(String targetFilename) {
+		Dimension videoDimension = null;
+		mp.media().prepare(targetFilename);
+		playVlc();
+		for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
+			videoDimension = mp.video().videoDimension();
+			System.err.println("hey4");
+			if (videoDimension != null && videoDimension.height != 0
+					&& videoDimension.width != 0) {
+				soundLength = (float) (mp.status().length() / 1000);
+				setDefaultVideoAspectRatio(videoDimension);
+				myStop();
+				break;
+			} else {
+				try {
+					Thread.sleep(RETRY_INTERVAL);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return videoDimension == null ? false : true;
+	}
+
+
+    private void setDefaultVideoAspectRatio(Dimension videoDimension) {
     	int pixelAspectRatio = 1; // default
     	int pixelAspectRatioBase = 1; // default
     	
@@ -942,27 +931,28 @@ public class SoundPlayer extends Thread {
     	defaultVideoAspectRatio = videoAspectRatio;
     }
     
+
     public float getDefaultVideoAspectRatio() {
     	return defaultVideoAspectRatio;
     }
-    
-	
-    private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
-		@Override
-		public void finished(MediaPlayer mediaPlayer) {
-        	if(playerType == PLAYER_TYPE_VLC){
-        		System.err.println("vlc finish!"); //$NON-NLS-1$
-        		if(mp.status().isSeekable()){
-            		initCallback();
-        		}
-        	}
-        }
-        
-        public void stopped(MediaPlayer mediaPlayer){
-        	if(playerType == PLAYER_TYPE_VLC){
-        		System.err.println("vlc stop"); //$NON-NLS-1$
-        		initCallback();
-        	}
-        }
-    }
+//    
+//	
+//    private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
+//		@Override
+//		public void finished(MediaPlayer mediaPlayer) {
+//        	if(playerType == PLAYER_TYPE_VLC){
+//        		System.err.println("vlc finish!"); //$NON-NLS-1$
+//        		if(mp.status().isSeekable()){
+//            		initCallback();
+//        		}
+//        	}
+//        }
+//        
+//        public void stopped(MediaPlayer mediaPlayer){
+//        	if(playerType == PLAYER_TYPE_VLC){
+//        		System.err.println("vlc stop"); //$NON-NLS-1$
+////        		initCallback();
+//        	}
+//        }
+//    }
 }	
