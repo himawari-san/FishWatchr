@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
@@ -39,14 +38,10 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
-import uk.co.caprica.vlcj.media.TrackType;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
-import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
 public class SoundPlayer extends Thread {
@@ -363,8 +358,6 @@ public class SoundPlayer extends Thread {
 //				mp.events().addMediaPlayerEventListener(mpEventListener);
 				mp.media().prepare(targetFilename);
 			} else {
-//				mp.events().addMediaPlayerEventListener(mpEventListener);
-				System.err.println("hey1");
 				if(!readVideoInfo(targetFilename)) {
 					return false;
 				}
@@ -884,7 +877,6 @@ public class SoundPlayer extends Thread {
 		playVlc();
 		for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
 			videoDimension = mp.video().videoDimension();
-			System.err.println("hey4");
 			if (videoDimension != null && videoDimension.height != 0
 					&& videoDimension.width != 0) {
 				soundLength = (float) (mp.status().length() / 1000);
@@ -935,24 +927,4 @@ public class SoundPlayer extends Thread {
     public float getDefaultVideoAspectRatio() {
     	return defaultVideoAspectRatio;
     }
-//    
-//	
-//    private class MyMediaPlayerEventListener extends MediaPlayerEventAdapter {
-//		@Override
-//		public void finished(MediaPlayer mediaPlayer) {
-//        	if(playerType == PLAYER_TYPE_VLC){
-//        		System.err.println("vlc finish!"); //$NON-NLS-1$
-//        		if(mp.status().isSeekable()){
-//            		initCallback();
-//        		}
-//        	}
-//        }
-//        
-//        public void stopped(MediaPlayer mediaPlayer){
-//        	if(playerType == PLAYER_TYPE_VLC){
-//        		System.err.println("vlc stop"); //$NON-NLS-1$
-////        		initCallback();
-//        	}
-//        }
-//    }
 }	
