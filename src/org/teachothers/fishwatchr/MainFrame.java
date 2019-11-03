@@ -1652,7 +1652,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemFileOpen == null) {
 			jMenuItemFileOpen = new JMenuItem(Messages.getString("MainFrame.34")); //$NON-NLS-1$
 			jMenuItemFileOpen.setAccelerator(KeyStroke.getKeyStroke('O',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileOpen
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -1673,7 +1673,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemURLOpen == null) {
 			jMenuItemURLOpen = new JMenuItem(Messages.getString("MainFrame.35")); //$NON-NLS-1$
 			jMenuItemURLOpen.setAccelerator(KeyStroke.getKeyStroke('U',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemURLOpen
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -1807,7 +1807,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemFileSave == null) {
 			jMenuItemFileSave = new JMenuItem(Messages.getString("MainFrame.39")); //$NON-NLS-1$
 			jMenuItemFileSave.setAccelerator(KeyStroke.getKeyStroke('S',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileSave
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -1851,7 +1851,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemFileExport == null) {
 			jMenuItemFileExport = new JMenuItem(Messages.getString("MainFrame.41")); //$NON-NLS-1$
 			jMenuItemFileExport.setAccelerator(KeyStroke.getKeyStroke('E',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileExport
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -1890,7 +1890,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemFileMerge == null) {
 			jMenuItemFileMerge = new JMenuItem(Messages.getString("MainFrame.49")); //$NON-NLS-1$
 			jMenuItemFileMerge.setAccelerator(KeyStroke.getKeyStroke('M',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileMerge
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2044,7 +2044,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemFileSaveConfig == null) {
 			jMenuItemFileSaveConfig = new JMenuItem(Messages.getString("MainFrame.76")); //$NON-NLS-1$
 			jMenuItemFileSaveConfig.setAccelerator(KeyStroke.getKeyStroke('C',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileSaveConfig
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2069,7 +2069,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemFileExit == null) {
 			jMenuItemFileExit = new JMenuItem(Messages.getString("MainFrame.81")); //$NON-NLS-1$
 			jMenuItemFileExit.setAccelerator(KeyStroke.getKeyStroke('Q',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileExit
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2344,7 +2344,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemControlScroll == null) {
 			jMenuItemControlScroll = new JMenuItem(Messages.getString("MainFrame.95")); //$NON-NLS-1$
 			jMenuItemControlScroll.setAccelerator(KeyStroke.getKeyStroke('J',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemControlScroll
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -2992,7 +2992,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemOptionRecorderMode == null) {
 			jMenuItemOptionRecorderMode = new JCheckBoxMenuItem(Messages.getString("MainFrame.137")); //$NON-NLS-1$
 			jMenuItemOptionRecorderMode.setAccelerator(KeyStroke.getKeyStroke('R',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemOptionRecorderMode
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -3012,7 +3012,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemOptionViewSyncMode == null) {
 			jMenuItemOptionViewSyncMode = new JCheckBoxMenuItem(Messages.getString("MainFrame.138")); //$NON-NLS-1$
 			jMenuItemOptionViewSyncMode.setAccelerator(KeyStroke.getKeyStroke('Y',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemOptionViewSyncMode
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -3049,7 +3049,7 @@ public class MainFrame extends JFrame {
 		if (jMenuItemOptionFilteredViewMode == null) {
 			jMenuItemOptionFilteredViewMode = new JCheckBoxMenuItem(Messages.getString("MainFrame.139")); //$NON-NLS-1$
 			jMenuItemOptionFilteredViewMode.setAccelerator(KeyStroke.getKeyStroke('V',
-					KeyEvent.CTRL_MASK, false));
+					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemOptionFilteredViewMode
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(ActionEvent e) {
