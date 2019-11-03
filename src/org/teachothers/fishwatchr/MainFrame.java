@@ -2403,7 +2403,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
-									if(soundPlayer.getPlayerState() == soundPlayer.PLAYER_STATE_PLAY && jMenuItemOptionPauseAfterAnnotation.isSelected()) {
+									if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY && jMenuItemOptionPauseAfterAnnotation.isSelected()) {
 										soundPlayer.myPause();
 										changeStatePause();
 									}
@@ -2437,7 +2437,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
-									if(soundPlayer.getPlayerState() == soundPlayer.PLAYER_STATE_PLAY && jMenuItemOptionPauseAfterAnnotation.isSelected() ) {
+									if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY && jMenuItemOptionPauseAfterAnnotation.isSelected() ) {
 										soundPlayer.myPause();
 										changeStatePause();
 									}
