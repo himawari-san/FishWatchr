@@ -264,7 +264,7 @@ public class SoundPlayer extends Thread {
 			buf = new byte[maxDataSize]; 
 			readWav(targetFilename, buf);
 			setSoundBufferEnable(true);
-			mp.media().prepare(targetFilename);
+			mp.media().start(targetFilename);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			isStreaming = true;
 			playerType = PLAYER_TYPE_VLC;
@@ -560,7 +560,7 @@ public class SoundPlayer extends Thread {
 			mp.media().start(targetFilename);
 			for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
 				if (mp.status().isSeekable()) {
-					break;
+					return;
 				} else {
 					try {
 						Thread.sleep(RETRY_INTERVAL);
@@ -569,6 +569,7 @@ public class SoundPlayer extends Thread {
 					}
 				}
 			}
+			stopVlc();
 		} else {
 			mp.controls().play();
 		}
@@ -577,8 +578,6 @@ public class SoundPlayer extends Thread {
 	public void stopVlc(){
 		if(mp != null && mp.status().isPlayable()){
 	        mp.controls().stop();
-			// hey vlcj4
-//			mediaPlayerComponent.clearDisplay();
 		}
 	}
 
@@ -678,7 +677,7 @@ public class SoundPlayer extends Thread {
 	public synchronized void myResume(){
 		state = PLAYER_STATE_PLAY;
 		if(playerType == PLAYER_TYPE_VLC){
-			mp.controls().play();
+			playVlc();
 		} else {
 			notify();
 		}
