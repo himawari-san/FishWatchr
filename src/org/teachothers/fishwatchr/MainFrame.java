@@ -320,7 +320,20 @@ public class MainFrame extends JFrame {
 				mediaPlayerCallback();
 	        }
 	        
-	        public void stopped(MediaPlayer mediaPlayer){
+	        @Override
+			public void opening(MediaPlayer mediaPlayer) {
+				// TODO Auto-generated method stub
+				super.opening(mediaPlayer);
+	        	System.err.println("state play"); //$NON-NLS-1$
+	        	SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						changeState(SoundPlayer.PLAYER_STATE_PLAY);
+			        	timerStart();
+					}
+				});
+			}
+
+			public void stopped(MediaPlayer mediaPlayer){
 	        	System.err.println("vlc stop"); //$NON-NLS-1$
 				mediaPlayerCallback();
 	        }
@@ -1681,9 +1694,9 @@ public class MainFrame extends JFrame {
 							if(!setTargetFile(null)){
 								return;
 							}
-							changeStatePlay();
-							soundPlayer.myPlay();
-							timerStart();
+//							changeStatePlay();
+//							soundPlayer.myPlay();
+//							timerStart();
 						}
 					});
 		}
@@ -3281,9 +3294,9 @@ public class MainFrame extends JFrame {
 								return;
 							}
 						}
-						changeStatePlay();
+//						changeStatePlay();
 						soundPlayer.myPlay();
-						timerStart();
+//						timerStart();
 					}
 				}
 			} catch (UnsupportedFlavorException e) {
@@ -3315,12 +3328,17 @@ public class MainFrame extends JFrame {
 					time = soundPlayer.getCurrentRecordingTime();
 				}
 				soundPlayer.setOverlayText(commentTable.getCurrentComment());
-				timeCurrent.setTime(time / 1000);
-				timeSlider.setValue(time / 1000);
-				commentTable.indicateCurrentComment(time, focusRange);
-				if (jMenuItemOptionViewSyncMode.isSelected()) {
-					commentTable.setViewCenterByTime(time);
-				}
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						timeCurrent.setTime(time / 1000);
+						timeSlider.setValue(time / 1000);
+						commentTable.indicateCurrentComment(time, focusRange);
+						if (jMenuItemOptionViewSyncMode.isSelected()) {
+							commentTable.setViewCenterByTime(time);
+						}
+					}
+				});
 			} catch (Exception e) {
 				System.err.println("Error(MainFrame): some exception is caused in run() of DrawGraphTask."); //$NON-NLS-1$
 			}
