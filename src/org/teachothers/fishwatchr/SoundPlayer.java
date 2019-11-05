@@ -38,10 +38,9 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import uk.co.caprica.vlcj.media.VideoTrackInfo;
-import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
-import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.component.EmbeddedMediaListPlayerComponent;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
 public class SoundPlayer extends Thread {
@@ -97,8 +96,8 @@ public class SoundPlayer extends Thread {
 	private TargetDataLine targetDataLine;
 	private SoundGraphBuffer soundGraphBuf;
 	
-	private CallbackMediaPlayerComponent mediaPlayerComponent;
-	private MediaPlayer mp;
+	private EmbeddedMediaListPlayerComponent mediaPlayerComponent;
+	private EmbeddedMediaPlayer mp;
 
 	
 	private String targetFilename;
@@ -112,10 +111,7 @@ public class SoundPlayer extends Thread {
 	
 	private boolean saveFlag = false;
 
-//	private MediaPlayerEventListener mediaPlayerEventListener;
-	
-	private float videoAspectRatio = 16f/9f;
-	private float defaultVideoAspectRatio = 16f/9f; // default ratio of the video file
+	private String defaultVideoAspectRatio = ""; // default ratio of the video file
 	
 	private boolean isStreaming = false;
 	
@@ -124,7 +120,7 @@ public class SoundPlayer extends Thread {
 		this.mainFrame = mainFrame;
 		soundGraphBuf = new SoundGraphBuffer((int) Math.ceil(LIMIT_RECODING_TIME / frameLength));
 		init();
-		mediaPlayerComponent = new CallbackMediaPlayerComponent();
+		mediaPlayerComponent = new EmbeddedMediaListPlayerComponent();
 		mp = mediaPlayerComponent.mediaPlayer();
 		mp.events().addMediaPlayerEventListener(mediaPlayerEventListenerr);
 	}
@@ -133,68 +129,27 @@ public class SoundPlayer extends Thread {
 		mediaPlayerComponent.release();
 	}
 	
-	public void resizeMediaPlayer(int width, int height){
-		System.err.println("hey resize0");
-		long now = 0;
-		int currentState = getPlayerState();
+	
+	public void setSize(int width, int height) {
+		mediaPlayerComponent.setSize(width, height);
+	}
+	
 
-		now = mp.status().time();
-		mediaPlayerComponent.setSize(new Dimension(width, height));
-
-        if(playerType == PLAYER_TYPE_DEFAULT){
-			System.err.println("hey resize default");
-    		SwingUtilities.invokeLater(new Runnable() {
-    			@Override
-    			public void run() {
-    	    		mainFrame.changeState(state);
-    			}
-    		});
-        	System.err.println("return: " + state); //$NON-NLS-1$
-			return;
-		}
-		
-        
-		state = currentState;
-		if(currentState == PLAYER_STATE_PAUSE){
-			mp.media().start(targetFilename);
-			mp.controls().setTime(now);
-			mp.controls().pause();
-		} else if(currentState == PLAYER_STATE_PLAY){
-			System.err.println("hey resize3");
-			mp.media().start(targetFilename);
-			if (isStreaming) {
-				for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
-					if (mp.status().isSeekable()) {
-						break;
-					} else {
-						try {
-							Thread.sleep(RETRY_INTERVAL);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-			mp.controls().setTime(now);
-		} else if(currentState == PLAYER_STATE_STOP){
-			System.err.println("hey resize4");
-			mp.media().prepare(targetFilename);
-		}
-
-		// hey vlcj4
+	public void setVideoAspectRatio(String videoAspectRatio){
 		SwingUtilities.invokeLater(new Runnable() {
+			
 			@Override
 			public void run() {
-	    		mainFrame.changeState(state);
+				// TODO Auto-generated method stub
+				if(videoAspectRatio.equals(DEFAULT_VIDEO_ASPECT_RATIO)) {
+					mp.video().setAspectRatio(defaultVideoAspectRatio);
+				} else {
+					mp.video().setAspectRatio(videoAspectRatio);
+				}
+				mediaPlayerComponent.setSize(mediaPlayerComponent.getSize());
+				
 			}
 		});
-	}
-
-	
-	public void setVideoAspectRatio(float videoAspectRatio){
-		Dimension componentSize = mediaPlayerComponent.getSize();
-		this.videoAspectRatio = videoAspectRatio;
-		resizeMediaPlayer(componentSize.width, componentSize.height);
 	}
 	
 	public String[] getAvailableVideoAspectRatio(){
@@ -223,6 +178,7 @@ public class SoundPlayer extends Thread {
 		soundGraphBuf.clear();
 		soundLength = -1;
 		saveFlag = false;
+		defaultVideoAspectRatio = "";
 	}
 
 	
@@ -815,7 +771,7 @@ public class SoundPlayer extends Thread {
 		return playerType;
 	}
 	
-	public CallbackMediaPlayerComponent getMediaplayerComponent(){
+	public EmbeddedMediaListPlayerComponent getMediaplayerComponent(){
 		if(mediaPlayerComponent == null) {System.err.println("null");}
 		return mediaPlayerComponent;
 	}
@@ -850,14 +806,12 @@ public class SoundPlayer extends Thread {
 	private boolean readVideoInfo(String targetFilename) {
 		Dimension videoDimension = null;
 		mp.media().start(targetFilename);
-//		playVlc();
 		for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
 			videoDimension = mp.video().videoDimension();
 			if (videoDimension != null && videoDimension.height != 0
 					&& videoDimension.width != 0) {
 				soundLength = (float) (mp.status().length() / 1000);
-				setDefaultVideoAspectRatio(videoDimension);
-//				myStop();
+				defaultVideoAspectRatio = mp.video().aspectRatio();
 				break;
 			} else {
 				try {
@@ -875,37 +829,4 @@ public class SoundPlayer extends Thread {
 			return true;
 		}
 	}
-
-
-    private void setDefaultVideoAspectRatio(Dimension videoDimension) {
-    	int pixelAspectRatio = 1; // default
-    	int pixelAspectRatioBase = 1; // default
-    	
-    	if(mp.media().info().videoTracks().size() > 0) {
-        	VideoTrackInfo videoTrackInfo = (VideoTrackInfo)mp.media().info().videoTracks().get(0);
-        	
-        	pixelAspectRatio = videoTrackInfo.sampleAspectRatio();
-        	pixelAspectRatioBase = videoTrackInfo.sampleAspectRatioBase();
-
-        	if(pixelAspectRatio == 0 || pixelAspectRatioBase == 0) {
-        		pixelAspectRatio = 1;
-        		pixelAspectRatioBase = 1;
-        	}
-    	}
-    	
-    	if(videoDimension != null) {
-        	videoAspectRatio =  (float)videoDimension.width / (float)videoDimension.height
-        			* (float)pixelAspectRatio / (float)pixelAspectRatioBase; 
-    	} else {
-    		// use videoAspectRatios[1] (= 16:9) 
-    		String[] strRatio = videoAspectRatios[1].split(":"); //$NON-NLS-1$
-        	videoAspectRatio = Float.parseFloat(strRatio[0]) / Float.parseFloat(strRatio[1]); 
-    	}
-    	defaultVideoAspectRatio = videoAspectRatio;
-    }
-    
-
-    public float getDefaultVideoAspectRatio() {
-    	return defaultVideoAspectRatio;
-    }
 }	

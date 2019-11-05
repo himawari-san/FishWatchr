@@ -1552,7 +1552,7 @@ public class MainFrame extends JFrame {
 							}
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
-									soundPlayer.resizeMediaPlayer(size.width, size.height);
+									soundPlayer.setSize(size.width, size.height);
 									annotationGlobalViewPanel.updatePanel();
 								}
 							});
@@ -2795,26 +2795,21 @@ public class MainFrame extends JFrame {
 			jMenuItemOptionVideoRatio = new JMenu(Messages.getString("MainFrame.120")); //$NON-NLS-1$
 			ButtonGroup itemGroup = new ButtonGroup();
 			for (int i = 0; i < videoAspectRatios.length; i++) {
-				String strVideoAspectRatio = videoAspectRatios[i];
-				final float videoAspectRatio;
-				if(strVideoAspectRatio.equals(SoundPlayer.DEFAULT_VIDEO_ASPECT_RATIO)) {
-					videoAspectRatio = 0;
-				} else {
-					String[] strRatio = strVideoAspectRatio.split(":"); //$NON-NLS-1$
-					videoAspectRatio = Float.parseFloat(strRatio[0]) / Float.parseFloat(strRatio[1]);
-				}
+				String videoAspectRatio = videoAspectRatios[i];
 				final int ii = i;
-				JMenuItem item = new JRadioButtonMenuItem(strVideoAspectRatio);
+				JMenuItem item = new JRadioButtonMenuItem(videoAspectRatio);
 				item.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(timer != null){
 							timer.cancel();
 						}
-						if(videoAspectRatio == 0) { // default ratio of the video file
-							soundPlayer.setVideoAspectRatio(soundPlayer.getDefaultVideoAspectRatio());
-						} else {
-							soundPlayer.setVideoAspectRatio(videoAspectRatio);
-						}
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								soundPlayer.setVideoAspectRatio(videoAspectRatio);
+							}
+						});
 						timerStart();
 						int playerState = soundPlayer.getPlayerState();
 						if(playerState == SoundPlayer.PLAYER_STATE_PAUSE){
@@ -2825,8 +2820,6 @@ public class MainFrame extends JFrame {
 						iVideoAspectRatio = ii;
 					}
 				});
-				strVideoAspectRatio.replaceAll("f", ""); //$NON-NLS-1$ //$NON-NLS-2$
-				strVideoAspectRatio.replaceAll("/", ":"); //$NON-NLS-1$ //$NON-NLS-2$
 				jMenuItemOptionVideoRatio.add(item);
 				itemGroup.add(item);
 				if (i == iVideoAspectRatio) {
