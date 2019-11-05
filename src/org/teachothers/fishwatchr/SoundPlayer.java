@@ -115,14 +115,14 @@ public class SoundPlayer extends Thread {
 	
 	private boolean isStreaming = false;
 	
-	public SoundPlayer(MainFrame mainFrame, MediaPlayerEventListener mediaPlayerEventListenerr) {
-		if(mediaPlayerEventListenerr==null)System.err.println("null");
+	public SoundPlayer(MainFrame mainFrame, MediaPlayerEventListener mediaPlayerEventListener) {
+		if(mediaPlayerEventListener==null)System.err.println("null");
 		this.mainFrame = mainFrame;
 		soundGraphBuf = new SoundGraphBuffer((int) Math.ceil(LIMIT_RECODING_TIME / frameLength));
 		init();
 		mediaPlayerComponent = new EmbeddedMediaListPlayerComponent();
 		mp = mediaPlayerComponent.mediaPlayer();
-		mp.events().addMediaPlayerEventListener(mediaPlayerEventListenerr);
+		mp.events().addMediaPlayerEventListener(mediaPlayerEventListener);
 	}
 	
 	public void release() {
