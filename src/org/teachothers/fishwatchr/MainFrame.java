@@ -1230,6 +1230,8 @@ public class MainFrame extends JFrame {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+				soundPlayer.release();
+				
 				// stop cell editing before exit
 				if(commentTable.getCellEditor() != null){
 					commentTable.getCellEditor().stopCellEditing();
