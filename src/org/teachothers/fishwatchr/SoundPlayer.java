@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -814,15 +815,18 @@ public class SoundPlayer extends Thread {
 	
 	
     public List<CaptureDevice> getVideoDeviceList(){
-		// hey vlcj4
-    	return null;
-//    	return mediaPlayerComponent.getVideoDeviceList();
+        ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
+    	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));
+        return captureDevices;
     }
 
     public List<CaptureDevice> getAudioDeviceList(){
-		// hey vlcj4
-    	return null;
-//    	return mediaPlayerComponent.getAudioDeviceList();
+        ArrayList<CaptureDevice> captureDevices = new ArrayList<CaptureDevice>();
+    	CaptureDevice captureDevice = new CaptureDevice("", "Default", CaptureDevice.TYPE_AUDIO); //$NON-NLS-1$ //$NON-NLS-2$
+    	captureDevices.add(captureDevice);
+    	captureDevices.add(new CaptureDevice(CaptureDevice.LABEL_NONE, CaptureDevice.LABEL_NONE, CaptureDevice.TYPE_NONE));
+
+        return captureDevices;
     }
 	
 
