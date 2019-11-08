@@ -97,8 +97,10 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.teachothers.fishwatchr.AnnotationGlobalViewer.FilteredViewCheckBoxCallBack;
+import org.teachothers.fishwatchr.SoundPlayer.TextOverlayInfo;
 import org.xml.sax.SAXException;
 
+import uk.co.caprica.vlcj.player.base.MarqueePosition;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
@@ -247,7 +249,7 @@ public class MainFrame extends JFrame {
 	// private int adjustmentJumpAtComment = 5; // ジャンプ時補正（コメント，行）
 	private float playRate = 1.0f; // 再生速度
 	private int iVideoAspectRatio = 0;
-	private int iTextOverlayStyle = 0;
+	private MarqueePosition textOverlayPosition = null; // no overlay text
 	private int iMergeMode = 0;
 	
 	// ボタンタイプの初期値（討論者優先）
@@ -2766,22 +2768,23 @@ public class MainFrame extends JFrame {
 
 	
 	private JMenuItem getJMenuItemOptionTextOverlay() {
-		String[] textOverlayStyles = soundPlayer.getAvailableTextOverlayStyles();
+		TextOverlayInfo textOverlayInfo = soundPlayer.getTextOverlayInfo();
 
 		if (jMenuItemOptionTextOverlay == null) {
 			jMenuItemOptionTextOverlay = new JMenu(Messages.getString("MainFrame.119")); //$NON-NLS-1$
 			ButtonGroup itemGroup = new ButtonGroup();
-			for (int i = 0; i < textOverlayStyles.length; i++) {
+			for (int i = 0; i < textOverlayInfo.count(); i++) {
 				final int ii = i;
-				JMenuItem item = new JRadioButtonMenuItem(textOverlayStyles[i]);
+				JMenuItem item = new JRadioButtonMenuItem(textOverlayInfo.getLabel(i));
 				item.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						soundPlayer.setTextOverlayStyle(ii);
+						soundPlayer.setTextOverlayPosition(textOverlayInfo.getPosition(ii));
+						textOverlayPosition = textOverlayInfo.getPosition(ii);
 					}
 				});
 				jMenuItemOptionTextOverlay.add(item);
 				itemGroup.add(item);
-				if (i == iTextOverlayStyle) {
+				if (i == 0) {
 					item.setSelected(true);
 				}
 			}
@@ -3322,7 +3325,6 @@ public class MainFrame extends JFrame {
 				} else {
 					time = soundPlayer.getCurrentRecordingTime();
 				}
-				soundPlayer.setOverlayText(commentTable.getCurrentComment());
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -3331,6 +3333,9 @@ public class MainFrame extends JFrame {
 						commentTable.indicateCurrentComment(time, focusRange);
 						if (jMenuItemOptionViewSyncMode.isSelected()) {
 							commentTable.setViewCenterByTime(time);
+						}
+						if(textOverlayPosition != null) {
+							soundPlayer.setOverlayText(commentTable.getCurrentComment());
 						}
 					}
 				});

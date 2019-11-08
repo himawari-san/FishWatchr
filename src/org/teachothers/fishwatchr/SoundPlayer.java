@@ -18,6 +18,7 @@
 
 package org.teachothers.fishwatchr;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +39,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import uk.co.caprica.vlcj.player.base.Marquee;
+import uk.co.caprica.vlcj.player.base.MarqueePosition;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaListPlayerComponent;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
@@ -52,7 +55,8 @@ public class SoundPlayer extends Thread {
 	private static String[] SOUND_FILE_EXTENSIONS = { "mp3", "oga", "wav", "wma"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private final static int MAX_RETRY_REFERRING_DATA = 100;  
 	private final static int RETRY_INTERVAL = 100; // msec  
-    private final String overlayStyles[] = {Messages.getString("VLCDirectMediaPlayerComponent.0"), Messages.getString("VLCDirectMediaPlayerComponent.1"), Messages.getString("VLCDirectMediaPlayerComponent.2"), Messages.getString("VLCDirectMediaPlayerComponent.3")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    private final String textOverlayLabels[] = {Messages.getString("VLCDirectMediaPlayerComponent.0"), Messages.getString("VLCDirectMediaPlayerComponent.1"), Messages.getString("VLCDirectMediaPlayerComponent.2"), Messages.getString("VLCDirectMediaPlayerComponent.3")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    private final MarqueePosition textOverlayPositions[] = {null, MarqueePosition.TOP_LEFT, MarqueePosition.CENTRE, MarqueePosition.BOTTOM_LEFT};
 	
 	public final static int PLAYER_STATE_STOP = 0;
 	public final static int PLAYER_STATE_RECORD = 1;
@@ -114,10 +118,15 @@ public class SoundPlayer extends Thread {
 	private String defaultVideoAspectRatio = ""; // default ratio of the video file
 	
 	private boolean isStreaming = false;
+
+	private MarqueePosition currentOverlayPosition = null;
+    private TextOverlayInfo textOverlayInfo;
+
 	
 	public SoundPlayer(MainFrame mainFrame, MediaPlayerEventListener mediaPlayerEventListener) {
 		if(mediaPlayerEventListener==null)System.err.println("null");
 		this.mainFrame = mainFrame;
+		textOverlayInfo = new TextOverlayInfo(textOverlayPositions, textOverlayLabels);
 		soundGraphBuf = new SoundGraphBuffer((int) Math.ceil(LIMIT_RECODING_TIME / frameLength));
 		init();
 		mediaPlayerComponent = new EmbeddedMediaListPlayerComponent();
@@ -157,14 +166,18 @@ public class SoundPlayer extends Thread {
 	}
 
 	
-	public void setTextOverlayStyle(int iStyle){
-		// hey vlcj4
-		int thiIStyle = iStyle;
-//		mediaPlayerComponent.setTextOverlayStyle(iStyle);
+	public void setTextOverlayPosition(MarqueePosition position){
+		if(position == null) {
+			mp.marquee().enable(false);
+			return;
+		} 
+		
+		currentOverlayPosition = position;
+		mp.marquee().enable(true);
 	}
 	
-	public String[] getAvailableTextOverlayStyles(){
-		return overlayStyles;
+	public TextOverlayInfo getTextOverlayInfo(){
+		return textOverlayInfo;
 	}
 
 	
@@ -785,8 +798,18 @@ public class SoundPlayer extends Thread {
 
 	
 	public void setOverlayText(String text){
-		// hey vlcj4
-//		mediaPlayerComponent.setMarquee(text);
+		if(currentOverlayPosition == null) {
+			return;
+		}
+		
+		mp.marquee().enable(true);
+		Marquee.marquee()
+		.opacity(255)
+	     .position(currentOverlayPosition)
+	     .colour(Color.WHITE)
+	     .text(text)
+	     .size(40)
+	     .apply(mp);
 	}
 	
 	
@@ -827,6 +850,28 @@ public class SoundPlayer extends Thread {
 			return false;
 		} else {
 			return true;
+		}
+	}
+	
+	class TextOverlayInfo {
+		MarqueePosition[] positions;
+		String[] labels;
+
+		public TextOverlayInfo (MarqueePosition[] positions, String[] labels){
+			this.positions = positions;
+			this.labels = labels;
+		}
+		
+		public String getLabel(int i) {
+			return labels[i];
+		}
+		
+		public MarqueePosition getPosition(int i) {
+			return positions[i];
+		}
+		
+		public int count() {
+			return positions.length;
 		}
 	}
 }	
