@@ -21,20 +21,14 @@ package org.teachothers.fishwatchr;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
@@ -47,7 +41,7 @@ import uk.co.caprica.vlcj.player.component.EmbeddedMediaListPlayerComponent;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
-public class SoundPlayer extends Thread {
+public class SoundPlayer {
 	public static final int LIMIT_RECODING_TIME = 60 * 60 * 2; // 7200sec = 2hours
 	public static final String DEFAULT_VIDEO_ASPECT_RATIO = "default"; //$NON-NLS-1$
 	public static String SOUNDFILE_EXTENSION = ".wav"; //$NON-NLS-1$
@@ -67,10 +61,6 @@ public class SoundPlayer extends Thread {
 	public final static int PLAYER_STATE_PLAY = 4;
 	public final static int PLAYER_STATE_STOPPING = 5;
 
-	public final static int PLAYER_TYPE_DEFAULT = 0; // Java Sound 
-	public final static int PLAYER_TYPE_VLC = 1; // VLC
-	
-	
 	public final static double defaultFrameLength = 0.25; // sec
 	public final static float defaultSampleRate = 10000; // Hz
 	public final static int defaultSampleSizeInBits = 16; // bits
@@ -85,12 +75,9 @@ public class SoundPlayer extends Thread {
 	public static boolean isSigned = defaultIsSigned;
 	public static boolean isBigEndian = defaultIsBigEndian;
 	
-//	public static int playerType = PLAYER_TYPE_VLC;
-	public static int playerType = PLAYER_TYPE_DEFAULT;
 	public static boolean isSoundBufferEnable = false;
 	
 	private AudioFormat linearFormat;
-	private DataLine.Info info;
 
 	private byte[] buf; 
 	private int maxDataSize;
@@ -108,12 +95,6 @@ public class SoundPlayer extends Thread {
 	private String targetFilename;
 	private float soundLength; // 収録時間(sec)
 	
-	private MainFrame mainFrame;
-
-	private int skippedFrame;
-
-	private Thread myThread;
-	
 	private boolean saveFlag = false;
 
 	private String defaultVideoAspectRatio = ""; // default ratio of the video file
@@ -124,9 +105,8 @@ public class SoundPlayer extends Thread {
     private TextOverlayInfo textOverlayInfo;
 
 	
-	public SoundPlayer(MainFrame mainFrame, MediaPlayerEventListener mediaPlayerEventListener) {
+	public SoundPlayer(MediaPlayerEventListener mediaPlayerEventListener) {
 		if(mediaPlayerEventListener==null)System.err.println("null");
-		this.mainFrame = mainFrame;
 		textOverlayInfo = new TextOverlayInfo(textOverlayPositions, textOverlayLabels);
 		soundGraphBuf = new SoundGraphBuffer((int) Math.ceil(LIMIT_RECODING_TIME / frameLength));
 		init();
@@ -188,7 +168,6 @@ public class SoundPlayer extends Thread {
 		targetFilename = ""; //$NON-NLS-1$
 		startTime = null;
 		state = PLAYER_STATE_STOP;
-		skippedFrame = 0;
 		soundGraphBuf.clear();
 		soundLength = -1;
 		saveFlag = false;
@@ -197,11 +176,7 @@ public class SoundPlayer extends Thread {
 
 	
 	public void initState(){
-		skippedFrame = 0;
 		soundGraphBuf.setPosition(0);
-		if(playerType == PLAYER_TYPE_VLC){
-//			setP
-		}
 	}
 	
 
@@ -229,7 +204,6 @@ public class SoundPlayer extends Thread {
 			// ファイル名だけセットするということでいいか？
 			return true;
 		} else if(targetFilename.toLowerCase().endsWith(".wav")){ //$NON-NLS-1$
-			playerType = PLAYER_TYPE_VLC;
 			readWavInfo(targetFilename);
 			buf = new byte[maxDataSize]; 
 			readWav(targetFilename, buf);
@@ -237,13 +211,10 @@ public class SoundPlayer extends Thread {
 			mp.media().start(targetFilename);
 		} else if(targetFilename.startsWith("http://") || targetFilename.startsWith("file://") || targetFilename.startsWith("https://")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			isStreaming = true;
-			playerType = PLAYER_TYPE_VLC;
 			if(!readVideoInfo(targetFilename)) {
 				return false;
 			}
 		} else {
-			playerType = PLAYER_TYPE_VLC;
-
 			// wav データの読み込み
 			String wavFilename = targetFilename + ".wav"; //$NON-NLS-1$
 			if(flagWaveform){
@@ -253,7 +224,7 @@ public class SoundPlayer extends Thread {
 					readWav(wavFilename, buf);
 					setSoundBufferEnable(true);
 				} else {
-					JOptionPane.showMessageDialog(mainFrame,
+					JOptionPane.showMessageDialog(mediaPlayerComponent.getParent(),
 							Messages.getString("SoundPlayer.0") + //$NON-NLS-1$
 							"(" + wavFilename + ")" + //$NON-NLS-1$ //$NON-NLS-2$
 							Messages.getString("SoundPlayer.3")); //$NON-NLS-1$
@@ -273,7 +244,7 @@ public class SoundPlayer extends Thread {
 							return false;
 						}
 					}
-					JOptionPane.showMessageDialog(mainFrame, wavFilename
+					JOptionPane.showMessageDialog(mediaPlayerComponent.getParent(), wavFilename
 							+ Messages.getString("SoundPlayer.4")); //$NON-NLS-1$
 					try {
 						Thread.sleep(2000);
@@ -289,18 +260,12 @@ public class SoundPlayer extends Thread {
 				}
 			}
 
-//			try {
-//				join();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-
 			if (isSoundFile(targetFilename)) {
 				mp.media().start(targetFilename);
 				soundLength = (float) (mp.status().length() / 1000);
 				mp.controls().stop();
-				mp.release();
-				// hey vlcj4
+//				// hey vlcj4
+//				mp.release();
 //				mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
 //				mp.events().addMediaPlayerEventListener(mpEventListener);
 				mp.media().prepare(targetFilename);
@@ -377,185 +342,11 @@ public class SoundPlayer extends Thread {
 		return soundLength;
 	}
 	
-	
-	public void start(){
-		myThread = new Thread(this);
-		myThread.start();
-	}
-
-	public void run() {
-//	public synchronized void run() {
-		if(state == PLAYER_STATE_RECORD){
-			System.err.println("record!"); //$NON-NLS-1$
-			record();
-		} else if(state == PLAYER_STATE_PLAY){
-			play();
-		}
-	}
-
-
-	public void record(){
-		saveFlag = false;
-
-		String tmpTargetFilename = targetFilename + ".tmp"; //$NON-NLS-1$
-		File tmpFile;
-		
-		try {
-			// ターゲットデータラインを取得する
-			info = new DataLine.Info(TargetDataLine.class, linearFormat);
-
-			targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
-			
-			// ターゲットデータラインをオープンする
-			targetDataLine.open(linearFormat);
-			System.err.println(targetDataLine.getBufferSize());
-			// マイク入力開始
-			targetDataLine.start();
-
-			// ターゲットデータラインから入力ストリームを取得する
-			AudioInputStream audioStream = new AudioInputStream(targetDataLine);
-
-			// 音声出力用テンポラリファイル
-			tmpFile = new File(tmpTargetFilename);
-			FileOutputStream fos = new FileOutputStream(tmpFile);
-
-			int nRead;
-			int sumRead = 0;
-			while (state == PLAYER_STATE_RECORD) {
-				nRead = audioStream.read(buf, 0, buf.length);
-				fos.write(buf, 0, nRead);
-				soundGraphBuf.add(buf, nRead, channels);
-				sumRead += nRead;
-			}
-
-			fos.close();
-			
-			// マイク入力停止
-			// ターゲットデータラインをクローズする
-			targetDataLine.close();
-			
-			// wav ファイルへ書き出す
-			File audioFile = new File(targetFilename);
-			FileInputStream fis = new FileInputStream(tmpTargetFilename);
-			AudioInputStream audioStream2 = new AudioInputStream(fis, linearFormat, sumRead/linearFormat.getFrameSize());
-			AudioSystem.write(audioStream2, AudioFileFormat.Type.WAVE, audioFile);
-			fis.close();
-			audioStream.close();
-			tmpFile.delete();
-			saveFlag = true;
-			// hey vlcj4
-//			initCallback();
-		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	public boolean isSaved(){
 		return saveFlag;
 	}
 
-
-	public synchronized void play(){
-
-		try {
-	        AudioInputStream ais = AudioSystem.getAudioInputStream(new File(targetFilename));
-	        
-			// ターゲットデータラインを取得する
-			info = new DataLine.Info(SourceDataLine.class, linearFormat);
-			SourceDataLine source = (SourceDataLine)AudioSystem.getLine(info);
-	        // ソースデータラインを開く
-	        source.open(linearFormat);
-	        // スピーカー出力開始
-	        source.start();
-
-	        while(state != PLAYER_STATE_STOPPING){
-	        	if(state == PLAYER_STATE_PAUSE){
-	        		wait();
-	        	}
-	        	
-	        	if(skippedFrame < 0){
-	        		source.flush();
-	        		ais.close();
-	    	        ais = AudioSystem.getAudioInputStream(new File(targetFilename));
-	    	        int newFrame = soundGraphBuf.getPosition() + skippedFrame;
-	    	        if(newFrame < 0){
-	    	        	newFrame = 0;
-	    	        }
-
-	    	        ais.skip(newFrame * buf.length);
-	    	        soundGraphBuf.setPosition(newFrame);
-
-	    	        skippedFrame = 0;
-	    	        continue;
-	        	}
-
-				int nRead = ais.read(buf);
-				if(nRead == -1){
-					break;
-				}
-
-				soundGraphBuf.add(buf, nRead, channels);
-
-				// skip forwards
-				if(skippedFrame > 0){
-					skippedFrame--;
-					continue;
-				}
-
-				source.write(buf, 0, nRead);
-	        }
-	        ais.close();
-    		source.flush();
-	        source.close();
-			// hey vlcj4
-//	        initCallback();
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (UnsupportedAudioFileException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	
-	public void playVlc(){
-		if(isStreaming){
-			mp.media().start(targetFilename);
-			for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
-				if (mp.status().isSeekable()) {
-					return;
-				} else {
-					try {
-						Thread.sleep(RETRY_INTERVAL);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			stopVlc();
-		} else {
-			mp.controls().play();
-		}
-	}
-
-	public void stopVlc(){
-		if(mp != null && mp.status().isPlayable()){
-	        mp.controls().stop();
-		}
-	}
-
-	public void pauseVlc(){
-		if(mp.status().isPlaying()){
-			mp.controls().pause();
-		}
-	}
 
 	public long getCurrentRecordingPosition(){
 		return targetDataLine.getLongFramePosition();
@@ -571,105 +362,63 @@ public class SoundPlayer extends Thread {
 
 	public void myRecord(String filename, boolean withSoundFile, CaptureDevice videoDevice, CaptureDevice audioDevice){
 		state = PLAYER_STATE_RECORD;
-		playerType = PLAYER_TYPE_DEFAULT;
 		startTime = new Date();
 		targetFilename = filename;
 		if(withSoundFile){
-			playerType = PLAYER_TYPE_VLC;
-			recordVLC(videoDevice, audioDevice);
-//			start();
+	        String mrl = CaptureDevice.getMRL(videoDevice, audioDevice);
+	        String[] options = CaptureDevice.getOption(videoDevice, audioDevice, targetFilename);
+
+	        mp.media().start(mrl, options);
 		}
 	}
 	
 	
-	public void recordVLC(CaptureDevice videoDevice, CaptureDevice audioDevice){
-        String mrl = CaptureDevice.getMRL(videoDevice, audioDevice);
-        String[] options = CaptureDevice.getOption(videoDevice, audioDevice, targetFilename);
-
-		if(mp != null) mp.release();
-		// hey vlcj4
-//		mp = mediaPlayerComponent.getMediaPlayer(videoAspectRatio);
-//        mp.events().addMediaPlayerEventListener(mpEventListener);
-        mp.media().start(mrl, options);
-	}
-	
-	
-
 	public void myPlay(){
 		state = PLAYER_STATE_PLAY;
-		if(playerType == PLAYER_TYPE_DEFAULT){
-			start();
+
+		if(isStreaming){
+			mp.media().start(targetFilename);
+			for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
+				if (mp.status().isSeekable()) {
+					return;
+				} else {
+					try {
+						Thread.sleep(RETRY_INTERVAL);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			myStop();
 		} else {
-			playVlc();
+			mp.controls().play();
 		}
 	}
 
 	
 	public void myStop(){
-		if(playerType == PLAYER_TYPE_VLC){
-			stopVlc();
-		} else if(state == PLAYER_STATE_PLAY){
-			state = PLAYER_STATE_STOPPING;
-		} else {
-			if(state == PLAYER_STATE_RECORD){ // jMenuItemOptionRecorderMode.isSelected() == false
-				skippedFrame = 0;
-				soundGraphBuf.setPosition(0);
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-				        mainFrame.changeState(PLAYER_STATE_STOP);
-					}
-				});
-			}
-			state = PLAYER_STATE_STOP;
-		}
-
-		// STOP になるまで待つ
-		int c = 0;
-		while(state == PLAYER_STATE_STOPPING){
-			System.err.println("stopping"); //$NON-NLS-1$
-			try {
-				Thread.sleep(RETRY_INTERVAL);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			if(c++ > 30) break; // 永久ループ防止（3sec）
+		if(mp != null && mp.status().isPlayable()){
+	        mp.controls().stop();
 		}
 	}
 
 	public void myPause(){
 		state = PLAYER_STATE_PAUSE;
-		if(playerType == PLAYER_TYPE_VLC){
-			pauseVlc();
+
+		if(mp.status().isPlaying()){
+			mp.controls().pause();
 		}
 	}
 
-	public synchronized void myResume(){
+	public void myResume(){
 		state = PLAYER_STATE_PLAY;
-		if(playerType == PLAYER_TYPE_VLC){
-			playVlc();
-		} else {
-			notify();
-		}
+		myPlay();
 	}
-	
-	public void myJoin(){
-		if(myThread == null) return;
-		
-		try {
-			myThread.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	
 
 	public SoundGraphBuffer getSoundGraphBuffer(){
 		return soundGraphBuf;
 	}
-
 	
 	
 	public Date getStartTime(){
@@ -709,10 +458,6 @@ public class SoundPlayer extends Thread {
 		return targetFilename;
 	}
 
-//	public void setTargetFilename(String targetFilename){
-//		this.targetFilename = targetFilename;
-//	}
-
 
 	public static String[] getPlayableFileExtensions(){
 		return MEDIA_FILE_EXTENSIONS;
@@ -749,40 +494,26 @@ public class SoundPlayer extends Thread {
 	
 	
 	public void forward(int msec){
-		skippedFrame = (int)(msec / frameLength /1000);
-		if(playerType == PLAYER_TYPE_VLC){		
-			mp.controls().skipTime(msec);
-		}
+		mp.controls().skipTime(msec);
 	}
 
 	public void backward(int msec){
-		skippedFrame = - (int)(msec / frameLength / 1000);
-		if(playerType == PLAYER_TYPE_VLC){
-			mp.controls().skipTime(-msec);
-		}
+		mp.controls().skipTime(-msec);
 	}
 	
 	public void setPlayPoint(long msec){
-		if(playerType == PLAYER_TYPE_VLC){
-			mp.controls().setTime(msec);
-		} else {
-			skippedFrame = (int)(msec/frameLength/1000) - soundGraphBuf.getPosition();
-		}
+		mp.controls().setTime(msec);
 	}
 	
 	
 	public void setPlayRate(float rate){
-		if(playerType == PLAYER_TYPE_VLC && mp.status().isPlaying()){
+		if(mp.status().isPlaying()){
 			mp.controls().setRate(rate);
 		}
 	}
 	
 	public double getFrameLength(){
 		return frameLength;
-	}
-	
-	public int getPlayerType(){
-		return playerType;
 	}
 	
 	public EmbeddedMediaListPlayerComponent getMediaplayerComponent(){
@@ -850,7 +581,7 @@ public class SoundPlayer extends Thread {
 		}
 		
 		if(videoDimension == null) {
-			stopVlc();
+			myStop();
 			return false;
 		} else {
 			return true;

@@ -315,7 +315,7 @@ public class MainFrame extends JFrame {
 		// commentTypes 初期値
 		commentTypes = new ArrayList<CommentType>();
 		
-		soundPlayer = new SoundPlayer(this, new MediaPlayerEventAdapter() {
+		soundPlayer = new SoundPlayer(new MediaPlayerEventAdapter() {
 			@Override
 			public void finished(MediaPlayer mediaPlayer) {
 				System.err.println("vlc finish!"); //$NON-NLS-1$
