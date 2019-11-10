@@ -318,8 +318,15 @@ public class MainFrame extends JFrame {
 		soundPlayer = new SoundPlayer(new MediaPlayerEventAdapter() {
 			@Override
 			public void finished(MediaPlayer mediaPlayer) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						soundPlayer.initState();
+				        soundPlayer.setPlayerState(SoundPlayer.PLAYER_STATE_STOP);
+				        changeState(SoundPlayer.PLAYER_STATE_STOP);
+					}
+				});
 				System.err.println("vlc finish!"); //$NON-NLS-1$
-				mediaPlayerCallback();
 	        }
 	        
 	        @Override
@@ -327,17 +334,49 @@ public class MainFrame extends JFrame {
 				// TODO Auto-generated method stub
 				super.opening(mediaPlayer);
 	        	System.err.println("state play"); //$NON-NLS-1$
-	        	SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						changeState(SoundPlayer.PLAYER_STATE_PLAY);
-			        	timerStart();
-					}
-				});
+				if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD) {
+		        	SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							changeState(SoundPlayer.PLAYER_STATE_RECORD);
+				        	timerStart();
+						}
+					});
+				} else {
+		        	SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							changeState(SoundPlayer.PLAYER_STATE_PLAY);
+				        	timerStart();
+						}
+					});
+				}
 			}
 
 			public void stopped(MediaPlayer mediaPlayer){
+				int soundPlayerState = soundPlayer.getPlayerState();
+				
+				if(soundPlayerState == SoundPlayer.PLAYER_STATE_RECORD) {
+					return;
+				} else if(soundPlayerState == SoundPlayer.PLAYER_STATE_FINISH_RECORDING) {
+//					soundGraphBuf.setPosition(0);
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+					        soundPlayer.setPlayerState(SoundPlayer.PLAYER_STATE_STOP);
+							soundPlayer.setFile(mf, false);
+							annotationGlobalViewPanel.initScaleFactor();
+							soundPlayer.myStop();
+						}
+					});
+					return;
+				}
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+				        changeState(SoundPlayer.PLAYER_STATE_STOP);
+					}
+				});
 	        	System.err.println("vlc stop"); //$NON-NLS-1$
-				mediaPlayerCallback();
 	        }
 		});
 
@@ -350,24 +389,6 @@ public class MainFrame extends JFrame {
 		}
 	}
 
-	private void mediaPlayerCallback() {
-// hey vlcj
-		//		skippedFrame = 0;
-//		soundGraphBuf.setPosition(0);
-		if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD){
-			soundPlayer.setFile(mf, false);
-			soundPlayer.myStop();
-		}
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-		        changeState(SoundPlayer.PLAYER_STATE_STOP);
-		        updateMediaLengthUI(SoundPlayer.PLAYER_STATE_RECORD);
-			}
-		});
-        System.err.println("initcall state stop"); //$NON-NLS-1$
-        soundPlayer.setPlayerState(SoundPlayer.PLAYER_STATE_STOP);
-	}
 
 	public void init() {
 		// load config.xml
@@ -858,7 +879,6 @@ public class MainFrame extends JFrame {
 
 							soundPlayer.init();
 							soundPlayer.setDefaultRecordingParameters();
-//							soundPlayer.setTargetFilename(targetFilename);
 
 							timeSlider.setMinimum(0);
 							timeSlider.setMaximum(SoundPlayer.LIMIT_RECODING_TIME);

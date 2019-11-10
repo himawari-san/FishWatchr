@@ -59,7 +59,7 @@ public class SoundPlayer {
 	public final static int PLAYER_STATE_RESUME = 3;
 	public final static int PLAYER_STATE_INITALIZED = 0;
 	public final static int PLAYER_STATE_PLAY = 4;
-	public final static int PLAYER_STATE_STOPPING = 5;
+	public final static int PLAYER_STATE_FINISH_RECORDING = 5;
 
 	public final static double defaultFrameLength = 0.25; // sec
 	public final static float defaultSampleRate = 10000; // Hz
@@ -164,7 +164,6 @@ public class SoundPlayer {
 	
 	// すべての設定を初期化
 	public void init(){
-		System.err.println("hey ini0");
 		targetFilename = ""; //$NON-NLS-1$
 		startTime = null;
 		state = PLAYER_STATE_STOP;
@@ -397,8 +396,15 @@ public class SoundPlayer {
 
 	
 	public void myStop(){
+		if(getPlayerState() == PLAYER_STATE_RECORD) {
+			setPlayerState(PLAYER_STATE_FINISH_RECORDING);
+		} else {
+			setPlayerState(PLAYER_STATE_STOP);
+		}
+		
 		if(mp != null && mp.status().isPlayable()){
 	        mp.controls().stop();
+	        initState();
 		}
 	}
 
