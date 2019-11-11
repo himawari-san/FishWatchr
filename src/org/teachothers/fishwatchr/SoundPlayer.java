@@ -57,9 +57,9 @@ public class SoundPlayer {
 	public final static int PLAYER_STATE_RECORD = 1;
 	public final static int PLAYER_STATE_PAUSE = 2;
 	public final static int PLAYER_STATE_RESUME = 3;
-	public final static int PLAYER_STATE_INITALIZED = 0;
 	public final static int PLAYER_STATE_PLAY = 4;
 	public final static int PLAYER_STATE_FINISH_RECORDING = 5;
+	public final static int PLAYER_STATE_READ_VIDEO_INFO = 6;
 
 	public final static double defaultFrameLength = 0.25; // sec
 	public final static float defaultSampleRate = 10000; // Hz
@@ -569,6 +569,7 @@ public class SoundPlayer {
 
 	private boolean readVideoInfo(String targetFilename) {
 		Dimension videoDimension = null;
+		setPlayerState(PLAYER_STATE_READ_VIDEO_INFO);
 		mp.media().start(targetFilename);
 		for (int i = 0; i < MAX_RETRY_REFERRING_DATA; i++) {
 			videoDimension = mp.video().videoDimension();

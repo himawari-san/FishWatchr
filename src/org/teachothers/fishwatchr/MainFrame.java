@@ -354,7 +354,7 @@ public class MainFrame extends JFrame {
 			public void stopped(MediaPlayer mediaPlayer){
 				int soundPlayerState = soundPlayer.getPlayerState();
 				
-				if(soundPlayerState == SoundPlayer.PLAYER_STATE_RECORD) {
+				if(soundPlayerState == SoundPlayer.PLAYER_STATE_RECORD || soundPlayerState == SoundPlayer.PLAYER_STATE_READ_VIDEO_INFO) {
 					return;
 				} else if(soundPlayerState == SoundPlayer.PLAYER_STATE_FINISH_RECORDING) {
 //					soundGraphBuf.setPosition(0);
