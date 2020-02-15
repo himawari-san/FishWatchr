@@ -21,6 +21,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -61,12 +63,18 @@ public class FishWatchr {
 		}
 
 		// find vlc libs
+		String vlcLibraryName = RuntimeUtil.getLibVlcLibraryName();
 		if(osName.toLowerCase().startsWith("windows") && new File(jarParent + "/" + LOCAL_VLC_DIR_WINDOWS).exists()){ //$NON-NLS-1$ //$NON-NLS-2$
-			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$
+			NativeLibrary.addSearchPath(vlcLibraryName, jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$
 			LibC.INSTANCE._putenv("VLC_PLUGIN_PATH=" + jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$ //$NON-NLS-2$
 			System.err.println("Warning(FishWatchr): using the local vlc library, " + jarParent + "/" + LOCAL_VLC_DIR_WINDOWS); //$NON-NLS-1$ //$NON-NLS-2$
 		} else if(osName.toLowerCase().startsWith("mac") && new File(jarParent + "/" + LOCAL_VLC_DIR_MACOS).exists()){ //$NON-NLS-1$ //$NON-NLS-2$
-			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib"); //$NON-NLS-1$ //$NON-NLS-2$
+			NativeLibrary.addSearchPath(vlcLibraryName, jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib"); //$NON-NLS-1$ //$NON-NLS-2$
+
+			// https://github.com/caprica/vlcj/issues/643
+			NativeLibrary.addSearchPath(vlcLibraryName+"core", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib");
+			Map<String,?> options = new HashMap<>();
+			NativeLibrary.getInstance(vlcLibraryName+"core", options );
 
 			LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/plugins", 1); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			// for Youtube videos
