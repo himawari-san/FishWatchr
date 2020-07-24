@@ -172,7 +172,8 @@ public class CommentTable extends JTable {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				// コメントリストから行の削除
-				if(e.getButton() == MouseEvent.BUTTON3 && CommentTable.this.getSelectedColumnCount() > 0){
+				if((e.getButton() == MouseEvent.BUTTON3 || e.isControlDown())
+						&& CommentTable.this.getSelectedColumnCount() > 0){
 					popupMenu.show(CommentTable.this, e.getX(), e.getY());
 				}
 			}
