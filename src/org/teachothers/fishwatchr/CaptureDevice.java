@@ -112,7 +112,10 @@ public class CaptureDevice {
         	if(videoDevice.type == TYPE_NONE){
         		// audio only
 //    			mrl = "qtsound://" + audioDevice.getDeviceID(); // this code does not work.
-    			mrl = "qtsound://"; // use a default device //$NON-NLS-1$
+        		// this module has been removed. see https://wiki.videolan.org/Documentation:Modules/qtsound/
+//    			mrl = "qtsound://"; //$NON-NLS-1$
+    			mrl = "avaudiocapture://"; // does not work //$NON-NLS-1$
+//    			mrl = "avaudiocapture://AppleHDAEngineInput:1"; // does not work //$NON-NLS-1$
         	} else {
         		// video(and audio)
     			mrl = "qtcapture://" + videoDevice.getDeviceID(); //$NON-NLS-1$
