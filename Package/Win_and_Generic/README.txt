@@ -1,5 +1,5 @@
-観察支援ツール『FishWatchr』 ver.0.9.15.1 (2019-11-22)
-Copyright 2014-2019 山口昌也
+観察支援ツール『FishWatchr』 ver.0.9.16 (2020-07-25)
+Copyright 2014-2020 山口昌也
 (大学共同利用機関法人 人間文化研究機構 国立国語研究所)
 
 １．本パッケージの内容
@@ -40,8 +40,14 @@ Copyright 2014-2019 山口昌也
 　- 本パッケージの作成にあたっては，次のソフトウェア，および，助成金
     の支援を受けました。関係者の方々に深く感謝いたします。
 
-    -- VLC media player (http://www.videolan.org/)
-    -- vlcj (https://github.com/caprica/vlcj)
+    -- FishWatchr は以下のフリーソフトウェアを内部的に利用させていた
+       だいています。
+      * VLC media player (http://www.videolan.org/)
+        ライセンス: GPL 2
+	(https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+      * vlcj (https://github.com/caprica/vlcj)
+        ライセンス: GPL 3
+	(https://www.gnu.org/licenses/gpl-3.0.txt)
     -- JSPS科研費（17K01105，「ビデオアノテーションを利用した協同型実
        習活動支援システムに関する研究」）
     -- JSPS科研費（26560135，「即時性と教育効果を考慮した協調学習過程の
