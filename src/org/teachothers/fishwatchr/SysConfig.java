@@ -20,6 +20,7 @@ package org.teachothers.fishwatchr;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -62,7 +63,15 @@ public class SysConfig {
 	
 	
 	public void load(ArrayList<CommentType> commentTypes, ArrayList<User> discussers) {
-		File configFile = new File(Util.getCurrentDir() + "/" + CONFIG_FILENAME); //$NON-NLS-1$
+
+		String jarDir = "."; //$NON-NLS-1$
+		try {
+			jarDir = Util.getJarDir();
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
+		
+		File configFile = new File(jarDir + "/" + CONFIG_FILENAME); //$NON-NLS-1$
 
 		if(!configFile.exists()){
 			try {
@@ -164,8 +173,15 @@ public class SysConfig {
 
 	
 	public void save() throws IOException, TransformerException {
+
+		String jarDir = "."; //$NON-NLS-1$
+		try {
+			jarDir = Util.getJarDir();
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
 		
-		File configFile = new File(Util.getCurrentDir() + "/" + CONFIG_FILENAME); //$NON-NLS-1$
+		File configFile = new File(jarDir + "/" + CONFIG_FILENAME); //$NON-NLS-1$
 		if (configFile.exists()) {
 			String filename = configFile.getName();
 			

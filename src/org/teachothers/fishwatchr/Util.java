@@ -18,7 +18,9 @@
 package org.teachothers.fishwatchr;
 
 import java.awt.Font;
+import java.io.File;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 
 import javax.swing.JLabel;
 import javax.swing.plaf.basic.BasicHTML;
@@ -48,9 +50,17 @@ public class Util {
 			return str1 + delimiter + str2;
 		}
 	}
+
+	
+	public static String getJarDir() throws URISyntaxException{
+		// the directory where fishwatchr.jar is placed
+		return new File(FishWatchr.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+	}
+
 	
 	public static String getCurrentDir(){
-		return System.getProperty("user.dir"); // the directory where fishwatchr.jar is placed //$NON-NLS-1$
+		// the directory where jvm is executed
+		return System.getProperty("user.dir");  //$NON-NLS-1$
 	}
 	
 
