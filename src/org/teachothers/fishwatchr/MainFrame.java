@@ -1181,18 +1181,18 @@ public class MainFrame extends JFrame {
 				if(commentTable.getCellEditor() != null){
 					commentTable.getCellEditor().stopCellEditing();
 				}
+				try {
+					saveCommentList();
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.27") + xf + Messages.getString("MainFrame.28") + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+					e.printStackTrace();
+//					System.exit(0);
+				}
+
+				System.exit(0);
 			}
 		});
 		
-		try {
-			saveCommentList();
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.27") + xf + Messages.getString("MainFrame.28") + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-			e.printStackTrace();
-//			System.exit(0);
-		}
-
-		System.exit(0);
 	}
 
 
