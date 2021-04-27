@@ -103,7 +103,7 @@ import org.xml.sax.SAXException;
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final String VERSION = "Ver.0.9.16_cejc [20210318]"; //$NON-NLS-1$
+	private static final String VERSION = "Ver.0.9.17 [20210427]"; //$NON-NLS-1$
 	private static final String COPYRIGHT = "Copyright(c) 2014-2021 Masaya YAMAGUCHI"; //$NON-NLS-1$
 	private static final int TASK_INTERVAL = 250;
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms

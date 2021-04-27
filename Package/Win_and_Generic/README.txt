@@ -1,11 +1,11 @@
-観察支援ツール『FishWatchr』 ver.0.9.16 (2020-07-25)
-Copyright 2014-2020 山口昌也
+観察支援ツール『FishWatchr』 ver.0.9.17 (2021-04-27)
+Copyright 2014-2021 山口昌也
 (大学共同利用機関法人 人間文化研究機構 国立国語研究所)
 
 １．本パッケージの内容
   - vlc/            ... VLC ライブラリ，および，プラグイン
-                        (ver.3.0.4, Windows 32bit版)
-  - jre/            ... JRE (OpenJDK jdk8u232-b9-jre, Windows 32bit版)
+                        (ver.3.0.12, Windows 32bit版)
+  - jre/            ... JRE (OpenJDK jdk8u292-b10-jre, Windows 32bit版)
   - FishWatchr.exe  ... FishWatchr プログラム(Windows 専用)
   - fishwatchr.jar  ... FishWatchr プログラム(Mac, Linux, Windows 共用)
   - config.xml      ... 設定ファイル
@@ -59,4 +59,4 @@ Copyright 2014-2020 山口昌也
 ４．履歴
 　下記，ページを参照して下さい。既知のバグも掲載されます。
 
-http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%FA%CE%F2
+https://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%FA%CE%F2
