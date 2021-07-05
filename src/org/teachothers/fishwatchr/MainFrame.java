@@ -646,6 +646,7 @@ public class MainFrame extends JFrame {
 						Comment selectedComment = filteredCommentList.get(row);
 						long commentTime = commentList.unifiedCommentTime(selectedComment)
 								+ adjustmentTimeAtJump; // msec
+						commentTime = commentTime < 0 ? 0 : commentTime;
 
 						if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
 							if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){ //$NON-NLS-1$
@@ -658,7 +659,7 @@ public class MainFrame extends JFrame {
 								return;
 							}
 							
-							if(commentTime / 1000 > soundPlayer.getSoundLength() || commentTime < 0){
+							if(commentTime / 1000 > soundPlayer.getSoundLength()){
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.4")); //$NON-NLS-1$
 							}
 							
