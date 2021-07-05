@@ -45,6 +45,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 
@@ -94,6 +95,7 @@ public class CommentTable extends JTable {
 		getColumn(ctm.getColumnName(Comment.F_COMMENT_LABEL)).setCellEditor(new ListCellEditor<CommentType>(ctm.commentTypes));
 		getColumn(ctm.getColumnName(Comment.F_COMMENT)).setCellEditor(new TextCellEditor());
 		getColumn(ctm.getColumnName(Comment.F_AUX)).setCellEditor(new TextCellEditor());
+		getColumn(ctm.getColumnName(Comment.F_ANNOTATOR)).setCellEditor(new TextCellEditor());
 		setCellSelectionEnabled(true);
 		
 		
@@ -555,15 +557,24 @@ public class CommentTable extends JTable {
 
 		@Override
 		public boolean stopCellEditing() {
-			value = textField.getText();
+			String className = value.getClass().getSimpleName();
+			if(className.equals("String")) {
+				value = textField.getText();
+			} else if(className.equals("User")) {
+				value = new User(textField.getText());
+			} else {
+				// unexected class
+				value = textField.getText();
+				System.err.println("Warning(CommentTable): unexpected class, " + className);
+			}
 			return super.stopCellEditing();
 		}
 
 		@Override
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column) {
-
-			textField.setText((String) value);
+			this.value = value;
+			textField.setText(value.toString());
 			textField.setFont(table.getFont());
 			
 			return textField;
