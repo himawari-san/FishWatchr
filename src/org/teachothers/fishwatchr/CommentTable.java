@@ -558,14 +558,14 @@ public class CommentTable extends JTable {
 		@Override
 		public boolean stopCellEditing() {
 			String className = value.getClass().getSimpleName();
-			if(className.equals("String")) {
+			if(className.equals("String")) { //$NON-NLS-1$
 				value = textField.getText();
-			} else if(className.equals("User")) {
+			} else if(className.equals("User")) { //$NON-NLS-1$
 				value = new User(textField.getText());
 			} else {
 				// unexected class
 				value = textField.getText();
-				System.err.println("Warning(CommentTable): unexpected class, " + className);
+				System.err.println("Warning(CommentTable): unexpected class, " + className); //$NON-NLS-1$
 			}
 			return super.stopCellEditing();
 		}
@@ -688,7 +688,7 @@ public class CommentTable extends JTable {
 				}
 				
 			} else {
-				ctm.addFilter(headerName, "^" + selectedValue + "$");
+				ctm.addFilter(headerName, "^" + selectedValue + "$"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			
 			resetPosition();

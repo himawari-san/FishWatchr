@@ -72,9 +72,9 @@ public class FishWatchr {
 			NativeLibrary.addSearchPath(vlcLibraryName, jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			// https://github.com/caprica/vlcj/issues/643
-			NativeLibrary.addSearchPath(vlcLibraryName+"core", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib");
+			NativeLibrary.addSearchPath(vlcLibraryName+"core", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/lib"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			Map<String,?> options = new HashMap<>();
-			NativeLibrary.getInstance(vlcLibraryName+"core", options );
+			NativeLibrary.getInstance(vlcLibraryName+"core", options ); //$NON-NLS-1$
 
 			LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", jarParent + "/" + LOCAL_VLC_DIR_MACOS + "/plugins", 1); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			// for Youtube videos
