@@ -27,6 +27,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -271,5 +272,11 @@ public class VLCDirectMediaPlayerComponent extends JPanel {
         public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
             return new RV32BufferFormat(imageWidth, imageHeight);
         }
+
+		@Override
+		public void allocatedBuffers(ByteBuffer[] buffers) {
+			// TODO Auto-generated method stub
+			
+		}
     }
 }
