@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities;
 import uk.co.caprica.vlcj.player.base.Marquee;
 import uk.co.caprica.vlcj.player.base.MarqueePosition;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
-import uk.co.caprica.vlcj.player.component.EmbeddedMediaListPlayerComponent;
+import uk.co.caprica.vlcj.player.component.CallbackMediaListPlayerComponent;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
@@ -88,7 +88,7 @@ public class SoundPlayer {
 	private TargetDataLine targetDataLine;
 	private SoundGraphBuffer soundGraphBuf;
 	
-	private EmbeddedMediaListPlayerComponent mediaPlayerComponent;
+	private CallbackMediaListPlayerComponent mediaPlayerComponent;
 	private EmbeddedMediaPlayer mp;
 
 	
@@ -110,7 +110,8 @@ public class SoundPlayer {
 		textOverlayInfo = new TextOverlayInfo(textOverlayPositions, textOverlayLabels);
 		soundGraphBuf = new SoundGraphBuffer((int) Math.ceil(LIMIT_RECODING_TIME / frameLength));
 		init();
-		mediaPlayerComponent = new EmbeddedMediaListPlayerComponent();
+		mediaPlayerComponent = new CallbackMediaListPlayerComponent();
+//		mediaPlayerComponent = new EmbeddedMediaListPlayerComponent();
 		mp = mediaPlayerComponent.mediaPlayer();
 		mp.events().addMediaPlayerEventListener(mediaPlayerEventListener);
 	}
@@ -522,7 +523,7 @@ public class SoundPlayer {
 		return frameLength;
 	}
 	
-	public EmbeddedMediaListPlayerComponent getMediaplayerComponent(){
+	public CallbackMediaListPlayerComponent getMediaplayerComponent(){
 		if(mediaPlayerComponent == null) {System.err.println("null");}
 		return mediaPlayerComponent;
 	}
