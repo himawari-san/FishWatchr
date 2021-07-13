@@ -109,7 +109,7 @@ import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static final String VERSION = "Ver.1.0 [20210706]"; //$NON-NLS-1$
+	private static final String VERSION = "Ver.1.1a20210712 [20210712]"; //$NON-NLS-1$
 	private static final String COPYRIGHT = "Copyright(c) 2014-2021 Masaya YAMAGUCHI"; //$NON-NLS-1$
 	private static final int TASK_INTERVAL = 250;
 	private static final int THRESHOLD_CLICK_INTERVAL = 800; // ms
