@@ -2,6 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>FishWatchr</artifactId>
   <version>0.9.5</version>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
   <dependencies>
   	<dependency>
   		<groupId>uk.co.caprica</groupId>
@@ -97,7 +100,42 @@
     	<version>1.0.19</version>
 	</dependency>
   </dependencies>
-  <groupId>org.teachothers</groupId>
+  <groupId>org.teachothers.fishwatchr</groupId>
   <name>FishWatchr</name>
   <description>Video Annotation System for Observing Educational Activities</description>
+	<build>
+		<resources>
+			<resource>
+				<directory>resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>org.teachothers.fishwatchr.FishWatchr</mainClass>
+						</manifest>
+					</archive>
+				    <descriptors>
+				      <descriptor>maven_plugin_conf.xml</descriptor>
+    				</descriptors>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
