@@ -54,7 +54,7 @@ public class MarkPanel extends JPanel {
 		int y0 = getSize().height / 2;
 		int p = filteredCommentList.size();
 		int bp = soundPlayer.getCurrentFrame();
-		double frameLength = soundPlayer.getFrameLength() * 1000;
+		int frameLength = soundPlayer.getFrameLength();
 
 		while (p > 0) {
 			Comment comment = filteredCommentList.get(--p);

@@ -20,10 +20,14 @@ package org.teachothers.fishwatchr;
 
 public class SoundGraphBuffer {
 	short[] buf;
+	int frameLength;
+	int pTime;
 	int pc;
 	
-	public SoundGraphBuffer(int limit){
-		buf = new short[limit];
+	public SoundGraphBuffer(int limit, int frameLength){
+		buf = new short[(limit / frameLength) + 1];
+		this.frameLength = frameLength;
+		pTime = 0;
 		pc = 0;
 	}
 	
@@ -51,19 +55,19 @@ public class SoundGraphBuffer {
 		return buf;
 	}
 	
-	public int getPosition(){
-		return pc;
+	public int getTime(){
+		return pTime;
 	}
-	
-	public void setPosition(int pc){
-		this.pc = pc;
-		
+
+	public void setTime(int msec){
+		pTime = msec;
+		pc = pTime / frameLength;
 	}
-	
+
 	public void clear(){
 		for(int i = 0; i < buf.length; i++){
 			buf[i] = 0;
 		}
-		setPosition(0);
+		setTime(0);
 	}	
 }

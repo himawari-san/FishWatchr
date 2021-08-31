@@ -881,8 +881,8 @@ public class MainFrame extends JFrame {
 							soundPlayer.setDefaultRecordingParameters();
 
 							timeSlider.setMinimum(0);
-							timeSlider.setMaximum(SoundPlayer.LIMIT_RECODING_TIME);
-							timeEnd.setTime(SoundPlayer.LIMIT_RECODING_TIME);
+							timeSlider.setMaximum(SoundPlayer.LIMIT_RECODING_TIME / 1000);
+							timeEnd.setTime(SoundPlayer.LIMIT_RECODING_TIME / 1000);
 //							timerStart();
 							changeStateRecord();
 							soundPlayer.myRecord(mf,

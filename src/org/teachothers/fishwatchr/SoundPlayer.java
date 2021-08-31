@@ -42,7 +42,7 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
 public class SoundPlayer {
-	public static final int LIMIT_RECODING_TIME = 60 * 60 * 2; // 7200sec = 2hours
+	public static final int LIMIT_RECODING_TIME = 60 * 60 * 2 * 1000; // 7200 * 1000 msec = 2hours
 	public static final String DEFAULT_VIDEO_ASPECT_RATIO = "default"; //$NON-NLS-1$
 	public static String SOUNDFILE_EXTENSION = ".wav"; //$NON-NLS-1$
 	private static String[] videoAspectRatios = {DEFAULT_VIDEO_ASPECT_RATIO, "16:9", "4:3", "1:1", "16:10", "2.21:1", "2.35:1", "2.39:1", "5:4"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
@@ -61,14 +61,14 @@ public class SoundPlayer {
 	public final static int PLAYER_STATE_FINISH_RECORDING = 5;
 	public final static int PLAYER_STATE_READ_VIDEO_INFO = 6;
 
-	public final static double defaultFrameLength = 0.25; // sec
+	public final static int defaultFrameLength = 250; // msec
 	public final static float defaultSampleRate = 10000; // Hz
 	public final static int defaultSampleSizeInBits = 16; // bits
 	public final static int defaultChannels = 1; // モノラル
 	public final static boolean defaultIsSigned = true;
 	public final static boolean defaultIsBigEndian = false;
 
-	public static double frameLength = defaultFrameLength;
+	public static int frameLength = defaultFrameLength;
 	public static float sampleRate = defaultSampleRate;
 	public static int sampleSizeInBits = defaultSampleSizeInBits;
 	public static int channels = defaultChannels;
@@ -108,7 +108,7 @@ public class SoundPlayer {
 	public SoundPlayer(MediaPlayerEventListener mediaPlayerEventListener) {
 		if(mediaPlayerEventListener==null)System.err.println("null");
 		textOverlayInfo = new TextOverlayInfo(textOverlayPositions, textOverlayLabels);
-		soundGraphBuf = new SoundGraphBuffer((int) Math.ceil(LIMIT_RECODING_TIME / frameLength));
+		soundGraphBuf = new SoundGraphBuffer(LIMIT_RECODING_TIME, frameLength);
 		init();
 		mediaPlayerComponent = new CallbackMediaListPlayerComponent();
 //		mediaPlayerComponent = new EmbeddedMediaListPlayerComponent();
@@ -176,7 +176,7 @@ public class SoundPlayer {
 
 	
 	public void initState(){
-		soundGraphBuf.setPosition(0);
+		soundGraphBuf.setTime(0);
 	}
 	
 
@@ -189,7 +189,7 @@ public class SoundPlayer {
 		isBigEndian = defaultIsBigEndian;
 		// リニアPCM 8000Hz 16bit モノラル 符号付き リトルエンディアン
 		linearFormat = new AudioFormat(sampleRate, sampleSizeInBits, channels, isSigned, isBigEndian);
-		maxDataSize = (int)(sampleRate * sampleSizeInBits / 8 * channels * frameLength);
+		maxDataSize = (int)(sampleRate * sampleSizeInBits / 8 * channels * frameLength / 1000);
 		buf = new byte[maxDataSize];
 //		soundGraphBuf.setFrameLength(frameLength);
 	}
@@ -252,7 +252,7 @@ public class SoundPlayer {
 						e.printStackTrace();
 					}
 
-					soundGraphBuf.setPosition(0);
+					soundGraphBuf.setTime(0);
 					readWavInfo(wavFilename);
 					buf = new byte[maxDataSize];
 					readWav(wavFilename, buf);
@@ -275,7 +275,7 @@ public class SoundPlayer {
 				}
 			}
 		}
-		soundGraphBuf.setPosition(0);
+		soundGraphBuf.setTime(0);
 		return true;
 	}
 
@@ -291,7 +291,7 @@ public class SoundPlayer {
 			isBigEndian = linearFormat.isBigEndian();
 			isSigned = true;
 			soundLength = AudioSystem.getAudioFileFormat(mediaFile).getFrameLength() / sampleRate;
-			maxDataSize = (int)Math.ceil(sampleRate * sampleSizeInBits / 8 * channels * frameLength);
+			maxDataSize = (int)Math.ceil(sampleRate * sampleSizeInBits / 8 * channels * frameLength / 1000);
 			System.err.println("rate: " + sampleRate + ", " + "bits: " + sampleSizeInBits + ", " +  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					"channels: " + channels + ", " + "maxDataSize: " + maxDataSize); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		} catch (UnsupportedAudioFileException e) {
@@ -437,7 +437,7 @@ public class SoundPlayer {
 		if(state == PLAYER_STATE_RECORD){
 			return getCurrentRecordingTime();
 		} else {
-			return (int)(soundGraphBuf.getPosition() * frameLength * 1000);
+			return soundGraphBuf.getTime();
 		}
 	}
 	
@@ -454,9 +454,9 @@ public class SoundPlayer {
 	// 経過フレーム数
 	public int getCurrentFrame(){
 		if(state == PLAYER_STATE_RECORD){
-			return (int)(getCurrentRecordingTime()/frameLength/1000);
+			return (int)(getCurrentRecordingTime()/frameLength);
 		} else {
-			return soundGraphBuf.getPosition();
+			return (int)(soundGraphBuf.getTime()/frameLength);
 		}
 	}
 	
@@ -519,7 +519,7 @@ public class SoundPlayer {
 		}
 	}
 	
-	public double getFrameLength(){
+	public int getFrameLength(){
 		return frameLength;
 	}
 	
@@ -530,9 +530,8 @@ public class SoundPlayer {
 
 	
 	public void updateVlcInfo(){
-//		if(mp == null) return;
 		if(mp == null || !mp.status().isPlayable()) return;
-		soundGraphBuf.setPosition((int)(mp.status().time() /1000 / frameLength));
+		soundGraphBuf.setTime((int)mp.status().time());
 	}
 
 	
