@@ -899,6 +899,14 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							timer.cancel();
+							if(soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_RECORD &&
+									!jMenuItemOptionRecorderMode.isSelected()) {
+								// Do this before soundPlayer.myStop()
+								 System.out.println("EventDispatchThread ? " + SwingUtilities.isEventDispatchThread());
+								 soundPlayer.setPlayerState(SoundPlayer.PLAYER_STATE_STOP);
+								 annotationGlobalViewPanel.initScaleFactor();
+								 changeState(SoundPlayer.PLAYER_STATE_STOP);
+							}
 							soundPlayer.myStop();
 						}
 					});
