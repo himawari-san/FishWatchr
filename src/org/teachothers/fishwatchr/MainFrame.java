@@ -103,7 +103,6 @@ import org.xml.sax.SAXException;
 import uk.co.caprica.vlcj.player.base.MarqueePosition;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
-import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
 
 
 public class MainFrame extends JFrame {
@@ -3348,11 +3347,8 @@ public class MainFrame extends JFrame {
 					annotationGlobalViewPanel.repaint();
 				}
 				soundPlayer.updateVlcInfo();
-				if (jMenuItemOptionRecorderMode.isSelected()) {
-					time = soundPlayer.getElapsedTime();
-				} else {
-					time = soundPlayer.getCurrentRecordingTime();
-				}
+				time = soundPlayer.getElapsedTime();
+
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {

@@ -432,32 +432,24 @@ public class SoundPlayer {
 		return startTime;
 	}
 	
-	// 再生時の経過時間（msec）
+
+	// msec
 	public int getElapsedTime(){
 		if(state == PLAYER_STATE_RECORD){
-			return getCurrentRecordingTime();
+			// elapsed time from startTime
+			if(startTime == null){
+				return 0;
+			}
+			Date now = new Date();
+			return (int)(now.getTime() - startTime.getTime());
 		} else {
 			return soundGraphBuf.getTime();
 		}
 	}
 	
-	// startTime からの経過時間録音オフ時のアノテーション経過時間（msec）
-	public int getCurrentRecordingTime(){
-		if(startTime == null){
-			return 0;
-		}
-		Date now = new Date();
-		return (int)(now.getTime() - startTime.getTime());
-	}
-	
-
 	// 経過フレーム数
 	public int getCurrentFrame(){
-		if(state == PLAYER_STATE_RECORD){
-			return (int)(getCurrentRecordingTime()/frameLength);
-		} else {
-			return (int)(soundGraphBuf.getTime()/frameLength);
-		}
+		return (int)(getElapsedTime()/frameLength);
 	}
 	
 	
