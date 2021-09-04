@@ -276,7 +276,7 @@ public class SysConfig {
 
 				Matcher m = patternColumnID.matcher(id);
 				if(m.find()){
-					int n = new Integer(m.group(1));
+					int n = Integer.parseInt(m.group(1));
 					if(n <= nColumns && columnNames[n-1] == null && !name.isEmpty()){
 						columnNames[n-1] = name;
 						continue;
@@ -318,7 +318,7 @@ public class SysConfig {
 
 				Matcher m = patternColumnID.matcher(id);
 				if(m.find() && !idSet.contains(id)){
-					int n = new Integer(m.group(1));
+					int n = Integer.parseInt(m.group(1));
 					if(n <= nColumns  && !readonly.isEmpty()){
 						// always true if n == 1 or 2 
 						if(n > 2){

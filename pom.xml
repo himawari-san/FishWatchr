@@ -17,9 +17,9 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.10</version>
-			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+			<artifactId>commons-text</artifactId>
+			<version>1.8</version>
+			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
