@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
@@ -29,6 +30,7 @@ import java.awt.geom.GeneralPath;
 import javax.swing.JComponent;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicSliderUI;
 
 public class TimeSlider extends JSlider {
@@ -42,23 +44,26 @@ public class TimeSlider extends JSlider {
 
 	public TimeSlider() {
 
-		// SliderUI sui = getUI();
-		// Class.forName(MetalSliderUI);
-		// setUI(new SynthSliderUI(this) {
-//		 setUI(new MetalSliderUI() {
 		setUI(new CustomSliderUI(this) {
-			// setUI(new BasicSliderUI(this) {
 			protected void scrollDueToClickInTrack(int direction) {
 				// this is the default behaviour, let's comment that out
 				// scrollByBlock(direction);
-
-				int value = getValue();
-				if (getOrientation() == JSlider.HORIZONTAL) {
-					value = this.valueForXPosition(getMousePosition().x);
-				} else if (getOrientation() == JSlider.VERTICAL) {
-					value = this.valueForYPosition(getMousePosition().y);
-				}
-				setValue(value);
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Point p = getMousePosition();
+						if(p == null) {
+							return;
+						}
+						int value = getValue();
+						if (getOrientation() == JSlider.HORIZONTAL) {
+							value = valueForXPosition(p.x);
+						} else if (getOrientation() == JSlider.VERTICAL) {
+							value = valueForYPosition(p.y);
+						}
+						setValue(value);
+					}
+				});
 			}
 		});
 	}
