@@ -47,8 +47,10 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -179,6 +181,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemFileMerge;
 	private JMenuItem jMenuItemFileExport;
 	private JMenuItem jMenuItemFileSaveConfig;
+	private JMenuItem jMenuItemFileShare;
 	private JMenuItem jMenuItemFileExit;
 	private JMenu jMenuControl;
 	private JMenuItem jMenuItemControlPlayPause;
@@ -1686,6 +1689,7 @@ public class MainFrame extends JFrame {
 			jMenuFile.add(getJMenuItemFileExport());
 			jMenuFile.add(getJMenuItemFileMerge());
 			jMenuFile.add(getJMenuItemFileSaveConfig());
+			jMenuFile.add(getJMenuItemFileShare());
 			jMenuFile.add(getJMenuItemFileExit());
 		}
 		return jMenuFile;
@@ -2105,6 +2109,29 @@ public class MainFrame extends JFrame {
 					});
 		}
 		return jMenuItemFileSaveConfig;
+	}
+	
+
+	private JMenuItem getJMenuItemFileShare() {
+		if (jMenuItemFileShare == null) {
+			jMenuItemFileShare = new JMenuItem("ファイル共有");
+			jMenuItemFileShare
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							String pipeServer = "http://160.16.218.34/";
+//							String pipeServer = "http://localhost:8080/";
+//							String pipeServer = "https://piping-server-test.herokuapp.com/";
+							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getName());
+							JDialog d = fsp.createDialog("test");
+							d.setVisible(true);
+							Object selectedValue = fsp.getValue();
+//							fsp.shutdownNow();
+							System.err.println("aa:" + selectedValue);
+						}
+
+					});
+		}
+		return jMenuItemFileShare;
 	}
 	
 	
