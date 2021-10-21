@@ -5,7 +5,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -18,6 +23,7 @@ import java.util.function.Consumer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -37,18 +43,22 @@ public class FileSharingPane extends JOptionPane {
 	private static final int N_SCAN_PATH = 2;
 	private static final int N_RETRY = 10;
 	private String pipeServer;
-	private SimpleTextMap textMap = new SimpleTextMap();
+	private SimpleMessageMap messageMap = new SimpleMessageMap();
 	private String[] recieversStr = {"john", "paul"};
 	private DefaultListModel<String> model = new DefaultListModel<String>();
 	private JList<String> recieverList = new JList<String>(model);
 //	private MemberFinder memberFinder = null;
 	private String username;
+	private Path commentFilePath;
 
 
-	public FileSharingPane(String pipeServer, String username) {
+	public FileSharingPane(String pipeServer, String username, Path commentFilePath) {
 		super();
 		this.pipeServer = pipeServer;
 		this.username = username;
+		this.commentFilePath = commentFilePath;
+		this.commentFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4.merged_bunseki.xml");
+		System.err.println("cf:" + commentFilePath);
 		ginit();
 		
 	}
@@ -61,12 +71,12 @@ public class FileSharingPane extends JOptionPane {
 		
 		JPanel idPanel = new JPanel();
 		JLabel usernameLabel = new JLabel("Username");
-		JTextField usernameField = new JTextField("masa");
+		JLabel usernameBody = new JLabel(username);
 		JLabel pathLabel = new JLabel("Path:");
 		JTextField pathField = new JTextField("a");
 		idPanel.setLayout(new GridLayout(2, 2, 1, 3));
 		idPanel.add(usernameLabel);
-		idPanel.add(usernameField);
+		idPanel.add(usernameBody);
 		idPanel.add(pathLabel);
 		idPanel.add(pathField);
 		
@@ -108,11 +118,13 @@ public class FileSharingPane extends JOptionPane {
 		// collect tab
 		JPanel collectPanel = new JPanel();
 		tabbedpane.add(collectPanel);
-		JButton collectButton = new JButton("scan");
+		JButton collectButton1 = new JButton("scan");
+		JButton collectButton2 = new JButton("collect");
 		JScrollPane membersScrollPane = new JScrollPane();
 		membersScrollPane.setViewportView(recieverList);
-		collectPanel.add(membersScrollPane, BorderLayout.CENTER);
-		collectPanel.add(collectButton, BorderLayout.SOUTH);
+		collectPanel.add(membersScrollPane);
+		collectPanel.add(collectButton1);
+		collectPanel.add(collectButton2);
 		tabbedpane.setTitleAt(nTab++, "Collect");
 		
 		
@@ -130,7 +142,7 @@ public class FileSharingPane extends JOptionPane {
 		tabbedpane.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				System.err.println("k:" + tabbedpane.getSelectedIndex());
+				System.err.println("tab number:" + tabbedpane.getSelectedIndex());
 //				if(memberFinder != null) {
 //					memberFinder.pool.shutdownNow();
 //				}
@@ -142,13 +154,16 @@ public class FileSharingPane extends JOptionPane {
 			public void actionPerformed(ActionEvent arg0) {
 				DataPiper pipe = new DataPiper(pipeServer);
 				String basePath = pathField.getText();
-				PipeSender ps = new PipeSender(pipe, basePath, username, "/tmp/aaa.txt",
+				String selectvalues[] = {};
+				JOptionPane op = new JOptionPane("messages", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, selectvalues, null);
+				final JDialog jd = op.createDialog(FileSharingPane.this, "title");
+				System.err.println("ps:" + basePath + "," + commentFilePath);
+				PipeSender ps = new PipeSender(pipe, basePath, username, commentFilePath,
 						(str)->{
-							System.err.println("open!");
 							Executors.newSingleThreadExecutor().submit(new Runnable() {
 								@Override
 								public void run() {
-//									jd.setVisible(true);
+									jd.setVisible(true);
 								}
 							});
 						});
@@ -157,7 +172,7 @@ public class FileSharingPane extends JOptionPane {
 		});
 		
 		
-		collectButton.addActionListener(new ActionListener() {
+		collectButton1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String basePath = pathField.getText();
@@ -167,6 +182,25 @@ public class FileSharingPane extends JOptionPane {
 							System.err.println(e.getMessage());
 						});
 				Executors.newSingleThreadExecutor().submit(memberFinder);
+				
+			}
+		});
+		
+		
+		collectButton2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				DataPiper pipe = new DataPiper(pipeServer);
+				String downloadedFilename = "fwdata";
+				Path downloadedFilePath = commentFilePath.getParent().resolve(downloadedFilename);
+
+				try {
+					pipe.getFile(downloadedFilePath);
+				} catch (IOException | URISyntaxException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
 		});
 		
@@ -199,61 +233,66 @@ public class FileSharingPane extends JOptionPane {
 	}
 
 	
-	public void addReciever(String name) {
-		System.err.println("add:" + name);
+	public void addReciever(SimpleMessage message) {
+		System.err.println("add:" + message.get("username"));
 		DefaultListModel<String> model = (DefaultListModel<String>) recieverList.getModel();
-		model.addElement(name);
-		
+		model.addElement(message.get("username"));
 	}
 	
 	
-//	class RunnableSimpleFrame
-	
-
 	class PipeSender implements Callable<Void> {
 
 		private DataPiper pipe;
 		private String pathBase;
 		private String username;
-		private String filename;
+		private Path filePath;
 		private Consumer<String> c;
 	
 		
-		public PipeSender(DataPiper pipe, String pathBase, String username, String filename, Consumer<String> c) {
+		public PipeSender(DataPiper pipe, String pathBase, String username, Path filePath, Consumer<String> c) {
 			this.pipe = pipe;
 			this.pathBase = pathBase;
 			this.username = username;
-			this.filename = username;
+			this.filePath = filePath;
 			this.c = c;
 		}
 
 		@Override
-		public Void call() {
+		public Void call()  {
 			c.accept("test1");
 			String newPath = pipe.sendUserInformation(username, pathBase);
 			if(newPath == null) {
 				return null;
 			}
-			c.accept(null);
-			c.accept("test2");
 			
+			System.err.println("post!:" + newPath);
 			try {
-				System.err.println("recieving!:" + newPath);
-				recieve(newPath);
-			} catch (IOException e) {
+				pipe.postFile(newPath, filePath);
+			} catch (URISyntaxException | IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.err.println("recieved:" + newPath);
+//			pipe.postFile(newPath, new File(filename));
+//			c.accept(null);
+			c.accept("test2");
+			
+//			try {
+//				System.err.println("recieving!:" + newPath);
+//				recieve(newPath);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			System.err.println("recieved:" + newPath);
 			
 			
 			return null;
 		}
 		
 		
-		public void recieve(String path) throws IOException {
-			pipe.getFile(path);
-		}
+//		public void recieve(String path) throws IOException {
+//			pipe.getFile(path);
+//		}
 		
 	}
 
@@ -297,9 +336,9 @@ public class FileSharingPane extends JOptionPane {
 		}
 		
 		
-		public void recieve(String path) throws IOException {
-			pipe.getFile(path);
-		}
+//		public void recieve(String path) throws IOException {
+//			pipe.getFile(path);
+//		}
 		
 	}
 	
@@ -323,12 +362,14 @@ public class FileSharingPane extends JOptionPane {
 			for(int i = 0; i < N_PIPE_WATCHER; i++) {
 				System.err.println("pathpw:" + path);
 				PipeWatcher pw = new PipeWatcher(pipe, path,
-						(map)-> {
-							String mapID = textMap.updateMap(map);
-							if(mapID.isEmpty()) {
+						(message)-> {
+							String messageID = message.getID();
+							if(messageID.isEmpty()) {
 								return;
 							}
-							addReciever(mapID);
+							System.err.println("mid:" + messageID + "aaa");
+							messageMap.put(messageID, message);
+							addReciever(message);
 						});
 				Future<Long> f = pool.submit(pw);
 				queue.add(f);

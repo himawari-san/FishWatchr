@@ -16,7 +16,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.util.Random;
 
 
@@ -36,131 +38,40 @@ public class DataPiper {
 		this.pipeServer = pipeServer.endsWith("/") ? pipeServer : pipeServer + "/";
 	}
 
-	
-	private InputStream getInputStream(String path) throws IOException {
-		URL pipeURL = new URL(pipeServer + path);
-		URLConnection urlCon = pipeURL.openConnection();
 
-		HttpURLConnection httpCon = (HttpURLConnection) pipeURL.openConnection();
-
-		return urlCon.getInputStream();
-	}
-	
-	
-	private OutputStream getOutStream(String path) throws IOException {
-		URL pipeURL = new URL(pipeServer + path);
-
-		HttpURLConnection httpCon = (HttpURLConnection) pipeURL.openConnection();
-		httpCon.setDoOutput(true);
-		httpCon.setRequestMethod("PUT");
-
-		return httpCon.getOutputStream();
-	}
-
-	
-	public void getFile(String path) throws IOException {
-		InputStream inputStream = getInputStream(path);
-		FileOutputStream fos = new FileOutputStream(new File("/tmp/aaa"));
-		byte[] data = new byte[1024];
-		int nRead;
-		
-		while((nRead = inputStream.read(data)) > 0) {
-			fos.write(data, 0, nRead);
-		}
-		
-		fos.close();
-	}
-	
-	
-	public SimpleMessage getMessage2(String path) throws IOException {
-		URL pipeURL = new URL(pipeServer + path);
-//		URLConnection urlCon = pipeURL.openConnection();
-
-		HttpURLConnection httpCon = (HttpURLConnection) pipeURL.openConnection();
-		httpCon.connect();
-		
-		BufferedReader in = new BufferedReader(new InputStreamReader(httpCon.getInputStream()));
-		SimpleMessage message = new SimpleMessage();
-
-		String line;
-		while((line = in.readLine()) != null) {
-			int p = line.indexOf(KEY_VALUE_SEPARATOR);
-			
-			if(p != -1) {
-				String key = line.substring(0, p);
-				if(!key.isEmpty()) {
-					message.put(key, line.substring(p + 1));
-					System.err.println("kv:" + key + "," + message.get(key));
-					continue;
-				}
-			}
-			
-			System.err.println("Warning(getMap%FilePiper, invalid data):" + line);
-		}
-		in.close();
-		int response = httpCon.getResponseCode();
-		System.err.println("res getMessage:" + response + "," + path);
-	
-		httpCon.disconnect();
-		
-		return message;
-	}
 
 	public SimpleMessage getMessage(String path) throws IOException, URISyntaxException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
 		HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(pipeURL)
-                .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
-//                .header("Content-Type", "application/json")
-                .build();
-		
-		  HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+				.GET().uri(pipeURL)
+				.build();
 
-	        // print status code
-	        System.out.println(response.statusCode());
+		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-	        // print response body
-	        System.out.println(response.body());
-	        
-	        BufferedReader in = new BufferedReader(new StringReader(response.body()));
-			SimpleMessage message = new SimpleMessage();
-	        
-//	        response.body().toString()
-	        
-			String line;
-	        while((line = in.readLine()) != null) {
-				int p = line.indexOf(KEY_VALUE_SEPARATOR);
-				
-				if(p != -1) {
-					String key = line.substring(0, p);
-					if(!key.isEmpty()) {
-						message.put(key, line.substring(p + 1));
-						System.err.println("kv:" + key + "," + message.get(key));
-						continue;
-					}
-				}
-				
-				System.err.println("Warning(getMap%FilePiper, invalid data):" + line);
-			}
-		
-	        
-	        return message;
+		// print status code
+		System.out.println(response.statusCode());
+
+		// print response body
+		System.out.println(response.body());
+
+		BufferedReader in = new BufferedReader(new StringReader(response.body()));
+
+		String line;
+		StringBuffer lines = new StringBuffer();
+		while ((line = in.readLine()) != null) {
+			lines.append(line + "\n");
+		}
+
+		return SimpleMessage.encode(lines.toString());
 	}
-
 	
-	public void putMessage(String path, String message) throws URISyntaxException, IOException, InterruptedException {
+	
+	public void postMessage(String path, SimpleMessage message) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
-//		
-//	    HttpClient httpClient = HttpClient.newBuilder()
-//	            .version(HttpClient.Version.HTTP_2)
-//	            .connectTimeout(Duration.ofSeconds(10))
-//	            .build();
-	    
-	    
+
 	    HttpRequest request = HttpRequest.newBuilder()
-	                .POST(HttpRequest.BodyPublishers.ofString(message))
+	                .POST(HttpRequest.BodyPublishers.ofString(message.toString()))
 	                .uri(pipeURL)
 	                .header("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 	                .build();
@@ -168,57 +79,70 @@ public class DataPiper {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         // print status code
-        System.out.println(response.statusCode());
+        System.err.println(response.statusCode());
 
         // print response body
-        System.out.println(response.body());
-
-
+        System.err.println(response.body());
 	}
+
 	
-	public void put(String path, String message) throws IOException {
-		URL pipeURL = new URL(pipeServer + path);
+	public void postFile(String path, Path filePath) throws URISyntaxException, IOException, InterruptedException {
+		URI pipeURL = new URI(pipeServer + path);
 
-		HttpURLConnection httpCon = (HttpURLConnection) pipeURL.openConnection();
-		httpCon.setRequestMethod("POST");
-		httpCon.setDoOutput(true);
-//		httpCon.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-
-		DataOutputStream out = new DataOutputStream(httpCon.getOutputStream());
-//		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(httpCon.getOutputStream(), "UTF-8"));
-		out.writeBytes(message);
-		out.flush();
-		out.close();
-		int response = httpCon.getResponseCode();
-		System.err.println("res put:" + response + "," + path);
-	       BufferedReader inputReader = new BufferedReader(
-	               new InputStreamReader(httpCon.getInputStream()));
-	           String inputLine;
-	           StringBuffer response2 = new StringBuffer();
+		System.err.println("pf1:" + path);
+	    HttpRequest request = HttpRequest.newBuilder()
+	    			.uri(pipeURL)
+	                .POST(HttpRequest.BodyPublishers.ofFile(filePath))
+	                .build();
 	    
-	           while ((inputLine = inputReader.readLine()) != null) {
-	               response2.append(inputLine);
-	           }
-	           inputReader.close();
-	           System.out.println(response2.toString());
-		httpCon.disconnect();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // print status code
+        System.err.println("post res:" + response.statusCode());
+
+        // print response body
+        System.err.println(response.body());
 	}
 
 	
+	public void getFile(Path path) throws URISyntaxException, IOException, InterruptedException {
+		URI pipeURL = new URI(pipeServer + path);
+
+		HttpRequest request = HttpRequest.newBuilder()
+				.GET().uri(pipeURL)
+				.setHeader("User-Agent", "FishWatchr")
+				.build();
+
+		HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(path));
+
+		// print status code
+		System.err.println(response.statusCode());
+
+		// print response body
+		System.err.println(response.body());
+	}
+
+	
+
 	public String sendUserInformation(String username, String basePath) {
 		Random rand = new Random();
 		
 		for(int i = 0; i < N_RETRY; i++) {
 			int pathSX = rand.nextInt(N_SCAN_PATH);
 			String path = basePath + pathSX;
-			StringBuffer message = new StringBuffer();
+			System.err.println("rc path:" + path + "," + username);
 			
-			message.append(SimpleTextMap.DATA_ID_KEY + DataPiper.KEY_VALUE_SEPARATOR + username + "\n");
+			SimpleMessage message = new SimpleMessage(username);
+
+			// username
+			message.put("username", username);
 			
 			try {
-				System.err.println("send:" + path);
-				putMessage(path, message.toString());
-				return path;
+				System.err.println("send path:" + path);
+				System.err.println("send message:" + message.toString());
+				System.err.println("send id:" + message.getID());
+				postMessage(path, message);
+				return message.getID();
 			} catch (IOException | URISyntaxException | InterruptedException e) {
 				System.err.println("Warning(FileSharingPane): Retry sendUserInformation()");
 				continue;

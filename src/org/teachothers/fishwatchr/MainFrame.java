@@ -52,6 +52,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2121,7 +2122,7 @@ public class MainFrame extends JFrame {
 							String pipeServer = "http://160.16.218.34/";
 //							String pipeServer = "http://localhost:8080/";
 //							String pipeServer = "https://piping-server-test.herokuapp.com/";
-							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getName());
+							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getName(), Paths.get(xf));
 							JDialog d = fsp.createDialog("test");
 							d.setVisible(true);
 							Object selectedValue = fsp.getValue();
