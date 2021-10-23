@@ -19,10 +19,16 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class DataPiper {
+	public static final String MESSAGE_KEY_PATH = "path";
+	public static final String MESSAGE_KEY_USERNAME = "username";
 	public static final String KEY_VALUE_SEPARATOR = ":";
 	private static final int N_PIPE_WATCHER = 5;
 	private static final int N_SCAN_PATH = 2;
@@ -105,15 +111,15 @@ public class DataPiper {
 	}
 
 	
-	public void getFile(Path path) throws URISyntaxException, IOException, InterruptedException {
-		URI pipeURL = new URI(pipeServer + path);
+	public void getFile(String pipePath, Path downloadedFilePath) throws URISyntaxException, IOException, InterruptedException {
+		URI pipeURL = new URI(pipeServer + pipePath);
 
 		HttpRequest request = HttpRequest.newBuilder()
 				.GET().uri(pipeURL)
 				.setHeader("User-Agent", "FishWatchr")
 				.build();
 
-		HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(path));
+		HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(downloadedFilePath));
 
 		// print status code
 		System.err.println(response.statusCode());
@@ -135,14 +141,15 @@ public class DataPiper {
 			SimpleMessage message = new SimpleMessage(username);
 
 			// username
-			message.put("username", username);
-			
+			message.put(MESSAGE_KEY_USERNAME, username);
+			message.put(MESSAGE_KEY_PATH,  generatePath(username + basePath));
+
 			try {
 				System.err.println("send path:" + path);
 				System.err.println("send message:" + message.toString());
 				System.err.println("send id:" + message.getID());
 				postMessage(path, message);
-				return message.getID();
+				return message.get(MESSAGE_KEY_PATH);
 			} catch (IOException | URISyntaxException | InterruptedException e) {
 				System.err.println("Warning(FileSharingPane): Retry sendUserInformation()");
 				continue;
@@ -154,4 +161,23 @@ public class DataPiper {
 	}
 
 	
+	public String generatePath(String seed) {
+		String result;
+		
+		try {
+			StringBuffer buf = new StringBuffer();
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
+			byte md5bytes[] = md5.digest(String.format("%s\t%d", seed, ThreadLocalRandom.current().nextLong()).getBytes());
+			
+			for(byte b : md5bytes) {
+				int i = b < 0 ? b + 256 : b;
+				buf.append(Integer.toHexString(i));
+			}
+			result = buf.toString();
+		} catch (NoSuchAlgorithmException e) {
+			result = seed + String.valueOf((new Date()).getTime());
+		}
+		
+		return result;
+	}
 }

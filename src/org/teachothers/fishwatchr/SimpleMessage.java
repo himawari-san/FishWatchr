@@ -1,6 +1,5 @@
 package org.teachothers.fishwatchr;
 
-import java.util.Date;
 import java.util.HashMap;
 
 public class SimpleMessage extends HashMap<String, String> {
@@ -9,18 +8,13 @@ public class SimpleMessage extends HashMap<String, String> {
 	private static final String KEY_GLUE = "/_/";
 	private static final String KEY_VALUE_SEPARATOR = "\t";
 	private String id = "";
+//	private String name = "";
 	
-	public SimpleMessage() {
-	}
 
-	public SimpleMessage(String name) {
-		Date d = new Date();
-		setID(String.format("%s%s%tQ", name, KEY_GLUE, d.getTime())); 
-	}
-
-	public void setID(String id) {
+	public SimpleMessage(String id) {
 		this.id = id;
 	}
+
 	
 	public String getID() {
 		return id;
@@ -43,8 +37,7 @@ public class SimpleMessage extends HashMap<String, String> {
 	
 	public static SimpleMessage encode(String str) {
 		String lines[] = str.split("\n");
-		SimpleMessage message = new SimpleMessage();
-		message.setID(lines[0]);
+		SimpleMessage message = new SimpleMessage(lines[0]);
 		
 		for(int i = 1; i < lines.length; i++) {
 			int p = lines[i].indexOf(KEY_VALUE_SEPARATOR);

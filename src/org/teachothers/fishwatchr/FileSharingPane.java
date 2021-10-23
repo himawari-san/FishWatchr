@@ -163,7 +163,7 @@ public class FileSharingPane extends JOptionPane {
 							Executors.newSingleThreadExecutor().submit(new Runnable() {
 								@Override
 								public void run() {
-									jd.setVisible(true);
+									submitLabel.setText(str);
 								}
 							});
 						});
@@ -193,9 +193,12 @@ public class FileSharingPane extends JOptionPane {
 				DataPiper pipe = new DataPiper(pipeServer);
 				String downloadedFilename = "fwdata";
 				Path downloadedFilePath = commentFilePath.getParent().resolve(downloadedFilename);
-
+				String username = recieverList.getModel().getElementAt(0);
+				SimpleMessage message = messageMap.get(username);
+				System.err.println("it1:" + recieverList.getModel().getElementAt(0));
+				System.err.println("it2:" + messageMap.get(username));
 				try {
-					pipe.getFile(downloadedFilePath);
+					pipe.getFile(message.get(DataPiper.MESSAGE_KEY_PATH), downloadedFilePath);
 				} catch (IOException | URISyntaxException | InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -240,6 +243,8 @@ public class FileSharingPane extends JOptionPane {
 	}
 	
 	
+	
+	
 	class PipeSender implements Callable<Void> {
 
 		private DataPiper pipe;
@@ -259,40 +264,25 @@ public class FileSharingPane extends JOptionPane {
 
 		@Override
 		public Void call()  {
-			c.accept("test1");
+			c.accept("送信準備中です！");
 			String newPath = pipe.sendUserInformation(username, pathBase);
 			if(newPath == null) {
 				return null;
 			}
 			
-			System.err.println("post!:" + newPath);
+			c.accept("送信準備完了です！");
+			System.err.println("post path!:" + newPath);
+			System.err.println("post file!:" + filePath);
 			try {
 				pipe.postFile(newPath, filePath);
 			} catch (URISyntaxException | IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			pipe.postFile(newPath, new File(filename));
-//			c.accept(null);
-			c.accept("test2");
-			
-//			try {
-//				System.err.println("recieving!:" + newPath);
-//				recieve(newPath);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			System.err.println("recieved:" + newPath);
-			
+			c.accept("送信完了しました");
 			
 			return null;
 		}
-		
-		
-//		public void recieve(String path) throws IOException {
-//			pipe.getFile(path);
-//		}
 		
 	}
 
@@ -367,7 +357,7 @@ public class FileSharingPane extends JOptionPane {
 							if(messageID.isEmpty()) {
 								return;
 							}
-							System.err.println("mid:" + messageID + "aaa");
+							System.err.println("mid:" + messageID);
 							messageMap.put(messageID, message);
 							addReciever(message);
 						});
