@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -47,15 +48,19 @@ public class FileSharingPane extends JOptionPane {
 //	private MemberFinder memberFinder = null;
 	private String username;
 	private Path commentFilePath;
+	private Path mediaFilePath;
 
 
-	public FileSharingPane(String pipeServer, String username, Path commentFilePath) {
+	public FileSharingPane(String pipeServer, String username, Path commentFilePath, Path mediaFilePath) {
 		super();
 		this.pipeServer = pipeServer;
 		this.username = username;
 		this.commentFilePath = commentFilePath;
 		this.commentFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4.merged_bunseki.xml");
+		this.mediaFilePath = mediaFilePath;
+		this.mediaFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4");
 		System.err.println("cf:" + commentFilePath);
+		System.err.println("mf:" + mediaFilePath);
 		ginit();
 		
 	}
@@ -92,15 +97,18 @@ public class FileSharingPane extends JOptionPane {
 		submitPanel.setLayout(new BorderLayout());
 		JPanel submitButtonPanel = new JPanel();
 		JButton submitButton = new JButton("Submit");
+		JLabel submitProgressLabel = new JLabel("test desu");
 		submitButtonPanel.add(submitButton);
 
 		JPanel submitDisplayPanel = new JPanel();
-//		submitDisplayPanel.setLayout(new BorderLayout());
-		JLabel submitLabel = new JLabel("提出します。");
-		JProgressBar submitionProgress = new JProgressBar();
-		submitDisplayPanel.add(submitLabel, BorderLayout.CENTER);
-		submitDisplayPanel.add(submitionProgress, BorderLayout.SOUTH);
-		submitPanel.add(submitDisplayPanel, BorderLayout.CENTER);
+		JTextArea submitTextarea = new JTextArea("");
+		JScrollPane submitScrollPane = new JScrollPane(submitTextarea);
+//				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+//			      JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
+//				);	
+
+		submitPanel.add(submitProgressLabel, BorderLayout.NORTH);
+		submitPanel.add(submitScrollPane, BorderLayout.CENTER);
 		submitPanel.add(submitButtonPanel, BorderLayout.SOUTH);
 		tabbedpane.add(submitPanel);
 		tabbedpane.setTitleAt(nTab++, "Submit");
@@ -155,15 +163,19 @@ public class FileSharingPane extends JOptionPane {
 				JOptionPane op = new JOptionPane("messages", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, selectvalues, null);
 				final JDialog jd = op.createDialog(FileSharingPane.this, "title");
 				System.err.println("ps:" + basePath + "," + commentFilePath);
-				Path pt[] = new Path[1];
-				pt[0] = commentFilePath;
+				Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
 
-				PipeSender ps = new PipeSender(pipe, basePath, username, pt,
+				PipeSender ps = new PipeSender(pipe, basePath, username, filePaths,
 						(str)->{
 							Executors.newSingleThreadExecutor().submit(new Runnable() {
 								@Override
 								public void run() {
-									submitLabel.setText(str);
+									if(str.startsWith("-")) {
+										submitTextarea.append(str);
+										submitTextarea.append("\n");
+									} else {
+										submitProgressLabel.setText(str);
+									}
 								}
 							});
 						});
@@ -262,22 +274,25 @@ public class FileSharingPane extends JOptionPane {
 
 		@Override
 		public Void call()  {
-			c.accept("送信準備中です！");
+			c.accept("- 送信準備中です！");
 			String newPath = pipe.sendUserInformation(username, pathBase);
 			if(newPath == null) {
 				return null;
 			}
 			
-			c.accept("送信準備完了です！");
+			c.accept("- 送信準備完了です！");
 			System.err.println("post path!:" + newPath);
 			System.err.println("post file!:" + filePaths);
 			try {
-				pipe.postFile(newPath, filePaths);
+				pipe.postFile(newPath, filePaths, 
+						(str)->{
+							c.accept(str);
+						});
 			} catch (URISyntaxException | IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			c.accept("送信完了しました");
+			c.accept("- 送信完了しました");
 			
 			return null;
 		}
@@ -406,7 +421,8 @@ public class FileSharingPane extends JOptionPane {
 				Future<Long> f = pool.submit(pw);
 				queue.add(f);
 			}
-			
+
+		
 			for(Future<Long> f : queue) {
 				try {
 					Long id = f.get();

@@ -1,7 +1,9 @@
 package org.teachothers.fishwatchr;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.StringReader;
@@ -18,6 +20,7 @@ import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
@@ -108,7 +111,7 @@ public class DataPiper {
 	}
 
 	
-	public void postFile(String path, Path[] filePaths) throws URISyntaxException, IOException, InterruptedException {
+	public void postFile(String path, Path[] filePaths, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
 		System.err.println("pf1:" + path);
@@ -118,17 +121,31 @@ public class DataPiper {
 				TarArchiveOutputStream tarOut = new TarArchiveOutputStream(pipeOut);
 				PipedInputStream pipeIn = new PipedInputStream(pipeOut)) {
 
+			System.err.println("hey1");
 			HttpRequest request = HttpRequest.newBuilder().uri(pipeURL)
 					.POST(HttpRequest.BodyPublishers.ofInputStream(() -> pipeIn)).build();
 
+			System.err.println("hey2");
 			Executors.newSingleThreadExecutor().submit(new Runnable() {
 				@Override
 				public void run() {
 					for (Path filePath : filePaths) {
+						float fileLength = filePath.toFile().length() / 1024 / 1024; // MB
 						try {
 							tarOut.putArchiveEntry(new TarArchiveEntry(filePath.toFile()));
-							tarOut.write(Files.readAllBytes(filePath));
+							BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(filePath));
+							byte buf[] = new byte[4096*16];
+							long nr = 0;
+							int len = 0;
+							while((len = bis.read(buf)) != -1) {
+								nr += len;
+								tarOut.write(buf, 0, len);
+//								c.accept(String.valueOf(nr));
+								c.accept(String.format("%s (%.0f%%, %.1fMB)", filePath.getFileName().toString(), nr/fileLength/1024/1024*100, fileLength));
+							}
+//							tarOut.write(Files.readAllBytes(filePath));
 							tarOut.closeArchiveEntry();
+							c.accept("- " + filePath.getFileName().toString());
 						} catch (IOException e) {
 							System.err.println("Error(DataPiper): Can't create a tar file.");
 							e.printStackTrace();
@@ -144,11 +161,14 @@ public class DataPiper {
 				}
 			});
 
+			System.err.println("hey3");
 			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-			// print status code
+			System.err.println("hey4");
+		// print status code
 			System.err.println("post res:" + response.statusCode());
 
+			System.err.println("hey5");
 			// print response body
 			System.err.println(response.body());
 
@@ -179,6 +199,7 @@ public class DataPiper {
 	}
 
 	
+
 
 	public String sendUserInformation(String username, String basePath) {
 		Random rand = new Random();
