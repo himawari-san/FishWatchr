@@ -199,7 +199,29 @@ public class DataPiper {
 	}
 
 	
-
+	public String getUserInformation(String basePath) {
+		Random rand = new Random();
+		
+		for(int i = 0; i < N_RETRY; i++) {
+			int pathSX = rand.nextInt(N_SCAN_PATH);
+			String path = basePath + pathSX;
+			
+			try {
+				SimpleMessage message = getMessage(path);
+				System.err.println("send path:" + path);
+				System.err.println("send message:" + message.toString());
+				System.err.println("send id:" + message.getID());
+				return message.getID();
+			} catch (IOException | URISyntaxException | InterruptedException e) {
+				System.err.println("Warning(FileSharingPane): Retry getUserInformation()");
+				continue;
+			}
+			
+		}
+		
+		return null; // failure
+	}
+	
 
 	public String sendUserInformation(String username, String basePath) {
 		Random rand = new Random();

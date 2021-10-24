@@ -97,7 +97,9 @@ public class FileSharingPane extends JOptionPane {
 		submitPanel.setLayout(new BorderLayout());
 		JPanel submitButtonPanel = new JPanel();
 		JButton submitButton = new JButton("Submit");
+		JButton confirmRecieverButton = new JButton("Confirm Reciever");
 		JLabel submitProgressLabel = new JLabel("test desu");
+		submitButtonPanel.add(confirmRecieverButton);
 		submitButtonPanel.add(submitButton);
 
 		JPanel submitDisplayPanel = new JPanel();
@@ -154,6 +156,24 @@ public class FileSharingPane extends JOptionPane {
 			}
 		});
 		
+		
+		confirmRecieverButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Executors.newSingleThreadExecutor().submit(new Runnable() {
+					@Override
+					public void run() {
+						DataPiper pipe = new DataPiper(pipeServer);
+						String basePath = pathField.getText();
+						String reciever = pipe.getUserInformation(basePath+MemberFinder.SUFFIX_RESPONSER_PATH);
+						submitTextarea.append("-" + reciever);
+						submitTextarea.append("\n");
+					}
+				});
+			}
+		});
+		
+		
 		submitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -188,7 +208,8 @@ public class FileSharingPane extends JOptionPane {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String basePath = pathField.getText();
-				MemberFinder memberFinder = new MemberFinder(N_SCAN_PATH, basePath,
+				SimpleMessage response = new SimpleMessage(username);
+				MemberFinder memberFinder = new MemberFinder(N_SCAN_PATH, basePath, response,
 						(e)->{
 							JOptionPane.showMessageDialog(FileSharingPane.this, e.getMessage());
 							System.err.println(e.getMessage());
@@ -390,15 +411,25 @@ public class FileSharingPane extends JOptionPane {
 	}
 	
 	class MemberFinder implements Callable<Void> {
+		public static final String SUFFIX_RESPONSER_PATH = "_responser";
+		private static final int N_PIPE_WATCHER = 5;
+		private static final int N_RESPONSER = 5;
+		private static final int N_SCAN_PATH = 2;
+		private static final int N_RETRY = 10;
+		
 		ExecutorService pool;
+		ExecutorService poolMessageResponser;
 		DataPiper pipe;
 		String path;
+		SimpleMessage response;
 		Consumer<Exception> c;
 		
-		public MemberFinder(int nPool, String path, Consumer<Exception> c) {
+		public MemberFinder(int nPool, String path, SimpleMessage response, Consumer<Exception> c) {
 			pool = Executors.newFixedThreadPool(nPool);
+			poolMessageResponser = Executors.newFixedThreadPool(nPool);
 			pipe = new DataPiper(pipeServer);
 			this.path = path;
+			this.response = response;
 			this.c = c;
 		}
 
@@ -422,10 +453,19 @@ public class FileSharingPane extends JOptionPane {
 				queue.add(f);
 			}
 
-		
+			
+			for(int i = 0; i < N_RESPONSER; i++) {
+				System.err.println("res path:" + path + SUFFIX_RESPONSER_PATH);
+				PipeMessageResponser pm = new PipeMessageResponser(pipe, path + SUFFIX_RESPONSER_PATH, response);
+				Future<Long> f = poolMessageResponser.submit(pm);
+				queue.add(f);
+			}
+			
+
 			for(Future<Long> f : queue) {
 				try {
 					Long id = f.get();
+					System.err.println("fid:" + id);
 				} catch (InterruptedException | ExecutionException e) {
 					pool.shutdownNow();
 					c.accept(e);
