@@ -5,10 +5,8 @@ import java.util.HashMap;
 public class SimpleMessage extends HashMap<String, String> {
 
 	private static final long serialVersionUID = 1L;
-	private static final String KEY_GLUE = "/_/";
 	private static final String KEY_VALUE_SEPARATOR = "\t";
 	private String id = "";
-//	private String name = "";
 	
 
 	public SimpleMessage(String id) {
@@ -23,7 +21,7 @@ public class SimpleMessage extends HashMap<String, String> {
 	
 	@Override
 	public String toString() {
-		StringBuffer result = new StringBuffer(id);
+		StringBuffer result = new StringBuffer(id); // show id at the beginning
 		this.forEach((key, value)->{
 			result.append("\n");
 			result.append(key);

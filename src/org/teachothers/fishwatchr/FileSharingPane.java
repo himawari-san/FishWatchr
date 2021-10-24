@@ -5,12 +5,10 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -23,7 +21,6 @@ import java.util.function.Consumer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -158,7 +155,10 @@ public class FileSharingPane extends JOptionPane {
 				JOptionPane op = new JOptionPane("messages", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, selectvalues, null);
 				final JDialog jd = op.createDialog(FileSharingPane.this, "title");
 				System.err.println("ps:" + basePath + "," + commentFilePath);
-				PipeSender ps = new PipeSender(pipe, basePath, username, commentFilePath,
+				Path pt[] = new Path[1];
+				pt[0] = commentFilePath;
+
+				PipeSender ps = new PipeSender(pipe, basePath, username, pt,
 						(str)->{
 							Executors.newSingleThreadExecutor().submit(new Runnable() {
 								@Override
@@ -243,9 +243,50 @@ public class FileSharingPane extends JOptionPane {
 	}
 	
 	
-	
-	
 	class PipeSender implements Callable<Void> {
+
+		private DataPiper pipe;
+		private String pathBase;
+		private String username;
+		private Path[] filePaths;
+		private Consumer<String> c;
+	
+		
+		public PipeSender(DataPiper pipe, String pathBase, String username, Path[] filePaths, Consumer<String> c) {
+			this.pipe = pipe;
+			this.pathBase = pathBase;
+			this.username = username;
+			this.filePaths = filePaths;
+			this.c = c;
+		}
+
+		@Override
+		public Void call()  {
+			c.accept("送信準備中です！");
+			String newPath = pipe.sendUserInformation(username, pathBase);
+			if(newPath == null) {
+				return null;
+			}
+			
+			c.accept("送信準備完了です！");
+			System.err.println("post path!:" + newPath);
+			System.err.println("post file!:" + filePaths);
+			try {
+				pipe.postFile(newPath, filePaths);
+			} catch (URISyntaxException | IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			c.accept("送信完了しました");
+			
+			return null;
+		}
+		
+	}
+
+	
+	
+	class PipeSender2 implements Callable<Void> {
 
 		private DataPiper pipe;
 		private String pathBase;
@@ -254,7 +295,7 @@ public class FileSharingPane extends JOptionPane {
 		private Consumer<String> c;
 	
 		
-		public PipeSender(DataPiper pipe, String pathBase, String username, Path filePath, Consumer<String> c) {
+		public PipeSender2(DataPiper pipe, String pathBase, String username, Path filePath, Consumer<String> c) {
 			this.pipe = pipe;
 			this.pathBase = pathBase;
 			this.username = username;
@@ -273,6 +314,7 @@ public class FileSharingPane extends JOptionPane {
 			c.accept("送信準備完了です！");
 			System.err.println("post path!:" + newPath);
 			System.err.println("post file!:" + filePath);
+			
 			try {
 				pipe.postFile(newPath, filePath);
 			} catch (URISyntaxException | IOException | InterruptedException e) {

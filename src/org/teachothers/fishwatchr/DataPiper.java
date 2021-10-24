@@ -1,29 +1,26 @@
 package org.teachothers.fishwatchr;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.StringReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 
 public class DataPiper {
@@ -111,16 +108,69 @@ public class DataPiper {
 	}
 
 	
+	public void postFile(String path, Path[] filePaths) throws URISyntaxException, IOException, InterruptedException {
+		URI pipeURL = new URI(pipeServer + path);
+
+		System.err.println("pf1:" + path);
+		
+		try (
+				PipedOutputStream pipeOut = new PipedOutputStream();
+				TarArchiveOutputStream tarOut = new TarArchiveOutputStream(pipeOut);
+				PipedInputStream pipeIn = new PipedInputStream(pipeOut)) {
+
+			HttpRequest request = HttpRequest.newBuilder().uri(pipeURL)
+					.POST(HttpRequest.BodyPublishers.ofInputStream(() -> pipeIn)).build();
+
+			Executors.newSingleThreadExecutor().submit(new Runnable() {
+				@Override
+				public void run() {
+					for (Path filePath : filePaths) {
+						try {
+							tarOut.putArchiveEntry(new TarArchiveEntry(filePath.toFile()));
+							tarOut.write(Files.readAllBytes(filePath));
+							tarOut.closeArchiveEntry();
+						} catch (IOException e) {
+							System.err.println("Error(DataPiper): Can't create a tar file.");
+							e.printStackTrace();
+						}
+					}
+					try {
+						tarOut.close();
+						pipeOut.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+
+			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+			// print status code
+			System.err.println("post res:" + response.statusCode());
+
+			// print response body
+			System.err.println(response.body());
+
+		}
+	}
+
+	
+	
+	
 	public void getFile(String pipePath, Path downloadedFilePath) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + pipePath);
 
+		System.err.println("gf0");
 		HttpRequest request = HttpRequest.newBuilder()
 				.GET().uri(pipeURL)
 				.setHeader("User-Agent", "FishWatchr")
 				.build();
 
+		System.err.println("gf1");
 		HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(downloadedFilePath));
 
+		System.err.println("gf2");
 		// print status code
 		System.err.println(response.statusCode());
 
