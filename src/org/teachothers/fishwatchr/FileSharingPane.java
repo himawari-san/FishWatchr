@@ -25,7 +25,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
@@ -37,9 +36,7 @@ import javax.swing.event.ChangeListener;
 
 public class FileSharingPane extends JOptionPane {
 	private static final long serialVersionUID = 1L;
-	private static final int N_PIPE_WATCHER = 5;
 	private static final int N_SCAN_PATH = 2;
-	private static final int N_RETRY = 10;
 	private String pipeServer;
 	private SimpleMessageMap messageMap = new SimpleMessageMap();
 	private String[] recieversStr = {"john", "paul"};
@@ -321,50 +318,6 @@ public class FileSharingPane extends JOptionPane {
 	}
 
 	
-	
-	class PipeSender2 implements Callable<Void> {
-
-		private DataPiper pipe;
-		private String pathBase;
-		private String username;
-		private Path filePath;
-		private Consumer<String> c;
-	
-		
-		public PipeSender2(DataPiper pipe, String pathBase, String username, Path filePath, Consumer<String> c) {
-			this.pipe = pipe;
-			this.pathBase = pathBase;
-			this.username = username;
-			this.filePath = filePath;
-			this.c = c;
-		}
-
-		@Override
-		public Void call()  {
-			c.accept("送信準備中です！");
-			String newPath = pipe.sendUserInformation(username, pathBase);
-			if(newPath == null) {
-				return null;
-			}
-			
-			c.accept("送信準備完了です！");
-			System.err.println("post path!:" + newPath);
-			System.err.println("post file!:" + filePath);
-			
-			try {
-				pipe.postFile(newPath, filePath);
-			} catch (URISyntaxException | IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			c.accept("送信完了しました");
-			
-			return null;
-		}
-		
-	}
-
-	
 	class PipeReciever implements Callable<Void> {
 
 		private DataPiper pipe;
@@ -414,8 +367,6 @@ public class FileSharingPane extends JOptionPane {
 		public static final String SUFFIX_RESPONSER_PATH = "_responser";
 		private static final int N_PIPE_WATCHER = 5;
 		private static final int N_RESPONSER = 5;
-		private static final int N_SCAN_PATH = 2;
-		private static final int N_RETRY = 10;
 		
 		ExecutorService pool;
 		ExecutorService poolMessageResponser;

@@ -3,7 +3,6 @@ package org.teachothers.fishwatchr;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.StringReader;
@@ -30,7 +29,6 @@ public class DataPiper {
 	public static final String MESSAGE_KEY_PATH = "path";
 	public static final String MESSAGE_KEY_USERNAME = "username";
 	public static final String KEY_VALUE_SEPARATOR = ":";
-	private static final int N_PIPE_WATCHER = 5;
 	private static final int N_SCAN_PATH = 2;
 	private static final int N_RETRY = 10;
 
@@ -95,7 +93,6 @@ public class DataPiper {
 	public void postFile(String path, Path filePath) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
-		System.err.println("pf1:" + path);
 	    HttpRequest request = HttpRequest.newBuilder()
 	    			.uri(pipeURL)
 	                .POST(HttpRequest.BodyPublishers.ofFile(filePath))
@@ -113,19 +110,17 @@ public class DataPiper {
 	
 	public void postFile(String path, Path[] filePaths, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
-
-		System.err.println("pf1:" + path);
 		
 		try (
 				PipedOutputStream pipeOut = new PipedOutputStream();
 				TarArchiveOutputStream tarOut = new TarArchiveOutputStream(pipeOut);
 				PipedInputStream pipeIn = new PipedInputStream(pipeOut)) {
 
-			System.err.println("hey1");
-			HttpRequest request = HttpRequest.newBuilder().uri(pipeURL)
-					.POST(HttpRequest.BodyPublishers.ofInputStream(() -> pipeIn)).build();
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(pipeURL)
+					.POST(HttpRequest.BodyPublishers.ofInputStream(() -> pipeIn))
+					.build();
 
-			System.err.println("hey2");
 			Executors.newSingleThreadExecutor().submit(new Runnable() {
 				@Override
 				public void run() {
@@ -140,10 +135,8 @@ public class DataPiper {
 							while((len = bis.read(buf)) != -1) {
 								nr += len;
 								tarOut.write(buf, 0, len);
-//								c.accept(String.valueOf(nr));
 								c.accept(String.format("%s (%.0f%%, %.1fMB)", filePath.getFileName().toString(), nr/fileLength/1024/1024*100, fileLength));
 							}
-//							tarOut.write(Files.readAllBytes(filePath));
 							tarOut.closeArchiveEntry();
 							c.accept("- " + filePath.getFileName().toString());
 						} catch (IOException e) {
@@ -161,14 +154,11 @@ public class DataPiper {
 				}
 			});
 
-			System.err.println("hey3");
 			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-			System.err.println("hey4");
 		// print status code
 			System.err.println("post res:" + response.statusCode());
 
-			System.err.println("hey5");
 			// print response body
 			System.err.println(response.body());
 
@@ -181,16 +171,13 @@ public class DataPiper {
 	public void getFile(String pipePath, Path downloadedFilePath) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + pipePath);
 
-		System.err.println("gf0");
 		HttpRequest request = HttpRequest.newBuilder()
 				.GET().uri(pipeURL)
 				.setHeader("User-Agent", "FishWatchr")
 				.build();
 
-		System.err.println("gf1");
 		HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(downloadedFilePath));
 
-		System.err.println("gf2");
 		// print status code
 		System.err.println(response.statusCode());
 

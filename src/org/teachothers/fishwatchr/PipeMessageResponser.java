@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 
 public class PipeMessageResponser implements Callable<Long> {
 	private DataPiper pipe;
@@ -25,7 +24,6 @@ public class PipeMessageResponser implements Callable<Long> {
 			String newPath = path + pathID;
 			System.err.println("wait:" + path + pathID);
 			pipe.postMessage(newPath, message);
-//			consumer.accept(pipe.postMessage(path, message));
 			idQueue.add(pathID);
 			System.err.println("consume:" + path);
 			return Thread.currentThread().getId();
