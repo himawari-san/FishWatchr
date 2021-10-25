@@ -109,6 +109,8 @@ public class DataPiper {
 
 	
 	public void postFile(String path, Path[] filePaths, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
+		final int BASE_FILE_SIZE = 1024 * 1024; // MB
+		final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
 		URI pipeURL = new URI(pipeServer + path);
 		
 		try (
@@ -125,17 +127,17 @@ public class DataPiper {
 				@Override
 				public void run() {
 					for (Path filePath : filePaths) {
-						float fileLength = filePath.toFile().length() / 1024 / 1024; // MB
+						float fileLength = filePath.toFile().length() / BASE_FILE_SIZE; // MB
 						try {
-							tarOut.putArchiveEntry(new TarArchiveEntry(filePath.toFile()));
+							tarOut.putArchiveEntry(new TarArchiveEntry(filePath.toFile(), filePath.toFile().getName()));
 							BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(filePath));
-							byte buf[] = new byte[4096*16];
+							byte buf[] = new byte[READ_BUFFER_SIZE];
 							long nr = 0;
 							int len = 0;
 							while((len = bis.read(buf)) != -1) {
 								nr += len;
 								tarOut.write(buf, 0, len);
-								c.accept(String.format("%s (%.0f%%, %.1fMB)", filePath.getFileName().toString(), nr/fileLength/1024/1024*100, fileLength));
+								c.accept(String.format("%s (%.0f%%, %.1fMB)", filePath.getFileName().toString(), nr/fileLength/BASE_FILE_SIZE*100, fileLength));
 							}
 							tarOut.closeArchiveEntry();
 							c.accept("- " + filePath.getFileName().toString());
