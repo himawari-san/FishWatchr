@@ -9,13 +9,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import javax.swing.DefaultListModel;
@@ -38,14 +33,12 @@ public class FileSharingPane extends JOptionPane {
 	private static final long serialVersionUID = 1L;
 	private static final int N_SCAN_PATH = 2;
 	private String pipeServer;
-	private SimpleMessageMap messageMap = new SimpleMessageMap();
-	private String[] recieversStr = {"john", "paul"};
 	private DefaultListModel<String> model = new DefaultListModel<String>();
 	private JList<String> recieverList = new JList<String>(model);
-//	private MemberFinder memberFinder = null;
 	private String username;
 	private Path commentFilePath;
 	private Path mediaFilePath;
+	private PipeMemberFinder memberFinder;
 
 
 	public FileSharingPane(String pipeServer, String username, Path commentFilePath, Path mediaFilePath) {
@@ -162,7 +155,7 @@ public class FileSharingPane extends JOptionPane {
 					public void run() {
 						DataPiper pipe = new DataPiper(pipeServer);
 						String basePath = pathField.getText();
-						String reciever = pipe.getUserInformation(basePath+MemberFinder.SUFFIX_RESPONSER_PATH);
+						String reciever = pipe.getUserInformation(basePath+PipeMemberFinder.SUFFIX_RESPONSER_PATH);
 						submitTextarea.append("-" + reciever);
 						submitTextarea.append("\n");
 					}
@@ -204,9 +197,13 @@ public class FileSharingPane extends JOptionPane {
 		collectButton1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				DataPiper pipe = new DataPiper(pipeServer);
 				String basePath = pathField.getText();
 				SimpleMessage response = new SimpleMessage(username);
-				MemberFinder memberFinder = new MemberFinder(N_SCAN_PATH, basePath, response,
+				memberFinder = new PipeMemberFinder(pipe, N_SCAN_PATH, basePath, response,
+						(message)->{
+							addReciever(message);
+						},
 						(e)->{
 							JOptionPane.showMessageDialog(FileSharingPane.this, e.getMessage());
 							System.err.println(e.getMessage());
@@ -224,9 +221,9 @@ public class FileSharingPane extends JOptionPane {
 				String downloadedFilename = "fwdata";
 				Path downloadedFilePath = commentFilePath.getParent().resolve(downloadedFilename);
 				String username = recieverList.getModel().getElementAt(0);
-				SimpleMessage message = messageMap.get(username);
+				SimpleMessage message = memberFinder.getMap(username);
 				System.err.println("it1:" + recieverList.getModel().getElementAt(0));
-				System.err.println("it2:" + messageMap.get(username));
+				System.err.println("it2:" + memberFinder.getMap(username));
 				try {
 					pipe.getFile(message.get(DataPiper.MESSAGE_KEY_PATH), downloadedFilePath);
 				} catch (IOException | URISyntaxException | InterruptedException e) {
@@ -362,74 +359,4 @@ public class FileSharingPane extends JOptionPane {
 //		}
 		
 	}
-	
-	class MemberFinder implements Callable<Void> {
-		public static final String SUFFIX_RESPONSER_PATH = "_responser";
-		private static final int N_PIPE_WATCHER = 5;
-		private static final int N_RESPONSER = 5;
-		
-		ExecutorService pool;
-		ExecutorService poolMessageResponser;
-		DataPiper pipe;
-		String path;
-		SimpleMessage response;
-		Consumer<Exception> c;
-		
-		public MemberFinder(int nPool, String path, SimpleMessage response, Consumer<Exception> c) {
-			pool = Executors.newFixedThreadPool(nPool);
-			poolMessageResponser = Executors.newFixedThreadPool(nPool);
-			pipe = new DataPiper(pipeServer);
-			this.path = path;
-			this.response = response;
-			this.c = c;
-		}
-
-		@Override
-		public Void call() {
-			BlockingQueue<Future<Long>> queue = new ArrayBlockingQueue<>(10);
-			
-			for(int i = 0; i < N_PIPE_WATCHER; i++) {
-				System.err.println("pathpw:" + path);
-				PipeWatcher pw = new PipeWatcher(pipe, path,
-						(message)-> {
-							String messageID = message.getID();
-							if(messageID.isEmpty()) {
-								return;
-							}
-							System.err.println("mid:" + messageID);
-							messageMap.put(messageID, message);
-							addReciever(message);
-						});
-				Future<Long> f = pool.submit(pw);
-				queue.add(f);
-			}
-
-			
-			for(int i = 0; i < N_RESPONSER; i++) {
-				System.err.println("res path:" + path + SUFFIX_RESPONSER_PATH);
-				PipeMessageResponser pm = new PipeMessageResponser(pipe, path + SUFFIX_RESPONSER_PATH, response);
-				Future<Long> f = poolMessageResponser.submit(pm);
-				queue.add(f);
-			}
-			
-
-			for(Future<Long> f : queue) {
-				try {
-					Long id = f.get();
-					System.err.println("fid:" + id);
-				} catch (InterruptedException | ExecutionException e) {
-					pool.shutdownNow();
-					c.accept(e);
-					e.printStackTrace();
-
-					return null;
-				}
-			}
-			
-			pool.shutdown();
-			
-			return null;
-		}
-	}
-
 }
