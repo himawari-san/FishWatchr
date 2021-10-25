@@ -224,12 +224,18 @@ public class FileSharingPane extends JOptionPane {
 				SimpleMessage message = memberFinder.getMap(username);
 				System.err.println("it1:" + recieverList.getModel().getElementAt(0));
 				System.err.println("it2:" + memberFinder.getMap(username));
-				try {
-					pipe.getFile(message.get(DataPiper.MESSAGE_KEY_PATH), downloadedFilePath);
-				} catch (IOException | URISyntaxException | InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				Executors.newSingleThreadExecutor().submit(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							pipe.getTaredFile(message.get(DataPiper.MESSAGE_KEY_PATH), Paths.get("/tmp"), (str)->{});
+						} catch (IOException | URISyntaxException | InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
 
 			}
 		});

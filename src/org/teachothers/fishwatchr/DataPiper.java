@@ -1,8 +1,13 @@
 package org.teachothers.fishwatchr;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.StringReader;
@@ -22,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 
@@ -168,6 +174,36 @@ public class DataPiper {
 	}
 
 	
+	public void getTaredFile(String pipePath, Path rootPath, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
+		final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
+
+		URI pipeURL = new URI(pipeServer + pipePath);
+
+		HttpRequest request = HttpRequest.newBuilder()
+				.GET().uri(pipeURL)
+				.build();
+
+		HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+		try (TarArchiveInputStream tarInput = new TarArchiveInputStream(response.body())) {
+			TarArchiveEntry entry;
+			byte buf[] = new byte[READ_BUFFER_SIZE];
+			
+			while((entry = tarInput.getNextTarEntry()) != null) {
+				long restSize = entry.getSize();
+				Path filePath = rootPath.resolve(entry.getName());
+				BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath));
+
+				int readLength;
+				while((readLength = tarInput.read(buf)) != -1) {
+					bos.write(buf, 0, readLength);
+				}
+				bos.close();
+			}
+		}
+		
+		System.err.println(response.statusCode());
+	}
 	
 	
 	public void getFile(String pipePath, Path downloadedFilePath) throws URISyntaxException, IOException, InterruptedException {
