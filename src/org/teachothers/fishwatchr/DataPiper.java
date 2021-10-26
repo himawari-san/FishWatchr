@@ -3,9 +3,6 @@ package org.teachothers.fishwatchr;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
@@ -175,6 +172,7 @@ public class DataPiper {
 
 	
 	public void getTaredFile(String pipePath, Path rootPath, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
+		final int BASE_FILE_SIZE = 1024 * 1024; // MB
 		final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
 
 		URI pipeURL = new URI(pipeServer + pipePath);
@@ -190,13 +188,17 @@ public class DataPiper {
 			byte buf[] = new byte[READ_BUFFER_SIZE];
 			
 			while((entry = tarInput.getNextTarEntry()) != null) {
-				long restSize = entry.getSize();
+				long fileSize = entry.getSize();
+				long nr = 0;
 				Path filePath = rootPath.resolve(entry.getName());
+				c.accept("-" + entry.getName() + "\n");
 				BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath));
 
 				int readLength;
 				while((readLength = tarInput.read(buf)) != -1) {
 					bos.write(buf, 0, readLength);
+					nr += readLength;
+					c.accept(Long.toString(nr) + "\n");
 				}
 				bos.close();
 			}

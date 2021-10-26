@@ -26,6 +26,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.BadLocationException;
 
 
 
@@ -59,7 +60,7 @@ public class FileSharingPane extends JOptionPane {
 	private void ginit(){
 		int nTab = 0;
 		
-		setPreferredSize(new Dimension(300, 300));
+		setPreferredSize(new Dimension(450, 300));
 		
 		JPanel idPanel = new JPanel();
 		JLabel usernameLabel = new JLabel("Username");
@@ -114,15 +115,26 @@ public class FileSharingPane extends JOptionPane {
 		
 		// collect tab
 		JPanel collectPanel = new JPanel();
+		collectPanel.setLayout(new BorderLayout());
 		tabbedpane.add(collectPanel);
-		JButton collectButton1 = new JButton("scan");
-		JButton collectButton2 = new JButton("collect");
+		JPanel collectButtonPanel = new JPanel();
+		JButton collectButton1 = new JButton("Scan");
+		JButton collectButton2 = new JButton("Collect");
+		collectButtonPanel.add(collectButton1);
+		collectButtonPanel.add(collectButton2);
+		JPanel collectDisplayPanel = new JPanel();
+		collectDisplayPanel.setLayout(new GridLayout(1, 2));
 		JScrollPane membersScrollPane = new JScrollPane();
+		JScrollPane messageScrollPane = new JScrollPane();
+		JTextArea collectMessageArea = new JTextArea();
 		membersScrollPane.setViewportView(recieverList);
-		collectPanel.add(membersScrollPane);
-		collectPanel.add(collectButton1);
-		collectPanel.add(collectButton2);
+		messageScrollPane.setViewportView(collectMessageArea);
+		collectDisplayPanel.add(membersScrollPane);
+		collectDisplayPanel.add(messageScrollPane);
+		collectPanel.add(collectDisplayPanel, BorderLayout.CENTER);
+		collectPanel.add(collectButtonPanel, BorderLayout.SOUTH);
 		tabbedpane.setTitleAt(nTab++, "Collect");
+		
 		
 		
 		// distribute tab
@@ -229,7 +241,27 @@ public class FileSharingPane extends JOptionPane {
 					@Override
 					public void run() {
 						try {
-							pipe.getTaredFile(message.get(DataPiper.MESSAGE_KEY_PATH), Paths.get("/tmp"), (str)->{});
+							pipe.getTaredFile(message.get(DataPiper.MESSAGE_KEY_PATH), Paths.get("/tmp"), (str)->{
+								if(str.startsWith("-")) {
+									collectMessageArea.append(str);
+								} else {
+									int pLine = collectMessageArea.getLineCount();
+									pLine = pLine >= 2 ? pLine - 2 : pLine;
+									try {
+										int a = collectMessageArea.getLineStartOffset(pLine);
+										if(!collectMessageArea.getText(a, 1).equals("-")) {
+											int b = collectMessageArea.getLineEndOffset(pLine);
+											System.err.println("a:" + a + "," + b + "," + pLine + "," + str);
+											collectMessageArea.replaceRange("", a, b);
+										}
+										collectMessageArea.append(str);
+										
+									} catch (BadLocationException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							});
 						} catch (IOException | URISyntaxException | InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
