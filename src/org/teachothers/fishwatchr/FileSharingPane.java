@@ -187,21 +187,28 @@ public class FileSharingPane extends JOptionPane {
 				System.err.println("ps:" + basePath + "," + commentFilePath);
 				Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
 
-				PipeSender ps = new PipeSender(pipe, basePath, username, filePaths,
-						(str)->{
-							Executors.newSingleThreadExecutor().submit(new Runnable() {
-								@Override
-								public void run() {
-									if(str.startsWith("-")) {
-										submitTextarea.append(str);
-										submitTextarea.append("\n");
-									} else {
-										submitProgressLabel.setText(str);
-									}
-								}
-							});
-						});
-				Executors.newSingleThreadExecutor().submit(ps);
+				Executors.newSingleThreadExecutor().submit(new Runnable() {
+					@Override
+					public void run() {
+						displayString(submitTextarea, "- 送信準備中です！\n");
+						String newPath = pipe.sendUserInformation(username, basePath);
+						if(newPath == null) {
+							return;
+						}
+						
+						displayString(submitTextarea, "- 送信準備完了です！\n");
+						try {
+							pipe.postFile(newPath, filePaths, 
+									(str)->{
+										displayString(submitTextarea, str + "\n");
+									});
+						} catch (URISyntaxException | IOException | InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						displayString(submitTextarea, "- 送信完了しました\n");
+					}
+				});
 			}
 		});
 		
@@ -308,48 +315,24 @@ public class FileSharingPane extends JOptionPane {
 	}
 	
 	
-	class PipeSender implements Callable<Void> {
-
-		private DataPiper pipe;
-		private String pathBase;
-		private String username;
-		private Path[] filePaths;
-		private Consumer<String> c;
-	
-		
-		public PipeSender(DataPiper pipe, String pathBase, String username, Path[] filePaths, Consumer<String> c) {
-			this.pipe = pipe;
-			this.pathBase = pathBase;
-			this.username = username;
-			this.filePaths = filePaths;
-			this.c = c;
-		}
-
-		@Override
-		public Void call()  {
-			c.accept("- 送信準備中です！");
-			String newPath = pipe.sendUserInformation(username, pathBase);
-			if(newPath == null) {
-				return null;
-			}
-			
-			c.accept("- 送信準備完了です！");
-			System.err.println("post path!:" + newPath);
-			System.err.println("post file!:" + filePaths);
+	public void displayString(JTextArea display, String str) {
+		if(str.startsWith("-")) {
+			display.append(str);
+		} else {
+			int pLine = display.getLineCount();
+			pLine = pLine >= 2 ? pLine - 2 : pLine;
 			try {
-				pipe.postFile(newPath, filePaths, 
-						(str)->{
-							c.accept(str);
-						});
-			} catch (URISyntaxException | IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
+				int lineStart = display.getLineStartOffset(pLine);
+				if(!display.getText(lineStart, 1).equals("-")) {
+					int lineEnd = display.getLineEndOffset(pLine);
+					display.replaceRange("", lineStart, lineEnd);
+				}
+				display.append(str);
+				
+			} catch (BadLocationException e) {
 				e.printStackTrace();
 			}
-			c.accept("- 送信完了しました");
-			
-			return null;
 		}
-		
 	}
 
 	
