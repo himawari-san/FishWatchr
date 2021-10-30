@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 
 import javax.swing.JLabel;
 import javax.swing.plaf.basic.BasicHTML;
@@ -63,6 +64,26 @@ public class Util {
 		return System.getProperty("user.dir");  //$NON-NLS-1$
 	}
 	
+	
+	public static Path getUniquePath(Path basePath, String filename){
+
+		Path newPath = basePath.resolve(filename);
+		int c = 1;
+		
+		while(newPath.toFile().exists()){
+			String num = String.format(".%03d", c++);
+			
+			if(filename.lastIndexOf(".") != -1) { // has a suffix
+				// e.g. test.xml -> test.001.xml	
+				newPath = basePath.resolve(filename.replaceFirst("(\\.[^\\.]*)$", num+"$1"));
+			} else {
+				// append a number
+				newPath = basePath.resolve(filename + num);
+			}
+		}
+		return newPath;
+	}
+
 
 	public static String prettyPrintXML(Node doc){
     	// https://stackoverflow.com/questions/139076/how-to-pretty-print-xml-from-java

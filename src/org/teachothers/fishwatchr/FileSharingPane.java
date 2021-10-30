@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
@@ -24,8 +25,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.text.BadLocationException;
 
 
@@ -40,6 +43,7 @@ public class FileSharingPane extends JOptionPane {
 	private Path commentFilePath;
 	private Path mediaFilePath;
 	private PipeMemberFinder memberFinder;
+	private Path distPath;
 
 
 	public FileSharingPane(String pipeServer, String username, Path commentFilePath, Path mediaFilePath) {
@@ -50,10 +54,10 @@ public class FileSharingPane extends JOptionPane {
 		this.commentFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4.merged_bunseki.xml");
 		this.mediaFilePath = mediaFilePath;
 		this.mediaFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4");
+		distPath = commentFilePath.getParent();
 		System.err.println("cf:" + commentFilePath);
 		System.err.println("mf:" + mediaFilePath);
 		ginit();
-		
 	}
 	
 	
@@ -237,45 +241,34 @@ public class FileSharingPane extends JOptionPane {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				DataPiper pipe = new DataPiper(pipeServer);
-				String downloadedFilename = "fwdata";
-				Path downloadedFilePath = commentFilePath.getParent().resolve(downloadedFilename);
-				String username = recieverList.getModel().getElementAt(0);
-				SimpleMessage message = memberFinder.getMap(username);
-				System.err.println("it1:" + recieverList.getModel().getElementAt(0));
-				System.err.println("it2:" + memberFinder.getMap(username));
-
-				Executors.newSingleThreadExecutor().submit(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							pipe.getTaredFile(message.get(DataPiper.MESSAGE_KEY_PATH), Paths.get("/tmp"), (str)->{
-								if(str.startsWith("-")) {
-									collectMessageArea.append(str);
-								} else {
-									int pLine = collectMessageArea.getLineCount();
-									pLine = pLine >= 2 ? pLine - 2 : pLine;
-									try {
-										int a = collectMessageArea.getLineStartOffset(pLine);
-										if(!collectMessageArea.getText(a, 1).equals("-")) {
-											int b = collectMessageArea.getLineEndOffset(pLine);
-											System.err.println("a:" + a + "," + b + "," + pLine + "," + str);
-											collectMessageArea.replaceRange("", a, b);
-										}
-										collectMessageArea.append(str);
-										
-									} catch (BadLocationException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								}
-							});
-						} catch (IOException | URISyntaxException | InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+				ListModel<String> recieverListMode = recieverList.getModel();
+				
+				for(int i = 0; i < recieverListMode.getSize(); i++) {
+					String username = recieverListMode.getElementAt(i);
+					Path savePath =  Util.getUniquePath(commentFilePath.getParent(), username);
+					try {
+						Files.createDirectories(savePath);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
-				});
-
+					SimpleMessage message = memberFinder.getMap(username);
+					
+					Executors.newSingleThreadExecutor().submit(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								pipe.getTaredFile(message.get(DataPiper.MESSAGE_KEY_PATH), savePath,
+										(str)->{
+											displayString(collectMessageArea, str);
+										});
+							} catch (IOException | URISyntaxException | InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
+				}
 			}
 		});
 		
