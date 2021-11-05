@@ -10,11 +10,11 @@ import java.util.function.Consumer;
 public class PipeMessageReciever implements Callable<Long> {
 	private DataPiper pipe;
 	private String path;
-	private Consumer<SimpleMessage> consumer;
+	private Consumer<PipeMessage> consumer;
 	private static ArrayBlockingQueue<Integer> idQueue = new ArrayBlockingQueue<Integer>(2, false, Arrays.asList(0,1));
 
 	
-	public PipeMessageReciever(DataPiper pipe, String path, Consumer<SimpleMessage> consumer) {
+	public PipeMessageReciever(DataPiper pipe, String path, Consumer<PipeMessage> consumer) {
 		this.pipe = pipe;
 		this.path = path;
 		this.consumer = consumer;

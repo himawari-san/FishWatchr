@@ -2,14 +2,14 @@ package org.teachothers.fishwatchr;
 
 import java.util.HashMap;
 
-public class SimpleMessage extends HashMap<String, String> {
+public class PipeMessage extends HashMap<String, String> {
 
 	private static final long serialVersionUID = 1L;
 	private static final String KEY_VALUE_SEPARATOR = "\t";
 	private String id = "";
 	
 
-	public SimpleMessage(String id) {
+	public PipeMessage(String id) {
 		this.id = id;
 	}
 
@@ -33,9 +33,9 @@ public class SimpleMessage extends HashMap<String, String> {
 	}
 	
 	
-	public static SimpleMessage encode(String str) {
+	public static PipeMessage encode(String str) {
 		String lines[] = str.split("\n");
-		SimpleMessage message = new SimpleMessage(lines[0]);
+		PipeMessage message = new PipeMessage(lines[0]);
 		
 		for(int i = 1; i < lines.length; i++) {
 			int p = lines[i].indexOf(KEY_VALUE_SEPARATOR);

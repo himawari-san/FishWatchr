@@ -222,7 +222,7 @@ public class FileSharingPane extends JOptionPane {
 			public void actionPerformed(ActionEvent arg0) {
 				DataPiper pipe = new DataPiper(pipeServer);
 				String basePath = pathField.getText();
-				SimpleMessage response = new SimpleMessage(username);
+				PipeMessage response = new PipeMessage(username);
 				memberFinder = new PipeMemberFinder(pipe, N_SCAN_PATH, basePath, response,
 						(message)->{
 							addReciever(message);
@@ -252,13 +252,13 @@ public class FileSharingPane extends JOptionPane {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					SimpleMessage message = memberFinder.getMap(username);
+					PipeMessage message = memberFinder.getMap(username);
 					
 					Executors.newSingleThreadExecutor().submit(new Runnable() {
 						@Override
 						public void run() {
 							try {
-								pipe.getTaredFile(message.get(DataPiper.MESSAGE_KEY_PATH), savePath,
+								pipe.getTarFile(message.get(DataPiper.MESSAGE_KEY_PATH), savePath,
 										(str)->{
 											displayString(collectMessageArea, str);
 										});
@@ -301,7 +301,7 @@ public class FileSharingPane extends JOptionPane {
 	}
 
 	
-	public void addReciever(SimpleMessage message) {
+	public void addReciever(PipeMessage message) {
 		System.err.println("add:" + message.get("username"));
 		DefaultListModel<String> model = (DefaultListModel<String>) recieverList.getModel();
 		model.addElement(message.get("username"));

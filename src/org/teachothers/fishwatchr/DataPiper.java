@@ -47,7 +47,7 @@ public class DataPiper {
 
 
 
-	public SimpleMessage getMessage(String path) throws IOException, URISyntaxException, InterruptedException {
+	public PipeMessage getMessage(String path) throws IOException, URISyntaxException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
 		HttpRequest request = HttpRequest.newBuilder()
@@ -70,11 +70,11 @@ public class DataPiper {
 			lines.append(line + "\n");
 		}
 
-		return SimpleMessage.encode(lines.toString());
+		return PipeMessage.encode(lines.toString());
 	}
 	
 	
-	public void postMessage(String path, SimpleMessage message) throws URISyntaxException, IOException, InterruptedException {
+	public void postMessage(String path, PipeMessage message) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
 	    HttpRequest request = HttpRequest.newBuilder()
@@ -171,7 +171,7 @@ public class DataPiper {
 	}
 
 	
-	public void getTaredFile(String pipePath, Path rootPath, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
+	public void getTarFile(String pipePath, Path rootPath, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
 		final int BASE_FILE_SIZE = 1024 * 1024; // MB
 		final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
 
@@ -234,7 +234,7 @@ public class DataPiper {
 			String path = basePath + pathSX;
 			
 			try {
-				SimpleMessage message = getMessage(path);
+				PipeMessage message = getMessage(path);
 				System.err.println("send path:" + path);
 				System.err.println("send message:" + message.toString());
 				System.err.println("send id:" + message.getID());
@@ -258,7 +258,7 @@ public class DataPiper {
 			String path = basePath + pathSX;
 			System.err.println("rc path:" + path + "," + username);
 			
-			SimpleMessage message = new SimpleMessage(username);
+			PipeMessage message = new PipeMessage(username);
 
 			// username
 			message.put(MESSAGE_KEY_USERNAME, username);

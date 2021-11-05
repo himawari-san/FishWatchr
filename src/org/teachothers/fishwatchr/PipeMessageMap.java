@@ -3,14 +3,14 @@ package org.teachothers.fishwatchr;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SimpleMessageMap extends HashMap<String, SimpleMessage> {
+public class PipeMessageMap extends HashMap<String, PipeMessage> {
 
 	private static final long serialVersionUID = 1L;
 	private ArrayList<String> mapIDs = new ArrayList<String>();
 	public static final String DATA_ID_KEY = "data_id";
 	public static final String DATA_GLUE = "\t";
 	
-	public SimpleMessageMap() {
+	public PipeMessageMap() {
 		super();
 		
 	}

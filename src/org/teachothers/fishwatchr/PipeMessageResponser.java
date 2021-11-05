@@ -9,11 +9,11 @@ import java.util.concurrent.Callable;
 public class PipeMessageResponser implements Callable<Long> {
 	private DataPiper pipe;
 	private String path;
-	private SimpleMessage message;
+	private PipeMessage message;
 	private static ArrayBlockingQueue<Integer> idQueue = new ArrayBlockingQueue<Integer>(2, false, Arrays.asList(0,1));
 
 	
-	public PipeMessageResponser(DataPiper pipe, String path, SimpleMessage message) {
+	public PipeMessageResponser(DataPiper pipe, String path, PipeMessage message) {
 		this.pipe = pipe;
 		this.path = path;
 		this.message = message;

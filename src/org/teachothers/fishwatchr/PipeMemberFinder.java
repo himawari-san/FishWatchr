@@ -20,13 +20,13 @@ public class PipeMemberFinder implements Callable<Void> {
 	ExecutorService poolMessageResponser;
 	DataPiper pipe;
 	String path;
-	SimpleMessage response;
-	Consumer<SimpleMessage> messageConsumer;
+	PipeMessage response;
+	Consumer<PipeMessage> messageConsumer;
 	Consumer<Exception> errorConsumer;
-	HashMap<String, SimpleMessage> messageMap = new HashMap<String, SimpleMessage>();
+	HashMap<String, PipeMessage> messageMap = new HashMap<String, PipeMessage>();
 	
 	
-	public PipeMemberFinder(DataPiper pipe, int nPool, String path, SimpleMessage response, Consumer<SimpleMessage> messageConsumer, Consumer<Exception> errorConsumer) {
+	public PipeMemberFinder(DataPiper pipe, int nPool, String path, PipeMessage response, Consumer<PipeMessage> messageConsumer, Consumer<Exception> errorConsumer) {
 		poolMessageReciever = Executors.newFixedThreadPool(nPool);
 		poolMessageResponser = Executors.newFixedThreadPool(nPool);
 		this.pipe = pipe;
@@ -82,7 +82,7 @@ public class PipeMemberFinder implements Callable<Void> {
 	}
 	
 	
-	SimpleMessage getMap(String name) {
+	PipeMessage getMap(String name) {
 		return messageMap.get(name);
 	}
 }
