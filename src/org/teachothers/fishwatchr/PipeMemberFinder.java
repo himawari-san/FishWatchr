@@ -82,8 +82,15 @@ public class PipeMemberFinder implements Callable<Void> {
 	}
 	
 	
-	PipeMessage getMap(String name) {
+	public PipeMessage getMap(String name) {
 		return messageMap.get(name);
 	}
+	
+	
+	public void stop() {
+		poolMessageReciever.shutdown();
+		poolMessageResponser.shutdown();
+	}
+	
 }
 

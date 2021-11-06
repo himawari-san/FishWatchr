@@ -10,13 +10,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -25,10 +22,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.text.BadLocationException;
 
 
@@ -36,25 +31,30 @@ import javax.swing.text.BadLocationException;
 public class FileSharingPane extends JOptionPane {
 	private static final long serialVersionUID = 1L;
 	private static final int N_SCAN_PATH = 2;
-	private String pipeServer;
-	private DefaultListModel<String> model = new DefaultListModel<String>();
-	private JList<String> recieverList = new JList<String>(model);
+	private DefaultListModel<String> recieverListModel = new DefaultListModel<String>();
+	private JList<String> recieverList = new JList<String>(recieverListModel);
+	private DefaultListModel<String> senderListModel = new DefaultListModel<String>();
+	private JList<String> senderList = new JList<String>(senderListModel);
 	private String username;
 	private Path commentFilePath;
 	private Path mediaFilePath;
 	private PipeMemberFinder memberFinder;
-	private Path distPath;
+	private JTextField pathField;
+	private JTextArea sendLogTextarea;
+	private JTextArea recieveLogTextarea;
+	private DataPiper pipe;
 
 
 	public FileSharingPane(String pipeServer, String username, Path commentFilePath, Path mediaFilePath) {
 		super();
-		this.pipeServer = pipeServer;
+//		this.pipeServer = pipeServer;
 		this.username = username;
 		this.commentFilePath = commentFilePath;
 		this.commentFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4.merged_bunseki.xml");
 		this.mediaFilePath = mediaFilePath;
 		this.mediaFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4");
-		distPath = commentFilePath.getParent();
+//		distPath = commentFilePath.getParent();
+		this.pipe = new DataPiper(pipeServer);
 		System.err.println("cf:" + commentFilePath);
 		System.err.println("mf:" + mediaFilePath);
 		ginit();
@@ -64,13 +64,14 @@ public class FileSharingPane extends JOptionPane {
 	private void ginit(){
 		int nTab = 0;
 		
+		setOptions(new Object[0]); // remove the default OK button
 		setPreferredSize(new Dimension(450, 300));
 		
 		JPanel idPanel = new JPanel();
 		JLabel usernameLabel = new JLabel("Username");
 		JLabel usernameBody = new JLabel(username);
 		JLabel pathLabel = new JLabel("Path:");
-		JTextField pathField = new JTextField("a");
+		pathField = new JTextField("a");
 		idPanel.setLayout(new GridLayout(2, 2, 1, 3));
 		idPanel.add(usernameLabel);
 		idPanel.add(usernameBody);
@@ -87,68 +88,85 @@ public class FileSharingPane extends JOptionPane {
 //		mainPanel.add(recieversScrollPane);
 //		mainPanel.add(scanButton);
 
-		// submit tab
-		JPanel submitPanel = new JPanel();
-		submitPanel.setLayout(new BorderLayout());
-		JPanel submitButtonPanel = new JPanel();
-		JButton submitButton = new JButton("Submit");
-		JButton confirmRecieverButton = new JButton("Confirm Reciever");
-		JLabel submitProgressLabel = new JLabel("test desu");
-		submitButtonPanel.add(confirmRecieverButton);
-		submitButtonPanel.add(submitButton);
-
-		JPanel submitDisplayPanel = new JPanel();
-		JTextArea submitTextarea = new JTextArea("");
-		JScrollPane submitScrollPane = new JScrollPane(submitTextarea);
-//				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-//			      JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
-//				);	
-
-		submitPanel.add(submitProgressLabel, BorderLayout.NORTH);
-		submitPanel.add(submitScrollPane, BorderLayout.CENTER);
-		submitPanel.add(submitButtonPanel, BorderLayout.SOUTH);
-		tabbedpane.add(submitPanel);
-		tabbedpane.setTitleAt(nTab++, "Submit");
+		// Send tab
+		JPanel sendPanel = new JPanel();
+		sendPanel.setLayout(new BorderLayout());
+		JPanel sendDisplayPanel = new JPanel();
+		JPanel sendRecieverPanel = new JPanel();
+		sendRecieverPanel.setLayout(new BorderLayout());
+		JPanel sendLogPanel = new JPanel();
+		sendLogPanel.setLayout(new BorderLayout());
+		sendDisplayPanel.setLayout(new GridLayout(1, 2));
+		sendDisplayPanel.add(sendRecieverPanel);
+		sendDisplayPanel.add(sendLogPanel);
 		
-		// recieve tab
+		JPanel sendButtonPanel = new JPanel();
+		JButton sendButton = new SendButton();
+		JButton sendCancelButton = new JButton("キャンセル");
+		sendButtonPanel.add(sendButton);
+		sendButtonPanel.add(sendCancelButton);
+		sendButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		
+		JLabel sendRecieverLabel = new JLabel("受信者リスト");
+		JScrollPane sendRecieverScrollPane = new JScrollPane();
+		sendRecieverScrollPane.setViewportView(recieverList);
+		sendRecieverPanel.add(sendRecieverLabel, BorderLayout.NORTH);
+		sendRecieverPanel.add(sendRecieverScrollPane, BorderLayout.CENTER);
+
+		JLabel sendLogLabel = new JLabel("進行状況");
+		JScrollPane sendLogScrollPane = new JScrollPane();
+		sendLogTextarea = new JTextArea("");
+		sendLogTextarea.setLineWrap(true);
+		sendLogScrollPane.setViewportView(sendLogTextarea);
+		sendLogPanel.add(sendLogLabel, BorderLayout.NORTH);
+		sendLogPanel.add(sendLogScrollPane, BorderLayout.CENTER);
+		
+		sendPanel.add(sendDisplayPanel, BorderLayout.CENTER);
+		sendPanel.add(sendButtonPanel, BorderLayout.SOUTH);
+		tabbedpane.add(sendPanel);
+		tabbedpane.setTitleAt(nTab++, "送信");
+		
+		
+		// Recieve tab
 		JPanel recievePanel = new JPanel();
+		recievePanel.setLayout(new BorderLayout());
 		tabbedpane.add(recievePanel);
-		JButton recieveButton = new JButton("recieve");
-		recievePanel.add(recieveButton);
-		tabbedpane.setTitleAt(nTab++, "recieve");
-		
-		// collect tab
-		JPanel collectPanel = new JPanel();
-		collectPanel.setLayout(new BorderLayout());
-		tabbedpane.add(collectPanel);
-		JPanel collectButtonPanel = new JPanel();
-		JButton collectButton1 = new JButton("Scan");
-		JButton collectButton2 = new JButton("Collect");
-		collectButtonPanel.add(collectButton1);
-		collectButtonPanel.add(collectButton2);
-		JPanel collectDisplayPanel = new JPanel();
-		collectDisplayPanel.setLayout(new GridLayout(1, 2));
-		JScrollPane membersScrollPane = new JScrollPane();
-		JScrollPane messageScrollPane = new JScrollPane();
-		JTextArea collectMessageArea = new JTextArea();
-		membersScrollPane.setViewportView(recieverList);
-		messageScrollPane.setViewportView(collectMessageArea);
-		collectDisplayPanel.add(membersScrollPane);
-		collectDisplayPanel.add(messageScrollPane);
-		collectPanel.add(collectDisplayPanel, BorderLayout.CENTER);
-		collectPanel.add(collectButtonPanel, BorderLayout.SOUTH);
-		tabbedpane.setTitleAt(nTab++, "Collect");
-		
-		
-		
-		// distribute tab
-		JPanel distributePanel = new JPanel();
-		tabbedpane.add(distributePanel);
-		JButton distributeButton = new JButton("Distribute");
-//		recievePanel.add(recieveButton);
-		tabbedpane.setTitleAt(nTab++, "Distribute");
+		JPanel recieveButtonPanel = new JPanel();
+		RecieveButton recieveButton = new RecieveButton();
 
+		JButton recieveCancelButton = new JButton("キャンセル");
+		recieveButtonPanel.add(recieveButton);
+		recieveButtonPanel.add(recieveCancelButton);
+		JPanel recieveDisplayPanel = new JPanel();
+		recieveDisplayPanel.setLayout(new GridLayout(1, 2));
+
+		JPanel recieveSenderPanel = new JPanel();
+		recieveSenderPanel.setLayout(new BorderLayout());
+		JLabel recieveSenderLabel = new JLabel("送信者リスト");
+		JScrollPane recieveSenderScrollPane = new JScrollPane();
+		recieveSenderScrollPane.setViewportView(senderList);
+		recieveSenderPanel.add(recieveSenderLabel, BorderLayout.NORTH);
+		recieveSenderPanel.add(recieveSenderScrollPane, BorderLayout.CENTER);
 		
+		JPanel recieveLogPanel = new JPanel();
+		recieveLogPanel.setLayout(new BorderLayout());
+		JLabel recieveLogLabel = new JLabel("進行状況");
+		JScrollPane recieveLogScrollPane = new JScrollPane();
+		recieveLogTextarea = new JTextArea();
+		recieveLogTextarea.setLineWrap(true);
+		recieveLogScrollPane.setViewportView(recieveLogTextarea);
+		recieveLogPanel.add(recieveLogLabel, BorderLayout.NORTH);
+		recieveLogPanel.add(recieveLogScrollPane, BorderLayout.CENTER);
+		recieveDisplayPanel.add(recieveSenderPanel);
+		recieveDisplayPanel.add(recieveLogPanel);
+		recievePanel.add(recieveDisplayPanel, BorderLayout.CENTER);
+		recievePanel.add(recieveButtonPanel, BorderLayout.SOUTH);
+		tabbedpane.setTitleAt(nTab++, "受信");
 		
 		setMessage(mainPanel);
 		
@@ -162,151 +180,8 @@ public class FileSharingPane extends JOptionPane {
 			}
 		});
 		
-		
-		confirmRecieverButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Executors.newSingleThreadExecutor().submit(new Runnable() {
-					@Override
-					public void run() {
-						DataPiper pipe = new DataPiper(pipeServer);
-						String basePath = pathField.getText();
-						String reciever = pipe.getUserInformation(basePath+PipeMemberFinder.SUFFIX_RESPONSER_PATH);
-						submitTextarea.append("-" + reciever);
-						submitTextarea.append("\n");
-					}
-				});
-			}
-		});
-		
-		
-		submitButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				DataPiper pipe = new DataPiper(pipeServer);
-				String basePath = pathField.getText();
-				String selectvalues[] = {};
-				JOptionPane op = new JOptionPane("messages", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, selectvalues, null);
-				final JDialog jd = op.createDialog(FileSharingPane.this, "title");
-				System.err.println("ps:" + basePath + "," + commentFilePath);
-				Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
-
-				Executors.newSingleThreadExecutor().submit(new Runnable() {
-					@Override
-					public void run() {
-						displayString(submitTextarea, "- 送信準備中です！\n");
-						String newPath = pipe.sendUserInformation(username, basePath);
-						if(newPath == null) {
-							return;
-						}
-						
-						displayString(submitTextarea, "- 送信準備完了です！\n");
-						try {
-							pipe.postFile(newPath, filePaths, 
-									(str)->{
-										displayString(submitTextarea, str + "\n");
-									});
-						} catch (URISyntaxException | IOException | InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						displayString(submitTextarea, "- 送信完了しました\n");
-					}
-				});
-			}
-		});
-		
-		
-		collectButton1.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				DataPiper pipe = new DataPiper(pipeServer);
-				String basePath = pathField.getText();
-				PipeMessage response = new PipeMessage(username);
-				memberFinder = new PipeMemberFinder(pipe, N_SCAN_PATH, basePath, response,
-						(message)->{
-							addReciever(message);
-						},
-						(e)->{
-							JOptionPane.showMessageDialog(FileSharingPane.this, e.getMessage());
-							System.err.println(e.getMessage());
-						});
-				Executors.newSingleThreadExecutor().submit(memberFinder);
-				
-			}
-		});
-		
-		
-		collectButton2.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				DataPiper pipe = new DataPiper(pipeServer);
-				ListModel<String> recieverListMode = recieverList.getModel();
-				
-				for(int i = 0; i < recieverListMode.getSize(); i++) {
-					String username = recieverListMode.getElementAt(i);
-					Path savePath =  Util.getUniquePath(commentFilePath.getParent(), username);
-					try {
-						Files.createDirectories(savePath);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					PipeMessage message = memberFinder.getMap(username);
-					
-					Executors.newSingleThreadExecutor().submit(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								pipe.getTarFile(message.get(DataPiper.MESSAGE_KEY_PATH), savePath,
-										(str)->{
-											displayString(collectMessageArea, str);
-										});
-							} catch (IOException | URISyntaxException | InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					});
-				}
-			}
-		});
-		
-		
-		recieveButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				DataPiper pipe = new DataPiper(pipeServer);
-				String pathBase = pathField.getText();
-				String selectvalues[] = {};
-				JOptionPane op = new JOptionPane("messages", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, selectvalues, null);
-				final JDialog jd = op.createDialog(FileSharingPane.this, "title");
-				if(pathBase.isEmpty()) {
-					pathBase = "a";
-				}
-				PipeReciever pr = new PipeReciever(pipe, pathBase, username,
-						(str)->{
-							System.err.println("open!");
-							Executors.newSingleThreadExecutor().submit(new Runnable() {
-								@Override
-								public void run() {
-									jd.setVisible(true);
-								}
-							});
-						});
-				Executors.newSingleThreadExecutor().submit(pr);
-			}
-		});
-		
 	}
 
-	
-	public void addReciever(PipeMessage message) {
-		System.err.println("add:" + message.get("username"));
-		DefaultListModel<String> model = (DefaultListModel<String>) recieverList.getModel();
-		model.addElement(message.get("username"));
-	}
-	
 	
 	public void displayString(JTextArea display, String str) {
 		if(str.startsWith("-")) {
@@ -329,48 +204,178 @@ public class FileSharingPane extends JOptionPane {
 	}
 
 	
-	class PipeReciever implements Callable<Void> {
+	private class RecieveButton extends JButton {
+		private static final long serialVersionUID = 1L;
+		private final static int STATUS_INIT = 0;
+		private final static int STATUS_SEARHING_RECIEVERS = 1;
+		private final static int STATUS_SENDING = 2;
+		private final String[] labels = {"相手を探す", "受信", "受信をやめる"};
+		
+		private int status = STATUS_INIT;
+		
+		public RecieveButton() {
+			super();
+			
+			setText(labels[STATUS_INIT]);
+			
+			addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					switch (status) {
+					case STATUS_INIT:
+						status++;
+						setText(labels[status]);
+						
+						String basePath = pathField.getText();
+						PipeMessage response = new PipeMessage(username);
+						memberFinder = new PipeMemberFinder(pipe, N_SCAN_PATH, basePath, response,
+								(message)->{
+									String sender = message.get("username");
+									senderListModel.addElement(sender);
+									recieveLogTextarea.append("- " + sender + "を送信者リストに追加しました。\n");
+								},
+								(e)->{
+									JOptionPane.showMessageDialog(FileSharingPane.this, e.getMessage());
+									System.err.println(e.getMessage());
+								});
+						Executors.newSingleThreadExecutor().submit(memberFinder);
+						recieveLogTextarea.append("- 送信者を探しています。\n");
 
-		private DataPiper pipe;
-		private String pathBase;
-		private String username;
-		private Consumer<String> c;
+						
+					break;
+					case STATUS_SEARHING_RECIEVERS:
+						int nSenders = senderListModel.getSize();
+						if(nSenders < 1) {
+							JOptionPane.showMessageDialog(RecieveButton.this, "送信者がいません");
+							return;
+						}
+						
+						status++;
+						setText(labels[status]);
+						memberFinder.stop();
+						
+						for(int i = 0; i < nSenders; i++) {
+							String username = senderListModel.getElementAt(i);
+							Path savePath =  Util.getUniquePath(commentFilePath.getParent(), username);
+							try {
+								Files.createDirectories(savePath);
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							PipeMessage message = memberFinder.getMap(username);
+							
+							Executors.newSingleThreadExecutor().submit(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										pipe.getTarFile(message.get(DataPiper.MESSAGE_KEY_PATH), savePath,
+												(str)->{
+													displayString(recieveLogTextarea, str);
+												});
+									} catch (IOException | URISyntaxException | InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							});
+						}
+						setText(labels[status=STATUS_INIT]);
+						senderListModel.clear();
+
+						break;
+					case STATUS_SENDING:
+						break;
+					default:
+						break;
+					}
+				}
+			});
+		}
+	}
 	
+	private class SendButton extends JButton {
+		private static final long serialVersionUID = 1L;
+		private final static int STATUS_INIT = 0;
+		private final static int STATUS_SEARHING_RECIEVERS = 1;
+		private final static int STATUS_SENDING = 2;
+		private final String[] labels = {"相手を探す", "送信", "送信をやめる"};
 		
-		public PipeReciever(DataPiper pipe, String pathBase, String username, Consumer<String> c) {
-			this.pipe = pipe;
-			this.pathBase = pathBase;
-			this.username = username;
-			this.c = c;
-		}
+		private int status = STATUS_INIT;
+		
+		public SendButton() {
+			super();
+			
+			setText(labels[STATUS_INIT]);
+			
+			addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					switch (status) {
+					case STATUS_INIT:
+						status++;
+						setText(labels[status]);
+						Executors.newSingleThreadExecutor().submit(new Runnable() {
+							@Override
+							public void run() {
+								sendLogTextarea.append("- 受信者を探しています。\n");
+								String basePath = pathField.getText();
+								String reciever = pipe.getUserInformation(basePath+PipeMemberFinder.SUFFIX_RESPONSER_PATH);
+								recieverListModel.addElement(reciever);
+								sendLogTextarea.append("- " + reciever + "を受信者リストに追加しました。\n");
+							}
+						});
+						break;
+					case STATUS_SEARHING_RECIEVERS:
+						int nRecievers = recieverListModel.getSize();
+						if(nRecievers < 1) {
+							JOptionPane.showMessageDialog(SendButton.this, "受信者がいません");
+							return;
+						}
 
-		@Override
-		public Void call() {
-			c.accept("test1");
-			String newPath = pipe.sendUserInformation(username, pathBase);
-			if(newPath == null) {
-				return null;
-			}
-			c.accept(null);
-			c.accept("test2");
-			
-//			try {
-//				System.err.println("recieving!:" + newPath);
-//				recieve(newPath);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-			System.err.println("recieved:" + newPath);
-			
-			
-			return null;
+						memberFinder.stop();
+						status++;
+						setText(labels[status]);
+
+						String basePath = pathField.getText();
+//						String selectvalues[] = {};
+//						JOptionPane op = new JOptionPane("messages", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, selectvalues, null);
+//						final JDialog jd = op.createDialog(FileSharingPane.this, "title");
+						System.err.println("ps:" + basePath + "," + commentFilePath);
+						Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
+
+						Executors.newSingleThreadExecutor().submit(new Runnable() {
+							@Override
+							public void run() {
+								displayString(sendLogTextarea, "- 送信準備中です！\n");
+								String newPath = pipe.sendUserInformation(username, basePath);
+								if(newPath == null) {
+									return;
+								}
+								
+								displayString(sendLogTextarea, "- 送信準備完了です！\n");
+								try {
+									pipe.postFile(newPath, filePaths, 
+											(str)->{
+												displayString(sendLogTextarea, str + "\n");
+											});
+								} catch (URISyntaxException | IOException | InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								displayString(sendLogTextarea, "- 送信完了しました\n");
+								setText(labels[status=STATUS_INIT]);
+								recieverListModel.clear();
+							}
+						});
+						break;
+					case STATUS_SENDING:
+						break;
+					default:
+						break;
+					}
+				}
+			});
 		}
-		
-		
-//		public void recieve(String path) throws IOException {
-//			pipe.getFile(path);
-//		}
-		
 	}
 }

@@ -2121,7 +2121,7 @@ public class MainFrame extends JFrame {
 //							String pipeServer = "http://localhost:8080/";
 //							String pipeServer = "https://piping-server-test.herokuapp.com/";
 							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getName(), Paths.get(xf), Paths.get(mf));
-							JDialog d = fsp.createDialog("test");
+							JDialog d = fsp.createDialog("ファイル共有");
 							d.setVisible(true);
 							Object selectedValue = fsp.getValue();
 //							fsp.shutdownNow();
