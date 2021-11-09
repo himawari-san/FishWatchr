@@ -1,6 +1,7 @@
 package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,7 +11,13 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -18,30 +25,27 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.text.BadLocationException;
 
 
 
 public class FileSharingPane extends JOptionPane {
 	private static final long serialVersionUID = 1L;
 	private static final int N_SCAN_PATH = 2;
-	private DefaultListModel<String> recieverListModel = new DefaultListModel<String>();
-	private JList<String> recieverList = new JList<String>(recieverListModel);
-	private DefaultListModel<String> senderListModel = new DefaultListModel<String>();
-	private JList<String> senderList = new JList<String>(senderListModel);
 	private String username;
 	private Path commentFilePath;
 	private Path mediaFilePath;
 	private PipeMemberFinder memberFinder;
 	private JTextField pathField;
-	private JTextArea sendLogTextarea;
-	private JTextArea recieveLogTextarea;
+//	private JTextArea sendLogTextarea;
 	private DataPiper pipe;
 
 
@@ -59,7 +63,7 @@ public class FileSharingPane extends JOptionPane {
 		System.err.println("mf:" + mediaFilePath);
 		ginit();
 	}
-	
+
 	
 	private void ginit(){
 		int nTab = 0;
@@ -85,88 +89,19 @@ public class FileSharingPane extends JOptionPane {
 		JTabbedPane tabbedpane = new JTabbedPane();
 		mainPanel.add(idPanel, BorderLayout.NORTH);
 		mainPanel.add(tabbedpane, BorderLayout.CENTER);
-//		mainPanel.add(recieversScrollPane);
-//		mainPanel.add(scanButton);
 
-		// Send tab
-		JPanel sendPanel = new JPanel();
-		sendPanel.setLayout(new BorderLayout());
-		JPanel sendDisplayPanel = new JPanel();
-		JPanel sendRecieverPanel = new JPanel();
-		sendRecieverPanel.setLayout(new BorderLayout());
-		JPanel sendLogPanel = new JPanel();
-		sendLogPanel.setLayout(new BorderLayout());
-		sendDisplayPanel.setLayout(new GridLayout(1, 2));
-		sendDisplayPanel.add(sendRecieverPanel);
-		sendDisplayPanel.add(sendLogPanel);
-		
-		JPanel sendButtonPanel = new JPanel();
-		JButton sendButton = new SendButton();
-		JButton sendCancelButton = new JButton("キャンセル");
-		sendButtonPanel.add(sendButton);
-		sendButtonPanel.add(sendCancelButton);
-		sendButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-			}
-		});
-		
-		JLabel sendRecieverLabel = new JLabel("受信者リスト");
-		JScrollPane sendRecieverScrollPane = new JScrollPane();
-		sendRecieverScrollPane.setViewportView(recieverList);
-		sendRecieverPanel.add(sendRecieverLabel, BorderLayout.NORTH);
-		sendRecieverPanel.add(sendRecieverScrollPane, BorderLayout.CENTER);
-
-		JLabel sendLogLabel = new JLabel("進行状況");
-		JScrollPane sendLogScrollPane = new JScrollPane();
-		sendLogTextarea = new JTextArea("");
-		sendLogTextarea.setLineWrap(true);
-		sendLogScrollPane.setViewportView(sendLogTextarea);
-		sendLogPanel.add(sendLogLabel, BorderLayout.NORTH);
-		sendLogPanel.add(sendLogScrollPane, BorderLayout.CENTER);
-		
-		sendPanel.add(sendDisplayPanel, BorderLayout.CENTER);
-		sendPanel.add(sendButtonPanel, BorderLayout.SOUTH);
-		tabbedpane.add(sendPanel);
+		tabbedpane.add(new SendPanel());
 		tabbedpane.setTitleAt(nTab++, "送信");
-		
-		
-		// Recieve tab
-		JPanel recievePanel = new JPanel();
-		recievePanel.setLayout(new BorderLayout());
-		tabbedpane.add(recievePanel);
-		JPanel recieveButtonPanel = new JPanel();
-		RecieveButton recieveButton = new RecieveButton();
 
-		JButton recieveCancelButton = new JButton("キャンセル");
-		recieveButtonPanel.add(recieveButton);
-		recieveButtonPanel.add(recieveCancelButton);
-		JPanel recieveDisplayPanel = new JPanel();
-		recieveDisplayPanel.setLayout(new GridLayout(1, 2));
-
-		JPanel recieveSenderPanel = new JPanel();
-		recieveSenderPanel.setLayout(new BorderLayout());
-		JLabel recieveSenderLabel = new JLabel("送信者リスト");
-		JScrollPane recieveSenderScrollPane = new JScrollPane();
-		recieveSenderScrollPane.setViewportView(senderList);
-		recieveSenderPanel.add(recieveSenderLabel, BorderLayout.NORTH);
-		recieveSenderPanel.add(recieveSenderScrollPane, BorderLayout.CENTER);
+//		tabbedpane.add(getRecievePanel());
+//		tabbedpane.setTitleAt(nTab++, "受信");
 		
-		JPanel recieveLogPanel = new JPanel();
-		recieveLogPanel.setLayout(new BorderLayout());
-		JLabel recieveLogLabel = new JLabel("進行状況");
-		JScrollPane recieveLogScrollPane = new JScrollPane();
-		recieveLogTextarea = new JTextArea();
-		recieveLogTextarea.setLineWrap(true);
-		recieveLogScrollPane.setViewportView(recieveLogTextarea);
-		recieveLogPanel.add(recieveLogLabel, BorderLayout.NORTH);
-		recieveLogPanel.add(recieveLogScrollPane, BorderLayout.CENTER);
-		recieveDisplayPanel.add(recieveSenderPanel);
-		recieveDisplayPanel.add(recieveLogPanel);
-		recievePanel.add(recieveDisplayPanel, BorderLayout.CENTER);
-		recievePanel.add(recieveButtonPanel, BorderLayout.SOUTH);
-		tabbedpane.setTitleAt(nTab++, "受信");
+		tabbedpane.add(new CollectPanel());
+		tabbedpane.setTitleAt(nTab++, "収集");
+
+//		tabbedpane.add(getDistributePanel());
+//		tabbedpane.setTitleAt(nTab++, "配布");
+
 		
 		setMessage(mainPanel);
 		
@@ -182,29 +117,213 @@ public class FileSharingPane extends JOptionPane {
 		
 	}
 
+
 	
-	public void displayString(JTextArea display, String str) {
-		if(str.startsWith("-")) {
-			display.append(str);
-		} else {
-			int pLine = display.getLineCount();
-			pLine = pLine >= 2 ? pLine - 2 : pLine;
-			try {
-				int lineStart = display.getLineStartOffset(pLine);
-				if(!display.getText(lineStart, 1).equals("-")) {
-					int lineEnd = display.getLineEndOffset(pLine);
-					display.replaceRange("", lineStart, lineEnd);
+	
+	private class SendPanel extends JPanel {
+		
+		private static final long serialVersionUID = 1L;
+
+		public SendPanel() {
+
+			JPanel memberListPanel = new JPanel();
+			MessagePanel messagePanel = new MessagePanel("状況表示");
+			JPanel buttonPanel = new JPanel();
+			
+			setLayout(new BorderLayout(10, 5));
+			add(memberListPanel, BorderLayout.NORTH);
+			add(messagePanel, BorderLayout.CENTER);
+			add(buttonPanel, BorderLayout.SOUTH);
+			
+			memberListPanel.setLayout(new BorderLayout());
+			JLabel listTitleLabel = new JLabel("送信の相手");
+			MemberPanel memberPanel = new MemberPanel();
+			memberListPanel.add(listTitleLabel, BorderLayout.NORTH);
+			memberListPanel.add(memberPanel, BorderLayout.CENTER);
+			
+			JButton sendButton = new SendButton(memberPanel, messagePanel);
+			JButton sendCancelButton = new JButton("キャンセル");
+			buttonPanel.add(sendButton);
+			buttonPanel.add(sendCancelButton);
+			sendButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					
 				}
-				display.append(str);
-				
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			}
+			});
+		}
+	}
+	
+
+	private class CollectPanel extends JPanel {
+		
+		private static final long serialVersionUID = 1L;
+
+		public CollectPanel() {
+			JPanel displayPanel = new JPanel();
+			JPanel buttonPanel = new JPanel();
+			
+			setLayout(new BorderLayout(10, 5));
+			add(displayPanel, BorderLayout.CENTER);
+			add(buttonPanel, BorderLayout.SOUTH);
+
+			displayPanel.setLayout(new GridLayout(2, 1));
+			MemberListPanel memberListPanel = new MemberListPanel("メンバー");
+			MessagePanel messagePanel = new MessagePanel("状況表示");
+			displayPanel.add(memberListPanel);
+			displayPanel.add(messagePanel);
+			
+			CollectButton collectButton = new CollectButton(memberListPanel, messagePanel);
+			JButton sendCancelButton = new JButton("キャンセル");
+			buttonPanel.add(collectButton);
+			buttonPanel.add(sendCancelButton);
+			collectButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					
+				}
+			});
 		}
 	}
 
 	
-	private class RecieveButton extends JButton {
+	private class MemberListPanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
+		private JProgressBar progressBar = new JProgressBar();
+		private MemberListModel memberListModel = new MemberListModel();
+		private JList<MemberPanel> memberList = new JList<MemberPanel>(memberListModel);
+
+		public MemberListPanel(String title) {
+			setLayout(new BorderLayout());
+			JLabel listTitleLabel = new JLabel(title);
+			JScrollPane listScrollPane = new JScrollPane();
+			listScrollPane.setViewportView(memberList);
+			memberList.setCellRenderer(new MemberCellRenderer());
+			add(listTitleLabel, BorderLayout.NORTH);
+			add(listScrollPane, BorderLayout.CENTER);
+		}
+		
+		public void addMember(PipeMessage message) {
+//			SwingUtilities.isEventDispatchThread();
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					MemberPanel m = new MemberPanel();
+					m.setMember(message.get("username"));
+					m.initBar(0, Integer.valueOf(message.get(DataPiper.MESSAGE_KEY_DATASIZE)));
+					memberListModel.add(0, m);
+				}
+			});
+		}
+		
+		public int getMemberSize() {
+			return ((DefaultListModel<MemberPanel>)memberList.getModel()).getSize();
+		}
+
+		public MemberPanel getMemberPanelAt(int i) {
+			return ((DefaultListModel<MemberPanel>)memberList.getModel()).getElementAt(i);
+		}
+
+		public void update(int i) {
+			memberListModel.update(i);
+		}
+
+		public void setValue(int v) {
+			progressBar.setValue(v);
+		}
+		
+		
+		class MemberCellRenderer extends MemberPanel implements ListCellRenderer<MemberPanel>{
+			private static final long serialVersionUID = 1L;
+
+			public MemberCellRenderer() {
+			}
+
+			public Component getListCellRendererComponent(JList list, MemberPanel value, int index, boolean isSelected, boolean cellHasFocus){
+				return value;
+			}
+		}
+		
+		
+		class MemberListModel extends DefaultListModel<MemberPanel> {
+			private static final long serialVersionUID = 1L;
+			
+		    public void update(int index)
+		    {
+		        fireContentsChanged(this, index, index);
+		    }
+		}
+	}
+	
+	
+	private class MemberPanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
+		private static final String MEMBER_NOT_FOUND = "（未確定）";
+		private JLabel nameLabel = new JLabel(MEMBER_NOT_FOUND);
+		private JProgressBar progressBar = new JProgressBar();
+
+		public MemberPanel() {
+			setLayout(new GridLayout(1, 2));
+			add(nameLabel);
+			add(progressBar);
+		}
+
+		
+		public void setMember(String str) {
+			System.err.println("h:" + SwingUtilities.isEventDispatchThread());
+			nameLabel.setText(str);
+		}
+		
+		
+		public String getMember() {
+			return nameLabel.getText();
+		}
+		
+		
+		public void clearMember() {
+			System.err.println("hey");
+			nameLabel.setText(MEMBER_NOT_FOUND);
+		}
+
+		public void initBar(int min, int max) {
+			progressBar.setMinimum(min);
+			progressBar.setMaximum(max);
+		}
+
+		public void setValue(int v) {
+			progressBar.setValue(v);
+		}
+	}
+
+	
+	private class MessagePanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
+		JTextArea textArea = new JTextArea("");
+
+		public MessagePanel(String title) {
+			setLayout(new BorderLayout());
+			JLabel titleLabel = new JLabel(title);
+			JScrollPane scrollPane = new JScrollPane();
+			textArea = new JTextArea("");
+			textArea.setLineWrap(true);
+			scrollPane.setViewportView(textArea);
+			add(titleLabel, BorderLayout.NORTH);
+			add(scrollPane, BorderLayout.CENTER);
+		}
+
+		
+		public void append(String str) {
+			textArea.append(str);
+		}
+
+	}
+	
+	
+	private class CollectButton extends JButton {
 		private static final long serialVersionUID = 1L;
 		private final static int STATUS_INIT = 0;
 		private final static int STATUS_SEARHING_RECIEVERS = 1;
@@ -213,7 +332,7 @@ public class FileSharingPane extends JOptionPane {
 		
 		private int status = STATUS_INIT;
 		
-		public RecieveButton() {
+		public CollectButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
 			super();
 			
 			setText(labels[STATUS_INIT]);
@@ -231,22 +350,24 @@ public class FileSharingPane extends JOptionPane {
 						memberFinder = new PipeMemberFinder(pipe, N_SCAN_PATH, basePath, response,
 								(message)->{
 									String sender = message.get("username");
-									senderListModel.addElement(sender);
-									recieveLogTextarea.append("- " + sender + "を送信者リストに追加しました。\n");
+									memberListPanel.addMember(message);
+//									senderListModel.addElement(sender);
+									messagePanel.append("- " + sender + "をメンバーリストに追加しました。\n");
 								},
 								(e)->{
 									JOptionPane.showMessageDialog(FileSharingPane.this, e.getMessage());
 									System.err.println(e.getMessage());
 								});
 						Executors.newSingleThreadExecutor().submit(memberFinder);
-						recieveLogTextarea.append("- 送信者を探しています。\n");
+						messagePanel.append("- メンバーを探しています。\n");
 
 						
 					break;
 					case STATUS_SEARHING_RECIEVERS:
-						int nSenders = senderListModel.getSize();
+						int nSenders = memberListPanel.getMemberSize();
+//						int nSenders = senderListModel.getSize();
 						if(nSenders < 1) {
-							JOptionPane.showMessageDialog(RecieveButton.this, "送信者がいません");
+							JOptionPane.showMessageDialog(CollectButton.this, "メンバーが見つかっていません。");
 							return;
 						}
 						
@@ -254,8 +375,13 @@ public class FileSharingPane extends JOptionPane {
 						setText(labels[status]);
 						memberFinder.stop();
 						
+						ExecutorService pool = Executors.newFixedThreadPool(3);
+						BlockingQueue<Future<Integer>> queue = new ArrayBlockingQueue<>(nSenders);
+						
 						for(int i = 0; i < nSenders; i++) {
-							String username = senderListModel.getElementAt(i);
+							final int a = i;
+							MemberPanel memberPanel = memberListPanel.getMemberPanelAt(i);
+							String username = memberPanel.getMember();
 							Path savePath =  Util.getUniquePath(commentFilePath.getParent(), username);
 							try {
 								Files.createDirectories(savePath);
@@ -265,23 +391,53 @@ public class FileSharingPane extends JOptionPane {
 							}
 							PipeMessage message = memberFinder.getMap(username);
 							
-							Executors.newSingleThreadExecutor().submit(new Runnable() {
+							final int iMember = i;
+							Future<Integer> f = pool.submit(new Callable<Integer>() {
+
 								@Override
-								public void run() {
+								public Integer call() throws Exception {
 									try {
 										pipe.getTarFile(message.get(DataPiper.MESSAGE_KEY_PATH), savePath,
-												(str)->{
-													displayString(recieveLogTextarea, str);
+												(readSize)->{
+													SwingUtilities.invokeLater(new Runnable() {
+														@Override
+														public void run() {
+															memberPanel.setValue(readSize.intValue());
+															memberListPanel.update(a);
+														}
+													});
 												});
 									} catch (IOException | URISyntaxException | InterruptedException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
+									return iMember;
 								}
+								
 							});
+							queue.add(f);
 						}
-						setText(labels[status=STATUS_INIT]);
-						senderListModel.clear();
+
+						Executors.newSingleThreadExecutor().submit(new Runnable() {
+							
+							@Override
+							public void run() {
+								for(Future<Integer> f : queue) {
+									try {
+										f.get();
+									} catch (InterruptedException | ExecutionException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								}
+								messagePanel.append("- 受信が完了しました。\n");
+								pool.shutdown();
+								System.err.println("heyhey");
+							}
+						});
+						
+//						setText(labels[status=STATUS_INIT]);
+//						memberListPanel.clearMember();
 
 						break;
 					case STATUS_SENDING:
@@ -293,6 +449,7 @@ public class FileSharingPane extends JOptionPane {
 			});
 		}
 	}
+
 	
 	private class SendButton extends JButton {
 		private static final long serialVersionUID = 1L;
@@ -303,9 +460,7 @@ public class FileSharingPane extends JOptionPane {
 		
 		private int status = STATUS_INIT;
 		
-		public SendButton() {
-			super();
-			
+		public SendButton(MemberPanel memberPanel, MessagePanel messagePanel) {
 			setText(labels[STATUS_INIT]);
 			
 			addActionListener(new ActionListener() {
@@ -318,54 +473,50 @@ public class FileSharingPane extends JOptionPane {
 						Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
-								sendLogTextarea.append("- 受信者を探しています。\n");
+								messagePanel.append("- メンバーを探しています。\n");
 								String basePath = pathField.getText();
 								String reciever = pipe.getUserInformation(basePath+PipeMemberFinder.SUFFIX_RESPONSER_PATH);
-								recieverListModel.addElement(reciever);
-								sendLogTextarea.append("- " + reciever + "を受信者リストに追加しました。\n");
+								memberPanel.setMember(reciever);
+								messagePanel.append("- " + reciever + "が見つかりました。\n");
 							}
 						});
 						break;
 					case STATUS_SEARHING_RECIEVERS:
-						int nRecievers = recieverListModel.getSize();
-						if(nRecievers < 1) {
-							JOptionPane.showMessageDialog(SendButton.this, "受信者がいません");
-							return;
+						if(memberFinder != null) {
+							memberFinder.stop();
 						}
-
-						memberFinder.stop();
 						status++;
 						setText(labels[status]);
 
 						String basePath = pathField.getText();
-//						String selectvalues[] = {};
-//						JOptionPane op = new JOptionPane("messages", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, selectvalues, null);
-//						final JDialog jd = op.createDialog(FileSharingPane.this, "title");
 						System.err.println("ps:" + basePath + "," + commentFilePath);
 						Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
+						long totalFilesize = Util.getTotalFilesize(filePaths);
+						memberPanel.initBar(0, (int)totalFilesize);
+
 
 						Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
-								displayString(sendLogTextarea, "- 送信準備中です！\n");
-								String newPath = pipe.sendUserInformation(username, basePath);
+								messagePanel.append("- 送信準備中です！\n");
+								String newPath = pipe.sendUserInformation(username, basePath, totalFilesize);
 								if(newPath == null) {
 									return;
 								}
 								
-								displayString(sendLogTextarea, "- 送信準備完了です！\n");
+								messagePanel.append("- 送信準備完了です！\n");
 								try {
 									pipe.postFile(newPath, filePaths, 
-											(str)->{
-												displayString(sendLogTextarea, str + "\n");
+											(readLength)->{
+												memberPanel.setValue(readLength.intValue());
 											});
 								} catch (URISyntaxException | IOException | InterruptedException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								displayString(sendLogTextarea, "- 送信完了しました\n");
+								messagePanel.append("- 送信完了しました\n");
 								setText(labels[status=STATUS_INIT]);
-								recieverListModel.clear();
+								memberPanel.clearMember();
 							}
 						});
 						break;

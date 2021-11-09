@@ -31,9 +31,13 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 public class DataPiper {
 	public static final String MESSAGE_KEY_PATH = "path";
 	public static final String MESSAGE_KEY_USERNAME = "username";
+	public static final String MESSAGE_KEY_DATASIZE = "datasize";
 	public static final String KEY_VALUE_SEPARATOR = ":";
+//	public static final int BASE_FILE_SIZE = 1024; // KB
+
 	private static final int N_SCAN_PATH = 2;
 	private static final int N_RETRY = 10;
+	private static final int Data_BUFFER_SIZE = 1024 * 1024; // 1MB
 
 	private String pipeServer;	
     private final HttpClient httpClient = HttpClient.newBuilder()
@@ -111,9 +115,7 @@ public class DataPiper {
 	}
 
 	
-	public void postFile(String path, Path[] filePaths, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
-		final int BASE_FILE_SIZE = 1024 * 1024; // MB
-		final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
+	public void postFile(String path, Path[] filePaths, Consumer<Long> readLenth) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 		
 		try (
@@ -130,20 +132,18 @@ public class DataPiper {
 				@Override
 				public void run() {
 					for (Path filePath : filePaths) {
-						float fileLength = filePath.toFile().length() / BASE_FILE_SIZE; // MB
 						try {
 							tarOut.putArchiveEntry(new TarArchiveEntry(filePath.toFile(), filePath.toFile().getName()));
 							BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(filePath));
-							byte buf[] = new byte[READ_BUFFER_SIZE];
+							byte buf[] = new byte[Data_BUFFER_SIZE];
 							long nr = 0;
 							int len = 0;
 							while((len = bis.read(buf)) != -1) {
 								nr += len;
 								tarOut.write(buf, 0, len);
-								c.accept(String.format("%s (%.0f%%, %.1fMB)", filePath.getFileName().toString(), nr/fileLength/BASE_FILE_SIZE*100, fileLength));
+								readLenth.accept(nr);
 							}
 							tarOut.closeArchiveEntry();
-							c.accept("- " + filePath.getFileName().toString());
 						} catch (IOException e) {
 							System.err.println("Error(DataPiper): Can't create a tar file.");
 							e.printStackTrace();
@@ -170,11 +170,8 @@ public class DataPiper {
 		}
 	}
 
-	
-	public void getTarFile(String pipePath, Path rootPath, Consumer<String> c) throws URISyntaxException, IOException, InterruptedException {
-		final int BASE_FILE_SIZE = 1024 * 1024; // MB
-		final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
 
+	public void getTarFile(String pipePath, Path rootPath, Consumer<Long> readSize) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + pipePath);
 
 		HttpRequest request = HttpRequest.newBuilder()
@@ -185,20 +182,19 @@ public class DataPiper {
 
 		try (TarArchiveInputStream tarInput = new TarArchiveInputStream(response.body())) {
 			TarArchiveEntry entry;
-			byte buf[] = new byte[READ_BUFFER_SIZE];
+			byte buf[] = new byte[Data_BUFFER_SIZE];
 			
 			while((entry = tarInput.getNextTarEntry()) != null) {
-				long fileSize = entry.getSize();
 				long nr = 0;
 				Path filePath = rootPath.resolve(entry.getName());
-				c.accept("-" + entry.getName() + "\n");
+//				readSize.accept("-" + entry.getName() + "\n");
 				BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath));
 
 				int readLength;
 				while((readLength = tarInput.read(buf)) != -1) {
 					bos.write(buf, 0, readLength);
 					nr += readLength;
-					c.accept(Long.toString(nr) + "\n");
+					readSize.accept(nr);
 				}
 				bos.close();
 			}
@@ -250,7 +246,7 @@ public class DataPiper {
 	}
 	
 
-	public String sendUserInformation(String username, String basePath) {
+	public String sendUserInformation(String username, String basePath, long dataSize) {
 		Random rand = new Random();
 		
 		for(int i = 0; i < N_RETRY; i++) {
@@ -263,6 +259,7 @@ public class DataPiper {
 			// username
 			message.put(MESSAGE_KEY_USERNAME, username);
 			message.put(MESSAGE_KEY_PATH,  generatePath(username + basePath));
+			message.put(MESSAGE_KEY_DATASIZE, String.valueOf(dataSize));
 
 			try {
 				System.err.println("send path:" + path);

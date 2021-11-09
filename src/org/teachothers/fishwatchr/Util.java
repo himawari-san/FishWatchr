@@ -84,6 +84,17 @@ public class Util {
 		return newPath;
 	}
 
+	
+	public static long getTotalFilesize(Path[] paths) {
+		long total = 0;
+		
+		for(Path path : paths) {
+			total += path.toFile().length();
+		}
+		
+		return total;
+	}
+	
 
 	public static String prettyPrintXML(Node doc){
     	// https://stackoverflow.com/questions/139076/how-to-pretty-print-xml-from-java
