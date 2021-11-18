@@ -13,13 +13,23 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandler;
+import java.net.http.HttpResponse.BodySubscriber;
+import java.net.http.HttpResponse.ResponseInfo;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
@@ -32,13 +42,17 @@ public class DataPiper {
 	public static final String MESSAGE_KEY_PATH = "path";
 	public static final String MESSAGE_KEY_USERNAME = "username";
 	public static final String MESSAGE_KEY_DATASIZE = "datasize";
+	public static final String MESSAGE_KEY_TYPE = "type";
+	public static final String MESSAGE_VALUE_TYPE_DISTRIBUTE = "distribute";
+	
 	public static final String KEY_VALUE_SEPARATOR = ":";
 //	public static final int BASE_FILE_SIZE = 1024; // KB
 
 	private static final int N_SCAN_PATH = 2;
-	private static final int N_RETRY = 10;
+	private static final int N_RETRY = 20;
 	private static final int Data_BUFFER_SIZE = 1024 * 1024; // 1MB
 
+	private BodyHandlerWrapper handlerWrapper;
 	private String pipeServer;	
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
@@ -52,6 +66,74 @@ public class DataPiper {
 
 
 	public PipeMessage getMessage(String path) throws IOException, URISyntaxException, InterruptedException {
+		URI pipeURL = new URI(pipeServer + path);
+
+		HttpRequest request = HttpRequest.newBuilder()
+				.GET().uri(pipeURL)
+				.build();
+
+        handlerWrapper = new BodyHandlerWrapper(HttpResponse.BodyHandlers.ofString());
+
+		
+		HttpResponse<String> response = httpClient.send(request, handlerWrapper);
+		
+
+		// print status code
+		System.out.println(response.statusCode());
+
+		// print response body
+		System.out.println(response.body());
+
+		BufferedReader in = new BufferedReader(new StringReader(response.body()));
+
+		String line;
+		StringBuffer lines = new StringBuffer();
+		while ((line = in.readLine()) != null) {
+			lines.append(line + "\n");
+		}
+
+		return PipeMessage.encode(lines.toString());
+	}
+	
+	
+	public PipeMessage getMessage(String path, Duration timeout) throws IOException, URISyntaxException, InterruptedException {
+		URI pipeURL = new URI(pipeServer + path);
+
+		HttpRequest request = HttpRequest.newBuilder()
+				.GET().uri(pipeURL)
+				.timeout(timeout)
+				.build();
+
+        handlerWrapper = new BodyHandlerWrapper(HttpResponse.BodyHandlers.ofString());
+
+		
+		HttpResponse<String> response = httpClient.send(request, handlerWrapper);
+		
+
+		// print status code
+		System.out.println(response.statusCode());
+
+		// print response body
+		System.out.println(response.body());
+
+		BufferedReader in = new BufferedReader(new StringReader(response.body()));
+
+		String line;
+		StringBuffer lines = new StringBuffer();
+		while ((line = in.readLine()) != null) {
+			lines.append(line + "\n");
+		}
+
+		return PipeMessage.encode(lines.toString());
+	}
+	
+
+	public void cancel() {
+		System.err.println("hey cancel");
+		handlerWrapper.cancel();
+	}
+	
+	public PipeMessage getMessage2(String path) throws IOException, URISyntaxException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
 		HttpRequest request = HttpRequest.newBuilder()
@@ -96,6 +178,24 @@ public class DataPiper {
         System.err.println(response.body());
 	}
 
+	
+	public void postMessage(String path, PipeMessage message, Duration timeout) throws URISyntaxException, IOException, InterruptedException {
+		URI pipeURL = new URI(pipeServer + path);
+
+	    HttpRequest request = HttpRequest.newBuilder()
+	                .POST(HttpRequest.BodyPublishers.ofString(message.toString()))
+	                .uri(pipeURL)
+	                .timeout(timeout)
+	                .build();
+	    
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // print status code
+        System.err.println(response.statusCode());
+
+        // print response body
+        System.err.println(response.body());
+	}
 	
 	public void postFile(String path, Path filePath) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
@@ -222,7 +322,7 @@ public class DataPiper {
 	}
 
 	
-	public String getUserInformation(String basePath) {
+	public PipeMessage getUserInformation(String basePath) {
 		Random rand = new Random();
 		
 		for(int i = 0; i < N_RETRY; i++) {
@@ -230,11 +330,7 @@ public class DataPiper {
 			String path = basePath + pathSX;
 			
 			try {
-				PipeMessage message = getMessage(path);
-				System.err.println("send path:" + path);
-				System.err.println("send message:" + message.toString());
-				System.err.println("send id:" + message.getID());
-				return message.getID();
+				return getMessage(path, Duration.ofSeconds(1));
 			} catch (IOException | URISyntaxException | InterruptedException e) {
 				System.err.println("Warning(FileSharingPane): Retry getUserInformation()");
 				continue;
@@ -246,25 +342,46 @@ public class DataPiper {
 	}
 	
 
-	public String sendUserInformation(String username, String basePath, long dataSize) {
+	
+	public PipeMessage exchangeMessage(PipeMessage message, String basePath) {
 		Random rand = new Random();
 		
 		for(int i = 0; i < N_RETRY; i++) {
 			int pathSX = rand.nextInt(N_SCAN_PATH);
 			String path = basePath + pathSX;
-			System.err.println("rc path:" + path + "," + username);
 			
-			PipeMessage message = new PipeMessage(username);
+			try {
+				PipeMessage resultMessage = getMessage(path, Duration.ofSeconds(1));
+				String nextPath = resultMessage.get(DataPiper.MESSAGE_KEY_PATH);
+				if(message != null) {
+					
+				}
+				
+				return resultMessage;
+			} catch (IOException | URISyntaxException | InterruptedException e) {
+				System.err.println("Warning(FileSharingPane): Retry getUserInformation()");
+				continue;
+			}
+			
+		}
+		
+		
+		
+		return null;
+	}
+	
+	public String sendUserInformation(String username, String basePath, long dataSize) {
+		Random rand = new Random();
 
-			// username
-			message.put(MESSAGE_KEY_USERNAME, username);
-			message.put(MESSAGE_KEY_PATH,  generatePath(username + basePath));
-			message.put(MESSAGE_KEY_DATASIZE, String.valueOf(dataSize));
+		PipeMessage message = new PipeMessage(username);
+		message.put(MESSAGE_KEY_USERNAME, username);
+		message.put(MESSAGE_KEY_DATASIZE, String.valueOf(dataSize));
+		message.put(MESSAGE_KEY_PATH,  generatePath(username + basePath));
+		
+		for(int i = 0; i < N_RETRY; i++) {
+			String path = basePath + rand.nextInt(N_SCAN_PATH);
 
 			try {
-				System.err.println("send path:" + path);
-				System.err.println("send message:" + message.toString());
-				System.err.println("send id:" + message.getID());
 				postMessage(path, message);
 				return message.get(MESSAGE_KEY_PATH);
 			} catch (IOException | URISyntaxException | InterruptedException e) {
@@ -278,7 +395,7 @@ public class DataPiper {
 	}
 
 	
-	public String generatePath(String seed) {
+	static public String generatePath(String seed) {
 		String result;
 		
 		try {
@@ -297,4 +414,75 @@ public class DataPiper {
 		
 		return result;
 	}
+	
+	
+    private static class SubscriberWrapper implements BodySubscriber<String> {
+        private final CountDownLatch latch;
+        private final BodySubscriber<String> subscriber;
+        private Subscription subscription;
+
+        private SubscriberWrapper(BodySubscriber<String> subscriber, CountDownLatch latch) {
+            this.subscriber = subscriber;
+            this.latch = latch;
+        }
+
+        @Override
+        public CompletionStage<String> getBody() {
+            return subscriber.getBody();
+        }
+
+        @Override
+        public void onSubscribe(Subscription subscription) {
+            subscriber.onSubscribe(subscription);
+            this.subscription = subscription;
+            latch.countDown();
+        }
+
+        @Override
+        public void onNext(List<ByteBuffer> item) {
+            subscriber.onNext(item);
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            subscriber.onError(throwable);
+        }
+
+        @Override
+        public void onComplete() {
+            subscriber.onComplete();
+        }
+
+        public void cancel() {
+            subscription.cancel();
+            System.out.println("\r\n----------CANCEL!!!------------");
+        }
+    }
+
+    private static class BodyHandlerWrapper implements BodyHandler<String> {
+        private final CountDownLatch latch = new CountDownLatch(1);
+        private final BodyHandler<String> handler;
+        private SubscriberWrapper subscriberWrapper;
+
+        private BodyHandlerWrapper(BodyHandler<String> handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public BodySubscriber<String> apply(ResponseInfo responseInfo) {
+            subscriberWrapper = new SubscriberWrapper(handler.apply(responseInfo), latch);
+            return subscriberWrapper;
+        }
+
+        public void cancel() {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    latch.await();
+                    subscriberWrapper.cancel();
+                } catch (InterruptedException e) {}
+            });
+        }
+    }
+
+	
 }

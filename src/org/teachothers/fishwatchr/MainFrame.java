@@ -2117,8 +2117,8 @@ public class MainFrame extends JFrame {
 			jMenuItemFileShare
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							String pipeServer = "http://160.16.218.34/";
-//							String pipeServer = "http://localhost:8080/";
+//							String pipeServer = "http://160.16.218.34/";
+							String pipeServer = "http://localhost:8080/";
 //							String pipeServer = "https://piping-server-test.herokuapp.com/";
 							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getName(), Paths.get(xf), Paths.get(mf));
 							JDialog d = fsp.createDialog("ファイル共有");

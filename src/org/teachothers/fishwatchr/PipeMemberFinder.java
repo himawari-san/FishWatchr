@@ -68,7 +68,9 @@ public class PipeMemberFinder implements Callable<Void> {
 				Long id = f.get();
 				System.err.println("fid:" + id);
 			} catch (InterruptedException | ExecutionException e) {
+//				pipe.cancel();
 				poolMessageReciever.shutdownNow();
+				poolMessageResponser.shutdownNow();
 				errorConsumer.accept(e);
 				e.printStackTrace();
 
@@ -76,7 +78,8 @@ public class PipeMemberFinder implements Callable<Void> {
 			}
 		}
 
-		poolMessageReciever.shutdown();
+		poolMessageReciever.shutdownNow();
+		poolMessageResponser.shutdownNow();
 
 		return null;
 	}
@@ -87,9 +90,14 @@ public class PipeMemberFinder implements Callable<Void> {
 	}
 	
 	
+	public int getSize() {
+		return messageMap.size();
+	}
+
+	
 	public void stop() {
-		poolMessageReciever.shutdown();
-		poolMessageResponser.shutdown();
+		poolMessageReciever.shutdownNow();
+		poolMessageResponser.shutdownNow();
 	}
 	
 }
