@@ -7,14 +7,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
-public class PipeMessageReciever implements Callable<Long> {
+public class PipeMessageWatcher implements Callable<Long> {
 	private DataPiper pipe;
 	private String path;
 	private Consumer<PipeMessage> consumer;
 	private static ArrayBlockingQueue<Integer> idQueue = new ArrayBlockingQueue<Integer>(2, false, Arrays.asList(0,1));
 
 	
-	public PipeMessageReciever(DataPiper pipe, String path, Consumer<PipeMessage> consumer) {
+	public PipeMessageWatcher(DataPiper pipe, String path, Consumer<PipeMessage> consumer) {
 		this.pipe = pipe;
 		this.path = path;
 		this.consumer = consumer;

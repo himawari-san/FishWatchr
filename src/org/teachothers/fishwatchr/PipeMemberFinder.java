@@ -43,7 +43,7 @@ public class PipeMemberFinder implements Callable<Void> {
 
 		for (int i = 0; i < N_PIPE_WATCHER; i++) {
 			System.err.println("pathpw:" + path);
-			PipeMessageReciever pw = new PipeMessageReciever(pipe, path, (message) -> {
+			PipeMessageWatcher pw = new PipeMessageWatcher(pipe, path, (message) -> {
 				String messageID = message.getID();
 				if (messageID.isEmpty()) {
 					return;
