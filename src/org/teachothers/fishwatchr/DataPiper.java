@@ -72,11 +72,10 @@ public class DataPiper {
 				.GET().uri(pipeURL)
 				.build();
 
-        handlerWrapper = new BodyHandlerWrapper(HttpResponse.BodyHandlers.ofString());
-
+		System.err.println("call getm0:" + path);
+		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		
-		HttpResponse<String> response = httpClient.send(request, handlerWrapper);
-		
+		System.err.println("call getm1:" + path);
 
 		// print status code
 		System.out.println(response.statusCode());

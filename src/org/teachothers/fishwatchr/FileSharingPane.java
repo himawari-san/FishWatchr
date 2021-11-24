@@ -95,7 +95,7 @@ public class FileSharingPane extends JOptionPane {
 		tabbedpane.add(new SendPanel());
 		tabbedpane.setTitleAt(nTab++, "送信");
 
-		tabbedpane.add(new RecievePanel());
+		tabbedpane.add(new ReceivePanel());
 		tabbedpane.setTitleAt(nTab++, "受信");
 		
 		tabbedpane.add(new CollectPanel());
@@ -157,11 +157,11 @@ public class FileSharingPane extends JOptionPane {
 	}
 	
 	
-	private class RecievePanel extends JPanel {
+	private class ReceivePanel extends JPanel {
 		
 		private static final long serialVersionUID = 1L;
 
-		public RecievePanel() {
+		public ReceivePanel() {
 
 			JPanel memberListPanel = new JPanel();
 			MessagePanel messagePanel = new MessagePanel("状況表示");
@@ -178,11 +178,11 @@ public class FileSharingPane extends JOptionPane {
 			memberListPanel.add(listTitleLabel, BorderLayout.NORTH);
 			memberListPanel.add(memberPanel, BorderLayout.CENTER);
 			
-			JButton recieveButton = new RecieveButton(memberPanel, messagePanel);
+			JButton receiveButton = new ReceiveButton(memberPanel, messagePanel);
 			JButton cancelButton = new JButton("キャンセル");
-			buttonPanel.add(recieveButton);
+			buttonPanel.add(receiveButton);
 			buttonPanel.add(cancelButton);
-			recieveButton.addActionListener(new ActionListener() {
+			receiveButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					
@@ -394,68 +394,63 @@ public class FileSharingPane extends JOptionPane {
 	
 	
 	
-	private class RecieveButton extends JButton {
+	private class ReceiveButton extends JButton {
 		private static final long serialVersionUID = 1L;
-		private final static int STATUS_INIT = 0;
-		private final static int STATUS_SEARHING_RECIEVERS = 1;
-		private final static int STATUS_SENDING = 2;
+		private final static int STATUS_SEARCH_SENDER = 0;
+		private final static int STATUS_RECEIVE = 1;
+		private final static int STATUS_FINISH = 2;
 		private final String[] labels = {"相手を探す", "受信", "受信をやめる"};
 		
-		private int status = STATUS_INIT;
-		PipeMemberFinder memberFinder;
+		private int status = STATUS_SEARCH_SENDER;
+		private String newPath = "";
+		private long dataSize = 0;
 		
-		public RecieveButton(MemberPanel memberPanel, MessagePanel messagePanel) {
-			setText(labels[STATUS_INIT]);
+		public ReceiveButton(MemberPanel memberPanel, MessagePanel messagePanel) {
+			setText(labels[STATUS_SEARCH_SENDER]);
 			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-//					PipeMessage message = null;
 					
 					switch (status) {
-					case STATUS_INIT:
+					case STATUS_SEARCH_SENDER:
 						status++;
 						setText(labels[status]);
+						setEnabled(false);
 
 						Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
 								messagePanel.append("- メンバーを探しています。\n");
 								String basePath = pathField.getText();
-								String memberName = pipe.sendUserInformation(username, basePath+PipeMemberFinder.SUFFIX_RESPONSER_PATH, 0);
-								memberPanel.setMember(memberName);
-								messagePanel.append("- " + memberName + "が見つかりました。\n");
+								newPath = DataPiper.generatePath(username + basePath);
+								PipeMessage myInfo = new PipeMessage(username);
+								myInfo.put(DataPiper.MESSAGE_KEY_PATH, newPath);
+								myInfo.put(DataPiper.MESSAGE_KEY_USERNAME, username);
+								try {
+									pipe.postMessage(basePath+PipeMessageReceiver.SUFFIX_FIRST_WAITER_PATH, myInfo);
+								} catch (URISyntaxException | IOException | InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								try {
+									int a;
+									PipeMessage memberInfo = pipe.getMessage(newPath);
+									String memberName = memberInfo.get(DataPiper.MESSAGE_KEY_USERNAME);
+									dataSize =  Long.parseLong(memberInfo.get(DataPiper.MESSAGE_KEY_DATASIZE));
+									memberPanel.setMember(memberName);
+									messagePanel.append("- " + memberName + "が見つかりました。\n");
+									setEnabled(true);
+								} catch (IOException | URISyntaxException | InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 						});
-//
-//						String basePath = pathField.getText();
-//						PipeMessage response = new PipeMessage(username);
-//						response.put(DataPiper.MESSAGE_KEY_USERNAME, username);
-//						memberFinder = new PipeMemberFinder(pipe, N_SCAN_PATH, basePath, response,
-//								(message)->{
-//									String memberName = message.get(DataPiper.MESSAGE_KEY_USERNAME);
-//									memberPanel.setMember(memberName);
-//									messagePanel.append("- " + memberName + "が見つかりました。\n");
-//									memberFinder.stop();
-//								},
-//								(e)->{
-//									JOptionPane.showMessageDialog(FileSharingPane.this, e.getMessage());
-//									System.err.println(e.getMessage());
-//								});
-//						Executors.newSingleThreadExecutor().submit(memberFinder);
-//						messagePanel.append("- メンバーを探しています。\n");
-
-	
 						break;
-					case STATUS_SEARHING_RECIEVERS:
-						if(memberFinder.getSize() < 1) {
-							return;
-						}
-
-						
+					case STATUS_RECEIVE:
 						status++;
 						setText(labels[status]);
-						memberFinder.stop();
 						
 						String memberName = memberPanel.getMember();
 						Path savePath =  Util.getUniquePath(commentFilePath.getParent(), memberName);
@@ -470,16 +465,10 @@ public class FileSharingPane extends JOptionPane {
 							
 							@Override
 							public void run() {
-								PipeMessage message0  = memberFinder.getMap(memberPanel.getMember());
-								final String pipePath = message0.containsKey(DataPiper.MESSAGE_KEY_TYPE)
-										? pipe.getUserInformation(message0.get(DataPiper.MESSAGE_KEY_PATH)).get(DataPiper.MESSAGE_KEY_PATH)
-												: message0.get(DataPiper.MESSAGE_KEY_PATH);
-								final int dataSize = Integer.valueOf(message0.get(DataPiper.MESSAGE_KEY_DATASIZE));
-
-								memberPanel.initBar(0, dataSize);
+								memberPanel.initBar(0, (int)dataSize);
 
 								try {
-									pipe.getTarFile(pipePath, savePath,
+									pipe.getTarFile(newPath, savePath,
 											(readSize) -> {
 												SwingUtilities.invokeLater(new Runnable() {
 													@Override
@@ -492,14 +481,14 @@ public class FileSharingPane extends JOptionPane {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								setText(labels[status = STATUS_INIT]);
+								setText(labels[status = STATUS_SEARCH_SENDER]);
 							}
 						});
 						
 //						memberPanel.clearMember();
 
 						break;
-					case STATUS_SENDING:
+					case STATUS_FINISH:
 						break;
 					default:
 						break;
@@ -520,11 +509,12 @@ public class FileSharingPane extends JOptionPane {
 		private final String[] labels = {"相手を探す", "配布", "配布をやめる"};
 		
 		private int status = STATUS_INIT;
+		private String newPath = "";
+		private long dataSize = 0;
+
 		PipeMemberFinder memberFinder = null;
 		
 		public DistributeButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
-			super();
-			
 			setText(labels[STATUS_INIT]);
 
 			Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
@@ -632,7 +622,7 @@ public class FileSharingPane extends JOptionPane {
 	private class CollectButton extends JButton {
 		private static final long serialVersionUID = 1L;
 		private final static int STATUS_INIT = 0;
-		private final static int STATUS_SEARHING_RECIEVERS = 1;
+		private final static int STATUS_SEARHING_RECEIVERS = 1;
 		private final static int STATUS_SENDING = 2;
 		private final String[] labels = {"相手を探す", "受信", "受信をやめる"};
 		
@@ -653,6 +643,9 @@ public class FileSharingPane extends JOptionPane {
 						
 						String basePath = pathField.getText();
 						PipeMessage response = new PipeMessage(username);
+						
+						
+						
 						memberFinder = new PipeMemberFinder(pipe, N_SCAN_PATH, basePath, response,
 								(message)->{
 									String sender = message.get("username");
@@ -669,7 +662,7 @@ public class FileSharingPane extends JOptionPane {
 
 						
 					break;
-					case STATUS_SEARHING_RECIEVERS:
+					case STATUS_SEARHING_RECEIVERS:
 						int nSenders = memberListPanel.getMemberSize();
 //						int nSenders = senderListModel.getSize();
 						if(nSenders < 1) {
@@ -759,59 +752,87 @@ public class FileSharingPane extends JOptionPane {
 	
 	private class SendButton extends JButton {
 		private static final long serialVersionUID = 1L;
-		private final static int STATUS_INIT = 0;
-		private final static int STATUS_SEARHING_RECIEVERS = 1;
-		private final static int STATUS_SENDING = 2;
+		private final static int STATUS_SEARCH_RECEIVER = 0;
+		private final static int STATUS_SEND = 1;
+		private final static int STATUS_FINISH = 2;
 		private final String[] labels = {"相手を探す", "送信", "送信をやめる"};
 		
-		private int status = STATUS_INIT;
+		private int status = STATUS_SEARCH_RECEIVER;
+		private String newPath = "";
+		private long dataSize = 0;
 		
 		public SendButton(MemberPanel memberPanel, MessagePanel messagePanel) {
-			setText(labels[STATUS_INIT]);
+			setText(labels[STATUS_SEARCH_RECEIVER]);
 			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
+					
 					switch (status) {
-					case STATUS_INIT:
+					case STATUS_SEARCH_RECEIVER:
 						status++;
 						setText(labels[status]);
+						setEnabled(false);
+						messagePanel.append("- メンバーを探しています。\n");
 						Executors.newSingleThreadExecutor().submit(new Runnable() {
+							
 							@Override
 							public void run() {
-								messagePanel.append("- メンバーを探しています。\n");
 								String basePath = pathField.getText();
-								String reciever = pipe.getUserInformation(basePath+PipeMemberFinder.SUFFIX_RESPONSER_PATH).get(DataPiper.MESSAGE_KEY_USERNAME);
-								memberPanel.setMember(reciever);
-								messagePanel.append("- " + reciever + "が見つかりました。\n");
+								PipeMessage memberInfo = new PipeMessage(username);
+								try {
+									memberInfo = pipe.getMessage(basePath+PipeMessageReceiver.SUFFIX_FIRST_WAITER_PATH);
+									String memberName = memberInfo.get(DataPiper.MESSAGE_KEY_USERNAME);
+									newPath = memberInfo.get(DataPiper.MESSAGE_KEY_PATH);
+									memberPanel.setMember(memberName);
+									messagePanel.append("- " + memberName + "が見つかりました。\n");
+								} catch (URISyntaxException | IOException | InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								try {
+									dataSize = Util.getTotalFilesize(filePaths);
+
+									PipeMessage myInfo = new PipeMessage(username);
+									myInfo.put(DataPiper.MESSAGE_KEY_USERNAME, username);
+									myInfo.put(DataPiper.MESSAGE_KEY_DATASIZE, Long.toString(dataSize));
+									pipe.postMessage(newPath, myInfo);
+									setEnabled(true);
+								} catch (IOException | URISyntaxException | InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 						});
+//						PipeMessageReceiver receiver = new PipeMessageReceiver(pipe, 1,
+//								basePath, (receivedMessage)->{
+//									String name = receivedMessage.get(DataPiper.MESSAGE_KEY_USERNAME);
+//									String newPath = receivedMessage.get(DataPiper.MESSAGE_KEY_PATH);
+//									memberPanel.setMember(receivedMessage.get(name));
+//									messagePanel.append("- " + name + "が見つかりました。\n");
+//									
+//									PipeMessage myInfo = new PipeMessage(username);
+//									myInfo.put(DataPiper.MESSAGE_KEY_USERNAME, username);
+//									try {
+//										pipe.postMessage(newPath, myInfo);
+//									} catch (URISyntaxException | IOException | InterruptedException e) {
+//										// TODO Auto-generated catch block
+//										e.printStackTrace();
+//									}
+//								},
+//								(ex)->{});
+//						Executors.newSingleThreadExecutor().submit(receiver);
 						break;
-					case STATUS_SEARHING_RECIEVERS:
-						if(memberFinder != null) {
-							memberFinder.stop();
-						}
+					case STATUS_SEND:
 						status++;
 						setText(labels[status]);
 
-						String basePath = pathField.getText();
-						System.err.println("ps:" + basePath + "," + commentFilePath);
-						Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
-						long totalFilesize = Util.getTotalFilesize(filePaths);
-						memberPanel.initBar(0, (int)totalFilesize);
-
+						memberPanel.initBar(0, (int)dataSize);
 
 						Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
-								messagePanel.append("- 送信準備中です！\n");
-								System.err.println("ps2:" + basePath);
-								String newPath = pipe.sendUserInformation(username, basePath, totalFilesize);
-								if(newPath == null) {
-									return;
-								}
-								
-								messagePanel.append("- 送信準備完了です！\n");
 								try {
 									pipe.postFile(newPath, filePaths, 
 											(readLength)->{
@@ -822,12 +843,12 @@ public class FileSharingPane extends JOptionPane {
 									e.printStackTrace();
 								}
 								messagePanel.append("- 送信完了しました\n");
-								setText(labels[status=STATUS_INIT]);
+								setText(labels[status=STATUS_SEARCH_RECEIVER]);
 								memberPanel.clearMember();
 							}
 						});
 						break;
-					case STATUS_SENDING:
+					case STATUS_FINISH:
 						break;
 					default:
 						break;
