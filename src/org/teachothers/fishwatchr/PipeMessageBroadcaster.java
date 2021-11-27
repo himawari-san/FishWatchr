@@ -2,7 +2,6 @@ package org.teachothers.fishwatchr;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -103,12 +102,12 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 
 			while(loopFlag) {
 				try {
-					PipeMessage newMessage = new PipeMessage("");
-					newMessage.put(DataPiper.MESSAGE_KEY_USERNAME, message.get(DataPiper.MESSAGE_KEY_USERNAME));
-					newMessage.put(DataPiper.MESSAGE_KEY_PATH, DataPiper.generatePath(message.get(DataPiper.MESSAGE_KEY_USERNAME)+path));
+					PipeMessage newMessage = new PipeMessage(
+							message.getSenderName(),
+							DataPiper.generatePath(message.getSenderName()+path));
 					System.err.println("m:" + newMessage.toString());
 					pipe.postMessage(path + SUFFIX_SENDER_PATH + String.valueOf(id), newMessage);
-					messageMap.put(message.get(DataPiper.MESSAGE_KEY_USERNAME), newMessage);
+					messageMap.put(message.getSenderName(), newMessage);
 					messageConsumer.accept(newMessage);
 				} catch (IOException e) {
 					e.printStackTrace();

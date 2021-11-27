@@ -98,7 +98,7 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 		
 		@Override
 		public PipeMessage call()  {
-			PipeMessage message = new PipeMessage("");
+			PipeMessage message = new PipeMessage();
 
 			System.err.println("mw00:" + id);
 			while(loopFlag) {

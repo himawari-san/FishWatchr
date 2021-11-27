@@ -273,8 +273,8 @@ public class FileSharingPane extends JOptionPane {
 				@Override
 				public void run() {
 					MemberPanel m = new MemberPanel();
-					m.setMember(message.get("username"));
-					m.initBar(0, Integer.valueOf(message.get(DataPiper.MESSAGE_KEY_DATASIZE)));
+					m.setMember(message.getSenderName());
+					m.initBar(0, (int)(message.getDataSize()));
 					memberListModel.add(0, m);
 				}
 			});
@@ -416,9 +416,7 @@ public class FileSharingPane extends JOptionPane {
 								messagePanel.append("- メンバーを探しています。\n");
 								String basePath = pathField.getText();
 								newPath = DataPiper.generatePath(username + basePath);
-								PipeMessage myInfo = new PipeMessage(username);
-								myInfo.put(DataPiper.MESSAGE_KEY_PATH, newPath);
-								myInfo.put(DataPiper.MESSAGE_KEY_USERNAME, username);
+								PipeMessage myInfo = new PipeMessage(username, newPath);
 								try {
 									pipe.postMessage(basePath+PipeMessageReceiver.SUFFIX_FIRST_WAITER_PATH, myInfo);
 								} catch (URISyntaxException | IOException | InterruptedException e) {
@@ -428,8 +426,8 @@ public class FileSharingPane extends JOptionPane {
 								try {
 									int a;
 									PipeMessage memberInfo = pipe.getMessage(newPath);
-									String memberName = memberInfo.get(DataPiper.MESSAGE_KEY_USERNAME);
-									dataSize =  Long.parseLong(memberInfo.get(DataPiper.MESSAGE_KEY_DATASIZE));
+									String memberName = memberInfo.getSenderName();
+									dataSize =  memberInfo.getDataSize();
 									memberPanel.setMember(memberName);
 									messagePanel.append("- " + memberName + "が見つかりました。\n");
 									setEnabled(true);
@@ -521,10 +519,10 @@ public class FileSharingPane extends JOptionPane {
 						status++;
 						setText(labels[status]);
 						
-						PipeMessage response = new PipeMessage(username);
-						response.put(DataPiper.MESSAGE_KEY_PATH, nextPath);
-						response.put(DataPiper.MESSAGE_KEY_TYPE, DataPiper.MESSAGE_VALUE_TYPE_DISTRIBUTE);
-						response.put(DataPiper.MESSAGE_KEY_DATASIZE, String.valueOf(Util.getTotalFilesize(filePaths)));
+//						PipeMessage response = new PipeMessage(username, newPath);
+//						response.put(DataPiper.MESSAGE_KEY_PATH, nextPath);
+//						response.put(DataPiper.MESSAGE_KEY_TYPE, DataPiper.MESSAGE_VALUE_TYPE_DISTRIBUTE);
+//						response.put(DataPiper.MESSAGE_KEY_DATASIZE, String.valueOf(Util.getTotalFilesize(filePaths)));
 
 //						memberFinder = new PipeMemberFinder(pipe, N_SCAN_PATH, basePath, response,
 //								(message)->{
@@ -636,15 +634,14 @@ public class FileSharingPane extends JOptionPane {
 						
 						String basePath = pathField.getText();
 						PipeMessage myInfo = new PipeMessage(username);
-						myInfo.put(DataPiper.MESSAGE_KEY_USERNAME, username);
 						
 						messageBroadcaster = new PipeMessageBroadcaster(pipe, 1, basePath, myInfo,
 								(updatedMessage) -> {
-									String newPath = updatedMessage.get(DataPiper.MESSAGE_KEY_PATH);
+									String newPath = updatedMessage.getPath();
 
 									try {
 										PipeMessage memberInfo = pipe.getMessage(newPath);
-										String sender = memberInfo.get(DataPiper.MESSAGE_KEY_USERNAME);
+										String sender = memberInfo.getSenderName();
 										memberListPanel.addMember(memberInfo);
 										messagePanel.append("- " + sender + "をメンバーリストに追加しました。\n");
 									} catch (URISyntaxException | IOException | InterruptedException e) {
@@ -683,7 +680,7 @@ public class FileSharingPane extends JOptionPane {
 									PipeMessage message = messageBroadcaster.getMap(username);
 									
 									try {
-										pipe.getTarFile(message.get(DataPiper.MESSAGE_KEY_PATH), savePath, (readSize) -> {
+										pipe.getTarFile(message.getPath(), savePath, (readSize) -> {
 											SwingUtilities.invokeLater(new Runnable() {
 												@Override
 												public void run() {
@@ -748,8 +745,8 @@ public class FileSharingPane extends JOptionPane {
 								PipeMessage memberInfo = new PipeMessage(username);
 								try {
 									memberInfo = pipe.getMessage(basePath+PipeMessageReceiver.SUFFIX_FIRST_WAITER_PATH);
-									String memberName = memberInfo.get(DataPiper.MESSAGE_KEY_USERNAME);
-									newPath = memberInfo.get(DataPiper.MESSAGE_KEY_PATH);
+									String memberName = memberInfo.getSenderName();
+									newPath = memberInfo.getPath();
 									memberPanel.setMember(memberName);
 									messagePanel.append("- " + memberName + "が見つかりました。\n");
 								} catch (URISyntaxException | IOException | InterruptedException e) {
@@ -760,8 +757,7 @@ public class FileSharingPane extends JOptionPane {
 									dataSize = Util.getTotalFilesize(filePaths);
 
 									PipeMessage myInfo = new PipeMessage(username);
-									myInfo.put(DataPiper.MESSAGE_KEY_USERNAME, username);
-									myInfo.put(DataPiper.MESSAGE_KEY_DATASIZE, Long.toString(dataSize));
+									myInfo.setDataSize(dataSize);
 									pipe.postMessage(newPath, myInfo);
 									setEnabled(true);
 								} catch (IOException | URISyntaxException | InterruptedException e) {

@@ -24,7 +24,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
@@ -39,13 +38,13 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 
 public class DataPiper {
-	public static final String MESSAGE_KEY_PATH = "path";
-	public static final String MESSAGE_KEY_USERNAME = "username";
-	public static final String MESSAGE_KEY_DATASIZE = "datasize";
-	public static final String MESSAGE_KEY_TYPE = "type";
-	public static final String MESSAGE_VALUE_TYPE_DISTRIBUTE = "distribute";
-	
-	public static final String KEY_VALUE_SEPARATOR = ":";
+////	public static final String MESSAGE_KEY_PATH = "path";
+////	public static final String MESSAGE_KEY_USERNAME = "username";
+////	public static final String MESSAGE_KEY_DATASIZE = "datasize";
+////	public static final String MESSAGE_KEY_TYPE = "type";
+////	public static final String MESSAGE_VALUE_TYPE_DISTRIBUTE = "distribute";
+//	
+//	public static final String KEY_VALUE_SEPARATOR = ":";
 //	public static final int BASE_FILE_SIZE = 1024; // KB
 
 	private static final int N_SCAN_PATH = 2;
@@ -90,6 +89,7 @@ public class DataPiper {
 		while ((line = in.readLine()) != null) {
 			lines.append(line + "\n");
 		}
+		System.err.println("enc:" + lines);
 
 		return PipeMessage.encode(lines.toString());
 	}
