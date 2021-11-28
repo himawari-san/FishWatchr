@@ -66,9 +66,13 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 		return message;
 	}
 	
+	public PipeMessage getMap(String key) {
+		return messageMap.get(key);
+	}
 	
-	public PipeMessage getMap(String name) {
-		return messageMap.get(name);
+	
+	public PipeMessage setMap(String key, PipeMessage message) {
+		return messageMap.put(key, message);
 	}
 	
 	
@@ -104,6 +108,9 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 			while(loopFlag) {
 				try {
 					message = pipe.getMessage(path + SUFFIX_WAITER_PATH + String.valueOf(id));
+//					message.setPath(DataPiper.generatePath(message.getSenderName()+path));
+					setMap(message.getSenderName(), message);
+
 					if(message.getType() == PipeMessage.TYPE_NORMAL) {
 						messageConsumer.accept(message);
 					}

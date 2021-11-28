@@ -67,8 +67,13 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 	}
 	
 	
-	public PipeMessage getMap(String name) {
-		return messageMap.get(name);
+	public PipeMessage getMap(String key) {
+		return messageMap.get(key);
+	}
+	
+	
+	public PipeMessage setMap(String key, PipeMessage message) {
+		return messageMap.put(key, message);
 	}
 	
 	
@@ -107,7 +112,7 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 							DataPiper.generatePath(message.getSenderName()+path));
 					System.err.println("m:" + newMessage.toString());
 					pipe.postMessage(path + SUFFIX_SENDER_PATH + String.valueOf(id), newMessage);
-					messageMap.put(message.getSenderName(), newMessage);
+					setMap(message.getSenderName(), newMessage);
 					messageConsumer.accept(newMessage);
 				} catch (IOException e) {
 					e.printStackTrace();
