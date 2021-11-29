@@ -14,8 +14,6 @@ import java.util.function.Consumer;
 
 
 public class PipeMessageReceiver implements Callable<PipeMessage> {
-	public static final String SUFFIX_WAITER_PATH = "_waiter";
-	public static final String SUFFIX_FIRST_WAITER_PATH = SUFFIX_WAITER_PATH + "0";
 
 	ExecutorService poolMessageReceiver;
 	DataPiper pipe;
@@ -47,7 +45,7 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 
 		for(int i = 0; i < nWaiter; i++) {
 			System.err.println("w:" + i);
-			waiters[i] = new PipeMessageWaiter(i, messageConsumer);
+			waiters[i] = new PipeMessageWaiter(String.valueOf(i), messageConsumer);
 			var f = poolMessageReceiver.submit(waiters[i]);
 			queue.add(f);
 		}
@@ -91,12 +89,12 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 	
 	
 	private class PipeMessageWaiter implements Callable<PipeMessage> {
-		private int id;
+		private String suffix;
 		private boolean loopFlag = true;
 		private Consumer<PipeMessage> messageConsumer;
 		
-		public PipeMessageWaiter(int id, Consumer<PipeMessage> messageConsumer) {
-			this.id = id;
+		public PipeMessageWaiter(String suffix, Consumer<PipeMessage> messageConsumer) {
+			this.suffix = suffix;
 			this.messageConsumer = messageConsumer;
 		}
 		
@@ -104,11 +102,9 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 		public PipeMessage call()  {
 			PipeMessage message = new PipeMessage();
 
-			System.err.println("mw00:" + id);
 			while(loopFlag) {
 				try {
-					message = pipe.getMessage(path + SUFFIX_WAITER_PATH + String.valueOf(id));
-//					message.setPath(DataPiper.generatePath(message.getSenderName()+path));
+					message = pipe.getMessage(path + suffix);
 					setMap(message.getSenderName(), message);
 
 					if(message.getType() == PipeMessage.TYPE_NORMAL) {

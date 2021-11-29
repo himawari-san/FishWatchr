@@ -418,7 +418,7 @@ public class FileSharingPane extends JOptionPane {
 								newPath = DataPiper.generatePath(username + basePath);
 								PipeMessage myInfo = new PipeMessage(username, newPath);
 								try {
-									pipe.postMessage(basePath+PipeMessageReceiver.SUFFIX_FIRST_WAITER_PATH, myInfo);
+									pipe.postMessage(basePath+DataPiper.DEFAULT_PATH_SUFFIX, myInfo);
 								} catch (URISyntaxException | IOException | InterruptedException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -735,7 +735,7 @@ public class FileSharingPane extends JOptionPane {
 								String basePath = pathField.getText();
 								PipeMessage memberInfo = new PipeMessage(username);
 								try {
-									memberInfo = pipe.getMessage(basePath+PipeMessageReceiver.SUFFIX_FIRST_WAITER_PATH);
+									memberInfo = pipe.getMessage(basePath+DataPiper.DEFAULT_PATH_SUFFIX);
 									String memberName = memberInfo.getSenderName();
 									newPath = memberInfo.getPath();
 									memberPanel.setMember(memberName);

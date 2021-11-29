@@ -47,7 +47,8 @@ public class DataPiper {
 //	public static final String KEY_VALUE_SEPARATOR = ":";
 //	public static final int BASE_FILE_SIZE = 1024; // KB
 
-	private static final int N_SCAN_PATH = 2;
+	public static final String DEFAULT_PATH_SUFFIX = "0";
+	private static final int N_PATH_SUFFIX = 2;
 	private static final int N_RETRY = 20;
 	private static final int Data_BUFFER_SIZE = 1024 * 1024; // 1MB
 

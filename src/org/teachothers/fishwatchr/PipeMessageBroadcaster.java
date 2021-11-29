@@ -14,8 +14,6 @@ import java.util.function.Consumer;
 
 
 public class PipeMessageBroadcaster implements Callable<PipeMessage> {
-	public static final String SUFFIX_SENDER_PATH = "_waiter";
-	public static final String SUFFIX_FIRST_SENDER_PATH = SUFFIX_SENDER_PATH + "0";
 
 	ExecutorService poolMessageAgent;
 	DataPiper pipe;
@@ -47,7 +45,7 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 		System.err.println("nwa:" + nSender);
 
 		for(int i = 0; i < nSender; i++) {
-			senders[i] = new PipeMessageSender(i);
+			senders[i] = new PipeMessageSender(String.valueOf(i));
 			var f = poolMessageAgent.submit(senders[i]);
 			queue.add(f);
 		}
@@ -92,12 +90,12 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 	
 	
 	private class PipeMessageSender implements Callable<PipeMessage> {
-		private int id;
+		private String suffix;
 		private boolean loopFlag = true;
 //		private Consumer<PipeMessage> messageConsumer;
 		
-		public PipeMessageSender(int id) {
-			this.id = id;
+		public PipeMessageSender(String suffix) {
+			this.suffix = suffix;
 //			this.message = message;
 //			this.messageConsumer = messageConsumer;
 		}
@@ -111,7 +109,7 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 							message.getSenderName(),
 							DataPiper.generatePath(message.getSenderName()+path));
 					System.err.println("m:" + newMessage.toString());
-					pipe.postMessage(path + SUFFIX_SENDER_PATH + String.valueOf(id), newMessage);
+					pipe.postMessage(path + suffix, newMessage);
 					setMap(message.getSenderName(), newMessage);
 					messageConsumer.accept(newMessage);
 				} catch (IOException e) {
