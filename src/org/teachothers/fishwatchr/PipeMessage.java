@@ -2,15 +2,17 @@ package org.teachothers.fishwatchr;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class PipeMessage extends HashMap<String, String> {
+public class PipeMessage extends ConcurrentHashMap<String, String> {
 
 	private static final long serialVersionUID = 1L;
 	private static final String KEY_VALUE_SEPARATOR = "\t";
 	private static final String SYSTEM_KEY_PREFIX = "__pipe_message_";
+	private static final String SYSTEM_SENDER_NAME = "_system_pipe_message_";
 
-			public static final int TYPE_INIT = 0;
+	public static final int TYPE_INIT = 0;
 	public static final int TYPE_NORMAL = 1;
 	public static final int TYPE_ERROR = -1;
 	
@@ -18,6 +20,7 @@ public class PipeMessage extends HashMap<String, String> {
 	private static final String MESSAGE_KEY_ID = SYSTEM_KEY_PREFIX + "id";
 	private static final String MESSAGE_KEY_SENDER_NAME = SYSTEM_KEY_PREFIX + "username";
 	private static final String MESSAGE_KEY_DATASIZE = SYSTEM_KEY_PREFIX + "datasize";
+	
 	private static final String MESSAGE_KEY_TYPE = SYSTEM_KEY_PREFIX + "type";
 	private static final String MESSAGE_VALUE_TYPE_DISTRIBUTE = "distribute";
 
@@ -28,6 +31,7 @@ public class PipeMessage extends HashMap<String, String> {
 	private String senderName = "";
 	private String path = "";
 	private long dataSize = 0;
+	private int errorCode = 0;
 	
 
 	public PipeMessage() {
@@ -38,6 +42,11 @@ public class PipeMessage extends HashMap<String, String> {
 		setSenderName(senderName);
 	}
 
+	public PipeMessage(String path, int errorCode) {
+		this(SYSTEM_SENDER_NAME, path);
+		setErrorCode(errorCode);
+	}
+	
 	public PipeMessage(String senderName, String path) {
 		setSenderName(senderName);
 		setPath(path);
@@ -75,6 +84,14 @@ public class PipeMessage extends HashMap<String, String> {
 
 	public void setDataSize(long dataSize) {
 		this.dataSize = dataSize;
+	}
+
+	public int getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(int errorCode) {
+		this.errorCode = errorCode;
 	}
 
 	public int getType() {

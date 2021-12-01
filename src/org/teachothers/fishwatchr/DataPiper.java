@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -48,8 +49,7 @@ public class DataPiper {
 //	public static final int BASE_FILE_SIZE = 1024; // KB
 
 	public static final String DEFAULT_PATH_SUFFIX = "0";
-	private static final int N_PATH_SUFFIX = 2;
-	private static final int N_RETRY = 20;
+	private static final int N_PATH_SUFFIX = 5;
 	private static final int Data_BUFFER_SIZE = 1024 * 1024; // 1MB
 
 	private BodyHandlerWrapper handlerWrapper;
@@ -57,6 +57,8 @@ public class DataPiper {
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .build();
+    private int nPathSuffix = N_PATH_SUFFIX;
+    
 
 	public DataPiper(String pipeServer) {
 		super();
@@ -64,7 +66,34 @@ public class DataPiper {
 	}
 
 
+	
+	public int getnPathSuffix() {
+		return nPathSuffix;
+	}
 
+	public void setnPathSuffix(int nPathSuffix) {
+		this.nPathSuffix = nPathSuffix;
+	}
+
+
+	public PipeMessage getMessage(String path, int nRetry) throws IOException, URISyntaxException, InterruptedException {
+		PipeMessage message = null;
+		
+		for(int i = 0; i < nRetry; i++){
+			for(int suffix : getRandamOrderedSuffixes(nPathSuffix)) {
+				message = getMessage(path + suffix);
+				if(message.getErrorCode() > 0) {
+					continue;
+				} else {
+					return message;
+				}
+			}
+		}
+		
+		return message;				
+	}
+
+	
 	public PipeMessage getMessage(String path) throws IOException, URISyntaxException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
@@ -72,27 +101,24 @@ public class DataPiper {
 				.GET().uri(pipeURL)
 				.build();
 
-		System.err.println("call getm0:" + path);
+		
 		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 		
-		System.err.println("call getm1:" + path);
+		if(isErrorResponse(response)) {
+			System.err.println(response.statusCode());
+			System.err.println(response.body());
+			return new PipeMessage(path, response.statusCode());
+		} else {
+			BufferedReader in = new BufferedReader(new StringReader(response.body()));
 
-		// print status code
-		System.out.println(response.statusCode());
+			String line;
+			StringBuffer lines = new StringBuffer();
+			while ((line = in.readLine()) != null) {
+				lines.append(line + "\n");
+			}
 
-		// print response body
-		System.out.println(response.body());
-
-		BufferedReader in = new BufferedReader(new StringReader(response.body()));
-
-		String line;
-		StringBuffer lines = new StringBuffer();
-		while ((line = in.readLine()) != null) {
-			lines.append(line + "\n");
+			return PipeMessage.encode(lines.toString());
 		}
-		System.err.println("enc:" + lines);
-
-		return PipeMessage.encode(lines.toString());
 	}
 	
 	
@@ -337,6 +363,33 @@ public class DataPiper {
 			result = buf.toString();
 		} catch (NoSuchAlgorithmException e) {
 			result = seed + String.valueOf((new Date()).getTime());
+		}
+		
+		return result;
+	}
+	
+	
+	private boolean isErrorResponse(HttpResponse<?> response) {
+		int responseCode = response.statusCode();
+		
+		return responseCode >= 400 && responseCode < 500 ? true : false;
+	}
+	
+	
+	// result[0] is always 0.
+	private int[] getRandamOrderedSuffixes (int max) {
+		ArrayList<Integer> seed = new ArrayList<Integer>();
+		int[] result = new int[max];
+		
+		for(int i = 1; i < max; i++) {
+			seed.add(i);
+		}
+		
+		result[0] = 0;
+
+		for(int i = 1; i < max; i++) {
+			int j = ThreadLocalRandom.current().nextInt(seed.size());
+			result[i] = seed.remove(j);
 		}
 		
 		return result;

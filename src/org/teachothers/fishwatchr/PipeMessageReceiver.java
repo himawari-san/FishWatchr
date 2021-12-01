@@ -2,10 +2,10 @@ package org.teachothers.fishwatchr;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 public class PipeMessageReceiver implements Callable<PipeMessage> {
 
-	ExecutorService poolMessageReceiver;
+	ExecutorService poolMessageAgent;
 	DataPiper pipe;
 	String pipeHost;
 	String path;
@@ -23,30 +23,27 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 	PipeMessageWaiter waiters[];
 	Consumer<PipeMessage> messageConsumer;
 	Consumer<Exception> errorConsumer;
-	HashMap<String, PipeMessage> messageMap = new HashMap<String, PipeMessage>();
+	ConcurrentHashMap<String, PipeMessage> messageMap = new ConcurrentHashMap<String, PipeMessage>();
 	
 	
-	public PipeMessageReceiver(DataPiper pipe, int nWaiter, String path, Consumer<PipeMessage> messageConsumer, Consumer<Exception> errorConsumer) {
-		poolMessageReceiver = Executors.newFixedThreadPool(nWaiter);
+	public PipeMessageReceiver(DataPiper pipe, String path, Consumer<PipeMessage> messageConsumer, Consumer<Exception> errorConsumer) {
 		this.pipe = pipe;
-		this.nWaiter = nWaiter;
 		this.path = path;
 		this.messageConsumer = messageConsumer;
 		this.errorConsumer = errorConsumer;
+		nWaiter = pipe.getnPathSuffix();
 		waiters = new PipeMessageWaiter[nWaiter];
-		System.err.println("pmr!!!");
+		poolMessageAgent = Executors.newFixedThreadPool(nWaiter);
 	}
 
 
 	@Override
 	public PipeMessage call() {
 		BlockingQueue<Future<PipeMessage>> queue = new ArrayBlockingQueue<>(nWaiter);
-		System.err.println("nwa:" + nWaiter);
 
 		for(int i = 0; i < nWaiter; i++) {
-			System.err.println("w:" + i);
-			waiters[i] = new PipeMessageWaiter(String.valueOf(i), messageConsumer);
-			var f = poolMessageReceiver.submit(waiters[i]);
+			waiters[i] = new PipeMessageWaiter(String.valueOf(i));
+			var f = poolMessageAgent.submit(waiters[i]);
 			queue.add(f);
 		}
 
@@ -54,10 +51,10 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 		for (Future<PipeMessage> f : queue) {
 			try {
 				f.get();
-				break;
 			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.err.println("PipeMessageReceiver is shutdown.");
+				poolMessageAgent.shutdownNow();
 			}
 		}
 
@@ -79,23 +76,13 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 	}
 
 	
-	public void stop() {
-		poolMessageReceiver.shutdown();
-		poolMessageReceiver.shutdownNow();
-//		for(Runnable waiter : poolMessageReciever.shutdownNow()) {
-//			((Waiter)waiter).disconnect();
-//		}
-	}
-	
 	
 	private class PipeMessageWaiter implements Callable<PipeMessage> {
 		private String suffix;
 		private boolean loopFlag = true;
-		private Consumer<PipeMessage> messageConsumer;
 		
-		public PipeMessageWaiter(String suffix, Consumer<PipeMessage> messageConsumer) {
+		public PipeMessageWaiter(String suffix) {
 			this.suffix = suffix;
-			this.messageConsumer = messageConsumer;
 		}
 		
 		@Override
@@ -105,19 +92,23 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 			while(loopFlag) {
 				try {
 					message = pipe.getMessage(path + suffix);
-					setMap(message.getSenderName(), message);
+//					setMap(message.getSenderName(), message);
 
 					if(message.getType() == PipeMessage.TYPE_NORMAL) {
 						messageConsumer.accept(message);
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
+				} catch (IOException | URISyntaxException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					// must close the path
-					e.printStackTrace();
-				} finally {
+					stop();
+					System.err.println("ps: close connection:" + path + suffix);
+					// close the connection
+					try {
+						pipe.postMessage(path + suffix, new PipeMessage());
+					} catch (URISyntaxException | IOException | InterruptedException e1) {
+						System.err.println("Error: Can't stop getMessage to " + path + suffix);
+						e1.printStackTrace();
+					}
 				}
 			}
 

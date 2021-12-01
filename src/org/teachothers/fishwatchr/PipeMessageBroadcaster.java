@@ -2,10 +2,10 @@ package org.teachothers.fishwatchr;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,25 +24,24 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 	PipeMessageSender senders[];
 	Consumer<PipeMessage> messageConsumer;
 	Consumer<Exception> errorConsumer;
-	HashMap<String, PipeMessage> messageMap = new HashMap<String, PipeMessage>();
+	ConcurrentHashMap<String, PipeMessage> messageMap = new ConcurrentHashMap<String, PipeMessage>();
 	
 	
-	public PipeMessageBroadcaster(DataPiper pipe, int nSender, String path, PipeMessage message, Consumer<PipeMessage> messageConsumer, Consumer<Exception> errorConsumer) {
-		poolMessageAgent = Executors.newFixedThreadPool(nSender);
+	public PipeMessageBroadcaster(DataPiper pipe, String path, PipeMessage message, Consumer<PipeMessage> messageConsumer, Consumer<Exception> errorConsumer) {
 		this.pipe = pipe;
-		this.nSender = nSender;
+		this.nSender = pipe.getnPathSuffix();
 		this.path = path;
 		this.message = message;
 		this.messageConsumer = messageConsumer;
 		this.errorConsumer = errorConsumer;
 		senders = new PipeMessageSender[nSender];
+		poolMessageAgent = Executors.newFixedThreadPool(nSender);
 	}
 
 
 	@Override
 	public PipeMessage call() {
 		BlockingQueue<Future<PipeMessage>> queue = new ArrayBlockingQueue<>(nSender);
-		System.err.println("nwa:" + nSender);
 
 		for(int i = 0; i < nSender; i++) {
 			senders[i] = new PipeMessageSender(String.valueOf(i));
@@ -54,13 +53,14 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 		for (Future<PipeMessage> f : queue) {
 			try {
 				f.get();
-				break;
-			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (InterruptedException e) {
+				System.err.println("PipeMessageBroadcaster is shutdown.");
+				poolMessageAgent.shutdownNow();
+			} catch (ExecutionException e) {
+				System.err.println("pmb exe");
 			}
 		}
-
+		
 		return message;
 	}
 	
@@ -80,14 +80,6 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 	}
 
 	
-	public void stop() {
-		poolMessageAgent.shutdown();
-		poolMessageAgent.shutdownNow();
-//		for(Runnable waiter : poolMessageReciever.shutdownNow()) {
-//			((Waiter)waiter).disconnect();
-//		}
-	}
-	
 	
 	private class PipeMessageSender implements Callable<PipeMessage> {
 		private String suffix;
@@ -103,27 +95,32 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 		@Override
 		public PipeMessage call()  {
 
+			PipeMessage newMessage = null;
+			
 			while(loopFlag) {
 				try {
-					PipeMessage newMessage = new PipeMessage(
+					newMessage = new PipeMessage(
 							message.getSenderName(),
 							DataPiper.generatePath(message.getSenderName()+path));
-					System.err.println("m:" + newMessage.toString());
 					pipe.postMessage(path + suffix, newMessage);
-					setMap(message.getSenderName(), newMessage);
 					messageConsumer.accept(newMessage);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
+				} catch (IOException | URISyntaxException e) {
+					stop();
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					// must close the path
-					e.printStackTrace();
-				} finally {
+					stop();
+					System.err.println("ps: close connection:" + path + suffix);
+					try {
+						// close the connection
+						pipe.getMessage(path + suffix);
+					} catch (IOException | URISyntaxException | InterruptedException e1) {
+						System.err.println("Error: Can't stop getMessage to " + path + suffix);
+						e.printStackTrace();
+					}
 				}
 			}
 
-			return message;
+			return newMessage;
 		}
 		
 		
