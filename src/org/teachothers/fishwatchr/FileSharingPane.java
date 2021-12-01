@@ -35,28 +35,22 @@ import javax.swing.event.ChangeListener;
 
 public class FileSharingPane extends JOptionPane {
 	private static final long serialVersionUID = 1L;
-	private static final int N_SCAN_PATH = 2;
 	private static final int N_RETRY = 2;
 	private String username;
 	private Path commentFilePath;
 	private Path mediaFilePath;
 	private JTextField pathField;
-//	private JTextArea sendLogTextarea;
 	private DataPiper pipe;
 
 
 	public FileSharingPane(String pipeServer, String username, Path commentFilePath, Path mediaFilePath) {
 		super();
-//		this.pipeServer = pipeServer;
 		this.username = username;
 		this.commentFilePath = commentFilePath;
 		this.commentFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4.merged_bunseki.xml");
 		this.mediaFilePath = mediaFilePath;
 		this.mediaFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4");
-//		distPath = commentFilePath.getParent();
 		this.pipe = new DataPiper(pipeServer);
-		System.err.println("cf:" + commentFilePath);
-		System.err.println("mf:" + mediaFilePath);
 		ginit();
 	}
 
@@ -141,12 +135,6 @@ public class FileSharingPane extends JOptionPane {
 			JButton sendCancelButton = new JButton("キャンセル");
 			buttonPanel.add(sendButton);
 			buttonPanel.add(sendCancelButton);
-			sendButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					
-				}
-			});
 		}
 	}
 	
@@ -176,12 +164,6 @@ public class FileSharingPane extends JOptionPane {
 			JButton cancelButton = new JButton("キャンセル");
 			buttonPanel.add(receiveButton);
 			buttonPanel.add(cancelButton);
-			receiveButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					
-				}
-			});
 		}
 	}
 	
@@ -208,12 +190,6 @@ public class FileSharingPane extends JOptionPane {
 			JButton sendCancelButton = new JButton("キャンセル");
 			buttonPanel.add(collectButton);
 			buttonPanel.add(sendCancelButton);
-			collectButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					
-				}
-			});
 		}
 	}
 
@@ -240,12 +216,6 @@ public class FileSharingPane extends JOptionPane {
 			JButton cancelButton = new JButton("キャンセル");
 			buttonPanel.add(distributeButton);
 			buttonPanel.add(cancelButton);
-			distributeButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					
-				}
-			});
 		}
 	}
 
@@ -269,7 +239,6 @@ public class FileSharingPane extends JOptionPane {
 		}
 		
 		public void addMember(PipeMessage message) {
-//			SwingUtilities.isEventDispatchThread();
 			SwingUtilities.invokeLater(new Runnable() {
 				
 				@Override
@@ -426,7 +395,6 @@ public class FileSharingPane extends JOptionPane {
 									e.printStackTrace();
 								}
 								try {
-									int a;
 									PipeMessage memberInfo = pipe.getMessage(newPath);
 									String memberName = memberInfo.getSenderName();
 									dataSize =  memberInfo.getDataSize();

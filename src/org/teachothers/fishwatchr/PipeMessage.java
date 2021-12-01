@@ -1,7 +1,6 @@
 package org.teachothers.fishwatchr;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -112,13 +111,6 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_SENDER_NAME, KEY_VALUE_SEPARATOR, getSenderName()));
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_PATH, KEY_VALUE_SEPARATOR, getPath()));
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_DATASIZE, KEY_VALUE_SEPARATOR, getDataSize()));
-		
-		
-//		public static final String MESSAGE_KEY_PATH = SYSTEM_KEY_PREFIX + "path";
-//		public static final String MESSAGE_KEY_USERNAME = SYSTEM_KEY_PREFIX + "username";
-//		public static final String MESSAGE_KEY_DATASIZE = SYSTEM_KEY_PREFIX + "datasize";
-//		public static final String MESSAGE_KEY_TYPE = SYSTEM_KEY_PREFIX + "type";
-//		public static final String MESSAGE_VALUE_TYPE_DISTRIBUTE = "distribute";
 
 		this.forEach((key, value)->{
 			result.append(String.format("\n%s%s%s", key, KEY_VALUE_SEPARATOR, value));

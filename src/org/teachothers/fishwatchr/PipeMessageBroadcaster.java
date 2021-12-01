@@ -84,12 +84,9 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 	private class PipeMessageSender implements Callable<PipeMessage> {
 		private String suffix;
 		private boolean loopFlag = true;
-//		private Consumer<PipeMessage> messageConsumer;
 		
 		public PipeMessageSender(String suffix) {
 			this.suffix = suffix;
-//			this.message = message;
-//			this.messageConsumer = messageConsumer;
 		}
 		
 		@Override

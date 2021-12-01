@@ -13,23 +13,13 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandler;
-import java.net.http.HttpResponse.BodySubscriber;
-import java.net.http.HttpResponse.ResponseInfo;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
@@ -52,7 +42,6 @@ public class DataPiper {
 	private static final int N_PATH_SUFFIX = 5;
 	private static final int Data_BUFFER_SIZE = 1024 * 1024; // 1MB
 
-	private BodyHandlerWrapper handlerWrapper;
 	private String pipeServer;	
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
@@ -120,71 +109,7 @@ public class DataPiper {
 			return PipeMessage.encode(lines.toString());
 		}
 	}
-	
-	
-	public PipeMessage getMessage(String path, Duration timeout) throws IOException, URISyntaxException, InterruptedException {
-		URI pipeURL = new URI(pipeServer + path);
 
-		HttpRequest request = HttpRequest.newBuilder()
-				.GET().uri(pipeURL)
-				.timeout(timeout)
-				.build();
-
-        handlerWrapper = new BodyHandlerWrapper(HttpResponse.BodyHandlers.ofString());
-
-		
-		HttpResponse<String> response = httpClient.send(request, handlerWrapper);
-		
-
-		// print status code
-		System.out.println(response.statusCode());
-
-		// print response body
-		System.out.println(response.body());
-
-		BufferedReader in = new BufferedReader(new StringReader(response.body()));
-
-		String line;
-		StringBuffer lines = new StringBuffer();
-		while ((line = in.readLine()) != null) {
-			lines.append(line + "\n");
-		}
-
-		return PipeMessage.encode(lines.toString());
-	}
-	
-
-	public void cancel() {
-		System.err.println("hey cancel");
-		handlerWrapper.cancel();
-	}
-	
-	public PipeMessage getMessage2(String path) throws IOException, URISyntaxException, InterruptedException {
-		URI pipeURL = new URI(pipeServer + path);
-
-		HttpRequest request = HttpRequest.newBuilder()
-				.GET().uri(pipeURL)
-				.build();
-
-		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-		// print status code
-		System.out.println(response.statusCode());
-
-		// print response body
-		System.out.println(response.body());
-
-		BufferedReader in = new BufferedReader(new StringReader(response.body()));
-
-		String line;
-		StringBuffer lines = new StringBuffer();
-		while ((line = in.readLine()) != null) {
-			lines.append(line + "\n");
-		}
-
-		return PipeMessage.encode(lines.toString());
-	}
-	
 	
 	public void postMessage(String path, PipeMessage message) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
@@ -205,24 +130,7 @@ public class DataPiper {
 	}
 
 	
-	public void postMessage(String path, PipeMessage message, Duration timeout) throws URISyntaxException, IOException, InterruptedException {
-		URI pipeURL = new URI(pipeServer + path);
 
-	    HttpRequest request = HttpRequest.newBuilder()
-	                .POST(HttpRequest.BodyPublishers.ofString(message.toString()))
-	                .uri(pipeURL)
-	                .timeout(timeout)
-	                .build();
-	    
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // print status code
-        System.err.println(response.statusCode());
-
-        // print response body
-        System.err.println(response.body());
-	}
-	
 	public void postFile(String path, Path filePath) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
@@ -394,75 +302,4 @@ public class DataPiper {
 		
 		return result;
 	}
-	
-	
-    private static class SubscriberWrapper implements BodySubscriber<String> {
-        private final CountDownLatch latch;
-        private final BodySubscriber<String> subscriber;
-        private Subscription subscription;
-
-        private SubscriberWrapper(BodySubscriber<String> subscriber, CountDownLatch latch) {
-            this.subscriber = subscriber;
-            this.latch = latch;
-        }
-
-        @Override
-        public CompletionStage<String> getBody() {
-            return subscriber.getBody();
-        }
-
-        @Override
-        public void onSubscribe(Subscription subscription) {
-            subscriber.onSubscribe(subscription);
-            this.subscription = subscription;
-            latch.countDown();
-        }
-
-        @Override
-        public void onNext(List<ByteBuffer> item) {
-            subscriber.onNext(item);
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            subscriber.onError(throwable);
-        }
-
-        @Override
-        public void onComplete() {
-            subscriber.onComplete();
-        }
-
-        public void cancel() {
-            subscription.cancel();
-            System.out.println("\r\n----------CANCEL!!!------------");
-        }
-    }
-
-    private static class BodyHandlerWrapper implements BodyHandler<String> {
-        private final CountDownLatch latch = new CountDownLatch(1);
-        private final BodyHandler<String> handler;
-        private SubscriberWrapper subscriberWrapper;
-
-        private BodyHandlerWrapper(BodyHandler<String> handler) {
-            this.handler = handler;
-        }
-
-        @Override
-        public BodySubscriber<String> apply(ResponseInfo responseInfo) {
-            subscriberWrapper = new SubscriberWrapper(handler.apply(responseInfo), latch);
-            return subscriberWrapper;
-        }
-
-        public void cancel() {
-            CompletableFuture.runAsync(() -> {
-                try {
-                    latch.await();
-                    subscriberWrapper.cancel();
-                } catch (InterruptedException e) {}
-            });
-        }
-    }
-
-	
 }
