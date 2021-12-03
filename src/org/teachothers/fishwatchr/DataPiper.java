@@ -17,9 +17,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
@@ -40,7 +45,7 @@ public class DataPiper {
 
 	public static final String DEFAULT_PATH_SUFFIX = "0";
 	private static final int N_PATH_SUFFIX = 5;
-	private static final int Data_BUFFER_SIZE = 1024 * 1024; // 1MB
+	private static final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
 
 	private String pipeServer;	
     private final HttpClient httpClient = HttpClient.newBuilder()
@@ -70,7 +75,13 @@ public class DataPiper {
 		
 		for(int i = 0; i < nRetry; i++){
 			for(int suffix : getRandamOrderedSuffixes(nPathSuffix)) {
-				message = getMessage(path + suffix);
+				try {
+					message = getMessage(path + suffix);
+				} catch (InterruptedException e) {
+					// close pipe
+					postMessage(path + suffix, new PipeMessage());
+					throw new InterruptedException();
+				}
 				if(message.getErrorCode() > 0) {
 					continue;
 				} else {
@@ -109,9 +120,9 @@ public class DataPiper {
 			return PipeMessage.encode(lines.toString());
 		}
 	}
-
 	
-	public void postMessage(String path, PipeMessage message) throws URISyntaxException, IOException, InterruptedException {
+	
+	public void postMessage(String path, PipeMessage message) throws IOException, URISyntaxException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
 	    HttpRequest request = HttpRequest.newBuilder()
@@ -120,17 +131,22 @@ public class DataPiper {
 	                .header("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 	                .build();
 	    
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response;
+		try {
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (InterruptedException e) {
+			// close pipe
+			getMessage(path);
+			throw new InterruptedException();
+		}
 
-        // print status code
-        System.err.println(response.statusCode());
-
-        // print response body
-        System.err.println(response.body());
+		if(isErrorResponse(response)) {
+			System.err.println(response.statusCode());
+			System.err.println(response.body());
+		}
 	}
 
 	
-
 	public void postFile(String path, Path filePath) throws URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
@@ -149,7 +165,7 @@ public class DataPiper {
 	}
 
 	
-	public void postFile(String path, Path[] filePaths, Consumer<Long> readLenth) throws URISyntaxException, IOException, InterruptedException {
+	public void postFile(String path, Path[] filePaths, Consumer<Long> readLenth) throws ExecutionException, URISyntaxException, IOException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 		
 		try (
@@ -162,45 +178,35 @@ public class DataPiper {
 					.POST(HttpRequest.BodyPublishers.ofInputStream(() -> pipeIn))
 					.build();
 
-			Executors.newSingleThreadExecutor().submit(new Runnable() {
+			Future<?> f = Executors.newSingleThreadExecutor().submit(new Callable<>() {
 				@Override
-				public void run() {
+				public Void call() throws IOException {
 					for (Path filePath : filePaths) {
-						try {
-							tarOut.putArchiveEntry(new TarArchiveEntry(filePath.toFile(), filePath.toFile().getName()));
-							BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(filePath));
-							byte buf[] = new byte[Data_BUFFER_SIZE];
-							long nr = 0;
-							int len = 0;
-							while((len = bis.read(buf)) != -1) {
-								nr += len;
-								tarOut.write(buf, 0, len);
-								readLenth.accept(nr);
-							}
-							tarOut.closeArchiveEntry();
-						} catch (IOException e) {
-							System.err.println("Error(DataPiper): Can't create a tar file.");
-							e.printStackTrace();
+						tarOut.putArchiveEntry(new TarArchiveEntry(filePath.toFile(), filePath.toFile().getName()));
+						BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(filePath));
+						byte buf[] = new byte[READ_BUFFER_SIZE];
+						long nr = 0;
+						int len = 0;
+						while((len = bis.read(buf)) != -1) {
+							nr += len;
+							tarOut.write(buf, 0, len);
+							readLenth.accept(nr);
 						}
+						tarOut.closeArchiveEntry();
 					}
-					try {
-						tarOut.close();
-						pipeOut.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					tarOut.close();
+					pipeOut.close();
+					
+					return null;
 				}
 			});
 
-			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			// TODO
+			// Handle response according to status code
+			httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
 
-		// print status code
-			System.err.println("post res:" + response.statusCode());
-
-			// print response body
-			System.err.println(response.body());
-
+			// pipe is expected to be disconnected by interruption
+			f.get();
 		}
 	}
 
@@ -216,7 +222,7 @@ public class DataPiper {
 
 		try (TarArchiveInputStream tarInput = new TarArchiveInputStream(response.body())) {
 			TarArchiveEntry entry;
-			byte buf[] = new byte[Data_BUFFER_SIZE];
+			byte buf[] = new byte[READ_BUFFER_SIZE];
 			
 			while((entry = tarInput.getNextTarEntry()) != null) {
 				long nr = 0;

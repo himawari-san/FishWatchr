@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -131,10 +132,17 @@ public class FileSharingPane extends JOptionPane {
 			memberListPanel.add(listTitleLabel, BorderLayout.NORTH);
 			memberListPanel.add(memberPanel, BorderLayout.CENTER);
 			
-			JButton sendButton = new SendButton(memberPanel, messagePanel);
+			SendButton sendButton = new SendButton(memberPanel, messagePanel);
 			JButton sendCancelButton = new JButton("キャンセル");
 			buttonPanel.add(sendButton);
 			buttonPanel.add(sendCancelButton);
+			sendCancelButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					sendButton.closePipe();
+				}
+			});
 		}
 	}
 	
@@ -554,7 +562,7 @@ public class FileSharingPane extends JOptionPane {
 												});
 											});
 									setEnabled(true);
-								} catch (IOException | URISyntaxException | InterruptedException e) {
+								} catch (IOException | URISyntaxException | ExecutionException | InterruptedException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -696,6 +704,7 @@ public class FileSharingPane extends JOptionPane {
 		private int status = STATUS_SEARCH_RECEIVER;
 		private String newPath = "";
 		private long dataSize = 0;
+		private Future<?> f = null;
 		
 		public SendButton(MemberPanel memberPanel, MessagePanel messagePanel) {
 			setText(labels[STATUS_SEARCH_RECEIVER]);
@@ -710,8 +719,9 @@ public class FileSharingPane extends JOptionPane {
 						status++;
 						setText(labels[status]);
 						setEnabled(false);
+						
 						messagePanel.append("- メンバーを探しています。\n");
-						Executors.newSingleThreadExecutor().submit(new Runnable() {
+						f = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							
 							@Override
 							public void run() {
@@ -722,10 +732,16 @@ public class FileSharingPane extends JOptionPane {
 									newPath = memberInfo.getPath();
 									memberPanel.setMember(memberName);
 									messagePanel.append("- " + memberName + "が見つかりました。\n");
-								} catch (URISyntaxException | IOException | InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+								} catch (URISyntaxException | IOException e) {
+									JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
+									initState();
+									return;
+								} catch (InterruptedException e) {
+									// getMessage() closes the pipe internally
+									initState();
+									return;
 								}
+
 								try {
 									dataSize = Util.getTotalFilesize(filePaths);
 
@@ -733,9 +749,14 @@ public class FileSharingPane extends JOptionPane {
 									myInfo.setDataSize(dataSize);
 									pipe.postMessage(newPath, myInfo);
 									setEnabled(true);
-								} catch (IOException | URISyntaxException | InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+								} catch (URISyntaxException | IOException e) {
+									JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
+									initState();
+									return;
+								} catch (InterruptedException e) {
+									// postMessage() closes the pipe internally
+									initState();
+									return;
 								}
 							}
 						});
@@ -746,7 +767,7 @@ public class FileSharingPane extends JOptionPane {
 
 						memberPanel.initBar(0, (int)dataSize);
 
-						Executors.newSingleThreadExecutor().submit(new Runnable() {
+						f = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
 								try {
@@ -760,9 +781,19 @@ public class FileSharingPane extends JOptionPane {
 													}
 												});
 											});
-								} catch (URISyntaxException | IOException | InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+								} catch (URISyntaxException | IOException | ExecutionException e) {
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											JOptionPane.showMessageDialog(SendButton.this, e.getMessage());	
+											initState();
+										}
+									});
+									return;
+								} catch (InterruptedException e) {
+									// postMessage() closes the pipe internally
+									initState();
+									return;
 								}
 								messagePanel.append("- 送信完了しました\n");
 								setText(labels[status=STATUS_SEARCH_RECEIVER]);
@@ -777,6 +808,17 @@ public class FileSharingPane extends JOptionPane {
 					}
 				}
 			});
+		}
+		
+		
+		public void initState() {
+			status = STATUS_SEARCH_RECEIVER;
+			setText(labels[status]);
+			setEnabled(true);
+		}
+		
+		public void closePipe() {
+			f.cancel(true);
 		}
 	}
 }
