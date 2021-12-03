@@ -140,7 +140,7 @@ public class FileSharingPane extends JOptionPane {
 				
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					sendButton.closePipe();
+					sendButton.cancel();
 				}
 			});
 		}
@@ -365,31 +365,27 @@ public class FileSharingPane extends JOptionPane {
 	
 	
 	
-	private class ReceiveButton extends JButton {
+	private class ReceiveButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final static int STATUS_SEARCH_SENDER = 0;
-		private final static int STATUS_RECEIVE = 1;
-		private final static int STATUS_FINISH = 2;
 		private final String[] labels = {"相手を探す", "受信", "受信をやめる"};
 		
-		private int status = STATUS_SEARCH_SENDER;
 		private String newPath = "";
 		private long dataSize = 0;
 		
 		public ReceiveButton(MemberPanel memberPanel, MessagePanel messagePanel) {
-			setText(labels[STATUS_SEARCH_SENDER]);
+			setLabels(labels);
+			setLabel(status);
 			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					
 					switch (status) {
-					case STATUS_SEARCH_SENDER:
-						status++;
-						setText(labels[status]);
+					case STATUS_SEARCH:
+						setLabel(++status);
 						setEnabled(false);
 
-						Executors.newSingleThreadExecutor().submit(new Runnable() {
+						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
 								messagePanel.append("- メンバーを探しています。\n");
@@ -417,9 +413,8 @@ public class FileSharingPane extends JOptionPane {
 							}
 						});
 						break;
-					case STATUS_RECEIVE:
-						status++;
-						setText(labels[status]);
+					case STATUS_EXECUTE:
+						setLabel(++status);
 						
 						String memberName = memberPanel.getMember();
 						Path savePath =  Util.getUniquePath(commentFilePath.getParent(), memberName);
@@ -450,7 +445,7 @@ public class FileSharingPane extends JOptionPane {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								setText(labels[status = STATUS_SEARCH_SENDER]);
+								setLabel(status = STATUS_SEARCH);
 							}
 						});
 						
@@ -469,20 +464,15 @@ public class FileSharingPane extends JOptionPane {
 
 	
 
-	private class DistributeButton extends JButton {
+	private class DistributeButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final static int STATUS_SEARCH = 0;
-		private final static int STATUS_DISTRIBUTE = 1;
-		private final static int STATUS_FINISH = 2;
 		private final String[] labels = {"相手を探す", "配布", "配布をやめる"};
 		
-		private int status = STATUS_SEARCH;
-
 		private PipeMessageReceiver messageReceiver = null;
-		private Future<PipeMessage> f = null;
 		
 		public DistributeButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
-			setText(labels[STATUS_SEARCH]);
+			setLabels(labels);
+			setLabel(status);
 
 			addActionListener(new ActionListener() {
 				Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
@@ -493,8 +483,7 @@ public class FileSharingPane extends JOptionPane {
 					
 					switch (status) {
 					case STATUS_SEARCH:
-						status++;
-						setText(labels[status]);
+						setLabel(++status);
 						
 						messageReceiver = new PipeMessageReceiver(pipe, basePath,
 								(memberMessage) -> {
@@ -505,22 +494,21 @@ public class FileSharingPane extends JOptionPane {
 									messagePanel.append("- " + memberName + "をメンバーリストに追加しました。\n");
 								}, (ex) -> {
 								});
-						f = Executors.newSingleThreadExecutor().submit(messageReceiver);
+						future = Executors.newSingleThreadExecutor().submit(messageReceiver);
 
 						messagePanel.append("- メンバーを探しています。\n");
 						break;
-					case STATUS_DISTRIBUTE:
+					case STATUS_EXECUTE:
 						int nSenders = memberListPanel.getMemberSize();
 						if(nSenders < 1) {
 							JOptionPane.showMessageDialog(DistributeButton.this, "メンバーが見つかっていません。");
 							return;
 						}
 						
-						status++;
-						setText(labels[status]);
-						
-						// Stop finding members
-						f.cancel(true);
+						setLabel(++status);
+
+						// Stop PipeMessageReceiver
+						future.cancel(true);
 
 						
 						Executors.newSingleThreadExecutor().submit(new Runnable() {
@@ -583,29 +571,21 @@ public class FileSharingPane extends JOptionPane {
 	}
 	
 	
-	private class CollectButton extends JButton {
+	private class CollectButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final static int STATUS_INIT = 0;
-		private final static int STATUS_SEARHING_RECEIVERS = 1;
-		private final static int STATUS_SENDING = 2;
 		private final String[] labels = {"相手を探す", "受信", "受信をやめる"};
-		
-		private int status = STATUS_INIT;
 		private PipeMessageBroadcaster messageBroadcaster = null;
-		private Future<PipeMessage> f = null;
-		
+	
 		public CollectButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
-			super();
-			
-			setText(labels[STATUS_INIT]);
+			setLabels(labels);
+			setLabel(status);
 			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					switch (status) {
-					case STATUS_INIT:
-						status++;
-						setText(labels[status]);
+					case STATUS_SEARCH:
+						setLabel(++status);
 						
 						String basePath = pathField.getText();
 						PipeMessage myInfo = new PipeMessage(username);
@@ -626,23 +606,22 @@ public class FileSharingPane extends JOptionPane {
 									}
 								}, (ex) -> {
 								});
-						f = Executors.newSingleThreadExecutor().submit(messageBroadcaster);
+						future = Executors.newSingleThreadExecutor().submit(messageBroadcaster);
 						messagePanel.append("- メンバーを探しています。\n");
 						break;
-					case STATUS_SEARHING_RECEIVERS:
+					case STATUS_EXECUTE:
 						int nSenders = memberListPanel.getMemberSize();
 						if(nSenders < 1) {
 							JOptionPane.showMessageDialog(CollectButton.this, "メンバーが見つかっていません。");
 							return;
 						}
 						
-						status++;
-						setText(labels[status]);
+						setLabel(++status);
 						
-						// Stop finding members
-						f.cancel(true);
+						// Stop MessageBroadcaster
+						cancel();
 						
-						Executors.newSingleThreadExecutor().submit(new Runnable() {
+						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
 								for(int i = 0; i < nSenders; i++) {
@@ -683,7 +662,7 @@ public class FileSharingPane extends JOptionPane {
 //						memberListPanel.clearMember();
 
 						break;
-					case STATUS_SENDING:
+					case STATUS_FINISH:
 						break;
 					default:
 						break;
@@ -694,20 +673,16 @@ public class FileSharingPane extends JOptionPane {
 	}
 
 	
-	private class SendButton extends JButton {
+	private class SendButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final static int STATUS_SEARCH_RECEIVER = 0;
-		private final static int STATUS_SEND = 1;
-		private final static int STATUS_FINISH = 2;
 		private final String[] labels = {"相手を探す", "送信", "送信をやめる"};
 		
-		private int status = STATUS_SEARCH_RECEIVER;
 		private String newPath = "";
 		private long dataSize = 0;
-		private Future<?> f = null;
 		
 		public SendButton(MemberPanel memberPanel, MessagePanel messagePanel) {
-			setText(labels[STATUS_SEARCH_RECEIVER]);
+			setLabels(labels);
+			setLabel(status);
 			
 			addActionListener(new ActionListener() {
 				@Override
@@ -715,13 +690,13 @@ public class FileSharingPane extends JOptionPane {
 					Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
 					
 					switch (status) {
-					case STATUS_SEARCH_RECEIVER:
+					case STATUS_SEARCH:
 						status++;
-						setText(labels[status]);
+						setLabel(status);
 						setEnabled(false);
 						
 						messagePanel.append("- メンバーを探しています。\n");
-						f = Executors.newSingleThreadExecutor().submit(new Runnable() {
+						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							
 							@Override
 							public void run() {
@@ -761,13 +736,13 @@ public class FileSharingPane extends JOptionPane {
 							}
 						});
 						break;
-					case STATUS_SEND:
+					case STATUS_EXECUTE:
 						status++;
-						setText(labels[status]);
+						setLabel(status);
 
 						memberPanel.initBar(0, (int)dataSize);
 
-						f = Executors.newSingleThreadExecutor().submit(new Runnable() {
+						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
 								try {
@@ -796,7 +771,7 @@ public class FileSharingPane extends JOptionPane {
 									return;
 								}
 								messagePanel.append("- 送信完了しました\n");
-								setText(labels[status=STATUS_SEARCH_RECEIVER]);
+								setLabel(status=STATUS_SEARCH);
 								memberPanel.clearMember();
 							}
 						});
@@ -809,16 +784,38 @@ public class FileSharingPane extends JOptionPane {
 				}
 			});
 		}
-		
+	}
+	
+	
+	private class PipeActionButton extends JButton {
+		private static final long serialVersionUID = 1L;
+		protected final static int STATUS_SEARCH = 0;
+		protected final static int STATUS_EXECUTE = 1;
+		protected final static int STATUS_FINISH = 2;
+
+		private String[] labels = {"phase_search", "phase_action", "phase_finish"};
+
+		protected int status = STATUS_SEARCH;
+		protected Future<?> future = null;
+	
+
+		public void setLabels(String[] labels) {
+			this.labels = labels;
+		}
 		
 		public void initState() {
-			status = STATUS_SEARCH_RECEIVER;
-			setText(labels[status]);
+			status = STATUS_SEARCH;
+			setLabel(status);
 			setEnabled(true);
 		}
 		
-		public void closePipe() {
-			f.cancel(true);
+
+		public void setLabel(int status) {
+			setText(labels[status]);
+		}
+		
+		public void cancel() {
+			future.cancel(true);
 		}
 	}
 }

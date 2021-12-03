@@ -17,11 +17,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -192,8 +190,11 @@ public class DataPiper {
 							tarOut.write(buf, 0, len);
 							readLenth.accept(nr);
 						}
+						tarOut.flush();
 						tarOut.closeArchiveEntry();
+						bis.close();
 					}
+					
 					tarOut.close();
 					pipeOut.close();
 					
