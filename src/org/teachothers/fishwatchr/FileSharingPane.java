@@ -168,10 +168,17 @@ public class FileSharingPane extends JOptionPane {
 			memberListPanel.add(listTitleLabel, BorderLayout.NORTH);
 			memberListPanel.add(memberPanel, BorderLayout.CENTER);
 			
-			JButton receiveButton = new ReceiveButton(memberPanel, messagePanel);
+			ReceiveButton receiveButton = new ReceiveButton(memberPanel, messagePanel);
 			JButton cancelButton = new JButton("キャンセル");
 			buttonPanel.add(receiveButton);
 			buttonPanel.add(cancelButton);
+			cancelButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					receiveButton.cancel();
+				}
+			});
 		}
 	}
 	
@@ -392,24 +399,26 @@ public class FileSharingPane extends JOptionPane {
 								String basePath = pathField.getText();
 								newPath = DataPiper.generatePath(username + basePath);
 								PipeMessage myInfo = new PipeMessage(username, newPath);
+								PipeMessage memberInfo = null;
 								try {
-									pipe.postMessage(basePath+DataPiper.DEFAULT_PATH_SUFFIX, myInfo);
-								} catch (URISyntaxException | IOException | InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									pipe.postMessage(basePath, myInfo, N_RETRY);
+									memberInfo = pipe.getMessage(newPath);
+								} catch (URISyntaxException | IOException e) {
+									JOptionPane.showMessageDialog(ReceiveButton.this, e.getMessage());
+									initState();
+									return;
+								} catch (InterruptedException e) {
+									// postMessage() closes the pipe internally
+									initState();
+									return;
 								}
-								try {
-									PipeMessage memberInfo = pipe.getMessage(newPath);
-									String memberName = memberInfo.getSenderName();
-									dataSize =  memberInfo.getDataSize();
-									newPath = memberInfo.getPath();
-									memberPanel.setMember(memberName);
-									messagePanel.append("- " + memberName + "が見つかりました。\n");
-									setEnabled(true);
-								} catch (IOException | URISyntaxException | InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+
+								String memberName = memberInfo.getSenderName();
+								dataSize =  memberInfo.getDataSize();
+								newPath = memberInfo.getPath();
+								memberPanel.setMember(memberName);
+								messagePanel.append("- " + memberName + "が見つかりました。\n");
+								setEnabled(true);
 							}
 						});
 						break;
@@ -420,12 +429,14 @@ public class FileSharingPane extends JOptionPane {
 						Path savePath =  Util.getUniquePath(commentFilePath.getParent(), memberName);
 						try {
 							Files.createDirectories(savePath);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						} catch (IOException e) {
+							JOptionPane.showMessageDialog(ReceiveButton.this,
+									"保存用のディレクトリが作成できませんでした。\n" + savePath.toAbsolutePath() + "\n" + e.getMessage());
+							initState();
+							return;
 						}
 
-						Executors.newSingleThreadExecutor().submit(new Runnable() {
+						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							
 							@Override
 							public void run() {
@@ -441,9 +452,15 @@ public class FileSharingPane extends JOptionPane {
 													}
 												});
 											});
-								} catch (URISyntaxException | IOException | InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+								} catch (URISyntaxException | ExecutionException | IOException e) {
+									JOptionPane.showMessageDialog(ReceiveButton.this, "データ送信が中断されるなどして，受信が完了しませんでした。\n" + e.getMessage());
+									initState();
+									return;
+								} catch (InterruptedException e) {
+									// postMessage() closes the pipe internally
+									System.err.println("kkkaa");
+									initState();
+									return;
 								}
 								setLabel(status = STATUS_SEARCH);
 							}
@@ -649,7 +666,7 @@ public class FileSharingPane extends JOptionPane {
 												}
 											});
 										});
-									} catch (URISyntaxException | IOException | InterruptedException e) {
+									} catch (URISyntaxException | IOException | InterruptedException | ExecutionException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}

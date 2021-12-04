@@ -30,6 +30,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
+import com.sun.jdi.InternalException;
+
 
 public class DataPiper {
 ////	public static final String MESSAGE_KEY_PATH = "path";
@@ -116,6 +118,26 @@ public class DataPiper {
 			}
 
 			return PipeMessage.encode(lines.toString());
+		}
+	}
+	
+	
+	public void postMessage(String path, PipeMessage message, int nRetry) throws IOException, URISyntaxException, InterruptedException {
+		for(int i = 0; i < nRetry; i++){
+			for(int suffix : getRandamOrderedSuffixes(nPathSuffix)) {
+				try {
+					postMessage(path + suffix, message);
+				} catch (InterruptedException e) {
+					// close pipe
+					getMessage(path + suffix);
+					throw new InterruptedException();
+				}
+				if(message.getErrorCode() > 0) {
+					continue;
+				} else {
+					return;
+				}
+			}
 		}
 	}
 	
@@ -212,36 +234,59 @@ public class DataPiper {
 	}
 
 
-	public void getTarFile(String pipePath, Path rootPath, Consumer<Long> readSize) throws URISyntaxException, IOException, InterruptedException {
+	public void getTarFile(String pipePath, Path rootPath, Consumer<Long> readSize) throws URISyntaxException, IOException, ExecutionException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + pipePath);
 
 		HttpRequest request = HttpRequest.newBuilder()
 				.GET().uri(pipeURL)
 				.build();
 
-		HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+		// TODO
+		// Handle response according to status code
+		final HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
-		try (TarArchiveInputStream tarInput = new TarArchiveInputStream(response.body())) {
-			TarArchiveEntry entry;
-			byte buf[] = new byte[READ_BUFFER_SIZE];
-			
-			while((entry = tarInput.getNextTarEntry()) != null) {
-				long nr = 0;
-				Path filePath = rootPath.resolve(entry.getName());
-//				readSize.accept("-" + entry.getName() + "\n");
-				BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath));
+		class TarFileReader implements Callable<Void> {
+			volatile Boolean readFlag = true;
 
-				int readLength;
-				while((readLength = tarInput.read(buf)) != -1) {
-					bos.write(buf, 0, readLength);
-					nr += readLength;
-					readSize.accept(nr);
+			@Override
+			public Void call() throws IOException, InterruptedException, ExecutionException {
+				try (TarArchiveInputStream tarInput = new TarArchiveInputStream(response.body())) {
+					TarArchiveEntry entry;
+					byte buf[] = new byte[READ_BUFFER_SIZE];
+					
+					while((entry = tarInput.getNextTarEntry()) != null && readFlag) {
+						long nr = 0;
+						Path filePath = rootPath.resolve(entry.getName());
+						BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath));
+
+						int readLength;
+						while((readLength = tarInput.read(buf)) != -1  && readFlag) {
+							bos.write(buf, 0, readLength);
+							nr += readLength;
+							readSize.accept(nr);
+						}
+						bos.close();
+					}
 				}
-				bos.close();
+
+				return null;
+			}
+			
+			public void stop() {
+				readFlag = false;
 			}
 		}
 		
-		System.err.println(response.statusCode());
+		TarFileReader tarFileReader = new TarFileReader();
+
+		try {
+			Executors.newSingleThreadExecutor()
+			.submit(tarFileReader)
+			.get();
+		} catch (InterruptedException e) {
+			tarFileReader.stop();
+			response.body().close();
+		}
 	}
 	
 	
