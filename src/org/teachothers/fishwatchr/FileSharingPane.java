@@ -11,6 +11,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -202,9 +205,17 @@ public class FileSharingPane extends JOptionPane {
 			displayPanel.add(messagePanel);
 			
 			CollectButton collectButton = new CollectButton(memberListPanel, messagePanel);
-			JButton sendCancelButton = new JButton("キャンセル");
+			JButton cancelButton = new JButton("キャンセル");
 			buttonPanel.add(collectButton);
-			buttonPanel.add(sendCancelButton);
+			buttonPanel.add(cancelButton);
+			cancelButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					collectButton.cancel();
+				}
+			});
+			
 		}
 	}
 
@@ -617,9 +628,14 @@ public class FileSharingPane extends JOptionPane {
 										messageBroadcaster.setMap(senderName, memberInfo);
 										memberListPanel.addMember(memberInfo);
 										messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
-									} catch (URISyntaxException | IOException | InterruptedException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+									} catch (URISyntaxException | IOException e) {
+										JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
+										initState();
+										return;
+									} catch (InterruptedException e) {
+										// getMessage() closes the pipe internally
+										initState();
+										return;
 									}
 								}, (ex) -> {
 								});
@@ -636,11 +652,13 @@ public class FileSharingPane extends JOptionPane {
 						setLabel(++status);
 						
 						// Stop MessageBroadcaster
-						cancel();
+						future.cancel(true);
 						
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
+								BlockingQueue<Future<Void>> queue = new ArrayBlockingQueue<>(nSenders);
+								
 								for(int i = 0; i < nSenders; i++) {
 									final int i2 = i;
 									MemberPanel memberPanel = memberListPanel.getMemberPanelAt(i);
@@ -648,30 +666,48 @@ public class FileSharingPane extends JOptionPane {
 									Path savePath =  Util.getUniquePath(commentFilePath.getParent(), username);
 									try {
 										Files.createDirectories(savePath);
-									} catch (IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
+									} catch (IOException e) {
+										JOptionPane.showMessageDialog(CollectButton.this, "保存用のフォルダを作成できません。\n" + e.getMessage());
+										initState();
+										return;
 									}
-									System.err.println("un1:" + username  + "," + nSenders);
-									PipeMessage message = messageBroadcaster.getMap(username);
-									System.err.println("un2:" + username + "," + message.getPath() + "," + nSenders);
 									
-									try {
-										pipe.getTarFile(message.getPath(), savePath, (readSize) -> {
-											SwingUtilities.invokeLater(new Runnable() {
-												@Override
-												public void run() {
-													memberPanel.setValue(readSize.intValue());
-													memberListPanel.update(i2);
-												}
+									PipeMessage message = messageBroadcaster.getMap(username);
+									
+									var f = Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
+										@Override
+										public Void call() throws URISyntaxException, IOException, ExecutionException, InterruptedException {
+											pipe.getTarFile(message.getPath(), savePath, (readSize) -> {
+												SwingUtilities.invokeLater(new Runnable() {
+													@Override
+													public void run() {
+														memberPanel.setValue(readSize.intValue());
+														memberListPanel.update(i2);
+													}
+												});
 											});
-										});
-									} catch (URISyntaxException | IOException | InterruptedException | ExecutionException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-									System.err.println("un1:");
+
+											return null;
+										}
+									});
+									
+									queue.add(f);
 								}
+								
+								for(Future<Void> f : queue) {
+									try {
+										f.get();
+									} catch (InterruptedException e) {
+										f.cancel(true);
+										initState();
+										return;
+									} catch (ExecutionException e) {
+										JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
+										initState();
+										return;
+									}
+								}
+								
 								messagePanel.append("- 受信が完了しました。\n");
 							}
 						});

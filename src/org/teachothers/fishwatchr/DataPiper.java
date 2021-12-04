@@ -125,13 +125,8 @@ public class DataPiper {
 	public void postMessage(String path, PipeMessage message, int nRetry) throws IOException, URISyntaxException, InterruptedException {
 		for(int i = 0; i < nRetry; i++){
 			for(int suffix : getRandamOrderedSuffixes(nPathSuffix)) {
-				try {
-					postMessage(path + suffix, message);
-				} catch (InterruptedException e) {
-					// close pipe
-					getMessage(path + suffix);
-					throw new InterruptedException();
-				}
+				postMessage(path + suffix, message);
+
 				if(message.getErrorCode() > 0) {
 					continue;
 				} else {
