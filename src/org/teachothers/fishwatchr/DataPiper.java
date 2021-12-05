@@ -75,13 +75,8 @@ public class DataPiper {
 		
 		for(int i = 0; i < nRetry; i++){
 			for(int suffix : getRandamOrderedSuffixes(nPathSuffix)) {
-				try {
-					message = getMessage(path + suffix);
-				} catch (InterruptedException e) {
-					// close pipe
-					postMessage(path + suffix, new PipeMessage());
-					throw new InterruptedException();
-				}
+				message = getMessage(path + suffix);
+
 				if(message.getErrorCode() > 0) {
 					continue;
 				} else {
