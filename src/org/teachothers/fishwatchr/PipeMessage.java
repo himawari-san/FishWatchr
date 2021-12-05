@@ -13,15 +13,14 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 
 	public static final int TYPE_INIT = 0;
 	public static final int TYPE_NORMAL = 1;
+	public static final int TYPE_CONTINUED = 2;
 	public static final int TYPE_ERROR = -1;
 	
 	private static final String MESSAGE_KEY_PATH = SYSTEM_KEY_PREFIX + "path";
 	private static final String MESSAGE_KEY_ID = SYSTEM_KEY_PREFIX + "id";
 	private static final String MESSAGE_KEY_SENDER_NAME = SYSTEM_KEY_PREFIX + "username";
 	private static final String MESSAGE_KEY_DATASIZE = SYSTEM_KEY_PREFIX + "datasize";
-	
 	private static final String MESSAGE_KEY_TYPE = SYSTEM_KEY_PREFIX + "type";
-	private static final String MESSAGE_VALUE_TYPE_DISTRIBUTE = "distribute";
 
 	
 	
@@ -111,6 +110,7 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_SENDER_NAME, KEY_VALUE_SEPARATOR, getSenderName()));
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_PATH, KEY_VALUE_SEPARATOR, getPath()));
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_DATASIZE, KEY_VALUE_SEPARATOR, getDataSize()));
+		result.append(String.format("\n%s%s%s", MESSAGE_KEY_TYPE, KEY_VALUE_SEPARATOR, getType()));
 
 		this.forEach((key, value)->{
 			result.append(String.format("\n%s%s%s", key, KEY_VALUE_SEPARATOR, value));
@@ -136,6 +136,7 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 				case MESSAGE_KEY_SENDER_NAME: message.setSenderName(value); break;
 				case MESSAGE_KEY_PATH: message.setPath(value); break;
 				case MESSAGE_KEY_DATASIZE: message.setDataSize(Long.parseLong(value)); break;
+				case MESSAGE_KEY_TYPE: message.setType(Integer.parseInt(value)); break;
 				default:
 					if (!key.isEmpty()) {
 						message.put(key, value);
@@ -144,8 +145,6 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 				}
 			}
 		}
-
-		message.setType(TYPE_NORMAL);
 
 		return message;
 	}

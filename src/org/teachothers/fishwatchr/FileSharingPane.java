@@ -242,6 +242,13 @@ public class FileSharingPane extends JOptionPane {
 			JButton cancelButton = new JButton("キャンセル");
 			buttonPanel.add(distributeButton);
 			buttonPanel.add(cancelButton);
+			cancelButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					distributeButton.cancel();
+				}
+			});
 		}
 	}
 
@@ -414,6 +421,19 @@ public class FileSharingPane extends JOptionPane {
 								try {
 									pipe.postMessage(basePath, myInfo, N_RETRY);
 									memberInfo = pipe.getMessage(newPath);
+
+									String memberName = memberInfo.getSenderName();
+									memberPanel.setMember(memberName);
+									messagePanel.append("- " + memberName + "が見つかりました。\n");
+
+									// sender uses Distribute mode
+									if(memberInfo.getType() == PipeMessage.TYPE_CONTINUED) {
+										messagePanel.append("- " + memberName + "が送信すると「受信」ボタンが使えるようになります。お待ちください。\n");
+										memberInfo = pipe.getMessage(newPath);
+									}
+
+									dataSize =  memberInfo.getDataSize();
+									newPath = memberInfo.getPath();
 								} catch (URISyntaxException | IOException e) {
 									JOptionPane.showMessageDialog(ReceiveButton.this, e.getMessage());
 									initState();
@@ -424,11 +444,6 @@ public class FileSharingPane extends JOptionPane {
 									return;
 								}
 
-								String memberName = memberInfo.getSenderName();
-								dataSize =  memberInfo.getDataSize();
-								newPath = memberInfo.getPath();
-								memberPanel.setMember(memberName);
-								messagePanel.append("- " + memberName + "が見つかりました。\n");
 								setEnabled(true);
 							}
 						});
@@ -469,7 +484,6 @@ public class FileSharingPane extends JOptionPane {
 									return;
 								} catch (InterruptedException e) {
 									// postMessage() closes the pipe internally
-									System.err.println("kkkaa");
 									initState();
 									return;
 								}
@@ -495,7 +509,6 @@ public class FileSharingPane extends JOptionPane {
 	private class DistributeButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
 		private final String[] labels = {"相手を探す", "配布", "配布をやめる"};
-		
 		private PipeMessageReceiver messageReceiver = null;
 		
 		public DistributeButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
@@ -515,12 +528,25 @@ public class FileSharingPane extends JOptionPane {
 						
 						messageReceiver = new PipeMessageReceiver(pipe, basePath,
 								(memberMessage) -> {
-//									memberMessage.setDataSize(Util.getTotalFilesize(filePaths));
 									String memberName = memberMessage.getSenderName();
 									messageReceiver.setMap(memberName, memberMessage);
 									memberListPanel.addMember(memberMessage);
 									messagePanel.append("- " + memberName + "をメンバーリストに追加しました。\n");
-								}, (ex) -> {
+									String tempPath = memberMessage.getPath();
+									PipeMessage myInfo = new PipeMessage(username, tempPath);
+									myInfo.setType(PipeMessage.TYPE_CONTINUED);
+									try {
+										pipe.postMessage(tempPath, myInfo);
+									} catch (IOException | URISyntaxException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}, 
+								(ex) -> {
+									initState();
 								});
 						future = Executors.newSingleThreadExecutor().submit(messageReceiver);
 
@@ -539,7 +565,7 @@ public class FileSharingPane extends JOptionPane {
 						future.cancel(true);
 
 						
-						Executors.newSingleThreadExecutor().submit(new Runnable() {
+						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
 								String newPath = DataPiper.generatePath(username + basePath) + "?n=" + nSenders;
@@ -557,9 +583,14 @@ public class FileSharingPane extends JOptionPane {
 
 									try {
 										pipe.postMessage(memberInfo.getPath(), myInfo);
-									} catch (URISyntaxException | IOException | InterruptedException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+									} catch (URISyntaxException | IOException e) {
+										JOptionPane.showMessageDialog(DistributeButton.this, e.getMessage());
+										initState();
+										return;
+									} catch (InterruptedException e) {
+										// postMessage() closes the pipe internally
+										initState();
+										return;
 									}
 
 								}
@@ -578,11 +609,16 @@ public class FileSharingPane extends JOptionPane {
 												});
 											});
 									setEnabled(true);
-								} catch (IOException | URISyntaxException | ExecutionException | InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+								} catch (URISyntaxException | ExecutionException | IOException e) {
+									JOptionPane.showMessageDialog(DistributeButton.this, "データ送信が中断されるなどして，受信が完了しませんでした。\n" + e.getMessage());
+									initState();
+									return;
+								} catch (InterruptedException e) {
+									// postMessage() closes the pipe internally
+									initState();
+									return;
 								}
-
+								
 								messagePanel.append("- 配布が完了しました。\n");
 							}
 						});

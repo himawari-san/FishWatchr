@@ -102,7 +102,13 @@ public class DataPiper {
 				.build();
 
 		
-		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		HttpResponse<String> response;
+		try {
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (InterruptedException e) {
+			postMessage(path, new PipeMessage());
+			throw new InterruptedException(); 
+		}
 		
 		if(isErrorResponse(response)) {
 			System.err.println(response.statusCode());

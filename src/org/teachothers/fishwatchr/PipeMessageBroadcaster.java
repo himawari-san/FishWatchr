@@ -40,7 +40,7 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 
 
 	@Override
-	public PipeMessage call() throws InterruptedException, ExecutionException {
+	public PipeMessage call() {
 		BlockingQueue<Future<Void>> queue = new ArrayBlockingQueue<>(nSender);
 
 		for(int i = 0; i < nSender; i++) {

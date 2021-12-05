@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 
-public class PipeMessageReceiver implements Callable<PipeMessage> {
+public class PipeMessageReceiver implements Callable<Void> {
 
 	ExecutorService poolMessageAgent;
 	DataPiper pipe;
@@ -38,8 +38,8 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 
 
 	@Override
-	public PipeMessage call() {
-		BlockingQueue<Future<PipeMessage>> queue = new ArrayBlockingQueue<>(nWaiter);
+	public Void call() {
+		BlockingQueue<Future<Void>> queue = new ArrayBlockingQueue<>(nWaiter);
 
 		for(int i = 0; i < nWaiter; i++) {
 			waiters[i] = new PipeMessageWaiter(String.valueOf(i));
@@ -47,18 +47,17 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 			queue.add(f);
 		}
 
-		PipeMessage message = null;
-		for (Future<PipeMessage> f : queue) {
+		for (Future<Void> f : queue) {
 			try {
 				f.get();
 			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
 				System.err.println("PipeMessageReceiver is shutdown.");
 				poolMessageAgent.shutdownNow();
+				errorConsumer.accept(e);
 			}
 		}
 
-		return message;
+		return null;
 	}
 	
 	public PipeMessage getMap(String key) {
@@ -77,7 +76,7 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 
 	
 	
-	private class PipeMessageWaiter implements Callable<PipeMessage> {
+	private class PipeMessageWaiter implements Callable<Void> {
 		private String suffix;
 		private boolean loopFlag = true;
 		
@@ -86,38 +85,20 @@ public class PipeMessageReceiver implements Callable<PipeMessage> {
 		}
 		
 		@Override
-		public PipeMessage call()  {
-			PipeMessage message = new PipeMessage();
-
+		public Void call()  {
 			while(loopFlag) {
 				try {
-					message = pipe.getMessage(path + suffix);
-//					setMap(message.getSenderName(), message);
-
-					if(message.getType() == PipeMessage.TYPE_NORMAL) {
-						messageConsumer.accept(message);
-					}
+					PipeMessage message = pipe.getMessage(path + suffix);
+					messageConsumer.accept(message);
 				} catch (IOException | URISyntaxException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					stop();
-					System.err.println("ps: close connection:" + path + suffix);
-					// close the connection
-					try {
-						pipe.postMessage(path + suffix, new PipeMessage());
-					} catch (URISyntaxException | IOException | InterruptedException e1) {
-						System.err.println("Error: Can't stop getMessage to " + path + suffix);
-						e1.printStackTrace();
-					}
+					loopFlag = false;
+					// postMessage() closes connection internally
 				}
 			}
 
-			return message;
-		}
-		
-		
-		public void stop() {
-			loopFlag = false;
+			return null;
 		}
 	}
 }
