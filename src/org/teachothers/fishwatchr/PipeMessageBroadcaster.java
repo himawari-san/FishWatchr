@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +12,7 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 
-public class PipeMessageBroadcaster implements Callable<PipeMessage> {
+public class PipeMessageBroadcaster implements Runnable {
 
 	ExecutorService poolMessageAgent;
 	DataPiper pipe;
@@ -40,8 +39,8 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 
 
 	@Override
-	public PipeMessage call() {
-		BlockingQueue<Future<Void>> queue = new ArrayBlockingQueue<>(nSender);
+	public void run() {
+		BlockingQueue<Future<?>> queue = new ArrayBlockingQueue<>(nSender);
 
 		for(int i = 0; i < nSender; i++) {
 			senders[i] = new PipeMessageSender(String.valueOf(i));
@@ -49,8 +48,7 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 			queue.add(f);
 		}
 
-		PipeMessage message = null;
-		for (Future<Void> f : queue) {
+		for (Future<?> f : queue) {
 			try {
 				f.get();
 			} catch (InterruptedException | ExecutionException e) {
@@ -59,8 +57,6 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 				poolMessageAgent.shutdownNow();
 			}
 		}
-		
-		return message;
 	}
 	
 	
@@ -80,7 +76,7 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 
 	
 	
-	private class PipeMessageSender implements Callable<Void> {
+	private class PipeMessageSender implements Runnable {
 		private String suffix;
 		private boolean loopFlag = true;
 		
@@ -89,7 +85,7 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 		}
 		
 		@Override
-		public Void call()  {
+		public void run()  {
 
 			while(loopFlag) {
 				try {
@@ -105,8 +101,6 @@ public class PipeMessageBroadcaster implements Callable<PipeMessage> {
 					loopFlag = false;
 				}
 			}
-
-			return null;
 		}
 	}
 }
