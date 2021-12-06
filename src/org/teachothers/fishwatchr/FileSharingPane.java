@@ -136,16 +136,7 @@ public class FileSharingPane extends JOptionPane {
 			memberListPanel.add(memberPanel, BorderLayout.CENTER);
 			
 			SendButton sendButton = new SendButton(memberPanel, messagePanel);
-			JButton sendCancelButton = new JButton("キャンセル");
 			buttonPanel.add(sendButton);
-			buttonPanel.add(sendCancelButton);
-			sendCancelButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					sendButton.cancel();
-				}
-			});
 		}
 	}
 	
@@ -172,16 +163,7 @@ public class FileSharingPane extends JOptionPane {
 			memberListPanel.add(memberPanel, BorderLayout.CENTER);
 			
 			ReceiveButton receiveButton = new ReceiveButton(memberPanel, messagePanel);
-			JButton cancelButton = new JButton("キャンセル");
 			buttonPanel.add(receiveButton);
-			buttonPanel.add(cancelButton);
-			cancelButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					receiveButton.cancel();
-				}
-			});
 		}
 	}
 	
@@ -205,17 +187,7 @@ public class FileSharingPane extends JOptionPane {
 			displayPanel.add(messagePanel);
 			
 			CollectButton collectButton = new CollectButton(memberListPanel, messagePanel);
-			JButton cancelButton = new JButton("キャンセル");
 			buttonPanel.add(collectButton);
-			buttonPanel.add(cancelButton);
-			cancelButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					collectButton.cancel();
-				}
-			});
-			
 		}
 	}
 
@@ -239,16 +211,7 @@ public class FileSharingPane extends JOptionPane {
 			displayPanel.add(messagePanel);
 			
 			DistributeButton distributeButton = new DistributeButton(memberListPanel, messagePanel);
-			JButton cancelButton = new JButton("キャンセル");
 			buttonPanel.add(distributeButton);
-			buttonPanel.add(cancelButton);
-			cancelButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					distributeButton.cancel();
-				}
-			});
 		}
 	}
 
@@ -392,7 +355,7 @@ public class FileSharingPane extends JOptionPane {
 	
 	private class ReceiveButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探す", "受信", "受信をやめる"};
+		private final String[] labels = {"相手を探索", "キャセル", "受信を実行"};
 		
 		private String newPath = "";
 		private long dataSize = 0;
@@ -407,9 +370,8 @@ public class FileSharingPane extends JOptionPane {
 					
 					switch (status) {
 					case STATUS_SEARCH:
-						setLabel(++status);
-						setEnabled(false);
-
+						setLabel(status);
+						
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
@@ -434,6 +396,7 @@ public class FileSharingPane extends JOptionPane {
 
 									dataSize =  memberInfo.getDataSize();
 									newPath = memberInfo.getPath();
+									setLabel(status = STATUS_EXECUTE);
 								} catch (URISyntaxException | IOException e) {
 									JOptionPane.showMessageDialog(ReceiveButton.this, e.getMessage());
 									initState();
@@ -447,9 +410,14 @@ public class FileSharingPane extends JOptionPane {
 								setEnabled(true);
 							}
 						});
+						
+						setLabel(status = STATUS_CANCEL);
+						break;
+					case STATUS_CANCEL:
+						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
-						setLabel(++status);
+						setLabel(status = STATUS_CANCEL);
 						
 						String memberName = memberPanel.getMember();
 						Path savePath =  Util.getUniquePath(commentFilePath.getParent(), memberName);
@@ -487,12 +455,11 @@ public class FileSharingPane extends JOptionPane {
 									initState();
 									return;
 								}
+								messagePanel.append("- 受信が完了しました\n");
 								setLabel(status = STATUS_SEARCH);
 							}
 						});
 						
-//						memberPanel.clearMember();
-
 						break;
 					case STATUS_FINISH:
 						break;
@@ -508,7 +475,7 @@ public class FileSharingPane extends JOptionPane {
 
 	private class DistributeButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探す", "配布", "配布をやめる"};
+		private final String[] labels = {"相手を探索", "キャンセル", "配布を実行"};
 		private PipeMessageReceiver messageReceiver = null;
 		
 		public DistributeButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
@@ -524,7 +491,7 @@ public class FileSharingPane extends JOptionPane {
 					
 					switch (status) {
 					case STATUS_SEARCH:
-						setLabel(++status);
+						setLabel(status);
 						
 						messageReceiver = new PipeMessageReceiver(pipe, basePath,
 								(memberMessage) -> {
@@ -544,6 +511,7 @@ public class FileSharingPane extends JOptionPane {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
+									setLabel(status = STATUS_EXECUTE);
 								}, 
 								(ex) -> {
 									initState();
@@ -551,6 +519,10 @@ public class FileSharingPane extends JOptionPane {
 						future = Executors.newSingleThreadExecutor().submit(messageReceiver);
 
 						messagePanel.append("- メンバーを探しています。\n");
+						setLabel(status = STATUS_CANCEL);
+						break;
+					case STATUS_CANCEL:
+						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
 						int nSenders = memberListPanel.getMemberSize();
@@ -559,7 +531,7 @@ public class FileSharingPane extends JOptionPane {
 							return;
 						}
 						
-						setLabel(++status);
+						setLabel(status = STATUS_CANCEL);
 
 						// Stop PipeMessageReceiver
 						future.cancel(true);
@@ -598,15 +570,17 @@ public class FileSharingPane extends JOptionPane {
 								try {
 									pipe.postFile(newPath, filePaths, 
 											(readLength)->{
-												SwingUtilities.invokeLater(new Runnable() {
-													
-													@Override
-													public void run() {
-														MemberPanel memberPanel = memberListPanel.getMemberPanelAt(0);
-														memberPanel.setValue(readLength.intValue());
-														memberListPanel.update(0);
-													}
-												});
+												for(int i = 0; i < nSenders; i++) {
+													final int i2 = i;
+													SwingUtilities.invokeLater(new Runnable() {
+														@Override
+														public void run() {
+															MemberPanel memberPanel = memberListPanel.getMemberPanelAt(i2);
+															memberPanel.setValue(readLength.intValue());
+															memberListPanel.update(i2);
+														}
+													});
+												}
 											});
 									setEnabled(true);
 								} catch (URISyntaxException | ExecutionException | IOException e) {
@@ -620,11 +594,10 @@ public class FileSharingPane extends JOptionPane {
 								}
 								
 								messagePanel.append("- 配布が完了しました。\n");
+								setLabel(status=STATUS_SEARCH);
 							}
 						});
 
-						break;
-					case STATUS_FINISH:
 						break;
 					default:
 						break;
@@ -637,7 +610,7 @@ public class FileSharingPane extends JOptionPane {
 	
 	private class CollectButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探す", "受信", "受信をやめる"};
+		private final String[] labels = {"相手を探索", "キャンセル", "収集を実行"};
 		private PipeMessageBroadcaster messageBroadcaster = null;
 	
 		public CollectButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
@@ -649,7 +622,7 @@ public class FileSharingPane extends JOptionPane {
 				public void actionPerformed(ActionEvent arg0) {
 					switch (status) {
 					case STATUS_SEARCH:
-						setLabel(++status);
+						setLabel(status);
 						
 						String basePath = pathField.getText();
 						PipeMessage myInfo = new PipeMessage(username);
@@ -664,6 +637,7 @@ public class FileSharingPane extends JOptionPane {
 										messageBroadcaster.setMap(senderName, memberInfo);
 										memberListPanel.addMember(memberInfo);
 										messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
+										setLabel(status = STATUS_EXECUTE);
 									} catch (URISyntaxException | IOException e) {
 										JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
 										initState();
@@ -677,6 +651,10 @@ public class FileSharingPane extends JOptionPane {
 								});
 						future = Executors.newSingleThreadExecutor().submit(messageBroadcaster);
 						messagePanel.append("- メンバーを探しています。\n");
+						setLabel(status = STATUS_CANCEL);
+						break;
+					case STATUS_CANCEL:
+						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
 						int nSenders = memberListPanel.getMemberSize();
@@ -685,7 +663,7 @@ public class FileSharingPane extends JOptionPane {
 							return;
 						}
 						
-						setLabel(++status);
+						setLabel(status = STATUS_CANCEL);
 						
 						// Stop MessageBroadcaster
 						future.cancel(true);
@@ -744,14 +722,13 @@ public class FileSharingPane extends JOptionPane {
 									}
 								}
 								
-								messagePanel.append("- 受信が完了しました。\n");
-							}
+								messagePanel.append("- 収集が完了しました。\n");
+								setLabel(status=STATUS_SEARCH);
+						}
 						});
 //						setText(labels[status=STATUS_INIT]);
 //						memberListPanel.clearMember();
 
-						break;
-					case STATUS_FINISH:
 						break;
 					default:
 						break;
@@ -764,7 +741,7 @@ public class FileSharingPane extends JOptionPane {
 	
 	private class SendButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探す", "送信", "送信をやめる"};
+		private final String[] labels = {"相手を探索", "キャンセル", "送信を実行"};
 		
 		private String newPath = "";
 		private long dataSize = 0;
@@ -780,9 +757,7 @@ public class FileSharingPane extends JOptionPane {
 					
 					switch (status) {
 					case STATUS_SEARCH:
-						status++;
 						setLabel(status);
-						setEnabled(false);
 						
 						messagePanel.append("- メンバーを探しています。\n");
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
@@ -812,7 +787,7 @@ public class FileSharingPane extends JOptionPane {
 									PipeMessage myInfo = new PipeMessage(username, newPath);
 									myInfo.setDataSize(dataSize);
 									pipe.postMessage(newPath, myInfo);
-									setEnabled(true);
+									setLabel(status = STATUS_EXECUTE);
 								} catch (URISyntaxException | IOException e) {
 									JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
 									initState();
@@ -824,10 +799,14 @@ public class FileSharingPane extends JOptionPane {
 								}
 							}
 						});
+
+						setLabel(status = STATUS_CANCEL);
+						break;
+					case STATUS_CANCEL:
+						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
-						status++;
-						setLabel(status);
+						setLabel(status = STATUS_CANCEL);
 
 						memberPanel.initBar(0, (int)dataSize);
 
@@ -859,13 +838,11 @@ public class FileSharingPane extends JOptionPane {
 									initState();
 									return;
 								}
-								messagePanel.append("- 送信完了しました\n");
+								messagePanel.append("- 送信が完了しました\n");
 								setLabel(status=STATUS_SEARCH);
 								memberPanel.clearMember();
 							}
 						});
-						break;
-					case STATUS_FINISH:
 						break;
 					default:
 						break;
@@ -879,8 +856,9 @@ public class FileSharingPane extends JOptionPane {
 	private class PipeActionButton extends JButton {
 		private static final long serialVersionUID = 1L;
 		protected final static int STATUS_SEARCH = 0;
-		protected final static int STATUS_EXECUTE = 1;
-		protected final static int STATUS_FINISH = 2;
+		protected final static int STATUS_CANCEL = 1;
+		protected final static int STATUS_EXECUTE = 2;
+		protected final static int STATUS_FINISH = 3;
 
 		private String[] labels = {"phase_search", "phase_action", "phase_finish"};
 
