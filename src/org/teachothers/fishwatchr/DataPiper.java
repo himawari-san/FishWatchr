@@ -30,18 +30,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
-import com.sun.jdi.InternalException;
-
 
 public class DataPiper {
-////	public static final String MESSAGE_KEY_PATH = "path";
-////	public static final String MESSAGE_KEY_USERNAME = "username";
-////	public static final String MESSAGE_KEY_DATASIZE = "datasize";
-////	public static final String MESSAGE_KEY_TYPE = "type";
-////	public static final String MESSAGE_VALUE_TYPE_DISTRIBUTE = "distribute";
-//	
-//	public static final String KEY_VALUE_SEPARATOR = ":";
-//	public static final int BASE_FILE_SIZE = 1024; // KB
 
 	public static final String DEFAULT_PATH_SUFFIX = "0";
 	private static final int N_PATH_SUFFIX = 5;

@@ -880,9 +880,5 @@ public class FileSharingPane extends JOptionPane {
 		public void setLabel(int status) {
 			setText(labels[status]);
 		}
-		
-		public void cancel() {
-			future.cancel(true);
-		}
 	}
 }
