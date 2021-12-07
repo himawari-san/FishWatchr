@@ -144,6 +144,7 @@ public class CommentButton extends JButton {
 		String label = getText();
 
 		if(c < 0 || c > 9){
+			setText("<html><div style=\"text-align:center;\">" + label + "</div></html>"); 
 			return;
 		} else if(c == 9){
 			c = 0;
