@@ -28,12 +28,6 @@
   			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress  -->
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-nop</artifactId>
-			<version>1.7.31</version>
-			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-nop  -->
-		</dependency>
-		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>1.5.3</version>
