@@ -17,11 +17,16 @@
 
 package org.teachothers.fishwatchr;
 
+import java.awt.Container;
 import java.awt.Font;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
@@ -35,7 +40,9 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class Util {
 
@@ -104,7 +111,18 @@ public class Util {
 		return documentBuilderFactory;
 	}
 	
+	
+	public static Element getFirstChild(Element parent, String childName) {
+		NodeList childs = parent.getElementsByTagName(childName);
+		
+		if(childs == null || childs.getLength() == 0) {
+			return null;
+		}
+		
+		return (Element)childs.item(0);
+	}
 
+	
 	public static int getTextHeight(String html, Font font, int componentWidth) {
 	    JLabel renderer = new JLabel(html);
 	    renderer.setFont(font);
@@ -112,5 +130,48 @@ public class Util {
 	    view.setSize(componentWidth, 0.0f);
 	    
 	    return (int) Math.ceil(view.getPreferredSpan(View.Y_AXIS));
+	}
+	
+	
+	// quoted from 
+	// http://www.ne.jp/asahi/hishidama/home/tech/java/swing/layout.html#h_GroupLayout
+	// and modified
+	public static GroupLayout getGroupLayout(JComponent[][] compos, Container container) {
+		GroupLayout layout = new GroupLayout(container);
+		container.setLayout(layout);
+
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+
+		int ny = compos.length;
+		int nx = compos[0].length;
+
+		SequentialGroup hg = layout.createSequentialGroup();
+		for (int x = 0; x < nx; x++) {
+			ParallelGroup pg = layout.createParallelGroup();
+			for (int y = 0; y < ny; y++) {
+				JComponent c = compos[y][x];
+				if (c != null) {
+					pg.addComponent(c);
+				}
+			}
+			hg.addGroup(pg);
+		}
+		layout.setHorizontalGroup(hg);
+
+		SequentialGroup vg = layout.createSequentialGroup();
+		for (int y = 0; y < ny; y++) {
+			ParallelGroup pg = layout.createParallelGroup(GroupLayout.Alignment.BASELINE);
+			for (int x = 0; x < nx; x++) {
+				JComponent c = compos[y][x];
+				if (c != null) {
+					pg.addComponent(c);
+				}
+			}
+			vg.addGroup(pg);
+		}
+		layout.setVerticalGroup(vg);
+		
+		return layout;
 	}
 }

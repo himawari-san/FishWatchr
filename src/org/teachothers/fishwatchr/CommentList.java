@@ -68,6 +68,8 @@ public class CommentList extends ArrayList<Comment> {
 	public static final String BASE_TIME_FILE_PREFIX = "_sys_basetime"; //$NON-NLS-1$
 	public static final String LOCKFILE_SUFFIX =".lock"; //$NON-NLS-1$
 	
+	private HashMap<String, OverallEvaluation> evaluations = new HashMap<String, OverallEvaluation>();
+	
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");  //$NON-NLS-1$
 	private Date startTime = null;
 
@@ -283,6 +285,8 @@ public class CommentList extends ArrayList<Comment> {
 			for (User discusser : discussers) {
 				discusser.setName(""); //$NON-NLS-1$
 			}
+			
+			evaluations.clear();
 		}
 		
 		DocumentBuilderFactory factory = Util.getSimpleDocumentBuilderFactory();
@@ -382,6 +386,16 @@ public class CommentList extends ArrayList<Comment> {
 			}
 		}
 		
+		// evaluation
+		expr = xpath.compile("/comment_list/evaluations/evaluation"); //$NON-NLS-1$
+		NodeList evaluationNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+		for (int i = 0; i < evaluationNodes.getLength(); i++) {
+			OverallEvaluation evaluation = OverallEvaluation.buildEvaluation((Element)evaluationNodes.item(i));
+			if(evaluation != null) {
+				evaluations.put(evaluation.getEvaluatorName(), evaluation);
+			}
+		}
+
 		
 		Element commentListElement = (Element) commentListNodes.item(0);
 		// set 要素
@@ -427,6 +441,10 @@ public class CommentList extends ArrayList<Comment> {
 				if (commentTimeEnd != Comment.COMMENT_TIME_END_UNDEFINED)
 					comment.setCommentTimeEnd(commentTimeEnd);
 				add(comment);
+				
+				OverallEvaluation evaluation = getEvaluation(commenter.getName());
+				evaluation = evaluation == null ? new OverallEvaluation(commenter.getName()) : evaluation;
+				
 			}
 		}
 
@@ -437,6 +455,16 @@ public class CommentList extends ArrayList<Comment> {
 		setModified(false);
 
 		return mediaFilename;
+	}
+	
+
+	public HashMap<String, OverallEvaluation> getEvaluations() {
+		return evaluations;
+	}
+
+	
+	public OverallEvaluation getEvaluation(String evaluatorName) {
+		return evaluations.get(evaluatorName);
 	}
 	
 	
