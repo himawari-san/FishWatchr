@@ -181,6 +181,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemFileExport;
 	private JMenuItem jMenuItemFileSaveConfig;
 	private JMenuItem jMenuItemFileShare;
+	private JMenuItem jMenuItemFileEval;
 	private JMenuItem jMenuItemFileExit;
 	private JMenu jMenuControl;
 	private JMenuItem jMenuItemControlPlayPause;
@@ -1689,6 +1690,7 @@ public class MainFrame extends JFrame {
 			jMenuFile.add(getJMenuItemFileMerge());
 			jMenuFile.add(getJMenuItemFileSaveConfig());
 			jMenuFile.add(getJMenuItemFileShare());
+			jMenuFile.add(getJMenuItemFileEval());
 			jMenuFile.add(getJMenuItemFileExit());
 		}
 		return jMenuFile;
@@ -2109,6 +2111,28 @@ public class MainFrame extends JFrame {
 		}
 		return jMenuItemFileSaveConfig;
 	}
+	
+
+	private JMenuItem getJMenuItemFileEval() {
+		if (jMenuItemFileEval == null) {
+			jMenuItemFileEval = new JMenuItem("全体評価");
+			jMenuItemFileEval.setAccelerator(KeyStroke.getKeyStroke('A',
+					KeyEvent.CTRL_DOWN_MASK, false));
+			jMenuItemFileEval
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+
+							OverallEvaluationPane fsp = new OverallEvaluationPane(commentList.getEvaluations(), commentTypes, discussers);
+							JDialog d = fsp.createDialog("全体評価");
+							d.setVisible(true);
+							Object selectedValue = fsp.getValue();
+						}
+
+					});
+		}
+		return jMenuItemFileEval;
+	}
+	
 	
 
 	private JMenuItem getJMenuItemFileShare() {
