@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -51,9 +50,7 @@ public class FileSharingPane extends JOptionPane {
 		super();
 		this.username = username;
 		this.commentFilePath = commentFilePath;
-		this.commentFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4.merged_bunseki.xml");
 		this.mediaFilePath = mediaFilePath;
-		this.mediaFilePath = Paths.get("/home/masaya/Downloads/GLS1901_merged/GLS1901.mp4");
 		this.pipe = new DataPiper(pipeServer);
 		ginit();
 	}
@@ -359,6 +356,8 @@ public class FileSharingPane extends JOptionPane {
 		
 		private String newPath = "";
 		private long dataSize = 0;
+		private Path saveRootPath = null;
+
 		
 		public ReceiveButton(MemberPanel memberPanel, MessagePanel messagePanel) {
 			setLabels(labels);
@@ -370,6 +369,18 @@ public class FileSharingPane extends JOptionPane {
 					
 					switch (status) {
 					case STATUS_SEARCH:
+
+						if(commentFilePath.getParent() == null) {
+							if(Util.getDefaultDirPath() == null) {
+								JOptionPane.showMessageDialog(ReceiveButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してみてください。");
+								return;
+							}
+							saveRootPath = Util.getDefaultDirPath();
+						} else {
+							saveRootPath = commentFilePath.getParent();
+						}
+
+						
 						setLabel(status);
 						
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
@@ -420,12 +431,13 @@ public class FileSharingPane extends JOptionPane {
 						setLabel(status = STATUS_CANCEL);
 						
 						String memberName = memberPanel.getMember();
-						Path savePath =  Util.getUniquePath(commentFilePath.getParent(), memberName);
+						Path savePath = Util.getUniquePath(saveRootPath, memberName);
+						
 						try {
 							Files.createDirectories(savePath);
 						} catch (IOException e) {
 							JOptionPane.showMessageDialog(ReceiveButton.this,
-									"保存用のディレクトリが作成できませんでした。\n" + savePath.toAbsolutePath() + "\n" + e.getMessage());
+									"保存用のフォルダが作成できませんでした。\n" + savePath.toAbsolutePath() + "\n" + e.getMessage());
 							initState();
 							return;
 						}
@@ -456,6 +468,7 @@ public class FileSharingPane extends JOptionPane {
 									return;
 								}
 								messagePanel.append("- 受信が完了しました\n");
+								messagePanel.append("- 保存先：" + savePath + "\n");
 								setLabel(status = STATUS_SEARCH);
 							}
 						});
@@ -491,6 +504,16 @@ public class FileSharingPane extends JOptionPane {
 					
 					switch (status) {
 					case STATUS_SEARCH:
+						if(commentFilePath.getParent() == null) {
+							JOptionPane.showMessageDialog(DistributeButton.this, "配布する観察結果をFishWatchrに読み込んでください。");
+							return;
+						}
+						messagePanel.append("- 次のファイルが配布対象です。\n");
+						messagePanel.append("-- " + commentFilePath.toString() + "\n");
+						if(mediaFilePath.getParent() != null) {
+							messagePanel.append("-- " + mediaFilePath.toString() + "\n");
+						}
+						
 						setLabel(status);
 						
 						messageReceiver = new PipeMessageReceiver(pipe, basePath,
@@ -612,6 +635,7 @@ public class FileSharingPane extends JOptionPane {
 		private static final long serialVersionUID = 1L;
 		private final String[] labels = {"相手を探索", "キャンセル", "収集を実行"};
 		private PipeMessageBroadcaster messageBroadcaster = null;
+		private Path saveRootPath = null;
 	
 		public CollectButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
 			setLabels(labels);
@@ -622,6 +646,16 @@ public class FileSharingPane extends JOptionPane {
 				public void actionPerformed(ActionEvent arg0) {
 					switch (status) {
 					case STATUS_SEARCH:
+						if(commentFilePath.getParent() == null) {
+							if(Util.getDefaultDirPath() == null) {
+								JOptionPane.showMessageDialog(CollectButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してみてください。");
+								return;
+							}
+							saveRootPath = Util.getDefaultDirPath().resolve(Util.getTimeStamp("yyyyMMdd_HHmmss"));
+						} else {
+							saveRootPath = commentFilePath.getParent().resolve(Util.getTimeStamp("yyyyMMdd_HHmmss"));
+						}
+						
 						setLabel(status);
 						
 						String basePath = pathField.getText();
@@ -676,17 +710,17 @@ public class FileSharingPane extends JOptionPane {
 								for(int i = 0; i < nSenders; i++) {
 									final int i2 = i;
 									MemberPanel memberPanel = memberListPanel.getMemberPanelAt(i);
-									String username = memberPanel.getMember();
-									Path savePath =  Util.getUniquePath(commentFilePath.getParent(), username);
+									String memberName = memberPanel.getMember();
+									Path savePath = Util.getUniquePath(saveRootPath, memberName);
+											
 									try {
 										Files.createDirectories(savePath);
 									} catch (IOException e) {
-										JOptionPane.showMessageDialog(CollectButton.this, "保存用のフォルダを作成できません。\n" + e.getMessage());
-										initState();
-										return;
+										messagePanel.append("保存用のフォルダを作成できません。\n" + memberName + "のファイルの保存処理をキャンセルします。\n");
+										continue;
 									}
 									
-									PipeMessage message = messageBroadcaster.getMap(username);
+									PipeMessage message = messageBroadcaster.getMap(memberName);
 									
 									var f = Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
 										@Override
@@ -700,6 +734,7 @@ public class FileSharingPane extends JOptionPane {
 													}
 												});
 											});
+											messagePanel.append("- 保存完了：" + memberName + ", " + savePath.toString() + "\n");
 
 											return null;
 										}
@@ -757,6 +792,15 @@ public class FileSharingPane extends JOptionPane {
 					
 					switch (status) {
 					case STATUS_SEARCH:
+						if(commentFilePath.getParent() == null) {
+							JOptionPane.showMessageDialog(SendButton.this, "送信する観察結果をFishWatchrに読み込んでください。");
+							return;
+						}
+						messagePanel.append("- 次のファイルが送信対象です。\n");
+						messagePanel.append("-- " + commentFilePath.toString() + "\n");
+						if(mediaFilePath.getParent() != null) {
+							messagePanel.append("-- " + mediaFilePath.toString() + "\n");
+						}
 						setLabel(status);
 						
 						messagePanel.append("- メンバーを探しています。\n");

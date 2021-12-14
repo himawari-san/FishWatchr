@@ -23,10 +23,13 @@ import java.io.File;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.plaf.basic.BasicHTML;
@@ -71,6 +74,10 @@ public class Util {
 		return System.getProperty("user.dir");  //$NON-NLS-1$
 	}
 	
+	public static Path getDefaultDirPath(){
+		return FileSystemView.getFileSystemView().getDefaultDirectory().toPath();
+	}
+	
 	
 	public static Path getUniquePath(Path basePath, String filename){
 
@@ -103,6 +110,11 @@ public class Util {
 	}
 	
 
+	public static String getTimeStamp(String pattern) {
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern));
+	}
+	
+	
 	public static String prettyPrintXML(Node doc){
     	// https://stackoverflow.com/questions/139076/how-to-pretty-print-xml-from-java
     	// answered by Lorenzo Boccaccia
