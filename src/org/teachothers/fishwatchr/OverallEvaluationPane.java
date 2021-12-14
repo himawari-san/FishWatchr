@@ -54,6 +54,8 @@ public class OverallEvaluationPane extends JOptionPane {
 			resultTabPane.add(new ResultPanel(evaluation));
 			resultTabPane.setTitleAt(nResultTabs++, evaluation.getEvaluatorName());
 		}
+		resultTabPane.add(new JPanel()); // dummy
+		resultTabPane.setTitleAt(nResultTabs++, "Summary");
 		
 		setMessage(mainTabPane);
 	}
