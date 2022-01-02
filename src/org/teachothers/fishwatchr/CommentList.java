@@ -390,7 +390,7 @@ public class CommentList extends ArrayList<Comment> {
 		expr = xpath.compile("/comment_list/evaluations/evaluation"); //$NON-NLS-1$
 		NodeList evaluationNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 		for (int i = 0; i < evaluationNodes.getLength(); i++) {
-			OverallEvaluation evaluation = OverallEvaluation.buildEvaluation((Element)evaluationNodes.item(i));
+			OverallEvaluation evaluation = new OverallEvaluation((Element)evaluationNodes.item(i));
 			if(evaluation != null) {
 				evaluations.put(evaluation.getEvaluatorName(), evaluation);
 			}
@@ -465,6 +465,11 @@ public class CommentList extends ArrayList<Comment> {
 	
 	public OverallEvaluation getEvaluation(String evaluatorName) {
 		return evaluations.get(evaluatorName);
+	}
+	
+	
+	public void setEvaluation(String evaluatorName, OverallEvaluation evaluation) {
+		evaluations.put(evaluatorName, evaluation);
 	}
 	
 	

@@ -5,14 +5,78 @@ import java.util.HashMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+
 public class OverallEvaluation {
+	public static final String TAG_EVALUATION = "evaluation";
+	public static final String TAG_CATEGORY1 = "target1";
+	public static final String TAG_CATEGORY2 = "target2";
+	public static final String[] TAG_CATEGORIES = {TAG_CATEGORY1, TAG_CATEGORY2};
+	public static final String TAG_COMMENT = "comment";
+	public static final String TAG_LI = "li";
+	public static final String ATTRIBUTE_EVALUATOR = "evaluator";
+	public static final String ATTRIBUTE_NAME = "name";
+	public static final String ATTRIBUTE_VALUE = "value";
+	public static final String ATTRIBUTE_COMMENT = "comment";
+	
 	private String evaluatorName = "";
 	private String comment = "";
-	private HashMap<String, String> target1 = new HashMap<String, String>();
-	private HashMap<String, String> target2 = new HashMap<String, String>();
+	private HashMap<String, EvaluationCategory> evaluationCategories = new HashMap<String, OverallEvaluation.EvaluationCategory>();
 
+	public OverallEvaluation() {
+		for(String categoryName : TAG_CATEGORIES) {
+			evaluationCategories.put(categoryName, new EvaluationCategory(categoryName));
+		}
+	}
+	
 	public OverallEvaluation(String evaluatorName) {
+		this();
 		this.evaluatorName = evaluatorName;
+	}
+	
+	public OverallEvaluation(Element evaluationElement) {
+		this();
+		evaluatorName = evaluationElement.getAttribute(ATTRIBUTE_EVALUATOR);
+		setValue(evaluationElement);
+	}
+
+	
+	public String[] getEvaluationNames(String categoryName) {
+		EvaluationCategory category = getEvaluationCategory(categoryName);
+		if(category == null) {
+			return new String[0];
+		} else {
+			return category.keySet().toArray(new String[0]);
+		}
+	}
+	
+	
+	public Evaluation getEvaluation(String categoryName, String evaluationName) {
+		return getCategory(categoryName).get(evaluationName);
+	}
+	
+	
+	public EvaluationCategory getEvaluationCategory(String categoryName) {
+		return getCategory(categoryName);
+	}
+
+	
+	private void setValue(Element evaluationElement) {
+
+		for(String categoryName : TAG_CATEGORIES) {
+			EvaluationCategory category = getCategory(categoryName);
+			category.setEvaluation(evaluationElement);
+		}
+
+		// comment
+		Element commentElement = Util.getFirstChild(evaluationElement, TAG_COMMENT);
+		String comment = commentElement.getTextContent();
+		comment = comment == null ? "" : comment.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+		setComment(comment);
+	}
+
+	
+	public EvaluationCategory getCategory(String name) {
+		return evaluationCategories.get(name);
 	}
 	
 	public String getEvaluatorName() {
@@ -27,60 +91,55 @@ public class OverallEvaluation {
 		this.comment = comment;
 	}
 
-	public void setTarget1(String key, String value) {
-		target1.put(key, value);
-	}
-
 	
-	public void setTarget2(String key, String value) {
-		target2.put(key, value);
-	}
-	
-	public String getTarget1(String key) {
-		return target1.get(key);
-	}
+	class EvaluationCategory extends HashMap<String, Evaluation>{
+		private static final long serialVersionUID = 1L;
+		String name;
 
-	public String getTarget2(String key) {
-		return target2.get(key);
-	}
-	
-	public static OverallEvaluation buildEvaluation(Element evaluationElement) {
-		
-		String evaluatorName = evaluationElement.getAttribute("evaluator");
-
-		Element target1Element = Util.getFirstChild(evaluationElement, "target1");
-		Element target2Element = Util.getFirstChild(evaluationElement, "target2");
-		Element commentElement = Util.getFirstChild(evaluationElement, "comment");
-
-		if(target1Element == null && target2Element == null) {
-			return null;
+		public EvaluationCategory(String name) {
+			this.name = name;
 		}
 		
-		OverallEvaluation evaluation = new OverallEvaluation(evaluatorName);
-		
-		NodeList target1Items = target1Element.getElementsByTagName("li");
-		NodeList target2Items = target2Element.getElementsByTagName("li");
-		
-		// target1
-		for(int i = 0; target1Items != null && i < target1Items.getLength(); i++) {
-			Element item = (Element)target1Items.item(i);
-			evaluation.setTarget1(item.getAttribute("name"), item.getAttribute("value"));
+		public void setEvaluation(Element evaluationElement) {
+			System.err.println("k:" + name);
+			Element categoryElement = Util.getFirstChild(evaluationElement, name);
+			NodeList categoryItems = categoryElement.getElementsByTagName(TAG_LI);
+
+			for(int i = 0; i < categoryItems.getLength(); i++) {
+				Element item = (Element)categoryItems.item(i);
+				String evaluationName = item.getAttribute(ATTRIBUTE_NAME);
+				String score = item.getAttribute(ATTRIBUTE_VALUE);
+				String comment = item.getAttribute(ATTRIBUTE_COMMENT);
+				
+				put(evaluationName, new Evaluation(evaluationName, score, comment));
+			}
 		}
-		
-		// target2
-		for(int i = 0; target2Items != null && i < target2Items.getLength(); i++) {
-			Element item = (Element)target2Items.item(i);
-			evaluation.setTarget2(item.getAttribute("name"), item.getAttribute("value"));
+	}
+	
+	
+	class Evaluation {
+		String name;
+		String  score;
+		String comment;
+
+		public Evaluation(String name, String score, String comment) {
+			this.name = name;
+			this.score = score;
+			this.comment = comment;
 		}
 
-		// comment
-		String comment = commentElement.getTextContent();
-		comment = comment == null ? "" : comment.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
-		evaluation.setComment(comment);
-		
-		
-		
+		public String getScore() {
+			return score;
+		}
 
-		return evaluation;
+		public void setScore(String score) {
+			this.score = score;
+		}
+		
+		public String getComment() {
+			return comment;
+		}
+		
+		
 	}
 }

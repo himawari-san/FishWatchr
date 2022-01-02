@@ -1,15 +1,15 @@
 package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
-import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -21,7 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 
 
 
@@ -63,7 +64,8 @@ public class OverallEvaluationPane extends JOptionPane {
 		resultTabPane.setTitleAt(nResultTabs++, "Summary");
 		
 		setMessage(mainTabPane);
-		setPreferredSize(new Dimension(600, 800));
+//		setPreferredSize(new Dimension(600, 800));
+		
 	}
 
 	class InputPanel extends JPanel {
@@ -71,139 +73,243 @@ public class OverallEvaluationPane extends JOptionPane {
 		private final Integer[] EVALUATION_SCALES = {2, 3, 4, 5, 6, 7, 8, 9, 10};
 		private static final int EVALUATION_SCALE_POINT = 3; // 5-points-scale
 		
-		private ArrayList<NPointScaleComboBox> evalComboBoxes = new ArrayList<NPointScaleComboBox>();
 		private JComboBox<Integer> evalScaleCB = new JComboBox<Integer>(EVALUATION_SCALES);
+		private UIEvalElements evalElementsLeft = new UIEvalElements();
+		private UIEvalElements evalElementsRight = new UIEvalElements();
 
 		public InputPanel() {
-			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			setLayout(new BorderLayout(5, 5));
 			
 			JPanel optionPanel = new JPanel();
+			JPanel evalPanel = new JPanel();
+			JPanel buttonPanel = new JPanel();
+			add(optionPanel, BorderLayout.NORTH);
+			add(evalPanel, BorderLayout.CENTER);
+			add(buttonPanel, BorderLayout.SOUTH);
+
+			optionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+			evalPanel.setLayout(new BorderLayout());
+			
+			evalPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
+
+			
+			// optionPanel
 			JLabel optionLabel = new JLabel("評価方法");
+			optionPanel.add(optionLabel);
+			optionPanel.add(evalScaleCB);
+			
 			evalScaleCB.setSelectedIndex(EVALUATION_SCALE_POINT);
 			evalScaleCB.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					updateComboBoxes();
+					int nScalePoints = (Integer)evalScaleCB.getSelectedItem();
+					evalElementsLeft.updateComboBox(nScalePoints);
+					evalElementsRight.updateComboBox(nScalePoints);
 				}
 			});
-			optionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			optionPanel.add(optionLabel);
-			optionPanel.add(evalScaleCB);
 			
-			JPanel evalLabelPanel = new JPanel();
-			JLabel evalLabel = new JLabel("評価項目");
-			evalLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			evalLabelPanel.add(evalLabel);
-			JPanel evalFormPanel = new JPanel();
-			int nItemsCommentType = commentTypes.size();
-			int nItemsDiscussor = discussers.size();
-			int nItems = nItemsCommentType > nItemsDiscussor ? nItemsCommentType : nItemsDiscussor;
-
-			JComponent[][] evalItems = new JComponent[nItems][7];
-			for(int i = 0; i < nItemsCommentType; i++) {
-				evalItems[i][0] = new JLabel(commentTypes.get(i).getType()); 
-				evalItems[i][1] = new NPointScaleComboBox((Integer)evalScaleCB.getSelectedItem());
-				evalItems[i][2] = new CommentButton("コメント");
-				evalItems[i][3] = new JLabel();
-				
-				evalComboBoxes.add((NPointScaleComboBox)evalItems[i][1]);
-			}
-			
-			for(int i = 0; i < nItemsDiscussor; i++) {
-				evalItems[i][4] = new JLabel(discussers.get(i).getName()); 
-				evalItems[i][5] = new NPointScaleComboBox((Integer)evalScaleCB.getSelectedItem());
-				evalItems[i][6] = new CommentButton("コメント");
-
-				evalComboBoxes.add((NPointScaleComboBox)evalItems[i][5]);
-			}
-			
-			GroupLayout gl2 = Util.getGroupLayout(evalItems, evalFormPanel);
-			evalFormPanel.setLayout(gl2);
-
-			JPanel commentLabelPanel = new JPanel();
-			commentLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			commentLabelPanel.add(new JLabel("総合コメント"));
-			JScrollPane commentScrollPane = new JScrollPane();
-			commentScrollPane.setViewportView(new JTextArea(10, 30));
-			
-			JPanel buttonPanel = new JPanel();
-			buttonPanel.add(new JButton("保存"));
-			
-			add(optionPanel);
-			add(evalLabelPanel);
-			add(evalFormPanel);
-			add(commentLabelPanel);
-			add(commentScrollPane);
-			add(buttonPanel);
-		}
 		
-		public void updateComboBoxes() {
-			evalComboBoxes.forEach((comboBox)->{
-				comboBox.setValues((Integer)evalScaleCB.getSelectedItem());
+			// evalPanel
+			JPanel evalScorePanel = new JPanel();
+			JPanel evalCommentPanel = new JPanel();
+			evalPanel.add(evalScorePanel, BorderLayout.CENTER);
+			evalPanel.add(evalCommentPanel, BorderLayout.SOUTH);
+
+			evalScorePanel.setLayout(new BorderLayout());
+			evalCommentPanel.setLayout(new BorderLayout());
+			
+			//// evalScorePanel
+			JLabel evalScoreLabel = new JLabel("評価項目");
+			JPanel evalFormPanel = new JPanel();
+			evalScorePanel.add(evalScoreLabel, BorderLayout.NORTH);
+			evalScorePanel.add(evalFormPanel, BorderLayout.CENTER);
+			
+			JPanel evalFormPanelLeft = new JPanel();
+			JPanel evalFormPanelRight = new JPanel();
+			evalFormPanel.add(evalFormPanelLeft);
+			evalFormPanel.add(evalFormPanelRight);
+			evalFormPanel.setLayout(new GridLayout(1, 2));
+
+			int nItemsCommentType = commentTypes.size();
+			for(int i = 0; i < nItemsCommentType; i++) {
+				UIEvalElement uie = new UIEvalElement(commentTypes.get(i).getType(), (Integer)evalScaleCB.getSelectedItem());
+				evalElementsLeft.add(uie);
+			}
+			GroupLayout gl2 = Util.getGroupLayout(evalElementsLeft.buildUIArray(), evalFormPanelLeft);
+			evalFormPanelLeft.setLayout(gl2);
+
+			int nItemsDiscussor = discussers.size();
+			for(int i = 0; i < nItemsDiscussor; i++) {
+				UIEvalElement uie = new UIEvalElement(discussers.get(i).getName(), (Integer)evalScaleCB.getSelectedItem());
+				evalElementsRight.add(uie);
+			}
+			GroupLayout gl3 = Util.getGroupLayout(evalElementsRight.buildUIArray(), evalFormPanelRight);
+			evalFormPanelRight.setLayout(gl3);
+			
+			//// evalCommentPanel
+			JScrollPane commentScrollPane = new JScrollPane();
+			evalCommentPanel.add(new JLabel("総合コメント"), BorderLayout.NORTH);
+			evalCommentPanel.add(commentScrollPane, BorderLayout.CENTER);
+			commentScrollPane.setViewportView(new JTextArea(10, 30));
+
+
+			// buttonPanel
+			JButton saveButton = new JButton("保存");
+			saveButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+				}
 			});
+			buttonPanel.add(saveButton);
 		}
 		
 	}
 
 	
+	class UIEvalElement {
+		public static final int N_ELEMENTS = 3;
+		
+		String name;
+		JLabel label;
+		NPointScaleComboBox comboBox;
+		CommentButton button;
+		
+		public UIEvalElement(String name, int nScalePoints){
+			this.name = name;
+			this.label = new JLabel(name);
+			this.comboBox = new NPointScaleComboBox(nScalePoints);
+			this.button = new CommentButton("コメント");
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public void setEvaluation(OverallEvaluation.Evaluation evaluation) {
+			comboBox.setFixedValue(evaluation.getScore());
+			button.setComment(evaluation.getComment());
+		}
+		
+		
+		public void setScalePoints(int n) {
+			comboBox.setValues(n);
+		}
+		
+		
+		public JComponent[] buildUIArray() {
+			JComponent[] components = new JComponent[N_ELEMENTS];
+			components[0] = label;
+			components[1] = comboBox;
+			components[2] = button;
+
+			return components;
+		}
+	}
+	
+	
+	class UIEvalElements extends HashMap<String, UIEvalElement> {
+		private static final long serialVersionUID = 1L;
+
+
+		public void add(UIEvalElement uiEvalElement) {
+			put(uiEvalElement.getName(), uiEvalElement);
+		}
+		
+		
+		public JComponent[][] buildUIArray() {
+			int n = size();
+
+			JComponent[][] components = new JComponent[n][];
+
+			int i = 0;
+			for(UIEvalElement element : values()) {
+				components[i++] = element.buildUIArray(); 
+			}
+
+			return components;
+		}
+		
+		public void updateComboBox(int nScalePoints) {
+			values().forEach((element)->{
+				element.setScalePoints(nScalePoints);
+			});
+		}
+	}
+	
 	class ResultPanel extends JPanel {
 		private static final long serialVersionUID = 1L;
 
-		public ResultPanel(OverallEvaluation evaluation) {
-			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-			
-			JPanel evalLabelPanel = new JPanel();
-			JLabel evalLabel = new JLabel("評価項目");
-			evalLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			evalLabelPanel.add(evalLabel);
-			JPanel evalFormPanel = new JPanel();
-			int nItemsCommentType = commentTypes.size();
-			int nItemsDiscussor = discussers.size();
-			int nItems = nItemsCommentType > nItemsDiscussor ? nItemsCommentType : nItemsDiscussor;
-			
-			Random r = new Random();
-			JComponent[][] evalItems = new JComponent[nItems][7];
-			for(int i = 0; i < nItemsCommentType; i++) {
-				String item = commentTypes.get(i).getType();
-				evalItems[i][0] = new JLabel(item); 
-				evalItems[i][0].setMaximumSize(new Dimension(Short.MAX_VALUE, evalItems[i][0].getMaximumSize().height));
-				evalItems[i][1] = new JLabel(evaluation.getTarget1(item));
-				evalItems[i][1].setMaximumSize(new Dimension(Short.MAX_VALUE, evalItems[i][1].getMaximumSize().height));
-				evalItems[i][2] = new CommentButton("コメント");
-				evalItems[i][3] = new JLabel();
-			}
-			
-			for(int i = 0; i < nItemsDiscussor; i++) {
-				String item = discussers.get(i).getName();
-				evalItems[i][4] = new JLabel(item);
-				evalItems[i][4].setMaximumSize(new Dimension(Short.MAX_VALUE, evalItems[i][3].getMaximumSize().height));
-				evalItems[i][5] = new JLabel(String.valueOf(r.nextInt(5)+1));
-				evalItems[i][5].setMaximumSize(new Dimension(Short.MAX_VALUE, evalItems[i][4].getMaximumSize().height));
-				evalItems[i][6] = new CommentButton("コメント");
-			}
-			
-			GroupLayout gl2 = Util.getGroupLayout(evalItems, evalFormPanel);
-			evalFormPanel.setLayout(gl2);
+		private UIEvalElements evalElementsLeft = new UIEvalElements();
+		private UIEvalElements evalElementsRight = new UIEvalElements();
 
-			JPanel commentLabelPanel = new JPanel();
-			commentLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-			JLabel commentLabel = new JLabel("コメント");
-			commentLabelPanel.add(commentLabel);
-			JScrollPane commentScrollPane = new JScrollPane();
-			JTextArea coomentArea = new JTextArea(evaluation.getComment(), 10, 30);
-			commentScrollPane.setViewportView(coomentArea);
-			JPanel dummy = new JPanel();
-			JPanel grue = new JPanel();
-			grue.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-			dummy.add(grue);
+		public ResultPanel(OverallEvaluation overallEvaluation) {
+			GridBagLayout gbl = new GridBagLayout();
+			GridBagConstraints gbc = new GridBagConstraints();
+			setLayout(gbl);
 			
-			add(commentLabelPanel);
-			add(commentScrollPane);
-			add(evalLabelPanel);
-			add(evalFormPanel);
-			add(dummy);
+			JPanel commentPanel = new JPanel();
+			commentPanel.setLayout(new BorderLayout(2, 4));
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.weightx = 0d;
+			gbc.weighty = 0d;
+			gbc.anchor = GridBagConstraints.NORTHWEST;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbl.setConstraints(commentPanel, gbc);
+			add(commentPanel);
+			JLabel commentLabel = new JLabel("総合コメント");
+			commentPanel.add(commentLabel, BorderLayout.NORTH);
+
+			JScrollPane commentScrollPane = new JScrollPane();
+			JTextArea commentArea = new JTextArea(10, 30);
+			commentArea.setText(overallEvaluation.getComment());
+			commentScrollPane.setViewportView(commentArea);
+			commentPanel.add(commentScrollPane, BorderLayout.CENTER);
+			commentPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
+
+			JPanel evalPanel = new JPanel();
+			evalPanel.setLayout(new BorderLayout());
+			evalPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
+			gbc.gridx = 0;
+			gbc.gridy = 1;
+			gbc.weightx = 1.0d;
+			gbc.weighty = 1.0d;
+			gbc.anchor = GridBagConstraints.SOUTHWEST;
+			gbc.fill = GridBagConstraints.BOTH;
+			gbl.setConstraints(evalPanel, gbc);
+			add(evalPanel);
+			
+			JLabel evalLabel = new JLabel("評価項目");
+			evalPanel.add(evalLabel, BorderLayout.NORTH);
+
+			JPanel evalFormPanel = new JPanel();
+			evalFormPanel.setLayout(new GridLayout(1, 2));
+			evalPanel.add(evalFormPanel, BorderLayout.CENTER);
+			
+			JPanel evalFormPanelLeft = new JPanel();
+			JPanel evalFormPanelRight = new JPanel();
+			evalFormPanel.add(evalFormPanelLeft);
+			evalFormPanel.add(evalFormPanelRight);
+			
+			for(String evaluationName : overallEvaluation.getEvaluationNames(OverallEvaluation.TAG_CATEGORY1)) {
+				UIEvalElement uie = new UIEvalElement(evaluationName, 0);
+				uie.setEvaluation(overallEvaluation.getEvaluation(OverallEvaluation.TAG_CATEGORY1, evaluationName));
+				evalElementsLeft.add(uie);
+			}
+			GroupLayout gl2 = Util.getGroupLayout(evalElementsLeft.buildUIArray(), evalFormPanelLeft);
+			evalFormPanelLeft.setLayout(gl2);
+
+			for(String evaluationName : overallEvaluation.getEvaluationNames(OverallEvaluation.TAG_CATEGORY2)) {
+				UIEvalElement uie = new UIEvalElement(evaluationName, 0);
+				uie.setEvaluation(overallEvaluation.getEvaluation(OverallEvaluation.TAG_CATEGORY2, evaluationName));
+				evalElementsRight.add(uie);
+			}
+			GroupLayout gl3 = Util.getGroupLayout(evalElementsRight.buildUIArray(), evalFormPanelRight);
+			evalFormPanelRight.setLayout(gl3);
 		}
 	}
+
 	
 	class CommentButton extends JButton {
 
@@ -225,12 +331,18 @@ public class OverallEvaluationPane extends JOptionPane {
 				}
 			});
 		}
+
+		
+		public void setComment(String comment) {
+			textArea.setText(comment);
+		}
 		
 		public String getComment() {
 			return textArea.getText();
 		}
 	}
 	
+
 	
 	class NPointScaleComboBox extends JComboBox<String> {
 
@@ -239,6 +351,9 @@ public class OverallEvaluationPane extends JOptionPane {
 
 		public NPointScaleComboBox(int n) {
 			setValues(n);
+			if(n < 2) {
+				setEditable(false);
+			}
 		}
 		
 		public void setValues(int n) {
@@ -251,7 +366,14 @@ public class OverallEvaluationPane extends JOptionPane {
 			model.addElement(UNENTERED_LABEL);
 			model.addAll(scale);
 		}
-
+		
+		public void setFixedValue(String n) {
+			if(getItemCount() == 1) {
+				DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)getModel();
+				model.removeAllElements();
+				model.addElement(n);
+			}
+			// TODO
+		}
 	}
-
 }
