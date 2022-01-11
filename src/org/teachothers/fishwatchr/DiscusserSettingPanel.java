@@ -42,7 +42,7 @@ public class DiscusserSettingPanel extends JPanel {
 		discusserNames = new JTextField[maxDiscussers];
 		newDiscussers = new String[maxDiscussers];
 		for(int i = 0; i < maxDiscussers; i++){
-			newDiscussers[i] = i < discussers.size() ? discussers.get(i).getName() : USER_NOT_DEFINED;
+			newDiscussers[i] = i < discussers.size() ? discussers.get(i).getUserName() : USER_NOT_DEFINED;
 		}
 		ginit();
 	}
@@ -53,7 +53,7 @@ public class DiscusserSettingPanel extends JPanel {
 		for(int i = 0; i < maxDiscussers; i++){
 			discusserNames[i] = new JTextField();
 			if(discussers.size() > i){
-				discusserNames[i].setText(discussers.get(i).getName());
+				discusserNames[i].setText(discussers.get(i).getUserName());
 			} else {
 				discusserNames[i].setText(USER_NOT_DEFINED);
 			}			
@@ -76,13 +76,13 @@ public class DiscusserSettingPanel extends JPanel {
 				invalidItems.add(discusserNames[i].getText());
 				continue;
 			} else {
-				discussers.get(c++).setName(discusserNames[i].getText());
+				discussers.get(c++).setUserName(discusserNames[i].getText());
 			} 
 		}
 		
 		// 空欄の部分
 		for(int i = c; i < discussers.size(); i++){
-			discussers.get(i).setName(""); //$NON-NLS-1$
+			discussers.get(i).setUserName(""); //$NON-NLS-1$
 		}
 
 		return StringUtils.join(invalidItems, ", "); //$NON-NLS-1$

@@ -364,9 +364,9 @@ public class CommentTable extends JTable {
 		if(iCurrentComment != -1 && ctm.getFilteredCommentList().size() > iCurrentComment){
 			currentCommentBuffer.setLength(0);
 			Comment currentComment = ctm.getFilteredCommentList().get(iCurrentComment);
-			currentCommentBuffer.append(currentComment.getDiscusser().getName() + "("); //$NON-NLS-1$
+			currentCommentBuffer.append(currentComment.getDiscusser().getUserName() + "("); //$NON-NLS-1$
 			currentCommentBuffer.append(currentComment.getCommentType().getType() + "), "); //$NON-NLS-1$
-			currentCommentBuffer.append(currentComment.getCommenter().getName() + ": "); //$NON-NLS-1$
+			currentCommentBuffer.append(currentComment.getCommenter().getUserName() + ": "); //$NON-NLS-1$
 			currentCommentBuffer.append(currentComment.getCommentBody());
 			return currentCommentBuffer.toString();
 		} else {

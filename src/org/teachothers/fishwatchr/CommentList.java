@@ -210,7 +210,7 @@ public class CommentList extends ArrayList<Comment> {
 		// discussers settings
 		ow.write("  <discussers>\n"); //$NON-NLS-1$
 		for (int i = 0; i < discussers.size(); i++) {
-			ow.write("    <li name=\"" + discussers.get(i).getName() //$NON-NLS-1$
+			ow.write("    <li name=\"" + discussers.get(i).getUserName() //$NON-NLS-1$
 					+ "\" />\n"); //$NON-NLS-1$
 		}
 		ow.write("  </discussers>\n"); //$NON-NLS-1$
@@ -223,8 +223,8 @@ public class CommentList extends ArrayList<Comment> {
 			}
 			setStr.put(setName, setValue + "    <comment" + " date=\"" //$NON-NLS-1$ //$NON-NLS-2$
 					+ dateFormat.format(comment.getDate()) + "\"" //$NON-NLS-1$
-					+ " commenter=\"" + comment.getCommenter().getName() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
-					+ " discusser=\"" + comment.getDiscusser().getName() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
+					+ " commenter=\"" + comment.getCommenter().getUserName() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
+					+ " discusser=\"" + comment.getDiscusser().getUserName() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
 					+ " comment_type=\"" //$NON-NLS-1$
 					+ comment.getCommentType().getType() + "\"" //$NON-NLS-1$
 					+ " comment_time=\"" + comment.getCommentTime() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
@@ -283,7 +283,7 @@ public class CommentList extends ArrayList<Comment> {
 
 			// discussers 初期化
 			for (User discusser : discussers) {
-				discusser.setName(""); //$NON-NLS-1$
+				discusser.setUserName(""); //$NON-NLS-1$
 			}
 			
 			evaluations.clear();
@@ -372,11 +372,11 @@ public class CommentList extends ArrayList<Comment> {
 			flagRegister = false;
 			for (int j = 0; j < discussers.size(); j++) {
 				User discusser = discussers.get(j);
-				if (discusser.getName().equals(discusserName)) {
+				if (discusser.getUserName().equals(discusserName)) {
 					flagRegister = true;
 					break;
-				} else if (discusser.getName().isEmpty()) {
-					discusser.setName(discusserName);
+				} else if (discusser.getUserName().isEmpty()) {
+					discusser.setUserName(discusserName);
 					flagRegister = true;
 					break;
 				}
@@ -442,8 +442,8 @@ public class CommentList extends ArrayList<Comment> {
 					comment.setCommentTimeEnd(commentTimeEnd);
 				add(comment);
 				
-				OverallEvaluation evaluation = getEvaluation(commenter.getName());
-				evaluation = evaluation == null ? new OverallEvaluation(commenter.getName()) : evaluation;
+				OverallEvaluation evaluation = getEvaluation(commenter.getUserName());
+				evaluation = evaluation == null ? new OverallEvaluation(commenter.getUserName()) : evaluation;
 				
 			}
 		}
@@ -786,9 +786,9 @@ public class CommentList extends ArrayList<Comment> {
 				setName = setName.replaceFirst("\\.[^\\.]+$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
-		if(!setName.endsWith("_" + commenter.getName())){ //$NON-NLS-1$
+		if(!setName.endsWith("_" + commenter.getUserName())){ //$NON-NLS-1$
 			// 末尾にユーザ名がついていなければ，追加
-			setName += "_" + commenter.getName(); //$NON-NLS-1$
+			setName += "_" + commenter.getUserName(); //$NON-NLS-1$
 		}
 		// ファイル名冒頭のシステム名を削除
 		setName = setName.replaceFirst("^" + FishWatchr.SYSTEM_NAME.toLowerCase(), ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -861,9 +861,9 @@ public class CommentList extends ArrayList<Comment> {
 	class UserComparator implements Comparator<User> {
 
 	    public int compare(User a, User b) {
-	    	if(a.getName().isEmpty()) return 1;
-	    	if(b.getName().isEmpty()) return -1;
-	    	return a.getName().compareTo(b.getName());
+	    	if(a.getUserName().isEmpty()) return 1;
+	    	if(b.getUserName().isEmpty()) return -1;
+	    	return a.getUserName().compareTo(b.getUserName());
 	    }
 	}
 	

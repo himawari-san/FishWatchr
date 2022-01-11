@@ -102,7 +102,7 @@ public class CommentButton extends JButton {
 
 	// 観察対象優先
 	public CommentButton(CommentTableModel ctm, SoundPlayer soundPlayer, boolean isMultiAnnotation, User discusser, ArrayList<CommentType> commentTypes, User commenter) {
-		super(discusser.getName());
+		super(discusser.getUserName());
 		this.ctm = ctm;
 		this.commenter = commenter;
 		this.commentTypes = commentTypes;
@@ -209,7 +209,7 @@ public class CommentButton extends JButton {
 		} else if(buttonType == BUTTON_TYPE_DISCUSSER){
 			CommentType commentType = new CommentType("", Color.BLACK); //$NON-NLS-1$
 			if (isTempMultiAnnotation) {
-				ButtonDialog dialog = new ButtonDialog(ctm.getColumnName(Comment.F_COMMENT_TARGET) + Messages.getString("CommentButton.1") + discusser.getName() + ")", commentTypes);  //$NON-NLS-1$//$NON-NLS-2$
+				ButtonDialog dialog = new ButtonDialog(ctm.getColumnName(Comment.F_COMMENT_TARGET) + Messages.getString("CommentButton.1") + discusser.getUserName() + ")", commentTypes);  //$NON-NLS-1$//$NON-NLS-2$
 				dialog.setModal(true);
 				dialog.setLocationRelativeTo(this);
 				dialog.setVisible(true);

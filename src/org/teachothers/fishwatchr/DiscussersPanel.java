@@ -61,8 +61,8 @@ public class DiscussersPanel extends JPanel {
 	public void updateCompoments(){
 		for (int i = 0; i < markPanels.length; i++) {
 			if(i < discussers.size()){
-				userNameLabels[i].setText(discussers.get(i).getName());
-				markPanels[i].setUserName(discussers.get(i).getName());
+				userNameLabels[i].setText(discussers.get(i).getUserName());
+				markPanels[i].setUserName(discussers.get(i).getUserName());
 			} else {
 				userNameLabels[i].setText(USER_NOT_UNDEFINED);
 				markPanels[i].setUserName(""); //$NON-NLS-1$
@@ -78,8 +78,8 @@ public class DiscussersPanel extends JPanel {
 			JPanel discusserPanel = new JPanel();
 			discusserPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, DISCUSSION_PANEL_MAX_HEIGHT));
 			discusserPanel.setLayout(new BorderLayout());
-			String discusserName = (i < discussers.size() && !discussers.get(i).getName().isEmpty())
-					? discussers.get(i).getName() : USER_NOT_UNDEFINED;
+			String discusserName = (i < discussers.size() && !discussers.get(i).getUserName().isEmpty())
+					? discussers.get(i).getUserName() : USER_NOT_UNDEFINED;
 			userNameLabels[i] = new JLabel(discusserName);
 			// why min_value?
 			userNameLabels[i].setPreferredSize(new Dimension(USERNAME_LABEL_MAX_WIDTH, Integer.MIN_VALUE));

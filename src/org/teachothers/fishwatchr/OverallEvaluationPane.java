@@ -140,7 +140,7 @@ public class OverallEvaluationPane extends JOptionPane {
 
 			int nItemsDiscussor = discussers.size();
 			for(int i = 0; i < nItemsDiscussor; i++) {
-				UIEvalElement uie = new UIEvalElement(discussers.get(i).getName(), (Integer)evalScaleCB.getSelectedItem());
+				UIEvalElement uie = new UIEvalElement(discussers.get(i).getUserName(), (Integer)evalScaleCB.getSelectedItem());
 				evalElementsRight.add(uie);
 			}
 			GroupLayout gl3 = Util.getGroupLayout(evalElementsRight.buildUIArray(), evalFormPanelRight);

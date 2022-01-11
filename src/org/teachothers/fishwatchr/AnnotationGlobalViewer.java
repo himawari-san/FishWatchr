@@ -329,7 +329,7 @@ public class AnnotationGlobalViewer extends JPanel {
 	public void updatePanel(){
 		discusserNames.clear();
 		for(User discusser: discussers){
-			String name = discusser.getName();
+			String name = discusser.getUserName();
 			if(!discusserNames.contains(name)){
 				discusserNames.add(name);
 			}
@@ -346,9 +346,9 @@ public class AnnotationGlobalViewer extends JPanel {
 		ArrayList<Comment> filteredCommentList = ctm.getFilteredCommentList();
 		commenterNames.clear();
 		for(Comment comment : filteredCommentList){
-			String name = comment.getCommenter().getName();
+			String name = comment.getCommenter().getUserName();
 			if(!commenterNames.contains(name)){
-				commenterNames.add(comment.getCommenter().getName());
+				commenterNames.add(comment.getCommenter().getUserName());
 			}
 		}
 		Collections.sort(commenterNames);
@@ -500,13 +500,13 @@ public class AnnotationGlobalViewer extends JPanel {
 					targetCond = null;
 					break;
 				case COMPARISON_COMMENTER:
-					targetCond = targetComment.getCommenter().getName();
+					targetCond = targetComment.getCommenter().getUserName();
 					break;
 				case COMPARISON_LABEL:
 					targetCond = targetComment.getCommentType().getType();
 					break;
 				case COMPARISON_DISCUSSER:
-					targetCond = targetComment.getDiscusser().getName();
+					targetCond = targetComment.getDiscusser().getUserName();
 				}
 
 
@@ -518,13 +518,13 @@ public class AnnotationGlobalViewer extends JPanel {
 						cond = null;
 						break;
 					case COMPARISON_COMMENTER:
-						cond = comment.getCommenter().getName();
+						cond = comment.getCommenter().getUserName();
 						break;
 					case COMPARISON_LABEL:
 						cond = comment.getCommentType().getType();
 						break;
 					case COMPARISON_DISCUSSER:
-						cond = comment.getDiscusser().getName();
+						cond = comment.getDiscusser().getUserName();
 					}
 
 					if(commentList.unifiedCommentTime(comment) - targetCommentTime < focusedRange){
@@ -543,13 +543,13 @@ public class AnnotationGlobalViewer extends JPanel {
 						cond = null;
 						break;
 					case COMPARISON_COMMENTER:
-						cond = comment.getCommenter().getName();
+						cond = comment.getCommenter().getUserName();
 						break;
 					case COMPARISON_LABEL:
 						cond = comment.getCommentType().getType();
 						break;
 					case COMPARISON_DISCUSSER:
-						cond = comment.getDiscusser().getName();
+						cond = comment.getDiscusser().getUserName();
 					}
 
 					if(targetCommentTime - commentList.unifiedCommentTime(comment) < focusedRange){
@@ -599,7 +599,7 @@ public class AnnotationGlobalViewer extends JPanel {
 
 				switch (targetSelector.getSelectedIndex()){
 				case VIEW_TYPE_SPEAKER:
-					discusserName = comment.getDiscusser().getName();
+					discusserName = comment.getDiscusser().getUserName();
 					g.fillRect(x, y0AnnotationViewerPanel + discusserNames.indexOf(discusserName)*itemHeight, markWidth, markHeight);
 					break;
 				case VIEW_TYPE_LABEL:
@@ -607,7 +607,7 @@ public class AnnotationGlobalViewer extends JPanel {
 					g.fillRect(x, y0AnnotationViewerPanel + types.indexOf(commentType)*itemHeight , markWidth, markHeight);
 					break;
 				case VIEW_TYPE_COMMENTER:
-					commenterName = comment.getCommenter().getName();
+					commenterName = comment.getCommenter().getUserName();
 					g.fillRect(x, y0AnnotationViewerPanel + commenterNames.indexOf(commenterName)*itemHeight , markWidth, markHeight);
 					break;
 				}

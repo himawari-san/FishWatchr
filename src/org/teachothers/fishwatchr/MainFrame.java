@@ -22,7 +22,9 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyEventPostProcessor;
@@ -73,6 +75,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -84,6 +87,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -196,7 +200,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemControlPlayRateDown;
 	private JMenuItem jMenuItemControlPlayRateReset;
 	private JMenu jMenuAnnotation;
-	private JMenuItem jMenuItemAnnotationYourName;
+	private JMenuItem jMenuItemAnnotationAnnotator;
 	private JMenuItem jMenuItemAnnotationDiscussers;
 	private JMenuItem jMenuItemAnnotationAnnotation;
 	private JMenuItem jMenuItemAnnotationOrderDiscusser;
@@ -598,7 +602,7 @@ public class MainFrame extends JFrame {
 		getContentPane().add(displayPanel, BorderLayout.CENTER);
 		getContentPane().add(commentPanel, BorderLayout.SOUTH);
 		soundRecordButton.setForeground(Color.red);
-		commentTable.setAnnotator(commenter.getName());
+		commentTable.setAnnotator(commenter.getUserName());
 		
 		String strEnableAutoFillAnnotatorName = config.getFirstNodeAsString("/settings/enableAutoFillAnnotatorName/@value"); //$NON-NLS-1$
 		if(strEnableAutoFillAnnotatorName == null
@@ -1214,7 +1218,7 @@ public class MainFrame extends JFrame {
 
 		if (commentList.isModified() || (!xf.isEmpty() && !(new File(xf).exists()))) {
 			if(xf.isEmpty()){
-				xf = userHomeDir + File.separator + "fw_" + commenter.getName() + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
+				xf = userHomeDir + File.separator + "fw_" + commenter.getUserName() + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
 				System.err.println("Warning(MainFrame): No filename found. Save the data to the following file.\n" + xf);  //$NON-NLS-1$
 			}
 			
@@ -2144,7 +2148,7 @@ public class MainFrame extends JFrame {
 //							String pipeServer = "http://160.16.218.34/";
 							String pipeServer = "http://localhost:8080/";
 //							String pipeServer = "https://piping-server-test.herokuapp.com/";
-							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getName(), Paths.get(xf), Paths.get(mf));
+							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getUserName(), Paths.get(xf), Paths.get(mf));
 							JDialog d = fsp.createDialog("ファイル共有");
 							d.setVisible(true);
 							Object selectedValue = fsp.getValue();
@@ -2454,7 +2458,7 @@ public class MainFrame extends JFrame {
 		if (jMenuAnnotation == null) {
 			jMenuAnnotation = new JMenu();
 			jMenuAnnotation.setText(Messages.getString("MainFrame.96")); //$NON-NLS-1$
-			jMenuAnnotation.add(getJMenuItemAnnotationYourName());
+			jMenuAnnotation.add(getJMenuItemAnnotationAnnotator());
 			jMenuAnnotation.add(getJMenuItemAnnotationDiscussers());
 			jMenuAnnotation.add(getJMenuItemAnnotationAnnotation());
 			jMenuAnnotation.addSeparator();
@@ -2487,7 +2491,7 @@ public class MainFrame extends JFrame {
 		int i = 0;
 		if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
 			for (User discusser : discussers) {
-				if (!discusser.getName().isEmpty()) {
+				if (!discusser.getUserName().isEmpty()) {
 					final CommentButton newCommentButton = new CommentButton(ctm,
 							soundPlayer, isAnnotationMulti,
 							discusser, commentTypes, commenter);
@@ -2622,34 +2626,84 @@ public class MainFrame extends JFrame {
 
 	}
 
-	private JMenuItem getJMenuItemAnnotationYourName() {
-		if (jMenuItemAnnotationYourName == null) {
-			jMenuItemAnnotationYourName = new JMenuItem(ctm.getColumnName(Comment.F_ANNOTATOR) + Messages.getString("MainFrame.100")); //$NON-NLS-1$
-			jMenuItemAnnotationYourName
+	private JMenuItem getJMenuItemAnnotationAnnotator() {
+		if (jMenuItemAnnotationAnnotator == null) {
+			jMenuItemAnnotationAnnotator = new JMenuItem(Messages.getString("MainFrame.100")); //$NON-NLS-1$
+			jMenuItemAnnotationAnnotator
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							String currentCommenterName = commenter.getName() == null ? Messages.getString("MainFrame.101") //$NON-NLS-1$
-									: commenter.getName();
-							String inputValue = JOptionPane.showInputDialog(
-									MainFrame.this, Messages.getString("MainFrame.102") //$NON-NLS-1$
-											+ currentCommenterName, ctm.getColumnName(Comment.F_ANNOTATOR) + Messages.getString("MainFrame.103"), //$NON-NLS-1$
-									JOptionPane.PLAIN_MESSAGE);
-							if(inputValue == null){
-								// do nothing if canceled
-							} else if(inputValue.isEmpty()){
-								JOptionPane.showMessageDialog(null, ctm.getColumnName(Comment.F_ANNOTATOR) + Messages.getString("MainFrame.104")); //$NON-NLS-1$
-							} else if(inputValue.matches(".*[\\s<>/&'\"].*")){ //$NON-NLS-1$
-								JOptionPane.showMessageDialog(null, inputValue + Messages.getString("MainFrame.105")); //$NON-NLS-1$
-							} else {
-								commenter.setName(inputValue);
-								commentTable.setAnnotator(commenter.getName());
-							}
+							setAnnotatorInfomation();
 						}
 					});
 		}
-		return jMenuItemAnnotationYourName;
+		return jMenuItemAnnotationAnnotator;
+	}
+	
+	
+	private void setAnnotatorInfomation() {
+		AnnotatorOptionPane userOptionPane = new AnnotatorOptionPane(commenter);
+		JDialog dialog = userOptionPane.createDialog(MainFrame.this, "注釈者情報");
+		dialog.setVisible(true);
+		dialog.setModal(true);
+		
+		Object selectedValue = userOptionPane.getValue();
+		if(selectedValue == null || ((Integer)selectedValue).intValue() == JOptionPane.CANCEL_OPTION) {
+			return;
+		}
+		
+		String annotatorName = userOptionPane.getAnnotatorName();
+		if(annotatorName.isEmpty()) {
+			JOptionPane.showMessageDialog(null, ctm.getColumnName(Comment.F_ANNOTATOR) + Messages.getString("MainFrame.104")); //$NON-NLS-1$
+			return;
+		} else if(annotatorName.matches(".*[\\s<>/&'\"].*")){ //$NON-NLS-1$
+			JOptionPane.showMessageDialog(null, annotatorName + Messages.getString("MainFrame.105")); //$NON-NLS-1$
+			return;
+		}
+		
+		String groupName = userOptionPane.getGroupName();
+		if(groupName.matches(".*[\\s<>/&'\"].*")){ //$NON-NLS-1$
+			JOptionPane.showMessageDialog(null, groupName + Messages.getString("MainFrame.105")); //$NON-NLS-1$
+			return;
+		}
+
+
+		commenter.setUserName(annotatorName);
+		commenter.setGroupName(groupName);
+		commentTable.setAnnotator(annotatorName);
+	
 	}
 
+	
+	private class AnnotatorOptionPane extends JOptionPane {
+
+		private static final long serialVersionUID = 1L;
+		private JTextField userNameField = new JTextField(15);
+		private JTextField groupNameField = new JTextField(15);
+
+		public AnnotatorOptionPane(User user) {
+			JPanel mainPanel = new JPanel();
+			mainPanel.setLayout(new GridLayout(2, 2, 2, 5));
+			mainPanel.add(new JLabel("注釈者名:"));
+			userNameField.setText(user.getUserName());
+			mainPanel.add(userNameField);
+			mainPanel.add(new JLabel("グループ名:"));
+			groupNameField.setText(user.getGroupName());
+			mainPanel.add(groupNameField);
+			setMessage(mainPanel);
+			setOptionType(JOptionPane.OK_CANCEL_OPTION);
+		}
+		
+		public String getAnnotatorName() {
+			return userNameField.getText();
+		}
+
+		public String getGroupName() {
+			return groupNameField.getText();
+		}
+	}
+	
+	
+	
 	private JMenuItem getJMenuItemAnnotationDiscussers() {
 		if (jMenuItemAnnotationDiscussers == null) {
 			jMenuItemAnnotationDiscussers = new JMenuItem(ctm.getColumnName(Comment.F_COMMENT_TARGET));
@@ -2797,7 +2851,7 @@ public class MainFrame extends JFrame {
 					headers[i] = ctm.getColumnName(iSelectedColumns[i]);
 				}
 
-				DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, commenter.getName());
+				DataCounter dc = new DataCounter(ctm.getFilteredCommentList(), iSelectedColumns, commenter.getUserName());
 				ArrayList<Object[]> results = dc.getSummary(mode);
 				if(results.size() == 0){
 					JOptionPane.showMessageDialog(null,  Messages.getString("MainFrame.114")); //$NON-NLS-1$

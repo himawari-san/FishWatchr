@@ -60,7 +60,7 @@ public class MarkPanel extends JPanel {
 			Comment comment = filteredCommentList.get(--p);
 			User discusser = comment.getDiscusser();
 			CommentType commentType = comment.getCommentType();
-			if (discusser == null || !userName.equals(comment.getDiscusser().getName())) {
+			if (discusser == null || !userName.equals(comment.getDiscusser().getUserName())) {
 				continue;
 			}
 			int frame = (int)(commentList.unifiedCommentTime(comment) / frameLength);

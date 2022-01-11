@@ -81,7 +81,7 @@ public class DataCounter {
 		for(Comment comment : comments){
 			
 			if(mode == SUMMARY_MODE_SELF){
-				if(!comment.getCommenter().getName().equals(username)){
+				if(!comment.getCommenter().getUserName().equals(username)){
 					continue;
 				}
 			} else if(mode == SUMMARY_MODE_ALL){
@@ -99,11 +99,11 @@ public class DataCounter {
 			} else if(mode == SUMMARY_MODE_SELF_COMPARE){
 				Comment newComment = new Comment();
 				User newUser;
-				if(comment.getCommenter().getName().equals(username)){
+				if(comment.getCommenter().getUserName().equals(username)){
 					newUser = comment.getCommenter();
 				} else {
 					newUser = new User(Messages.getString("DataCounter.5")); //$NON-NLS-1$
-					annotatorNameSet.add(comment.getCommenter().getName());
+					annotatorNameSet.add(comment.getCommenter().getUserName());
 				}
 					
 				newComment.set(

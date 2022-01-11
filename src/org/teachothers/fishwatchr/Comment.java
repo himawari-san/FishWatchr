@@ -70,8 +70,8 @@ public class Comment {
 	public void set(String contentBody, CommentType commentType, User commenter, User discusser,
 			Date commentDate, int commentTime, String setName, String aux){
 		// for testing
-		if(discusser.getName().isEmpty()){
-			discusser.setName(defaultDiscusserName);
+		if(discusser.getUserName().isEmpty()){
+			discusser.setUserName(defaultDiscusserName);
 		}
 		data[F_ANNOTATOR] = commenter;
 		data[F_COMMENT] = contentBody;

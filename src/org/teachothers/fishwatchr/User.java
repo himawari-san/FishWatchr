@@ -18,23 +18,32 @@
 package org.teachothers.fishwatchr;
 
 public class User {
-	public static int id = 1;
-	public String name;
+	private String userName;
+	private String groupName = "";
+	
 	
 	public User(String name){
-		this.name = name;
-		id++;
+		this.userName = name;
 	}
 	
-	public String getName(){
-		return name;
+	public String getUserName(){
+		return userName;
 	}
 	
-	public void setName(String name){
-		this.name = name;
+	public void setUserName(String name){
+		this.userName = name;
+	}
+
+	
+	public void setGroupName(String name) {
+		groupName = name;
+	}
+
+	public String getGroupName() {
+		return groupName;
 	}
 	
 	public String toString(){
-		return name;
+		return userName;
 	}
 }

@@ -139,11 +139,11 @@ public class SysConfig {
 					if(i < discussersNodes.getLength()){
 						String discusserName = ((Element) discussersNodes.item(i))
 								.getAttribute("name"); //$NON-NLS-1$
-						discusser.setName(discusserName);
+						discusser.setUserName(discusserName);
 					} else if(i == 0){
-						discusser.setName(Messages.getString("SysConfig.4")); //$NON-NLS-1$
+						discusser.setUserName(Messages.getString("SysConfig.4")); //$NON-NLS-1$
 					} else {
-						discusser.setName(""); //$NON-NLS-1$
+						discusser.setUserName(""); //$NON-NLS-1$
 					}
 				}
 				
@@ -413,11 +413,11 @@ public class SysConfig {
 			}
 			
 			for(User discusser: discussers){
-				if(discusser.getName().isEmpty()){
+				if(discusser.getUserName().isEmpty()){
 					continue;
 				}
 				Element newElement = doc.createElement(nodeName);
-				newElement.setAttribute("name", discusser.getName()); //$NON-NLS-1$
+				newElement.setAttribute("name", discusser.getUserName()); //$NON-NLS-1$
 				nodeCommentTypes.appendChild(newElement);
 			}
 			
