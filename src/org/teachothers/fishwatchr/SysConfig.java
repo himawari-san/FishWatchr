@@ -31,9 +31,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -50,6 +50,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 
 public class SysConfig {
@@ -65,113 +66,86 @@ public class SysConfig {
 		
 	}
 	
+	public void load(ArrayList<CommentType> commentTypes, ArrayList<User> discussers) throws URISyntaxException, IOException, XPathExpressionException, ParserConfigurationException, SAXException {
+		load(Paths.get(
+				Util.getJarDir() + "/" + CONFIG_FILENAME),
+				commentTypes, discussers);
+	}
 	
-	public void load(ArrayList<CommentType> commentTypes, ArrayList<User> discussers) {
-
-		String jarDir = "."; //$NON-NLS-1$
-		try {
-			jarDir = Util.getJarDir();
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
-		
-		File configFile = new File(jarDir + "/" + CONFIG_FILENAME); //$NON-NLS-1$
+	public void load(Path configPath, ArrayList<CommentType> commentTypes, ArrayList<User> discussers) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
+		File configFile = configPath.toFile();
 
 		if(!configFile.exists()){
-			try {
-				Files.copy(getClass().getResourceAsStream("resources/config/" + CONFIG_FILENAME), //$NON-NLS-1$
-						configFile.toPath());
-				System.err.println("Warning(SysConfig): Generate the default " + CONFIG_FILENAME + ", because " +  CONFIG_FILENAME + " is not found."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			} catch (IOException e) {
-				System.err.println("Error(SysConfig): Can not copy the default config file."); //$NON-NLS-1$
-				e.printStackTrace();
-			}
+			Files.copy(getClass().getResourceAsStream("resources/config/" + CONFIG_FILENAME), configFile.toPath()); //$NON-NLS-1$
+			System.err.println("Warning(SysConfig): Generate the default " + CONFIG_FILENAME + ", because " +  CONFIG_FILENAME + " is not found."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		} else {
 			System.err.println("loaded config:" + Util.getCurrentDir() + "/" + CONFIG_FILENAME); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		setDefault(commentTypes, discussers);
 		
-		if (configFile.exists()) {
-			DocumentBuilderFactory factory = Util.getSimpleDocumentBuilderFactory();
+		DocumentBuilderFactory factory = Util.getSimpleDocumentBuilderFactory();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		doc = builder.parse(configFile);
 
-			DocumentBuilder builder;
-			try {
-				builder = factory.newDocumentBuilder();
-				doc = builder.parse(configFile);
+		XPathFactory xPathFactory = XPathFactory.newInstance();
+		xpath = xPathFactory.newXPath();
 
-				XPathFactory xPathFactory = XPathFactory.newInstance();
-				xpath = xPathFactory.newXPath();
-
-				// comment_types 要素
-				XPathExpression expr = xpath
-						.compile("/settings/comment_types/li"); //$NON-NLS-1$
-				NodeList commentTypesNodes = (NodeList) expr.evaluate(doc,
-						XPathConstants.NODESET);
-				for (int i = 0; i < commentTypes.size(); i++) {
-					CommentType ct = commentTypes.get(i);
-					if(i < commentTypesNodes.getLength()){
-						String commentTypeName = ((Element) commentTypesNodes
-								.item(i)).getAttribute("name"); //$NON-NLS-1$
-						String commentTypeColor = ((Element) commentTypesNodes
-								.item(i)).getAttribute("color"); //$NON-NLS-1$
-						ct.set(commentTypeName,
-								new Color(Integer.parseInt(commentTypeColor)));
-					} else if(i == 0){
-						ct.set(Messages.getString("SysConfig.0"), Color.RED); //$NON-NLS-1$
-					} else {
-						ct.set("", Color.LIGHT_GRAY); //$NON-NLS-1$
-					}
-				}
-				if(commentTypesNodes.getLength() == 0){
-					commentTypes.get(0).set(Messages.getString("SysConfig.1"), Color.RED); //$NON-NLS-1$
-				} else if(commentTypesNodes.getLength() > commentTypes.size()){
-					for(int i = commentTypes.size(); i < commentTypesNodes.getLength(); i++){
-						String commentTypeName = ((Element) commentTypesNodes
-								.item(i)).getAttribute("name"); //$NON-NLS-1$
-						System.err.println(Messages.getString("SysConfig.2") + CommentTableModel.ITEM_LABEL + " "  //$NON-NLS-1$//$NON-NLS-2$
-										+ commentTypeName + Messages.getString("SysConfig.3")); //$NON-NLS-1$
-					}
-				}
-
-				// discussers 要素
-				expr = xpath.compile("/settings/discussers/li"); //$NON-NLS-1$
-				NodeList discussersNodes = (NodeList) expr.evaluate(doc,
-						XPathConstants.NODESET);
-				for (int i = 0; i < discussers.size(); i++) {
-					User discusser = discussers.get(i);
-					if(i < discussersNodes.getLength()){
-						String discusserName = ((Element) discussersNodes.item(i))
-								.getAttribute("name"); //$NON-NLS-1$
-						discusser.setUserName(discusserName);
-					} else if(i == 0){
-						discusser.setUserName(Messages.getString("SysConfig.4")); //$NON-NLS-1$
-					} else {
-						discusser.setUserName(""); //$NON-NLS-1$
-					}
-				}
-				
-				if(discussersNodes.getLength() > discussers.size()){
-					for(int i = discussers.size(); i < discussersNodes.getLength(); i++){
-						String discusserName = ((Element) discussersNodes.item(i))
-								.getAttribute("name"); //$NON-NLS-1$
-						System.err.println(Messages.getString("SysConfig.5") + CommentTableModel.ITEM_TARGET + " "  //$NON-NLS-1$//$NON-NLS-2$
-								+ discusserName + Messages.getString("SysConfig.6")); //$NON-NLS-1$
-					}
-				}
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(null,
-						Messages.getString("SysConfig.7") //$NON-NLS-1$
-						+ CONFIG_FILENAME
-						+ Messages.getString("SysConfig.8") //$NON-NLS-1$
-						+ Messages.getString("SysConfig.9") + e.getLocalizedMessage()); //$NON-NLS-1$
-				e.printStackTrace();
-				setDefault(commentTypes, discussers);
+		// comment_types 要素
+		XPathExpression expr = xpath
+				.compile("/settings/comment_types/li"); //$NON-NLS-1$
+		NodeList commentTypesNodes = (NodeList) expr.evaluate(doc,
+				XPathConstants.NODESET);
+		for (int i = 0; i < commentTypes.size(); i++) {
+			CommentType ct = commentTypes.get(i);
+			if(i < commentTypesNodes.getLength()){
+				String commentTypeName = ((Element) commentTypesNodes
+						.item(i)).getAttribute("name"); //$NON-NLS-1$
+				String commentTypeColor = ((Element) commentTypesNodes
+						.item(i)).getAttribute("color"); //$NON-NLS-1$
+				ct.set(commentTypeName,
+						new Color(Integer.parseInt(commentTypeColor)));
+			} else if(i == 0){
+				ct.set(Messages.getString("SysConfig.0"), Color.RED); //$NON-NLS-1$
+			} else {
+				ct.set("", Color.LIGHT_GRAY); //$NON-NLS-1$
 			}
+		}
+		if(commentTypesNodes.getLength() == 0){
+			commentTypes.get(0).set(Messages.getString("SysConfig.1"), Color.RED); //$NON-NLS-1$
+		} else if(commentTypesNodes.getLength() > commentTypes.size()){
+			for(int i = commentTypes.size(); i < commentTypesNodes.getLength(); i++){
+				String commentTypeName = ((Element) commentTypesNodes
+						.item(i)).getAttribute("name"); //$NON-NLS-1$
+				System.err.println(Messages.getString("SysConfig.2") + CommentTableModel.ITEM_LABEL + " "  //$NON-NLS-1$//$NON-NLS-2$
+								+ commentTypeName + Messages.getString("SysConfig.3")); //$NON-NLS-1$
+			}
+		}
 
-		} else {
-			System.err.println("Warning(SysConfig): " + CONFIG_FILENAME + Messages.getString("SysConfig.11")); //$NON-NLS-1$ //$NON-NLS-2$
-			setDefault(commentTypes, discussers);
+		// discussers 要素
+		expr = xpath.compile("/settings/discussers/li"); //$NON-NLS-1$
+		NodeList discussersNodes = (NodeList) expr.evaluate(doc,
+				XPathConstants.NODESET);
+		for (int i = 0; i < discussers.size(); i++) {
+			User discusser = discussers.get(i);
+			if(i < discussersNodes.getLength()){
+				String discusserName = ((Element) discussersNodes.item(i))
+						.getAttribute("name"); //$NON-NLS-1$
+				discusser.setUserName(discusserName);
+			} else if(i == 0){
+				discusser.setUserName(Messages.getString("SysConfig.4")); //$NON-NLS-1$
+			} else {
+				discusser.setUserName(""); //$NON-NLS-1$
+			}
+		}
+		
+		if(discussersNodes.getLength() > discussers.size()){
+			for(int i = discussers.size(); i < discussersNodes.getLength(); i++){
+				String discusserName = ((Element) discussersNodes.item(i))
+						.getAttribute("name"); //$NON-NLS-1$
+				System.err.println(Messages.getString("SysConfig.5") + CommentTableModel.ITEM_TARGET + " "  //$NON-NLS-1$//$NON-NLS-2$
+						+ discusserName + Messages.getString("SysConfig.6")); //$NON-NLS-1$
+			}
 		}
 	}
 
