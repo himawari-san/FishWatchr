@@ -50,6 +50,7 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -922,17 +923,14 @@ public class MainFrame extends JFrame {
 							}
 
 							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
-								System.err.println("hey bp play");
 								changeStatePause();
 								soundPlayer.myPause();
 								return;
 							} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-								System.err.println("hey bp pause");
 								changeStatePlay();
 								soundPlayer.myResume();
 								return;
 							} else {
-								System.err.println("hey bp else");
 								if (mf.isEmpty() && xf.isEmpty()) {
 									if(!setTargetFile("")){ //$NON-NLS-1$
 										return;
@@ -1149,7 +1147,6 @@ public class MainFrame extends JFrame {
 			timeSlider.setEnabled(false);
 			return false;
 		} else if (filename != null) {
-			System.err.println("hey open file");
 			// 関係ないファイルはここで止まるはず。null の場合は，url
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
@@ -1158,16 +1155,13 @@ public class MainFrame extends JFrame {
 			System.err.println("Warning(MainFrame): what?"); //$NON-NLS-1$
 		}
 		
-		System.err.println("hey main2");
 		System.err.println("set mf: " + mf); //$NON-NLS-1$
 		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 			JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.25") + mf); //$NON-NLS-1$
 			mf = ""; //$NON-NLS-1$
 			xf = ""; //$NON-NLS-1$
-			System.err.println("hey main1");
 			return false;
 		}
-		System.err.println("hey main0");
 		isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
 
 		
@@ -2141,7 +2135,7 @@ public class MainFrame extends JFrame {
 	
 	private JMenuItem getJMenuItemFileEval() {
 		if (jMenuItemFileEval == null) {
-			jMenuItemFileEval = new JMenuItem("全体評価");
+			jMenuItemFileEval = new JMenuItem(Messages.getString("MainFrame.152")); //$NON-NLS-1$
 			jMenuItemFileEval.setAccelerator(KeyStroke.getKeyStroke('A',
 					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileEval
@@ -2149,7 +2143,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 
 							OverallEvaluationPane fsp = new OverallEvaluationPane(commentList.getEvaluations(), commentTypes, discussers);
-							JDialog d = fsp.createDialog("全体評価");
+							JDialog d = fsp.createDialog(Messages.getString("MainFrame.153")); //$NON-NLS-1$
 							d.setVisible(true);
 							Object selectedValue = fsp.getValue();
 						}
