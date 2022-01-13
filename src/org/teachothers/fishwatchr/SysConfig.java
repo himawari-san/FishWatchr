@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -175,20 +177,15 @@ public class SysConfig {
 
 	
 	public void save() throws IOException, TransformerException, URISyntaxException {
-
-		String jarDir = Util.getJarDir();
-
-		save(new File(jarDir + "/" + CONFIG_FILENAME)); //$NON-NLS-1$
+		save(Paths.get(Util.getJarDir() + "/" + CONFIG_FILENAME)); //$NON-NLS-1$
 	}
 
-	public void save(File configFile) throws IOException, TransformerException {
+	public void save(Path configPath) throws IOException, TransformerException {
 
-		if (configFile.exists()) {
-			String filename = configFile.getName();
-			
-			String backupFilename = filename + ".bak"; //$NON-NLS-1$
-			File backupFile = new File(backupFilename);
-			Files.copy(configFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		if (configPath.toFile().exists()) {
+			// config.xml -> config.xml.bak
+			Path backupPath = configPath.getParent().resolve(configPath.getFileName() + ".bak");
+			Files.copy(configPath, backupPath, StandardCopyOption.REPLACE_EXISTING);
 		}
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -217,7 +214,7 @@ public class SysConfig {
 		}  
 
         // Generate a XML file
-        transformer.transform(new DOMSource(doc), new StreamResult(configFile));
+        transformer.transform(new DOMSource(doc), new StreamResult(configPath.toFile()));
 	}
 
 	
