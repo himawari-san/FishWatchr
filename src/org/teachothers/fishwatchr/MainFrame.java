@@ -927,17 +927,14 @@ public class MainFrame extends JFrame {
 							}
 
 							if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
-								System.err.println("hey bp play");
 								changeStatePause();
 								soundPlayer.myPause();
 								return;
 							} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-								System.err.println("hey bp pause");
 								changeStatePlay();
 								soundPlayer.myResume();
 								return;
 							} else {
-								System.err.println("hey bp else");
 								if (mf.isEmpty() && xf.isEmpty()) {
 									if(!setTargetFile("")){ //$NON-NLS-1$
 										return;
@@ -1154,7 +1151,6 @@ public class MainFrame extends JFrame {
 			timeSlider.setEnabled(false);
 			return false;
 		} else if (filename != null) {
-			System.err.println("hey open file");
 			// 関係ないファイルはここで止まるはず。null の場合は，url
 			timeSlider.setMinimum(0);
 			timeSlider.setEnabled(false);
@@ -1163,16 +1159,13 @@ public class MainFrame extends JFrame {
 			System.err.println("Warning(MainFrame): what?"); //$NON-NLS-1$
 		}
 		
-		System.err.println("hey main2");
 		System.err.println("set mf: " + mf); //$NON-NLS-1$
 		if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
 			JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.25") + mf); //$NON-NLS-1$
 			mf = ""; //$NON-NLS-1$
 			xf = ""; //$NON-NLS-1$
-			System.err.println("hey main1");
 			return false;
 		}
-		System.err.println("hey main0");
 		isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
 
 		
@@ -2147,7 +2140,7 @@ public class MainFrame extends JFrame {
 	
 	private JMenuItem getJMenuItemFileEval() {
 		if (jMenuItemFileEval == null) {
-			jMenuItemFileEval = new JMenuItem("全体評価");
+			jMenuItemFileEval = new JMenuItem(Messages.getString("MainFrame.152")); //$NON-NLS-1$
 			jMenuItemFileEval.setAccelerator(KeyStroke.getKeyStroke('A',
 					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileEval
@@ -2155,7 +2148,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 
 							OverallEvaluationPane fsp = new OverallEvaluationPane(commentList.getEvaluations(), commentTypes, discussers);
-							JDialog d = fsp.createDialog("全体評価");
+							JDialog d = fsp.createDialog(Messages.getString("MainFrame.153")); //$NON-NLS-1$
 							d.setVisible(true);
 							Object selectedValue = fsp.getValue();
 						}
@@ -2169,19 +2162,18 @@ public class MainFrame extends JFrame {
 
 	private JMenuItem getJMenuItemFileShare() {
 		if (jMenuItemFileShare == null) {
-			jMenuItemFileShare = new JMenuItem("ファイル共有");
+			jMenuItemFileShare = new JMenuItem(Messages.getString("MainFrame.156")); //$NON-NLS-1$
 			jMenuItemFileShare
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 //							String pipeServer = "http://160.16.218.34/";
-							String pipeServer = "http://localhost:8080/";
+							String pipeServer = "http://localhost:8080/"; //$NON-NLS-1$
 //							String pipeServer = "https://piping-server-test.herokuapp.com/";
 							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getUserName(), Paths.get(xf), Paths.get(mf));
-							JDialog d = fsp.createDialog("ファイル共有");
+							JDialog d = fsp.createDialog(Messages.getString("MainFrame.159")); //$NON-NLS-1$
 							d.setVisible(true);
 							Object selectedValue = fsp.getValue();
 //							fsp.shutdownNow();
-							System.err.println("aa:" + selectedValue);
 						}
 
 					});
@@ -2670,7 +2662,7 @@ public class MainFrame extends JFrame {
 	
 	private void setAnnotatorInfomation() {
 		AnnotatorOptionPane userOptionPane = new AnnotatorOptionPane(commenter);
-		JDialog dialog = userOptionPane.createDialog(MainFrame.this, "注釈者情報");
+		JDialog dialog = userOptionPane.createDialog(MainFrame.this, Messages.getString("MainFrame.160")); //$NON-NLS-1$
 		dialog.setVisible(true);
 		dialog.setModal(true);
 		
@@ -2711,10 +2703,10 @@ public class MainFrame extends JFrame {
 		public AnnotatorOptionPane(User user) {
 			JPanel mainPanel = new JPanel();
 			mainPanel.setLayout(new GridLayout(2, 2, 2, 5));
-			mainPanel.add(new JLabel("注釈者名:"));
+			mainPanel.add(new JLabel(Messages.getString("MainFrame.161"))); //$NON-NLS-1$
 			userNameField.setText(user.getUserName());
 			mainPanel.add(userNameField);
-			mainPanel.add(new JLabel("グループ名:"));
+			mainPanel.add(new JLabel(Messages.getString("MainFrame.162"))); //$NON-NLS-1$
 			groupNameField.setText(user.getGroupName());
 			mainPanel.add(groupNameField);
 			setMessage(mainPanel);
