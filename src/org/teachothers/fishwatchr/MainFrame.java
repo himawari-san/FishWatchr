@@ -2099,7 +2099,7 @@ public class MainFrame extends JFrame {
 							try {
 								config.save();
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.77") + SysConfig.CONFIG_FILENAME); //$NON-NLS-1$
-							} catch (IOException | TransformerException | URISyntaxException e1) {
+							} catch (IOException | TransformerException | URISyntaxException | XPathExpressionException e1) {
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.getLocalizedMessage()); //$NON-NLS-1$
 								e1.printStackTrace();
 							}
@@ -2128,7 +2128,7 @@ public class MainFrame extends JFrame {
 							try {
 								config.save(Paths.get(saveFilename));
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.77") + saveFilename); //$NON-NLS-1$
-							} catch (IOException | TransformerException e1) {
+							} catch (IOException | TransformerException | XPathExpressionException e1) {
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.getLocalizedMessage()); //$NON-NLS-1$
 								e1.printStackTrace();
 							}
