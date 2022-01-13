@@ -22,7 +22,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -184,6 +183,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemFileMerge;
 	private JMenuItem jMenuItemFileExport;
 	private JMenuItem jMenuItemFileSaveConfig;
+	private JMenuItem jMenuItemFileSaveConfigAs;
 	private JMenuItem jMenuItemFileShare;
 	private JMenuItem jMenuItemFileEval;
 	private JMenuItem jMenuItemFileExit;
@@ -1689,10 +1689,14 @@ public class MainFrame extends JFrame {
 			jMenuFile.setText(Messages.getString("MainFrame.33")); //$NON-NLS-1$
 			jMenuFile.add(getJMenuItemFileOpen());
 			jMenuFile.add(getJMenuItemURLOpen());
+			jMenuFile.addSeparator();
 			jMenuFile.add(getJMenuItemFileSave());
 			jMenuFile.add(getJMenuItemFileExport());
 			jMenuFile.add(getJMenuItemFileMerge());
+			jMenuFile.addSeparator();
 			jMenuFile.add(getJMenuItemFileSaveConfig());
+			jMenuFile.add(getJMenuItemFileSaveConfigAs());
+			jMenuFile.addSeparator();
 			jMenuFile.add(getJMenuItemFileShare());
 			jMenuFile.add(getJMenuItemFileEval());
 			jMenuFile.add(getJMenuItemFileExit());
@@ -2095,19 +2099,14 @@ public class MainFrame extends JFrame {
 	private JMenuItem getJMenuItemFileSaveConfig() {
 		if (jMenuItemFileSaveConfig == null) {
 			jMenuItemFileSaveConfig = new JMenuItem(Messages.getString("MainFrame.76")); //$NON-NLS-1$
-			jMenuItemFileSaveConfig.setAccelerator(KeyStroke.getKeyStroke('C',
-					KeyEvent.CTRL_DOWN_MASK, false));
 			jMenuItemFileSaveConfig
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							try {
 								config.save();
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.77") + SysConfig.CONFIG_FILENAME); //$NON-NLS-1$
-							} catch (IOException e1) {
+							} catch (IOException | TransformerException | URISyntaxException e1) {
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.getLocalizedMessage()); //$NON-NLS-1$
-								e1.printStackTrace();
-							} catch (TransformerException e1) {
-								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.80") + e1.getLocalizedMessage()); //$NON-NLS-1$
 								e1.printStackTrace();
 							}
 						}
@@ -2115,8 +2114,37 @@ public class MainFrame extends JFrame {
 		}
 		return jMenuItemFileSaveConfig;
 	}
-	
 
+	
+	private JMenuItem getJMenuItemFileSaveConfigAs() {
+		if (jMenuItemFileSaveConfigAs == null) {
+			jMenuItemFileSaveConfigAs = new JMenuItem(Messages.getString("MainFrame.80")); //$NON-NLS-1$
+			jMenuItemFileSaveConfigAs
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							String saveFilename = chooseFile(null, JFileChooser.FILES_ONLY, true);
+							
+							if(saveFilename.isBlank()) {
+								return;
+							}
+							
+							if(!saveFilename.endsWith(SysConfig.CONFIG_FILE_SUFFIX)) {
+								saveFilename += SysConfig.CONFIG_FILE_SUFFIX;
+							}
+							try {
+								config.save(new File(saveFilename));
+								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.77") + saveFilename); //$NON-NLS-1$
+							} catch (IOException | TransformerException e1) {
+								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.getLocalizedMessage()); //$NON-NLS-1$
+								e1.printStackTrace();
+							}
+						}
+					});
+		}
+		return jMenuItemFileSaveConfigAs;
+	}
+
+	
 	private JMenuItem getJMenuItemFileEval() {
 		if (jMenuItemFileEval == null) {
 			jMenuItemFileEval = new JMenuItem("全体評価");

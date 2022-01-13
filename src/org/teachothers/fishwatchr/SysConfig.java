@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -50,7 +51,8 @@ import org.w3c.dom.NodeList;
 
 
 public class SysConfig {
-	public final static String CONFIG_FILENAME = "config.xml"; //$NON-NLS-1$
+	public final static String CONFIG_FILE_SUFFIX = ".xml"; //$NON-NLS-1$
+	public final static String CONFIG_FILENAME = "config" + CONFIG_FILE_SUFFIX; //$NON-NLS-1$
 	public final static String COLUMN_ID_BASE = "column"; //$NON-NLS-1$
 	
 	private Document doc = null;
@@ -172,16 +174,15 @@ public class SysConfig {
 	}
 
 	
-	public void save() throws IOException, TransformerException {
+	public void save() throws IOException, TransformerException, URISyntaxException {
 
-		String jarDir = "."; //$NON-NLS-1$
-		try {
-			jarDir = Util.getJarDir();
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
-		
-		File configFile = new File(jarDir + "/" + CONFIG_FILENAME); //$NON-NLS-1$
+		String jarDir = Util.getJarDir();
+
+		save(new File(jarDir + "/" + CONFIG_FILENAME)); //$NON-NLS-1$
+	}
+
+	public void save(File configFile) throws IOException, TransformerException {
+
 		if (configFile.exists()) {
 			String filename = configFile.getName();
 			
@@ -193,10 +194,29 @@ public class SysConfig {
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         
-        transformer.setOutputProperty("indent", "yes"); //$NON-NLS-1$ //$NON-NLS-2$
-        transformer.setOutputProperty("encoding", "utf-8"); //$NON-NLS-1$ //$NON-NLS-2$
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$ //$NON-NLS-2$
+        transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        // XMLファイルの作成
+        
+        // Quoted from 
+        // https://stackoverflow.com/questions/978810/how-to-strip-whitespace-only-text-nodes-from-a-dom-before-serialization
+        XPathFactory xpathFactory = XPathFactory.newInstance();
+        // XPath to find empty text nodes.
+        XPathExpression xpathExp;
+		try {
+			xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");
+	        NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
+
+	        // Remove each empty text node from document.
+	        for (int i = 0; i < emptyTextNodes.getLength(); i++) {
+	        	Node emptyTextNode = emptyTextNodes.item(i);
+	        	emptyTextNode.getParentNode().removeChild(emptyTextNode);
+	        }
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}  
+
+        // Generate a XML file
         transformer.transform(new DOMSource(doc), new StreamResult(configFile));
 	}
 
