@@ -2132,7 +2132,7 @@ public class MainFrame extends JFrame {
 								saveFilename += SysConfig.CONFIG_FILE_SUFFIX;
 							}
 							try {
-								config.save(new File(saveFilename));
+								config.save(Paths.get(saveFilename));
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.77") + saveFilename); //$NON-NLS-1$
 							} catch (IOException | TransformerException e1) {
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.getLocalizedMessage()); //$NON-NLS-1$
