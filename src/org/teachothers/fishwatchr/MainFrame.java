@@ -394,8 +394,13 @@ public class MainFrame extends JFrame {
 
 	public void init() {
 		// load config.xml
-		config.load(commentTypes, discussers);
-
+		try {
+			config.load(commentTypes, discussers);
+		} catch (XPathExpressionException | URISyntaxException | IOException | ParserConfigurationException
+				| SAXException e1) {
+			JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e1); //$NON-NLS-1$
+			e1.printStackTrace();
+		}
 
 		// set column names
 		String newColumnNames[] = config.getColumnNames(ctm.getColumnCount());
@@ -1031,7 +1036,14 @@ public class MainFrame extends JFrame {
 			commentList.setStartTime(new Date());
 			commentList.setMediaFilename(mf);
 			ctm.refreshFilter();
-			config.load(commentTypes, discussers);
+			try {
+				config.load(commentTypes, discussers);
+			} catch (XPathExpressionException | URISyntaxException | IOException | ParserConfigurationException
+					| SAXException e) {
+				JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e);
+				e.printStackTrace();
+				return false;
+			}
 			updateButtonPanel(buttonType);
 			ctm.fireTableDataChanged();
 		} else if(filename.isEmpty()){
@@ -1061,7 +1073,14 @@ public class MainFrame extends JFrame {
 						commentList.setStartTime(new Date());
 						commentList.setMediaFilename(mf);
 						ctm.refreshFilter();
+					try {
 						config.load(commentTypes, discussers);
+					} catch (XPathExpressionException | URISyntaxException | IOException | ParserConfigurationException
+							| SAXException e) {
+						JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e);
+						e.printStackTrace();
+						return false;
+					}
 						updateButtonPanel(buttonType);
 						ctm.fireTableDataChanged();
 						xf = newXf;
@@ -1095,7 +1114,14 @@ public class MainFrame extends JFrame {
 				commentList.setStartTime(new Date());
 				commentList.setMediaFilename(mf);
 				ctm.refreshFilter();
-				config.load(commentTypes, discussers);
+				try {
+					config.load(commentTypes, discussers);
+				} catch (XPathExpressionException | URISyntaxException | IOException | ParserConfigurationException
+						| SAXException e) {
+					JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e);
+					e.printStackTrace();
+					return false;
+				}
 //				setDefaultButton();
 				updateButtonPanel(buttonType);
 				ctm.fireTableDataChanged();
