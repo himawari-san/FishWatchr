@@ -176,11 +176,11 @@ public class SysConfig {
 	}
 
 	
-	public void save() throws IOException, TransformerException, URISyntaxException {
+	public void save() throws IOException, TransformerException, URISyntaxException, XPathExpressionException {
 		save(Paths.get(Util.getJarDir() + "/" + CONFIG_FILENAME)); //$NON-NLS-1$
 	}
 
-	public void save(Path configPath) throws IOException, TransformerException {
+	public void save(Path configPath) throws IOException, TransformerException, XPathExpressionException {
 
 		if (configPath.toFile().exists()) {
 			// config.xml -> config.xml.bak
@@ -200,18 +200,15 @@ public class SysConfig {
         XPathFactory xpathFactory = XPathFactory.newInstance();
         // XPath to find empty text nodes.
         XPathExpression xpathExp;
-		try {
-			xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");
-	        NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
 
-	        // Remove each empty text node from document.
-	        for (int i = 0; i < emptyTextNodes.getLength(); i++) {
-	        	Node emptyTextNode = emptyTextNodes.item(i);
-	        	emptyTextNode.getParentNode().removeChild(emptyTextNode);
-	        }
-		} catch (XPathExpressionException e) {
-			e.printStackTrace();
-		}  
+        xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");
+        NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
+
+        // Remove each empty text node from document.
+        for (int i = 0; i < emptyTextNodes.getLength(); i++) {
+        	Node emptyTextNode = emptyTextNodes.item(i);
+        	emptyTextNode.getParentNode().removeChild(emptyTextNode);
+        }
 
         // Generate a XML file
         transformer.transform(new DOMSource(doc), new StreamResult(configPath.toFile()));
