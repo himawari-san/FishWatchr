@@ -9,11 +9,20 @@
   <!-- [オプション]⇒[注釈連動再生] -->
   <isViewSyncMode value="false" />
 
+  <!-- [オプション]⇒[注釈者名補完] -->
+  <enableAutoFillAnnotatorName value="false" />
+
+  <!-- [オプション]⇒[形式チェック] -->
+  <enableValidateAnnotations value="false" />
+
+  <!-- [オプション]⇒[注釈後ポーズ] -->
+  <enablePauseAfterAnnotation value="false" />
+
   <!-- [オプション]⇒[フォント] -->
   <tableFontSize value="12" />
   
   <!-- マニュアルのURL -->
-  <manual_url value="http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0" />;
+  <manual_url value="https://csd.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0" />
 
   <!-- 話者未指定時のデフォルト話者名 -->
   <default_discusser value="不特定" />
@@ -39,5 +48,25 @@
        システムのデフォルト値(ログイン + _in_ + ホスト名)が使われる
   -->
   <commenter value="" />
+
+  <!-- setting of column names
+       Attention:
+       li[@id='column1' or @id='column2']/@readonly are alwalys true
+       and can't be changed
+  -->
+
+  <column_names>
+    <li id="column1" name="番号" readonly="true" constraint="^\d+$" />
+    <li id="column2" name="時間" readonly="true" constraint="^.+$" />
+    <li id="column3" name="注釈者" readonly="false" constraint="^.*$" />
+    <li id="column4" name="観察対象" readonly="false" constraint="^.*$" />
+    <li id="column5" name="ラベル" readonly="false" constraint="^.*$" />
+    <li id="column6" name="セット" readonly="false" constraint="^.*$" />
+    <li id="column7" name="コメント" readonly="false" constraint="^.*$" />
+    <!-- sample constraint
+    <li id="column7" name="コメント" readonly="false" constraint="^.*\[\[.+?\]\]\s*(?=[\p{InCJKUnifiedIdeographs}\p{InHiragana}\p{InKatakana}\p{IsLatin}\p{N}]).+$" />
+    --> 
+    <li id="column8" name="補助情報" readonly="false" constraint="^.*$" />
+  </column_names>
 </settings>
 
