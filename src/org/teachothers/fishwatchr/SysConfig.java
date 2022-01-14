@@ -57,33 +57,38 @@ public class SysConfig {
 	public final static String CONFIG_FILE_SUFFIX = ".xml"; //$NON-NLS-1$
 	public final static String CONFIG_FILENAME = "config" + CONFIG_FILE_SUFFIX; //$NON-NLS-1$
 	public final static String COLUMN_ID_BASE = "column"; //$NON-NLS-1$
-	
+
 	private Document doc = null;
 	private XPath xpath = null;
 	private Pattern patternColumnID = Pattern.compile("^" + COLUMN_ID_BASE + "(\\d+)$"); //$NON-NLS-1$ //$NON-NLS-2$
-	
+
 	public SysConfig(){
-		
+
 	}
-	
-	public void load(ArrayList<CommentType> commentTypes, ArrayList<User> discussers) throws URISyntaxException, IOException, XPathExpressionException, ParserConfigurationException, SAXException {
-		load(Paths.get(
-				Util.getJarDir() + "/" + CONFIG_FILENAME),
-				commentTypes, discussers);
+
+	public void load(ArrayList<CommentType> commentTypes, ArrayList<User> discussers)
+			throws URISyntaxException, IOException, XPathExpressionException, ParserConfigurationException,
+			SAXException, UnsupportedSysConfigFileException {
+
+		load(Paths.get(Util.getJarDir() + "/" + CONFIG_FILENAME), commentTypes, discussers);
 	}
-	
-	public void load(Path configPath, ArrayList<CommentType> commentTypes, ArrayList<User> discussers) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
+
+	public void load(Path configPath, ArrayList<CommentType> commentTypes, ArrayList<User> discussers)
+			throws IOException, ParserConfigurationException, SAXException, XPathExpressionException,
+			UnsupportedSysConfigFileException {
+
 		File configFile = configPath.toFile();
 
-		if(!configFile.exists()){
+		if(!configFile.exists()) {
 			Files.copy(getClass().getResourceAsStream("resources/config/" + CONFIG_FILENAME), configFile.toPath()); //$NON-NLS-1$
-			System.err.println("Warning(SysConfig): Generate the default " + CONFIG_FILENAME + ", because " +  CONFIG_FILENAME + " is not found."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			System.err.println("Warning(SysConfig): Generate the default " + CONFIG_FILENAME + ", because " //$NON-NLS-1$ //$NON-NLS-2$
+					+ CONFIG_FILENAME + " is not found."); //$NON-NLS-1$
 		} else {
 			System.err.println("loaded config:" + Util.getCurrentDir() + "/" + CONFIG_FILENAME); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		setDefault(commentTypes, discussers);
-		
+
 		DocumentBuilderFactory factory = Util.getSimpleDocumentBuilderFactory();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		doc = builder.parse(configFile);
@@ -91,65 +96,76 @@ public class SysConfig {
 		XPathFactory xPathFactory = XPathFactory.newInstance();
 		xpath = xPathFactory.newXPath();
 
+		if (!isValid()) {
+			throw new UnsupportedSysConfigFileException();
+		}
+
 		// comment_types 要素
-		XPathExpression expr = xpath
-				.compile("/settings/comment_types/li"); //$NON-NLS-1$
-		NodeList commentTypesNodes = (NodeList) expr.evaluate(doc,
-				XPathConstants.NODESET);
+		XPathExpression expr = xpath.compile("/settings/comment_types/li"); //$NON-NLS-1$
+		NodeList commentTypesNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 		for (int i = 0; i < commentTypes.size(); i++) {
 			CommentType ct = commentTypes.get(i);
-			if(i < commentTypesNodes.getLength()){
-				String commentTypeName = ((Element) commentTypesNodes
-						.item(i)).getAttribute("name"); //$NON-NLS-1$
-				String commentTypeColor = ((Element) commentTypesNodes
-						.item(i)).getAttribute("color"); //$NON-NLS-1$
-				ct.set(commentTypeName,
-						new Color(Integer.parseInt(commentTypeColor)));
-			} else if(i == 0){
+			if (i < commentTypesNodes.getLength()) {
+				String commentTypeName = ((Element) commentTypesNodes.item(i)).getAttribute("name"); //$NON-NLS-1$
+				String commentTypeColor = ((Element) commentTypesNodes.item(i)).getAttribute("color"); //$NON-NLS-1$
+				ct.set(commentTypeName, new Color(Integer.parseInt(commentTypeColor)));
+			} else if(i == 0) {
 				ct.set(Messages.getString("SysConfig.0"), Color.RED); //$NON-NLS-1$
 			} else {
 				ct.set("", Color.LIGHT_GRAY); //$NON-NLS-1$
 			}
 		}
-		if(commentTypesNodes.getLength() == 0){
+		if (commentTypesNodes.getLength() == 0) {
 			commentTypes.get(0).set(Messages.getString("SysConfig.1"), Color.RED); //$NON-NLS-1$
-		} else if(commentTypesNodes.getLength() > commentTypes.size()){
-			for(int i = commentTypes.size(); i < commentTypesNodes.getLength(); i++){
-				String commentTypeName = ((Element) commentTypesNodes
-						.item(i)).getAttribute("name"); //$NON-NLS-1$
-				System.err.println(Messages.getString("SysConfig.2") + CommentTableModel.ITEM_LABEL + " "  //$NON-NLS-1$//$NON-NLS-2$
-								+ commentTypeName + Messages.getString("SysConfig.3")); //$NON-NLS-1$
+		} else if (commentTypesNodes.getLength() > commentTypes.size()) {
+			for (int i = commentTypes.size(); i < commentTypesNodes.getLength(); i++) {
+				String commentTypeName = ((Element) commentTypesNodes.item(i)).getAttribute("name"); //$NON-NLS-1$
+				System.err.println(Messages.getString("SysConfig.2") + CommentTableModel.ITEM_LABEL + " " //$NON-NLS-1$//$NON-NLS-2$
+						+ commentTypeName + Messages.getString("SysConfig.3")); //$NON-NLS-1$
 			}
 		}
 
 		// discussers 要素
 		expr = xpath.compile("/settings/discussers/li"); //$NON-NLS-1$
-		NodeList discussersNodes = (NodeList) expr.evaluate(doc,
-				XPathConstants.NODESET);
+		NodeList discussersNodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 		for (int i = 0; i < discussers.size(); i++) {
 			User discusser = discussers.get(i);
-			if(i < discussersNodes.getLength()){
-				String discusserName = ((Element) discussersNodes.item(i))
-						.getAttribute("name"); //$NON-NLS-1$
+			if (i < discussersNodes.getLength()) {
+				String discusserName = ((Element) discussersNodes.item(i)).getAttribute("name"); //$NON-NLS-1$
 				discusser.setUserName(discusserName);
-			} else if(i == 0){
+			} else if (i == 0) {
 				discusser.setUserName(Messages.getString("SysConfig.4")); //$NON-NLS-1$
 			} else {
 				discusser.setUserName(""); //$NON-NLS-1$
 			}
 		}
-		
+
 		if(discussersNodes.getLength() > discussers.size()){
-			for(int i = discussers.size(); i < discussersNodes.getLength(); i++){
-				String discusserName = ((Element) discussersNodes.item(i))
-						.getAttribute("name"); //$NON-NLS-1$
-				System.err.println(Messages.getString("SysConfig.5") + CommentTableModel.ITEM_TARGET + " "  //$NON-NLS-1$//$NON-NLS-2$
+			for (int i = discussers.size(); i < discussersNodes.getLength(); i++) {
+				String discusserName = ((Element) discussersNodes.item(i)).getAttribute("name"); //$NON-NLS-1$
+				System.err.println(Messages.getString("SysConfig.5") + CommentTableModel.ITEM_TARGET + " " //$NON-NLS-1$//$NON-NLS-2$
 						+ discusserName + Messages.getString("SysConfig.6")); //$NON-NLS-1$
 			}
 		}
 	}
 
+	private boolean isValid() throws XPathExpressionException {
+		if (doc == null) {
+			return false;
+		}
+
+		// this element must be described in config.xml
+		XPathExpression expr = xpath.compile("/settings/button_type"); //$NON-NLS-1$
+		NodeList nodeList = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+
+		if (nodeList.getLength() == 0) {
+			return false;
+		}
+
+		return true;
+	}
 	
+
 	public void save() throws IOException, TransformerException, URISyntaxException, XPathExpressionException {
 		save(Paths.get(Util.getJarDir() + "/" + CONFIG_FILENAME)); //$NON-NLS-1$
 	}
@@ -163,32 +179,30 @@ public class SysConfig {
 		}
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$ //$NON-NLS-2$
-        transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8"); //$NON-NLS-1$ //$NON-NLS-2$
+		Transformer transformer = transformerFactory.newTransformer();
 
-        
-        // Quoted from 
-        // https://stackoverflow.com/questions/978810/how-to-strip-whitespace-only-text-nodes-from-a-dom-before-serialization
-        XPathFactory xpathFactory = XPathFactory.newInstance();
-        // XPath to find empty text nodes.
-        XPathExpression xpathExp;
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$ //$NON-NLS-2$
+		transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");
-        NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
+		// Quoted from
+		// https://stackoverflow.com/questions/978810/how-to-strip-whitespace-only-text-nodes-from-a-dom-before-serialization
+		XPathFactory xpathFactory = XPathFactory.newInstance();
+		// XPath to find empty text nodes.
+		XPathExpression xpathExp;
 
-        // Remove each empty text node from document.
-        for (int i = 0; i < emptyTextNodes.getLength(); i++) {
-        	Node emptyTextNode = emptyTextNodes.item(i);
-        	emptyTextNode.getParentNode().removeChild(emptyTextNode);
-        }
+		xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");
+		NodeList emptyTextNodes = (NodeList) xpathExp.evaluate(doc, XPathConstants.NODESET);
 
-        // Generate a XML file
-        transformer.transform(new DOMSource(doc), new StreamResult(configPath.toFile()));
+		// Remove each empty text node from document.
+		for (int i = 0; i < emptyTextNodes.getLength(); i++) {
+			Node emptyTextNode = emptyTextNodes.item(i);
+			emptyTextNode.getParentNode().removeChild(emptyTextNode);
+		}
+
+		// Generate a XML file
+		transformer.transform(new DOMSource(doc), new StreamResult(configPath.toFile()));
 	}
 
-	
 	public void setDefault(ArrayList<CommentType> commentTypes, ArrayList<User> discussers){
 		discussers.clear();
 		discussers.add(new User(CommentTableModel.ITEM_TARGET + "1")); //$NON-NLS-1$
@@ -214,13 +228,12 @@ public class SysConfig {
 		commentTypes.add(new CommentType("", new Color(160, 160, 160))); //$NON-NLS-1$
 		commentTypes.add(new CommentType("", new Color(210, 210, 210))); //$NON-NLS-1$
 	}
-	
-	
+
 	public String getFirstNodeAsString(String path){
 		if(doc == null || xpath == null){
 			return null;
 		}
-		
+
 		String nodeValue = null;
 
 		try {
@@ -234,29 +247,28 @@ public class SysConfig {
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}
-		
+
 		return nodeValue;
 	}
-	
-	
+
 	public String[] getColumnNames(int nColumns){
 		if(doc == null || xpath == null){
 			return null;
 		}
 
 		String[] columnNames = new String[nColumns];
-		
+
 		try {
 			XPathExpression expr = xpath.compile("/settings/column_names/li"); //$NON-NLS-1$
 			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 			if(nColumns == 0 || nodes.getLength() == 0){
 				return null;
-			} else if(nodes.getLength() != nColumns){
-				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " + nColumns + ", but it is " + nodes.getLength() +"."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			} else if (nodes.getLength() != nColumns) {
+				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " //$NON-NLS-1$
+						+ nColumns + ", but it is " + nodes.getLength() + "."); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
-			
-			
+
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Element element = (Element)nodes.item(i);
 				String id = element.getAttribute("id"); //$NON-NLS-1$
@@ -280,7 +292,6 @@ public class SysConfig {
 		return columnNames;
 	}
 
-	
 	public boolean[] getColumnReadOnlyFlags(int nColumns){
 		if(doc == null || xpath == null){
 			return null;
@@ -288,17 +299,18 @@ public class SysConfig {
 
 		boolean[] flags = new boolean[nColumns];
 		HashSet<String> idSet = new HashSet<String>();
-		
+
 		try {
 			XPathExpression expr = xpath.compile("/settings/column_names/li"); //$NON-NLS-1$
 			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 			if(nColumns == 0 || nodes.getLength() == 0){
 				return null;
 			} else if(nodes.getLength() != nColumns){
-				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " + nColumns + ", but it is " + nodes.getLength() +"."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " //$NON-NLS-1$
+						+ nColumns + ", but it is " + nodes.getLength() + "."); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
-			
+
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Element element = (Element)nodes.item(i);
 				String id = element.getAttribute("id"); //$NON-NLS-1$
@@ -307,8 +319,8 @@ public class SysConfig {
 				Matcher m = patternColumnID.matcher(id);
 				if(m.find() && !idSet.contains(id)){
 					int n = Integer.parseInt(m.group(1));
-					if(n <= nColumns  && !readonly.isEmpty()){
-						// always true if n == 1 or 2 
+					if(n <= nColumns && !readonly.isEmpty()){
+						// always true if n == 1 or 2
 						if(n > 2){
 							if(readonly.equalsIgnoreCase("true")){ //$NON-NLS-1$
 								flags[n-1] = true;
@@ -331,23 +343,23 @@ public class SysConfig {
 		return flags;
 	}
 
-	
 	public String[] getColumnConstraints(int nColumns){
 		if(doc == null || xpath == null){
 			return null;
 		}
 		String[] constraints = new String[nColumns];
-		
+
 		try {
 			XPathExpression expr = xpath.compile("/settings/column_names/li"); //$NON-NLS-1$
 			NodeList nodes = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 			if(nColumns == 0 || nodes.getLength() == 0){
 				return null;
 			} else if(nodes.getLength() != nColumns){
-				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " + nColumns + ", but it is " + nodes.getLength() +"."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				System.err.println("Error(SysConfig): The number of columns of /settings/column_names must be " //$NON-NLS-1$
+						+ nColumns + ", but it is " + nodes.getLength() + "."); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			}
-			
+
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Element element = (Element)nodes.item(i);
 				constraints[i] = element.getAttribute("constraint"); //$NON-NLS-1$
@@ -359,19 +371,18 @@ public class SysConfig {
 		return constraints;
 	}
 
-	
 	public void setCommentTypes(String path, String nodeName, List<CommentType> commentTypes){
 
 		XPathExpression expr;
 		try {
 			expr = xpath.compile(path);
 			Node nodeCommentTypes = (Node) expr.evaluate(doc, XPathConstants.NODE);
-			
+
 			while(nodeCommentTypes.hasChildNodes()){
 				nodeCommentTypes.removeChild(nodeCommentTypes.getFirstChild());
 			}
-			
-			for(CommentType commentType: commentTypes){
+
+			for(CommentType commentType : commentTypes){
 				if(commentType.getType().isEmpty()){
 					continue;
 				}
@@ -380,27 +391,25 @@ public class SysConfig {
 				newElement.setAttribute("color", String.valueOf(commentType.getColor().getRGB())); //$NON-NLS-1$
 				nodeCommentTypes.appendChild(newElement);
 			}
-			
+
 		} catch (XPathExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
 
-	
 	public void setDiscussers(String path, String nodeName, List<User> discussers){
 
 		XPathExpression expr;
 		try {
 			expr = xpath.compile(path);
 			Node nodeCommentTypes = (Node) expr.evaluate(doc, XPathConstants.NODE);
-			
+
 			while(nodeCommentTypes.hasChildNodes()){
 				nodeCommentTypes.removeChild(nodeCommentTypes.getFirstChild());
 			}
-			
-			for(User discusser: discussers){
+
+			for(User discusser : discussers){
 				if(discusser.getUserName().isEmpty()){
 					continue;
 				}
@@ -408,13 +417,12 @@ public class SysConfig {
 				newElement.setAttribute("name", discusser.getUserName()); //$NON-NLS-1$
 				nodeCommentTypes.appendChild(newElement);
 			}
-			
+
 		} catch (XPathExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
 
 	public void setValue(String pathToElement, String attributeName, String value) throws XPathExpressionException{
 		XPathExpression expr = xpath.compile(pathToElement);
@@ -422,4 +430,16 @@ public class SysConfig {
 		element.setAttribute(attributeName, value);
 	}
 
+	
+	class UnsupportedSysConfigFileException extends Exception {
+		private static final long serialVersionUID = 1L;
+
+		public UnsupportedSysConfigFileException() {
+			super();
+		}
+		
+		public UnsupportedSysConfigFileException(String message) {
+			super(message);
+		}
+	}
 }

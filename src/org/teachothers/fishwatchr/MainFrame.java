@@ -102,6 +102,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.lang3.StringUtils;
 import org.teachothers.fishwatchr.AnnotationGlobalViewer.FilteredViewCheckBoxCallBack;
 import org.teachothers.fishwatchr.SoundPlayer.TextOverlayInfo;
+import org.teachothers.fishwatchr.SysConfig.UnsupportedSysConfigFileException;
 import org.xml.sax.SAXException;
 
 import uk.co.caprica.vlcj.player.base.MarqueePosition;
@@ -184,6 +185,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemFileExport;
 	private JMenuItem jMenuItemFileSaveConfig;
 	private JMenuItem jMenuItemFileSaveConfigAs;
+	private JMenuItem jMenuItemFileLoadConfig;
 	private JMenuItem jMenuItemFileShare;
 	private JMenuItem jMenuItemFileEval;
 	private JMenuItem jMenuItemFileExit;
@@ -401,9 +403,9 @@ public class MainFrame extends JFrame {
 		try {
 			config.load(commentTypes, discussers);
 		} catch (XPathExpressionException | URISyntaxException | IOException | ParserConfigurationException
-				| SAXException e1) {
-			JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e1); //$NON-NLS-1$
-			e1.printStackTrace();
+				| SAXException | UnsupportedSysConfigFileException e) {
+			JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e.toString() + "\n" + e.getStackTrace()[0]); //$NON-NLS-1$ //$NON-NLS-2$
+			e.printStackTrace();
 		}
 
 		// set column names
@@ -1043,8 +1045,8 @@ public class MainFrame extends JFrame {
 			try {
 				config.load(commentTypes, discussers);
 			} catch (XPathExpressionException | URISyntaxException | IOException | ParserConfigurationException
-					| SAXException e) {
-				JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e);
+					| SAXException | UnsupportedSysConfigFileException e) {
+				JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e.toString() + "\n" + e.getStackTrace()[0]); //$NON-NLS-1$ //$NON-NLS-2$
 				e.printStackTrace();
 				return false;
 			}
@@ -1080,8 +1082,8 @@ public class MainFrame extends JFrame {
 					try {
 						config.load(commentTypes, discussers);
 					} catch (XPathExpressionException | URISyntaxException | IOException | ParserConfigurationException
-							| SAXException e) {
-						JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e);
+							| SAXException | UnsupportedSysConfigFileException e) {
+						JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e.toString() + "\n" + e.getStackTrace()[0]); //$NON-NLS-1$ //$NON-NLS-2$
 						e.printStackTrace();
 						return false;
 					}
@@ -1121,8 +1123,8 @@ public class MainFrame extends JFrame {
 				try {
 					config.load(commentTypes, discussers);
 				} catch (XPathExpressionException | URISyntaxException | IOException | ParserConfigurationException
-						| SAXException e) {
-					JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e);
+						| SAXException | UnsupportedSysConfigFileException e) {
+					JOptionPane.showMessageDialog(this, Messages.getString("MainFrame.157") + e.toString() + "\n" + e.getStackTrace()[0]); //$NON-NLS-1$ //$NON-NLS-2$
 					e.printStackTrace();
 					return false;
 				}
@@ -1715,6 +1717,7 @@ public class MainFrame extends JFrame {
 			jMenuFile.addSeparator();
 			jMenuFile.add(getJMenuItemFileSaveConfig());
 			jMenuFile.add(getJMenuItemFileSaveConfigAs());
+			jMenuFile.add(getJMenuItemFileLoadConfig());
 			jMenuFile.addSeparator();
 			jMenuFile.add(getJMenuItemFileShare());
 			jMenuFile.add(getJMenuItemFileEval());
@@ -1865,6 +1868,9 @@ public class MainFrame extends JFrame {
 					(type == TYPE_ALL || type == TYPE_MEDIA)){
 				return true;
 			} else if(filename.endsWith(CommentList.FILE_SUFFIX) &&
+					(type == TYPE_ALL || type == TYPE_XML)){
+				return true;
+			} else if(filename.endsWith(SysConfig.CONFIG_FILE_SUFFIX) &&
 					(type == TYPE_ALL || type == TYPE_XML)){
 				return true;
 			} else {
@@ -2161,6 +2167,44 @@ public class MainFrame extends JFrame {
 					});
 		}
 		return jMenuItemFileSaveConfigAs;
+	}
+
+	
+	private JMenuItem getJMenuItemFileLoadConfig() {
+		if (jMenuItemFileLoadConfig == null) {
+			jMenuItemFileLoadConfig = new JMenuItem(Messages.getString("MainFrame.171")); //$NON-NLS-1$
+			jMenuItemFileLoadConfig
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							try {
+								if (commentList.isModified() || (xf != null && !xf.isBlank())) {
+									JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.172")); //$NON-NLS-1$
+									return;
+								}
+								
+								String loadFilename = chooseFile(
+										new FishWatchrFileFilter(Messages.getString("MainFrame.174")), //$NON-NLS-1$
+										JFileChooser.FILES_ONLY, false);
+								
+								if(loadFilename.isBlank()) {
+									return;
+								}
+								
+								config.load(
+										Paths.get(loadFilename),
+										commentTypes, discussers);
+								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.175")); //$NON-NLS-1$
+							} catch (IOException | XPathExpressionException | ParserConfigurationException | SAXException | UnsupportedSysConfigFileException e1) {
+								JOptionPane.showMessageDialog(
+										MainFrame.this,
+										Messages.getString("MainFrame.157") + e1.toString() + "\n" + e1.getStackTrace()[0]); //$NON-NLS-1$ //$NON-NLS-2$
+								e1.printStackTrace();
+								return;
+							}
+						}
+					});
+		}
+		return jMenuItemFileLoadConfig;
 	}
 
 	
