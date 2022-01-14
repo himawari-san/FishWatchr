@@ -2131,7 +2131,7 @@ public class MainFrame extends JFrame {
 								config.save();
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.77") + SysConfig.CONFIG_FILENAME); //$NON-NLS-1$
 							} catch (IOException | TransformerException | URISyntaxException | XPathExpressionException e1) {
-								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.getLocalizedMessage()); //$NON-NLS-1$
+								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.toString() + "\n" + e1.getStackTrace()[0]); //$NON-NLS-1$ //$NON-NLS-2$
 								e1.printStackTrace();
 							}
 						}
@@ -2160,7 +2160,7 @@ public class MainFrame extends JFrame {
 								config.save(Paths.get(saveFilename));
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.77") + saveFilename); //$NON-NLS-1$
 							} catch (IOException | TransformerException | XPathExpressionException e1) {
-								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.getLocalizedMessage()); //$NON-NLS-1$
+								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.79") + e1.toString() + "\n" + e1.getStackTrace()[0]); //$NON-NLS-1$ //$NON-NLS-2$
 								e1.printStackTrace();
 							}
 						}
@@ -3507,19 +3507,22 @@ public class MainFrame extends JFrame {
 							if(!mergeAnnotationFiles(target.getCanonicalPath())){
 								return;
 							}
+							soundPlayer.myPlay();
+						} else if(target.getName().endsWith(SysConfig.CONFIG_FILE_SUFFIX) && SysConfig.isConfigurationFile(target.getAbsoluteFile())){
+							config.load(target.toPath(), commentTypes, discussers);
+							JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.175")); //$NON-NLS-1$
 						} else {
 							if(!setTargetFile(target.getCanonicalPath())){
 								return;
 							}
+							soundPlayer.myPlay();
 						}
-//						changeStatePlay();
-						soundPlayer.myPlay();
-//						timerStart();
 					}
 				}
-			} catch (UnsupportedFlavorException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (UnsupportedFlavorException | IOException | XPathExpressionException | ParserConfigurationException | SAXException | UnsupportedSysConfigFileException e) {
+				JOptionPane.showMessageDialog(
+						MainFrame.this,
+						Messages.getString("MainFrame.165") + e.toString() + "\n" + e.getStackTrace()[0]); //$NON-NLS-1$ //$NON-NLS-2$
 				e.printStackTrace();
 			}
 		}
