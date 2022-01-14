@@ -474,8 +474,8 @@ public class MainFrame extends JFrame {
 			}
 		}
 
-		// set commenter's name
-		configValue = config.getFirstNodeAsString("/settings/commenter/@value"); //$NON-NLS-1$
+		// set commenter's name (@value is deprecated)
+		configValue = config.getFirstNodeAsString("/settings/commenter/@name | /settings/commenter/@value"); //$NON-NLS-1$
 		if(configValue == null
 				|| configValue.isEmpty()
 				|| configValue.matches("^\\s+$")){ //$NON-NLS-1$
@@ -496,11 +496,16 @@ public class MainFrame extends JFrame {
 				configValue = username + COMMENTER_NAME_GLUE2 + hostname;
 			}
 		}
-		String modifiedName = configValue.replaceAll("[/<>&'\"\\s]", COMMENTER_NAME_GLUE1); //$NON-NLS-1$
-		if(!configValue.equals(modifiedName)){
-			System.err.println("Warning(mainFrame): commenter's name was modified from " + configValue + " to " + modifiedName); //$NON-NLS-1$ //$NON-NLS-2$
+		String commenterName = configValue.replaceAll("[/<>&'\"\\s]", COMMENTER_NAME_GLUE1); //$NON-NLS-1$
+		if(!configValue.equals(commenterName)){
+			System.err.println("Warning(mainFrame): commenter's name was modified from " + configValue + " to " + commenterName); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		commenter = new User(modifiedName);
+		
+		// group
+		String groupName = config.getFirstNodeAsString("/settings/commenter/@group"); //$NON-NLS-1$
+		groupName = groupName == null ? "" : groupName.replaceFirst("^\\s+", "").replaceFirst("\\s+$", "");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		
+		commenter = new User(commenterName, groupName);
 
 		ginit();
 	}
@@ -2721,21 +2726,27 @@ public class MainFrame extends JFrame {
 			JOptionPane.showMessageDialog(null, ctm.getColumnName(Comment.F_ANNOTATOR) + Messages.getString("MainFrame.104")); //$NON-NLS-1$
 			return;
 		} else if(annotatorName.matches(".*[\\s<>/&'\"].*")){ //$NON-NLS-1$
-			JOptionPane.showMessageDialog(null, annotatorName + Messages.getString("MainFrame.105")); //$NON-NLS-1$
+			JOptionPane.showMessageDialog(MainFrame.this, annotatorName + Messages.getString("MainFrame.105")); //$NON-NLS-1$
 			return;
 		}
 		
 		String groupName = userOptionPane.getGroupName();
 		if(groupName.matches(".*[\\s<>/&'\"].*")){ //$NON-NLS-1$
-			JOptionPane.showMessageDialog(null, groupName + Messages.getString("MainFrame.105")); //$NON-NLS-1$
+			JOptionPane.showMessageDialog(MainFrame.this, groupName + Messages.getString("MainFrame.105")); //$NON-NLS-1$
 			return;
 		}
 
+		try {
+			config.setValue("/settings/commenter", "group", groupName); //$NON-NLS-1$ //$NON-NLS-2$
+		} catch (XPathExpressionException e) {
+			JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.176") + e.toString() + "\n" + e.getStackTrace()[0] ); //$NON-NLS-1$ //$NON-NLS-2$
+			e.printStackTrace();
+			return;
+		}
 
 		commenter.setUserName(annotatorName);
 		commenter.setGroupName(groupName);
 		commentTable.setAnnotator(annotatorName);
-	
 	}
 
 	

@@ -26,6 +26,12 @@ public class User {
 		this.userName = name;
 	}
 	
+	public User(String name, String group){
+		this.userName = name;
+		this.groupName = group;
+	}
+
+	
 	public String getUserName(){
 		return userName;
 	}

@@ -47,7 +47,7 @@
   <!-- 空欄の場合は，
        システムのデフォルト値(ログイン + _in_ + ホスト名)が使われる
   -->
-  <commenter value="" />
+  <commenter name="" group="" />
 
   <!-- setting of column names
        Attention:
