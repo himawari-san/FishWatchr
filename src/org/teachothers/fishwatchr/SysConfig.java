@@ -96,7 +96,7 @@ public class SysConfig {
 		XPathFactory xPathFactory = XPathFactory.newInstance();
 		xpath = xPathFactory.newXPath();
 
-		if (!isValid()) {
+		if (!isConfigurationFile(configPath.toFile())) {
 			throw new UnsupportedSysConfigFileException();
 		}
 
@@ -149,10 +149,14 @@ public class SysConfig {
 		}
 	}
 
-	private boolean isValid() throws XPathExpressionException {
-		if (doc == null) {
-			return false;
-		}
+	
+	static public boolean isConfigurationFile(File config) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+		DocumentBuilderFactory factory = Util.getSimpleDocumentBuilderFactory();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(config);
+
+		XPathFactory xPathFactory = XPathFactory.newInstance();
+		XPath xpath = xPathFactory.newXPath();
 
 		// this element must be described in config.xml
 		XPathExpression expr = xpath.compile("/settings/button_type"); //$NON-NLS-1$
@@ -164,7 +168,7 @@ public class SysConfig {
 
 		return true;
 	}
-	
+
 
 	public void save() throws IOException, TransformerException, URISyntaxException, XPathExpressionException {
 		save(Paths.get(Util.getJarDir() + "/" + CONFIG_FILENAME)); //$NON-NLS-1$
