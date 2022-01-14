@@ -470,8 +470,8 @@ public class MainFrame extends JFrame {
 			}
 		}
 
-		// set commenter's name
-		configValue = config.getFirstNodeAsString("/settings/commenter/@value"); //$NON-NLS-1$
+		// set commenter's name (@value is deprecated)
+		configValue = config.getFirstNodeAsString("/settings/commenter/@name | /settings/commenter/@value"); //$NON-NLS-1$
 		if(configValue == null
 				|| configValue.isEmpty()
 				|| configValue.matches("^\\s+$")){ //$NON-NLS-1$
