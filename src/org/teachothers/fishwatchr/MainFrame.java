@@ -2219,7 +2219,7 @@ public class MainFrame extends JFrame {
 //							String pipeServer = "http://160.16.218.34/";
 							String pipeServer = "http://localhost:8080/"; //$NON-NLS-1$
 //							String pipeServer = "https://piping-server-test.herokuapp.com/";
-							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter.getUserName(), Paths.get(xf), Paths.get(mf));
+							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter, Paths.get(xf), Paths.get(mf));
 							JDialog d = fsp.createDialog(Messages.getString("MainFrame.159")); //$NON-NLS-1$
 							d.setVisible(true);
 							Object selectedValue = fsp.getValue();

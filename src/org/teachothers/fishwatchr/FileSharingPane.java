@@ -39,16 +39,16 @@ import javax.swing.event.ChangeListener;
 public class FileSharingPane extends JOptionPane {
 	private static final long serialVersionUID = 1L;
 	private static final int N_RETRY = 2;
-	private String username;
+	private User user;
 	private Path commentFilePath;
 	private Path mediaFilePath;
 	private JTextField pathField;
 	private DataPiper pipe;
 
 
-	public FileSharingPane(String pipeServer, String username, Path commentFilePath, Path mediaFilePath) {
+	public FileSharingPane(String pipeServer, User user, Path commentFilePath, Path mediaFilePath) {
 		super();
-		this.username = username;
+		this.user = user;
 		this.commentFilePath = commentFilePath;
 		this.mediaFilePath = mediaFilePath;
 		this.pipe = new DataPiper(pipeServer);
@@ -64,7 +64,7 @@ public class FileSharingPane extends JOptionPane {
 		
 		JPanel idPanel = new JPanel();
 		JLabel usernameLabel = new JLabel("Username");
-		JLabel usernameBody = new JLabel(username);
+		JLabel usernameBody = new JLabel(user.getUserName());
 		JLabel pathLabel = new JLabel("Path:");
 		pathField = new JTextField("a");
 		idPanel.setLayout(new GridLayout(2, 2, 1, 3));
@@ -388,8 +388,8 @@ public class FileSharingPane extends JOptionPane {
 							public void run() {
 								messagePanel.append("- メンバーを探しています。\n");
 								String basePath = pathField.getText();
-								newPath = DataPiper.generatePath(username + basePath);
-								PipeMessage myInfo = new PipeMessage(username, newPath);
+								newPath = DataPiper.generatePath(user.getUserName() + basePath);
+								PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
 								PipeMessage memberInfo = null;
 								try {
 									pipe.postMessage(basePath, myInfo, N_RETRY);
@@ -523,7 +523,7 @@ public class FileSharingPane extends JOptionPane {
 									memberListPanel.addMember(memberMessage);
 									messagePanel.append("- " + memberName + "をメンバーリストに追加しました。\n");
 									String tempPath = memberMessage.getPath();
-									PipeMessage myInfo = new PipeMessage(username, tempPath);
+									PipeMessage myInfo = new PipeMessage(user.getUserName(), tempPath);
 									myInfo.setType(PipeMessage.TYPE_CONTINUED);
 									try {
 										pipe.postMessage(tempPath, myInfo);
@@ -563,8 +563,8 @@ public class FileSharingPane extends JOptionPane {
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
 							public void run() {
-								String newPath = DataPiper.generatePath(username + basePath) + "?n=" + nSenders;
-								PipeMessage myInfo = new PipeMessage(username, newPath);
+								String newPath = DataPiper.generatePath(user.getUserName() + basePath) + "?n=" + nSenders;
+								PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
 								long dataSize = Util.getTotalFilesize(filePaths);
 								myInfo.setDataSize(dataSize);
 								
@@ -659,7 +659,7 @@ public class FileSharingPane extends JOptionPane {
 						setLabel(status);
 						
 						String basePath = pathField.getText();
-						PipeMessage myInfo = new PipeMessage(username);
+						PipeMessage myInfo = new PipeMessage(user.getUserName());
 						
 						messageBroadcaster = new PipeMessageBroadcaster(pipe, basePath, myInfo,
 								(updatedMessage) -> {
@@ -828,7 +828,7 @@ public class FileSharingPane extends JOptionPane {
 								try {
 									dataSize = Util.getTotalFilesize(filePaths);
 
-									PipeMessage myInfo = new PipeMessage(username, newPath);
+									PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
 									myInfo.setDataSize(dataSize);
 									pipe.postMessage(newPath, myInfo);
 									setLabel(status = STATUS_EXECUTE);
