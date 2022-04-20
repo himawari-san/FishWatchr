@@ -2,7 +2,6 @@ package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,9 +15,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -30,13 +31,14 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
 
 
-public class FileSharingPane extends JOptionPane {
+public class FileSharingDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final int N_RETRY = 2;
 	private User user;
@@ -44,14 +46,16 @@ public class FileSharingPane extends JOptionPane {
 	private Path mediaFilePath;
 	private JTextField pathField;
 	private DataPiper pipe;
+	private Consumer<Path> receiveSuccess;
 
 
-	public FileSharingPane(String pipeServer, User user, Path commentFilePath, Path mediaFilePath) {
+	public FileSharingDialog(String pipeServer, User user, Path commentFilePath, Path mediaFilePath, Consumer<Path> receiveSuccess) {
 		super();
 		this.user = user;
 		this.commentFilePath = commentFilePath;
 		this.mediaFilePath = mediaFilePath;
 		this.pipe = new DataPiper(pipeServer);
+		this.receiveSuccess = receiveSuccess;
 		ginit();
 	}
 
@@ -59,8 +63,9 @@ public class FileSharingPane extends JOptionPane {
 	private void ginit(){
 		int nTab = 0;
 		
-		setOptions(new Object[0]); // remove the default OK button
-		setPreferredSize(new Dimension(450, 300));
+		setModal(true);
+		setSize(450, 300);
+
 		
 		JPanel idPanel = new JPanel();
 		JLabel usernameLabel = new JLabel("Username");
@@ -76,6 +81,7 @@ public class FileSharingPane extends JOptionPane {
 		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout(10, 10));
+		mainPanel.setBorder(new EmptyBorder( 5, 5, 5, 5));
 		
 		JTabbedPane tabbedpane = new JTabbedPane();
 		mainPanel.add(idPanel, BorderLayout.NORTH);
@@ -93,8 +99,7 @@ public class FileSharingPane extends JOptionPane {
 		tabbedpane.add(new DistributePanel());
 		tabbedpane.setTitleAt(nTab++, "配布");
 
-		
-		setMessage(mainPanel);
+		getContentPane().add(mainPanel);
 		
 		tabbedpane.addChangeListener(new ChangeListener() {
 			@Override
@@ -109,7 +114,7 @@ public class FileSharingPane extends JOptionPane {
 	}
 
 
-	
+
 	
 	private class SendPanel extends JPanel {
 		
@@ -352,11 +357,12 @@ public class FileSharingPane extends JOptionPane {
 	
 	private class ReceiveButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探索", "キャセル", "受信を実行"};
+		private final String[] labels = {"相手を探索", "キャセル", "受信を実行", "閉じる"};
 		
 		private String newPath = "";
 		private long dataSize = 0;
 		private Path saveRootPath = null;
+		private Path savePath = null;
 
 		
 		public ReceiveButton(MemberPanel memberPanel, MessagePanel messagePanel) {
@@ -372,7 +378,7 @@ public class FileSharingPane extends JOptionPane {
 
 						if(commentFilePath.getParent() == null) {
 							if(Util.getDefaultDirPath() == null) {
-								JOptionPane.showMessageDialog(ReceiveButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してみてください。");
+								JOptionPane.showMessageDialog(ReceiveButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatchrに読み込んだ上で，再度実行してみてください。");
 								return;
 							}
 							saveRootPath = Util.getDefaultDirPath();
@@ -431,7 +437,7 @@ public class FileSharingPane extends JOptionPane {
 						setLabel(status = STATUS_CANCEL);
 						
 						String memberName = memberPanel.getMember();
-						Path savePath = Util.getUniquePath(saveRootPath, memberName);
+						savePath = Util.getUniquePath(saveRootPath, memberName);
 						
 						try {
 							Files.createDirectories(savePath);
@@ -469,12 +475,14 @@ public class FileSharingPane extends JOptionPane {
 								}
 								messagePanel.append("- 受信が完了しました\n");
 								messagePanel.append("- 保存先：" + savePath + "\n");
-								setLabel(status = STATUS_SEARCH);
+								setLabel(status = STATUS_FINISH);
 							}
 						});
 						
 						break;
 					case STATUS_FINISH:
+						FileSharingDialog.this.setVisible(false);
+						receiveSuccess.accept(savePath);
 						break;
 					default:
 						break;
@@ -496,7 +504,8 @@ public class FileSharingPane extends JOptionPane {
 			setLabel(status);
 
 			addActionListener(new ActionListener() {
-				Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
+				Path filePaths[] = (mediaFilePath == null || mediaFilePath.toString().matches("^https?:/.+")) 
+						? new Path[] {commentFilePath} : new Path[] {commentFilePath, mediaFilePath};
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -788,8 +797,10 @@ public class FileSharingPane extends JOptionPane {
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					Path filePaths[] = new Path[] {commentFilePath, mediaFilePath};
-					
+					Path filePaths[] = (mediaFilePath == null || mediaFilePath.toString().matches("^https?:/.+")) 
+							? new Path[] {commentFilePath} : new Path[] {commentFilePath, mediaFilePath};
+							
+					System.err.println("len:" + filePaths.length + "," + mediaFilePath.toString());
 					switch (status) {
 					case STATUS_SEARCH:
 						if(commentFilePath.getParent() == null) {

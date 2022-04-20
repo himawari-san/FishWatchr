@@ -20,11 +20,14 @@ package org.teachothers.fishwatchr;
 import java.awt.Container;
 import java.awt.Font;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
@@ -98,6 +101,32 @@ public class Util {
 		return newPath;
 	}
 
+	
+	public static Path findCommentFile(Path targetDirPath) {
+		try (Stream<Path> files = Files.walk(targetDirPath)){
+			return files.filter(f->f.getFileName().toString().endsWith(".xml"))
+			.findFirst()
+			.orElseGet(()-> null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	
+//	public static Path findMediaFile(Path targetDirPath) {
+//		try (Stream<Path> files = Files.walk(targetDirPath)){
+//			return files.filter(f->f.getFileName().toString().endsWith(".mp4"))
+//					.findFirst()
+//					.orElseGet(()-> null);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		return null;
+//	}
+	
 	
 	public static long getTotalFilesize(Path[] paths) {
 		long total = 0;

@@ -51,6 +51,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,6 +63,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -2208,7 +2212,6 @@ public class MainFrame extends JFrame {
 		return jMenuItemFileEval;
 	}
 	
-	
 
 	private JMenuItem getJMenuItemFileShare() {
 		if (jMenuItemFileShare == null) {
@@ -2216,13 +2219,25 @@ public class MainFrame extends JFrame {
 			jMenuItemFileShare
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-//							String pipeServer = "http://160.16.218.34/";
 							String pipeServer = "http://localhost:8080/"; //$NON-NLS-1$
 //							String pipeServer = "https://piping-server-test.herokuapp.com/";
-							FileSharingPane fsp = new FileSharingPane(pipeServer, commenter, Paths.get(xf), Paths.get(mf));
-							JDialog d = fsp.createDialog(Messages.getString("MainFrame.159")); //$NON-NLS-1$
-							d.setVisible(true);
-							Object selectedValue = fsp.getValue();
+							FileSharingDialog fsp = new FileSharingDialog(pipeServer, commenter, Paths.get(xf), Paths.get(mf),
+									(receivedPath)-> {
+										xf = Util.findCommentFile(receivedPath).toAbsolutePath().toString();
+										
+										SwingUtilities.invokeLater(new Runnable() {
+											
+											@Override
+											public void run() {
+												if(!setTargetFile(xf)){
+													return;
+												}
+												soundPlayer.myPlay();
+											}
+										});
+							});
+							fsp.setLocationRelativeTo(MainFrame.this);
+							fsp.setVisible(true);
 //							fsp.shutdownNow();
 						}
 
