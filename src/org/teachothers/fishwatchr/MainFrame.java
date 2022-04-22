@@ -54,6 +54,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,8 +64,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Stream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -739,7 +738,7 @@ public class MainFrame extends JFrame {
 						commentTime = commentTime < 0 ? 0 : commentTime;
 
 						if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
-							if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){ //$NON-NLS-1$
+							if(!SoundPlayer.isPlayable(mf)) {
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.3") + mf); //$NON-NLS-1$
 								return;
 							}
@@ -935,9 +934,7 @@ public class MainFrame extends JFrame {
 			soundPlayButton
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
-							if(!mf.isEmpty()
-									&& !SoundPlayer.isPlayable(mf)
-									&& !mf.matches("^https?://.+")){ //$NON-NLS-1$
+							if(!SoundPlayer.isPlayable(mf)) {
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.9") + mf); //$NON-NLS-1$
 								return;
 							}
@@ -1061,7 +1058,7 @@ public class MainFrame extends JFrame {
 
 		
 		// 読み込んだファイルがメディアファイルの場合
-		if(SoundPlayer.isPlayable(selectedFilename)){
+		if(SoundPlayer.isPlayableFile(selectedFilename)){
 			String oldMf = mf;
 			String oldXf = xf;
 			mf = selectedFilename;
@@ -1526,7 +1523,7 @@ public class MainFrame extends JFrame {
 					}
 
 					if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
-						if(mf.isEmpty() || (!SoundPlayer.isPlayable(mf) && !mf.matches("^https?://.+"))){ //$NON-NLS-1$
+						if(!SoundPlayer.isPlayable(mf)) {
 							JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.29") + mf); //$NON-NLS-1$
 							return;
 						}
@@ -1839,7 +1836,7 @@ public class MainFrame extends JFrame {
 					(type == TYPE_ALL || type == TYPE_MEDIA)){
 				// 生成元のメディアファイルがないか調べる
 				String candidate = filename.replaceFirst(SoundPlayer.SOUNDFILE_EXTENSION + "$",  ""); //$NON-NLS-1$ //$NON-NLS-2$
-				if(SoundPlayer.isPlayable(candidate)){
+				if(SoundPlayer.isPlayableFile(candidate)){
 					for(String child: new File(f.getParent()).list()){
 						// 生成元の wav ファイルがある場合は，リストに表示しない
 						if(child.equals(candidate)){
@@ -1848,7 +1845,7 @@ public class MainFrame extends JFrame {
 					}
 				}
 				return true;
-			} else if(SoundPlayer.isPlayable(filename) &&
+			} else if(SoundPlayer.isPlayableFile(filename) &&
 					(type == TYPE_ALL || type == TYPE_MEDIA)){
 				return true;
 			} else if(filename.endsWith(CommentList.FILE_SUFFIX) &&

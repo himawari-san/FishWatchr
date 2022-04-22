@@ -553,7 +553,7 @@ public class CommentList extends ArrayList<Comment> {
 				if (!flagAdd) {
 					flagAdd = true;
 				}
-			} else if(SoundPlayer.isPlayable(filename)){
+			} else if(SoundPlayer.isPlayableFile(filename)){
 				if(candMediafilename.isEmpty()){
 					candMediafilename = filename;
 				} else if(!candMediafilename.equals(filename)){
@@ -781,7 +781,7 @@ public class CommentList extends ArrayList<Comment> {
 				// 末尾の .xml を削除
 				setName = setName.replaceFirst("\\.xml$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			if(SoundPlayer.isPlayable(setName)){
+			if(SoundPlayer.isPlayableFile(setName)){
 				// 末尾の拡張子を削除
 				setName = setName.replaceFirst("\\.[^\\.]+$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			}

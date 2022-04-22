@@ -462,9 +462,23 @@ public class SoundPlayer {
 		return MEDIA_FILE_EXTENSIONS;
 	}
 
-	
+
 	public static boolean isPlayable(String filename){
-		if(filename.startsWith("http://") || filename.startsWith("file://") || filename.startsWith("https://")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if(isStream(filename)) {
+			return true;
+		}
+
+		for(String extension: MEDIA_FILE_EXTENSIONS){
+			if(filename.toLowerCase().endsWith(extension.toLowerCase())){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	
+	public static boolean isPlayableFile(String filename){
+		if(isStream(filename)) {
 			return false;
 		}
 
@@ -476,6 +490,15 @@ public class SoundPlayer {
 		return false;
 	}
 
+	
+	public static boolean isStream(String filename) {
+		if(filename.startsWith("http://") || filename.startsWith("file://") || filename.startsWith("https://")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return true;
+		}
+		
+		return false;
+	}
+	
 	
 	public static boolean isSoundFile(String filename){
 		if(filename.startsWith("http://") || filename.startsWith("https://")){ //$NON-NLS-1$ //$NON-NLS-2$
