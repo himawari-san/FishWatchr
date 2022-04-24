@@ -2011,7 +2011,9 @@ public class MainFrame extends JFrame {
 			}
 			
 			mf = results.remove(0); // mediafilename
-			xf = CommentList.getUniqueFilename(mf + CommentList.MERGED_FILE_SUFFIX);
+			xf = SoundPlayer.isStream(mf) ?
+					CommentList.getUniqueFilename(Path.of(directoryName).resolve(CommentList.ANNOTATION_FILE_BASENAME_FOR_STREAM + CommentList.MERGED_FILE_SUFFIX).toAbsolutePath().toString())
+					: CommentList.getUniqueFilename(mf + CommentList.MERGED_FILE_SUFFIX);
 			commentList.setModified(true);
 			Collections.sort(results);
 
