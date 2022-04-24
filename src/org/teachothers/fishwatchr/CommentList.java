@@ -63,6 +63,7 @@ public class CommentList extends ArrayList<Comment> {
 	private static final int maxElapsedTime = 1000 * 60 * 60 * 2; // 2 hours
 	
 	public static final String FILE_SUFFIX = ".xml"; //$NON-NLS-1$
+	public static final String ANNOTATION_FILE_BASENAME_FOR_STREAM = "stream"; //$NON-NLS-1$
 	public static final String MERGED_FILE_SUFFIX = ".merged.xml"; //$NON-NLS-1$
 	public static final String BACKUP_DIR = "BAK"; //$NON-NLS-1$
 	public static final String BASE_TIME_FILE_PREFIX = "_sys_basetime"; //$NON-NLS-1$
@@ -78,7 +79,9 @@ public class CommentList extends ArrayList<Comment> {
 //	private HashMap<String, Integer> mapStartTimeOffset = new HashMap<String, Integer>();
 	private HashMap<String, Integer> mapCommentTimeOffset = new HashMap<String, Integer>();
 	private HashMap<String, String> mapStartTime = new HashMap<String, String>();
+	// a relative path from a observation file to a media file, or an absolute path to a media file 
 	private String mediaFilename = ""; //$NON-NLS-1$
+	// /comment_list/@media_file
 	private String mediaFilenameOriginal = ""; //$NON-NLS-1$
 	private String setName = ""; //$NON-NLS-1$
 
@@ -549,6 +552,21 @@ public class CommentList extends ArrayList<Comment> {
 				
 				load(filename, commentTypes, discussers, flagAdd);
 				results.add(file.getName());
+				
+				// update candMediafilename
+				if(!SoundPlayer.isStream(mediaFilename)) {
+					// do nothing
+				} else if(candMediafilename.isEmpty()){
+					candMediafilename = mediaFilename;
+				} else if(!candMediafilename.equals(mediaFilename)){
+					throw new IllegalStateException(
+							Messages.getString("CommentList.1") //$NON-NLS-1$
+							+ "\n" //$NON-NLS-1$
+							+ candMediafilename + ", " //$NON-NLS-1$
+							+ mediaFilename);
+				}
+				
+				
 				// 初回だけ，false にする
 				if (!flagAdd) {
 					flagAdd = true;
@@ -609,8 +627,7 @@ public class CommentList extends ArrayList<Comment> {
 		}
 
 		mediaFilename = candMediafilename;
-		// set the path relative to the config file
-		mediaFilenameOriginal = new File(mediaFilename).getName();
+		mediaFilenameOriginal = SoundPlayer.isStream(mediaFilename) ? mediaFilename : new File(mediaFilename).getName();
 		results.add(0, mediaFilename);
 		
 		return results;
