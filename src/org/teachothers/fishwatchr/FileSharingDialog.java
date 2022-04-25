@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -38,6 +39,7 @@ import javax.swing.event.ChangeListener;
 
 
 
+
 public class FileSharingDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final int N_RETRY = 2;
@@ -47,15 +49,18 @@ public class FileSharingDialog extends JDialog {
 	private JTextField pathField;
 	private DataPiper pipe;
 	private Consumer<Path> receiveSuccess;
+	private Consumer<ArrayList<Path>> collectSuccess;
 
 
-	public FileSharingDialog(String pipeServer, User user, Path commentFilePath, Path mediaFilePath, Consumer<Path> receiveSuccess) {
+	public FileSharingDialog(String pipeServer, User user, Path commentFilePath, Path mediaFilePath,
+			Consumer<Path> receiveSuccess, Consumer<ArrayList<Path>> collectSuccess) {
 		super();
 		this.user = user;
 		this.commentFilePath = commentFilePath;
 		this.mediaFilePath = mediaFilePath;
 		this.pipe = new DataPiper(pipeServer);
 		this.receiveSuccess = receiveSuccess;
+		this.collectSuccess = collectSuccess;
 		ginit();
 	}
 
@@ -642,9 +647,10 @@ public class FileSharingDialog extends JDialog {
 	
 	private class CollectButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探索", "キャンセル", "収集を実行"};
+		private final String[] labels = {"相手を探索", "キャンセル", "収集を実行", "閉じる"};
 		private PipeMessageBroadcaster messageBroadcaster = null;
 		private Path saveRootPath = null;
+		private ArrayList<Path> savePaths = new ArrayList<Path>();
 	
 		public CollectButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
 			setLabels(labels);
@@ -656,13 +662,10 @@ public class FileSharingDialog extends JDialog {
 					switch (status) {
 					case STATUS_SEARCH:
 						if(commentFilePath.getParent() == null) {
-							if(Util.getDefaultDirPath() == null) {
-								JOptionPane.showMessageDialog(CollectButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してみてください。");
+							JOptionPane.showMessageDialog(CollectButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してみてください。");
 								return;
-							}
-							saveRootPath = Util.getDefaultDirPath().resolve(Util.getTimeStamp("yyyyMMdd_HHmmss"));
 						} else {
-							saveRootPath = commentFilePath.getParent().resolve(Util.getTimeStamp("yyyyMMdd_HHmmss"));
+							saveRootPath = commentFilePath.getParent();
 						}
 						
 						setLabel(status);
@@ -750,6 +753,7 @@ public class FileSharingDialog extends JDialog {
 									});
 									
 									queue.add(f);
+									savePaths.add(savePath);
 								}
 								
 								for(Future<Void> f : queue) {
@@ -767,12 +771,15 @@ public class FileSharingDialog extends JDialog {
 								}
 								
 								messagePanel.append("- 収集が完了しました。\n");
-								setLabel(status=STATUS_SEARCH);
+								setLabel(status = STATUS_FINISH);
 						}
 						});
-//						setText(labels[status=STATUS_INIT]);
 //						memberListPanel.clearMember();
 
+						break;
+					case STATUS_FINISH:
+						FileSharingDialog.this.setVisible(false);
+						collectSuccess.accept(savePaths);
 						break;
 					default:
 						break;

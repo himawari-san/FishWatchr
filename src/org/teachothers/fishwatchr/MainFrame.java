@@ -2234,6 +2234,19 @@ public class MainFrame extends JFrame {
 												soundPlayer.myPlay();
 											}
 										});
+									},
+									(collectionPaths)-> {
+										for (Path path : collectionPaths) {
+											try {
+												Path f = Util.findCommentFile(path);
+												Files.copy(f, path.getParent().resolve(f.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+											} catch (IOException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+												return;
+											}
+										}
+										mergeAnnotationFiles(collectionPaths.get(0).getParent().toFile().getAbsolutePath());
 							});
 							fsp.setLocationRelativeTo(MainFrame.this);
 							fsp.setVisible(true);
