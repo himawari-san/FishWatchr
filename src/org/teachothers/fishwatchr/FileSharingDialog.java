@@ -2,6 +2,7 @@ package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,6 +44,8 @@ import javax.swing.event.ChangeListener;
 public class FileSharingDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final int N_RETRY = 2;
+	private static final int WIDTH = 450;
+	private static final int HEIGHT = 600;
 	private User user;
 	private Path commentFilePath;
 	private Path mediaFilePath;
@@ -69,7 +72,8 @@ public class FileSharingDialog extends JDialog {
 		int nTab = 0;
 		
 		setModal(true);
-		setSize(450, 300);
+		setSize(WIDTH, HEIGHT);
+		setMinimumSize(new Dimension(WIDTH, HEIGHT));
 
 		
 		JPanel idPanel = new JPanel();
