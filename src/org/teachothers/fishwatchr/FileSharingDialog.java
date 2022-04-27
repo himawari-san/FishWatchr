@@ -3,6 +3,8 @@ package org.teachothers.fishwatchr;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +21,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -33,7 +37,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -45,7 +53,7 @@ public class FileSharingDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final int N_RETRY = 2;
 	private static final int WIDTH = 450;
-	private static final int HEIGHT = 600;
+	private static final int HEIGHT = 500;
 	private User user;
 	private Path commentFilePath;
 	private Path mediaFilePath;
@@ -74,27 +82,25 @@ public class FileSharingDialog extends JDialog {
 		setModal(true);
 		setSize(WIDTH, HEIGHT);
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
+		setTitle("ファイル共有");
 
 		
 		JPanel idPanel = new JPanel();
-		JLabel usernameLabel = new JLabel("Username");
+		JLabel usernameLabel = new JLabel("ユーザ名");
+		usernameLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, usernameLabel.getFont().getSize()));
 		JLabel usernameBody = new JLabel(user.getUserName());
-		JLabel pathLabel = new JLabel("Path:");
+		JLabel pathLabel = new JLabel("Path");
+		pathLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, pathLabel.getFont().getSize()));
 		pathField = new JTextField("a");
-		idPanel.setLayout(new GridLayout(2, 2, 1, 3));
+		idPanel.setLayout(new GridLayout(2, 2, 1, 10));
+		idPanel.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED), new EmptyBorder(15, 5, 15, 5)));
 		idPanel.add(usernameLabel);
 		idPanel.add(usernameBody);
 		idPanel.add(pathLabel);
 		idPanel.add(pathField);
-		
-		
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new BorderLayout(10, 10));
-		mainPanel.setBorder(new EmptyBorder( 5, 5, 5, 5));
-		
+		idPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 250)); // the height value must be set, but doesn't work properly.
+
 		JTabbedPane tabbedpane = new JTabbedPane();
-		mainPanel.add(idPanel, BorderLayout.NORTH);
-		mainPanel.add(tabbedpane, BorderLayout.CENTER);
 
 		tabbedpane.add(new SendPanel());
 		tabbedpane.setTitleAt(nTab++, "送信");
@@ -108,6 +114,15 @@ public class FileSharingDialog extends JDialog {
 		tabbedpane.add(new DistributePanel());
 		tabbedpane.setTitleAt(nTab++, "配布");
 
+		
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+		mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		mainPanel.add(idPanel);
+		mainPanel.add(Box.createRigidArea(new Dimension(10,10)));
+		mainPanel.add(tabbedpane);
+		mainPanel.add(Box.createRigidArea(new Dimension(10,10)));
 		getContentPane().add(mainPanel);
 		
 		tabbedpane.addChangeListener(new ChangeListener() {
@@ -122,7 +137,29 @@ public class FileSharingDialog extends JDialog {
 		
 	}
 
+	
+	private class MessagePanel extends JPanel {
 
+		private static final long serialVersionUID = 1L;
+		JTextArea textArea = new JTextArea("");
+
+		public MessagePanel(String title) {
+			setLayout(new BorderLayout());
+			setBorder(new TitledBorder(new EtchedBorder(), title));
+			JScrollPane scrollPane = new JScrollPane();
+			textArea = new JTextArea("");
+			textArea.setLineWrap(true);
+			scrollPane.setViewportView(textArea);
+			add(Box.createRigidArea(new Dimension(5, 5)), BorderLayout.NORTH);
+			add(scrollPane, BorderLayout.CENTER);
+		}
+
+		
+		public void append(String str) {
+			textArea.append(str);
+		}
+
+	}
 
 	
 	private class SendPanel extends JPanel {
@@ -131,23 +168,28 @@ public class FileSharingDialog extends JDialog {
 
 		public SendPanel() {
 
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
 			JPanel memberListPanel = new JPanel();
-			MessagePanel messagePanel = new MessagePanel("状況表示");
-			JPanel buttonPanel = new JPanel();
-			
-			setLayout(new BorderLayout(10, 5));
-			add(memberListPanel, BorderLayout.NORTH);
-			add(messagePanel, BorderLayout.CENTER);
-			add(buttonPanel, BorderLayout.SOUTH);
-			
-			memberListPanel.setLayout(new BorderLayout());
-			JLabel listTitleLabel = new JLabel("送信の相手");
 			MemberPanel memberPanel = new MemberPanel();
-			memberListPanel.add(listTitleLabel, BorderLayout.NORTH);
-			memberListPanel.add(memberPanel, BorderLayout.CENTER);
+			memberPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 20));
+			memberListPanel.setLayout(new BoxLayout(memberListPanel, BoxLayout.PAGE_AXIS));
+			memberListPanel.add(Box.createRigidArea(new Dimension(5, 5)));
+			memberListPanel.add(memberPanel);
+			memberListPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+			memberListPanel.setBorder(new TitledBorder(new EtchedBorder(), "送信の相手"));
 			
-			SendButton sendButton = new SendButton(memberPanel, messagePanel);
+			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
+
+			JPanel buttonPanel = new JPanel();
+			SendButton sendButton = new SendButton(memberPanel, messagePanel); 
 			buttonPanel.add(sendButton);
+
+			add(Box.createRigidArea(new Dimension(10,10)));
+			add(memberListPanel);
+			add(Box.createRigidArea(new Dimension(10,10)));
+			add(messagePanel);
+			add(buttonPanel);
 		}
 	}
 	
@@ -158,23 +200,28 @@ public class FileSharingDialog extends JDialog {
 
 		public ReceivePanel() {
 
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
 			JPanel memberListPanel = new JPanel();
-			MessagePanel messagePanel = new MessagePanel("状況表示");
-			JPanel buttonPanel = new JPanel();
-			
-			setLayout(new BorderLayout(10, 5));
-			add(memberListPanel, BorderLayout.NORTH);
-			add(messagePanel, BorderLayout.CENTER);
-			add(buttonPanel, BorderLayout.SOUTH);
-			
-			memberListPanel.setLayout(new BorderLayout());
-			JLabel listTitleLabel = new JLabel("受信の相手");
 			MemberPanel memberPanel = new MemberPanel();
-			memberListPanel.add(listTitleLabel, BorderLayout.NORTH);
-			memberListPanel.add(memberPanel, BorderLayout.CENTER);
+			memberPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 20));
+			memberListPanel.setLayout(new BoxLayout(memberListPanel, BoxLayout.PAGE_AXIS));
+			memberListPanel.add(Box.createRigidArea(new Dimension(5, 5)));
+			memberListPanel.add(memberPanel);
+			memberListPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+			memberListPanel.setBorder(new TitledBorder(new EtchedBorder(), "受信の相手"));
 			
+			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
+
+			JPanel buttonPanel = new JPanel();
 			ReceiveButton receiveButton = new ReceiveButton(memberPanel, messagePanel);
 			buttonPanel.add(receiveButton);
+
+			add(Box.createRigidArea(new Dimension(10,10)));
+			add(memberListPanel);
+			add(Box.createRigidArea(new Dimension(10,10)));
+			add(messagePanel);
+			add(buttonPanel);
 		}
 	}
 	
@@ -184,21 +231,22 @@ public class FileSharingDialog extends JDialog {
 		private static final long serialVersionUID = 1L;
 
 		public CollectPanel() {
-			JPanel displayPanel = new JPanel();
-			JPanel buttonPanel = new JPanel();
-			
-			setLayout(new BorderLayout(10, 5));
-			add(displayPanel, BorderLayout.CENTER);
-			add(buttonPanel, BorderLayout.SOUTH);
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-			displayPanel.setLayout(new GridLayout(2, 1));
-			MemberListPanel memberListPanel = new MemberListPanel("メンバー");
-			MessagePanel messagePanel = new MessagePanel("状況表示");
-			displayPanel.add(memberListPanel);
-			displayPanel.add(messagePanel);
+			MemberListPanel memberListPanel = new MemberListPanel();
+			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
+			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 100));
 			
-			CollectButton collectButton = new CollectButton(memberListPanel, messagePanel);
-			buttonPanel.add(collectButton);
+			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
+
+			JPanel buttonPanel = new JPanel();
+			buttonPanel.add(new CollectButton(memberListPanel, messagePanel));
+
+			add(Box.createRigidArea(new Dimension(10,10)));
+			add(memberListPanel);
+			add(Box.createRigidArea(new Dimension(10,10)));
+			add(messagePanel);
+			add(buttonPanel);
 		}
 	}
 
@@ -208,21 +256,22 @@ public class FileSharingDialog extends JDialog {
 		private static final long serialVersionUID = 1L;
 
 		public DistributePanel() {
-			JPanel displayPanel = new JPanel();
-			JPanel buttonPanel = new JPanel();
-			
-			setLayout(new BorderLayout(10, 5));
-			add(displayPanel, BorderLayout.CENTER);
-			add(buttonPanel, BorderLayout.SOUTH);
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-			displayPanel.setLayout(new GridLayout(2, 1));
-			MemberListPanel memberListPanel = new MemberListPanel("メンバー");
-			MessagePanel messagePanel = new MessagePanel("状況表示");
-			displayPanel.add(memberListPanel);
-			displayPanel.add(messagePanel);
+			MemberListPanel memberListPanel = new MemberListPanel();
+			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
+			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 100));
+
+			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
 			
-			DistributeButton distributeButton = new DistributeButton(memberListPanel, messagePanel);
-			buttonPanel.add(distributeButton);
+			JPanel buttonPanel = new JPanel();
+			buttonPanel.add(new DistributeButton(memberListPanel, messagePanel));
+
+			add(Box.createRigidArea(new Dimension(10,10)));
+			add(memberListPanel);
+			add(Box.createRigidArea(new Dimension(10,10)));
+			add(messagePanel);
+			add(buttonPanel);
 		}
 	}
 
@@ -235,14 +284,22 @@ public class FileSharingDialog extends JDialog {
 		private MemberListModel memberListModel = new MemberListModel();
 		private JList<MemberPanel> memberList = new JList<MemberPanel>(memberListModel);
 
-		public MemberListPanel(String title) {
-			setLayout(new BorderLayout());
-			JLabel listTitleLabel = new JLabel(title);
+		public MemberListPanel() {
+			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+			setBorder(new TitledBorder(new EtchedBorder(), "メンバー"));
+
+			JPanel listPanel = new JPanel();
 			JScrollPane listScrollPane = new JScrollPane();
+
+			listPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+			listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.PAGE_AXIS));
+			listPanel.add(listScrollPane);
+
 			listScrollPane.setViewportView(memberList);
+			listScrollPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 			memberList.setCellRenderer(new MemberCellRenderer());
-			add(listTitleLabel, BorderLayout.NORTH);
-			add(listScrollPane, BorderLayout.CENTER);
+
+			add(listScrollPane);
 		}
 		
 		public void addMember(PipeMessage message) {
@@ -337,32 +394,6 @@ public class FileSharingDialog extends JDialog {
 		}
 	}
 
-	
-	private class MessagePanel extends JPanel {
-
-		private static final long serialVersionUID = 1L;
-		JTextArea textArea = new JTextArea("");
-
-		public MessagePanel(String title) {
-			setLayout(new BorderLayout());
-			JLabel titleLabel = new JLabel(title);
-			JScrollPane scrollPane = new JScrollPane();
-			textArea = new JTextArea("");
-			textArea.setLineWrap(true);
-			scrollPane.setViewportView(textArea);
-			add(titleLabel, BorderLayout.NORTH);
-			add(scrollPane, BorderLayout.CENTER);
-		}
-
-		
-		public void append(String str) {
-			textArea.append(str);
-		}
-
-	}
-	
-	
-	
 	
 	private class ReceiveButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
