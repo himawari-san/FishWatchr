@@ -3434,20 +3434,20 @@ public class MainFrame extends JFrame {
 
 		public void run() {
 			try {
-				if (timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW) {
-					if (isSoundPanelEnable) {
-						soundPanel.repaint();
-					}
-					discussersPanel.repaintComponents();
-				} else {
-					annotationGlobalViewPanel.repaint();
-				}
-				soundPlayer.updateVlcInfo();
-				time = soundPlayer.getElapsedTime();
-
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
+						if (timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW) {
+							if (isSoundPanelEnable) {
+								soundPanel.repaint();
+							}
+							discussersPanel.repaintComponents();
+						} else {
+							annotationGlobalViewPanel.repaint();
+						}
+						soundPlayer.updateVlcInfo();
+						time = soundPlayer.getElapsedTime();
+
 						timeCurrent.setTime(time / 1000);
 						timeSlider.setValue(time / 1000);
 						commentTable.indicateCurrentComment(time, focusRange);
@@ -3469,14 +3469,19 @@ public class MainFrame extends JFrame {
 	class DrawAnnotationGlobalViewerTask extends TimerTask {
 		public void run() {
 			try {
-				if(timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW){
-					if(isSoundPanelEnable){
-						soundPanel.repaint();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						if(timeLineTabbedPane.getSelectedIndex() == TAB_STATUS_DETAIL_VIEW){
+							if(isSoundPanelEnable){
+								soundPanel.repaint();
+							}
+							discussersPanel.repaintComponents();
+						} else {
+							annotationGlobalViewPanel.repaint();
+						}
 					}
-					discussersPanel.repaintComponents();
-				} else {
-					annotationGlobalViewPanel.repaint();
-				}
+				});
 			} catch (Exception e) {
 				System.err.println("Error(MainFrame): some exception is caused in run() of DrawAnnotationGlobalViewerTask."); //$NON-NLS-1$
 			}
