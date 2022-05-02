@@ -30,7 +30,6 @@ import java.awt.geom.GeneralPath;
 import javax.swing.JComponent;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicSliderUI;
 
 public class TimeSlider extends JSlider {
@@ -46,24 +45,18 @@ public class TimeSlider extends JSlider {
 
 		setUI(new CustomSliderUI(this) {
 			protected void scrollDueToClickInTrack(int direction) {
-				// this is the default behaviour, let's comment that out
-				// scrollByBlock(direction);
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Point p = getMousePosition();
-						if(p == null) {
-							return;
-						}
-						int value = getValue();
-						if (getOrientation() == JSlider.HORIZONTAL) {
-							value = valueForXPosition(p.x);
-						} else if (getOrientation() == JSlider.VERTICAL) {
-							value = valueForYPosition(p.y);
-						}
-						setValue(value);
-					}
-				});
+				// https://stackoverflow.com/questions/518471/jslider-question-position-after-leftclick
+				Point p = getMousePosition();
+				if(p == null) {
+					return;
+				}
+				int value = getValue();
+				if (getOrientation() == JSlider.HORIZONTAL) {
+					value = valueForXPosition(p.x);
+				} else if (getOrientation() == JSlider.VERTICAL) {
+					value = valueForYPosition(p.y);
+				}
+				setValue(value);
 			}
 		});
 	}
