@@ -258,17 +258,26 @@ public class FileSharingDialog extends JDialog {
 		public DistributePanel() {
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-			MemberListPanel memberListPanel = new MemberListPanel();
+			MemberListPanel memberListPanel = new MemberListPanel(false);
 			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
 			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 100));
+
+			JPanel progressPanel = new JPanel();
+			JLabel progressLabel = new JLabel("進行状況：");
+			JProgressBar progressBar = new JProgressBar();
+			progressBar.setPreferredSize(new Dimension(300, 10));
+			progressPanel.add(progressLabel);
+			progressPanel.add(progressBar);
 
 			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
 			
 			JPanel buttonPanel = new JPanel();
-			buttonPanel.add(new DistributeButton(memberListPanel, messagePanel));
+			buttonPanel.add(new DistributeButton(memberListPanel, messagePanel, progressBar));
 
 			add(Box.createRigidArea(new Dimension(10,10)));
 			add(memberListPanel);
+//			add(Box.createRigidArea(new Dimension(10,10)));
+			add(progressPanel);
 			add(Box.createRigidArea(new Dimension(10,10)));
 			add(messagePanel);
 			add(buttonPanel);
@@ -283,8 +292,16 @@ public class FileSharingDialog extends JDialog {
 		private JProgressBar progressBar = new JProgressBar();
 		private MemberListModel memberListModel = new MemberListModel();
 		private JList<MemberPanel> memberList = new JList<MemberPanel>(memberListModel);
+		private boolean enableProgressBar = true;
 
+		
 		public MemberListPanel() {
+			this(true);
+		}
+		
+		public MemberListPanel(boolean enableProgressBar) {
+			this.enableProgressBar = enableProgressBar;
+			
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 			setBorder(new TitledBorder(new EtchedBorder(), "メンバー"));
 
@@ -310,6 +327,7 @@ public class FileSharingDialog extends JDialog {
 					MemberPanel m = new MemberPanel();
 					m.setMember(message.getSenderName());
 					m.initBar(0, (int)(message.getDataSize()));
+					m.setEnableProgressBar(enableProgressBar);
 					memberListModel.add(0, m);
 				}
 			});
@@ -391,6 +409,10 @@ public class FileSharingDialog extends JDialog {
 
 		public void setValue(int v) {
 			progressBar.setValue(v);
+		}
+		
+		public void setEnableProgressBar(boolean enabled) {
+			progressBar.setVisible(enabled);
 		}
 	}
 
@@ -539,7 +561,7 @@ public class FileSharingDialog extends JDialog {
 		private final String[] labels = {"相手を探索", "キャンセル", "配布を実行"};
 		private PipeMessageReceiver messageReceiver = null;
 		
-		public DistributeButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
+		public DistributeButton(MemberListPanel memberListPanel, MessagePanel messagePanel, JProgressBar progressBar) {
 			setLabels(labels);
 			setLabel(status);
 
@@ -616,12 +638,11 @@ public class FileSharingDialog extends JDialog {
 								PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
 								long dataSize = Util.getTotalFilesize(filePaths);
 								myInfo.setDataSize(dataSize);
+								progressBar.setMinimum(0);
+								progressBar.setMaximum((int)dataSize);
 								
 								for(int i = 0; i < nSenders; i++) {
 									MemberPanel memberPanel = memberListPanel.getMemberPanelAt(i);
-									if(i == 0) {
-										memberPanel.initBar(0, (int)dataSize);
-									}
 									String memberName = memberPanel.getMember();
 									PipeMessage memberInfo = messageReceiver.getMap(memberName);
 
@@ -642,17 +663,12 @@ public class FileSharingDialog extends JDialog {
 								try {
 									pipe.postFile(newPath, filePaths, 
 											(readLength)->{
-												for(int i = 0; i < nSenders; i++) {
-													final int i2 = i;
-													SwingUtilities.invokeLater(new Runnable() {
-														@Override
-														public void run() {
-															MemberPanel memberPanel = memberListPanel.getMemberPanelAt(i2);
-															memberPanel.setValue(readLength.intValue());
-															memberListPanel.update(i2);
-														}
-													});
-												}
+												SwingUtilities.invokeLater(new Runnable() {
+													@Override
+													public void run() {
+														progressBar.setValue(readLength.intValue());
+													}
+												});
 											});
 									setEnabled(true);
 								} catch (URISyntaxException | ExecutionException | IOException e) {
