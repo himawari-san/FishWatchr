@@ -245,7 +245,7 @@ public class MainFrame extends JFrame {
 	private ArrayList<User> discussers;
 	private User commenter;
 
-	private Timer timer;
+	private volatile Timer timer;
 
 	private String systemName;
 
@@ -1557,7 +1557,7 @@ public class MainFrame extends JFrame {
 	}
 
 	
-	Timer t;
+	volatile Timer t;
 	private JPanel getMoviePanel() {
 		if (moviePanel == null) {
 			moviePanel = new JPanel();
