@@ -398,8 +398,9 @@ public class FileSharingDialog extends JDialog {
 		}
 		
 		
-		public void clearMember() {
+		public void clear() {
 			nameLabel.setText(MEMBER_NOT_FOUND);
+			progressBar.setValue(progressBar.getMinimum());
 		}
 
 		public void initBar(int min, int max) {
@@ -953,7 +954,7 @@ public class FileSharingDialog extends JDialog {
 								}
 								messagePanel.append("- 送信が完了しました\n");
 								setLabel(status=STATUS_SEARCH);
-								memberPanel.clearMember();
+								memberPanel.clear();
 							}
 						});
 						break;
