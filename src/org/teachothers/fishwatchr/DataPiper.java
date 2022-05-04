@@ -116,19 +116,20 @@ public class DataPiper {
 	public void postMessage(String path, PipeMessage message, int nRetry) throws IOException, URISyntaxException, InterruptedException {
 		for(int i = 0; i < nRetry; i++){
 			for(int suffix : getRandamOrderedSuffixes(nPathSuffix)) {
-				postMessage(path + suffix, message);
-
-				if(message.getErrorCode() > 0) {
+				if(isErrorResponse(postMessage(path + suffix, message))) {
 					continue;
 				} else {
+					System.err.println("postMessage/3: succeeded!");
 					return;
 				}
 			}
 		}
+
+		throw new IOException();
 	}
 	
 	
-	public void postMessage(String path, PipeMessage message) throws IOException, URISyntaxException, InterruptedException {
+	public HttpResponse<String> postMessage(String path, PipeMessage message) throws IOException, URISyntaxException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
 	    HttpRequest request = HttpRequest.newBuilder()
@@ -147,9 +148,11 @@ public class DataPiper {
 		}
 
 		if(isErrorResponse(response)) {
-			System.err.println(response.statusCode());
-			System.err.println(response.body());
+			System.err.println("postMessage/2:" + response.statusCode());
+			System.err.println("postMessage/2:" + response.body());
 		}
+
+		return response;
 	}
 
 	
