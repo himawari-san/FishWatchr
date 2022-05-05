@@ -333,6 +333,17 @@ public class FileSharingDialog extends JDialog {
 			});
 		}
 		
+		
+		public void clear() {
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					memberListModel.clear();
+				}
+			});
+		}
+		
 		public int getMemberSize() {
 			return ((DefaultListModel<MemberPanel>)memberList.getModel()).getSize();
 		}
@@ -684,9 +695,10 @@ public class FileSharingDialog extends JDialog {
 								
 								messagePanel.append("- 配布が完了しました。\n");
 								setLabel(status=STATUS_SEARCH);
+								memberListPanel.clear();
+								progressBar.setValue(progressBar.getMinimum());
 							}
 						});
-
 						break;
 					default:
 						break;
