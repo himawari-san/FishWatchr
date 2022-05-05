@@ -480,7 +480,7 @@ public class FileSharingDialog extends JDialog {
 									messagePanel.append("- " + memberName + "が見つかりました。\n");
 
 									// sender uses Distribute mode
-									if(memberInfo.getType() == PipeMessage.TYPE_CONTINUED) {
+									if(memberInfo.getStatus() == PipeMessage.STATUS_CONTINUED) {
 										messagePanel.append("- " + memberName + "が送信すると「受信」ボタンが使えるようになります。お待ちください。\n");
 										memberInfo = pipe.getMessage(newPath);
 									}
@@ -607,7 +607,7 @@ public class FileSharingDialog extends JDialog {
 									messagePanel.append("- " + memberName + "をメンバーリストに追加しました。\n");
 									String tempPath = memberMessage.getPath();
 									PipeMessage myInfo = new PipeMessage(user.getUserName(), tempPath);
-									myInfo.setType(PipeMessage.TYPE_CONTINUED);
+									myInfo.setStatus(PipeMessage.STATUS_CONTINUED);
 									try {
 										pipe.postMessage(tempPath, myInfo);
 									} catch (IOException | URISyntaxException e) {

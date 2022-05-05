@@ -11,10 +11,10 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 	private static final String SYSTEM_KEY_PREFIX = "__pipe_message_";
 	private static final String SYSTEM_SENDER_NAME = "_system_pipe_message_";
 
-	public static final int TYPE_INIT = 0;
-	public static final int TYPE_NORMAL = 1;
-	public static final int TYPE_CONTINUED = 2;
-	public static final int TYPE_ERROR = -1;
+	public static final int STATUS_INIT = 0;
+	public static final int STATUS_NORMAL = 1;
+	public static final int STATUS_CONTINUED = 2;
+	public static final int STATUS_ERROR = -1;
 	
 	private static final String MESSAGE_KEY_PATH = SYSTEM_KEY_PREFIX + "path";
 	private static final String MESSAGE_KEY_ID = SYSTEM_KEY_PREFIX + "id";
@@ -25,7 +25,7 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 	
 	
 	private String id = "";
-	private int type = TYPE_INIT;
+	private int status = STATUS_INIT;
 	private String senderName = "";
 	private String path = "";
 	private long dataSize = 0;
@@ -92,13 +92,13 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 		this.errorCode = errorCode;
 	}
 
-	public int getType() {
-		return type;
+	public int getStatus() {
+		return status;
 	}
 
 
-	public void setType(int type) {
-		this.type = type;
+	public void setStatus(int type) {
+		this.status = type;
 	}
 
 
@@ -110,7 +110,7 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_SENDER_NAME, KEY_VALUE_SEPARATOR, getSenderName()));
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_PATH, KEY_VALUE_SEPARATOR, getPath()));
 		result.append(String.format("\n%s%s%s", MESSAGE_KEY_DATASIZE, KEY_VALUE_SEPARATOR, getDataSize()));
-		result.append(String.format("\n%s%s%s", MESSAGE_KEY_TYPE, KEY_VALUE_SEPARATOR, getType()));
+		result.append(String.format("\n%s%s%s", MESSAGE_KEY_TYPE, KEY_VALUE_SEPARATOR, getStatus()));
 
 		this.forEach((key, value)->{
 			result.append(String.format("\n%s%s%s", key, KEY_VALUE_SEPARATOR, value));
@@ -136,7 +136,7 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 				case MESSAGE_KEY_SENDER_NAME: message.setSenderName(value); break;
 				case MESSAGE_KEY_PATH: message.setPath(value); break;
 				case MESSAGE_KEY_DATASIZE: message.setDataSize(Long.parseLong(value)); break;
-				case MESSAGE_KEY_TYPE: message.setType(Integer.parseInt(value)); break;
+				case MESSAGE_KEY_TYPE: message.setStatus(Integer.parseInt(value)); break;
 				default:
 					if (!key.isEmpty()) {
 						message.put(key, value);
