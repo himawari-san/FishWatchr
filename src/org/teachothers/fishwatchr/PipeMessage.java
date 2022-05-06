@@ -24,25 +24,19 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 
 	
 	
-	private String id = "";
+	private String id = String.format("%s/%d", LocalDateTime.now().toString(), ThreadLocalRandom.current().nextLong());
 	private int status = STATUS_INIT;
-	private String senderName = "";
+	private String senderName = SYSTEM_SENDER_NAME;
 	private String path = "";
 	private long dataSize = 0;
 	private int errorCode = 0;
 	
 
 	public PipeMessage() {
-		id = String.format("%s/%d", LocalDateTime.now().toString(), ThreadLocalRandom.current().nextLong());
 	}
 
-	public PipeMessage(String senderName) {
-		setSenderName(senderName);
-	}
-
-	public PipeMessage(String path, int errorCode) {
+	public PipeMessage(String path) {
 		this(SYSTEM_SENDER_NAME, path);
-		setErrorCode(errorCode);
 	}
 	
 	public PipeMessage(String senderName, String path) {

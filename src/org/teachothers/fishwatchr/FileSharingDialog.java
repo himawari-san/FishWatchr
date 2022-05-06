@@ -735,7 +735,7 @@ public class FileSharingDialog extends JDialog {
 						setLabel(status);
 						
 						String basePath = pathField.getText();
-						PipeMessage myInfo = new PipeMessage(user.getUserName());
+						PipeMessage myInfo = new PipeMessage(user.getUserName(), "");
 						
 						messageBroadcaster = new PipeMessageBroadcaster(pipe, basePath, myInfo,
 								(updatedMessage) -> {

@@ -98,7 +98,9 @@ public class DataPiper {
 		if(isErrorResponse(response)) {
 			System.err.println(response.statusCode());
 			System.err.println(response.body());
-			return new PipeMessage(path, response.statusCode());
+			PipeMessage errorMessage = new PipeMessage(path);
+			errorMessage.setErrorCode(response.statusCode());
+			return errorMessage;
 		} else {
 			BufferedReader in = new BufferedReader(new StringReader(response.body()));
 
