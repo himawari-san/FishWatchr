@@ -13,6 +13,11 @@ import java.util.function.Consumer;
 
 
 public class PipeMessageBroadcaster implements Runnable {
+	
+	public static final int ERROR_PATH_ALREADY_USED = 1;
+	public static final int ERROR_INTERRUPTED = 2;
+	public static final int ERROR_UNABLE_TO_RESERVE = 3;
+	private static final long RESERVER_WAIT = 1500; // ms
 
 	ExecutorService poolMessageAgent;
 	DataPiper pipe;
@@ -22,11 +27,11 @@ public class PipeMessageBroadcaster implements Runnable {
 	PipeMessage message;
 	PipeMessageSender senders[];
 	Consumer<PipeMessage> messageConsumer;
-	Consumer<Exception> errorConsumer;
+	Consumer<Integer> errorConsumer;
 	ConcurrentHashMap<String, PipeMessage> messageMap = new ConcurrentHashMap<String, PipeMessage>();
 	
 	
-	public PipeMessageBroadcaster(DataPiper pipe, String path, PipeMessage message, Consumer<PipeMessage> messageConsumer, Consumer<Exception> errorConsumer) {
+	public PipeMessageBroadcaster(DataPiper pipe, String path, PipeMessage message, Consumer<PipeMessage> messageConsumer, Consumer<Integer> errorConsumer) {
 		this.pipe = pipe;
 		this.nSender = pipe.getnPathSuffix();
 		this.path = path;
@@ -41,6 +46,37 @@ public class PipeMessageBroadcaster implements Runnable {
 	@Override
 	public void run() {
 		BlockingQueue<Future<?>> queue = new ArrayBlockingQueue<>(nSender);
+		
+		var reserver = Executors.newSingleThreadExecutor().submit(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					// Keep reserving the path
+					pipe.reservePath(path);
+					
+					// reservePath() ends if the path has been already reserved
+					poolMessageAgent.shutdownNow();
+					errorConsumer.accept(ERROR_PATH_ALREADY_USED);
+				} catch (IOException | URISyntaxException  e) {
+					poolMessageAgent.shutdownNow();
+					errorConsumer.accept(ERROR_UNABLE_TO_RESERVE);
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					errorConsumer.accept(ERROR_INTERRUPTED);
+				}
+			}
+		});
+		
+
+		// Wait to confirm whether the path is reserved 
+		try {
+			Thread.sleep(RESERVER_WAIT);
+		} catch (InterruptedException e1) {
+			errorConsumer.accept(ERROR_INTERRUPTED);
+			reserver.cancel(true);
+			return;
+		}
+
 
 		for(int i = 0; i < nSender; i++) {
 			senders[i] = new PipeMessageSender(String.valueOf(i));
@@ -55,6 +91,7 @@ public class PipeMessageBroadcaster implements Runnable {
 				System.err.println("PipeMessageBroadcaster is shutdown.");
 				poolMessageAgent.shutdown();
 				poolMessageAgent.shutdownNow();
+				reserver.cancel(true);
 			}
 		}
 	}

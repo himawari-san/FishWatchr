@@ -3,7 +3,6 @@ package org.teachothers.fishwatchr;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -505,6 +504,12 @@ public class FileSharingDialog extends JDialog {
 						setLabel(status = STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								messagePanel.append("- キャンセルしました。\n");
+							}
+						});
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
@@ -614,13 +619,25 @@ public class FileSharingDialog extends JDialog {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									} catch (InterruptedException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+										initState();
 									}
 									setLabel(status = STATUS_EXECUTE);
 								}, 
 								(ex) -> {
-									initState();
+									System.err.println("hey:" + SwingUtilities.isEventDispatchThread());
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											if(ex == PipeMessageReceiver.ERROR_PATH_ALREADY_USED) {
+												JOptionPane.showMessageDialog(DistributeButton.this, "このパスはすでに使用されています。別のパスを使用してください。");
+												messagePanel.append("- キャンセルしました。\n");
+											} else if(ex == PipeMessageBroadcaster.ERROR_UNABLE_TO_RESERVE) {
+												JOptionPane.showMessageDialog(DistributeButton.this, "ネットワークに接続できませんでした。処理を中止します。");
+												messagePanel.append("- キャンセルしました。\n");
+											}
+											initState();
+										}
+									});
 								});
 						future = Executors.newSingleThreadExecutor().submit(messageReceiver);
 
@@ -628,6 +645,12 @@ public class FileSharingDialog extends JDialog {
 						setLabel(status = STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								messagePanel.append("- キャンセルしました。\n");
+							}
+						});
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
@@ -758,12 +781,31 @@ public class FileSharingDialog extends JDialog {
 										return;
 									}
 								}, (ex) -> {
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											if(ex == PipeMessageBroadcaster.ERROR_PATH_ALREADY_USED) {
+												JOptionPane.showMessageDialog(CollectButton.this, "このパスはすでに使用されています。別のパスを使用してください。");
+												messagePanel.append("- キャンセルしました。\n");
+											} else if(ex == PipeMessageBroadcaster.ERROR_UNABLE_TO_RESERVE) {
+												JOptionPane.showMessageDialog(CollectButton.this, "ネットワークに接続できませんでした。処理を中止します。");
+												messagePanel.append("- キャンセルしました。\n");
+											}
+											initState();
+										}
+									});
 								});
 						future = Executors.newSingleThreadExecutor().submit(messageBroadcaster);
 						messagePanel.append("- メンバーを探しています。\n");
 						setLabel(status = STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								messagePanel.append("- キャンセルしました。\n");
+							}
+						});
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
@@ -929,6 +971,12 @@ public class FileSharingDialog extends JDialog {
 						setLabel(status = STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								messagePanel.append("- キャンセルしました。\n");
+							}
+						});
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:

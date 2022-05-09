@@ -36,6 +36,7 @@ public class DataPiper {
 	public static final String DEFAULT_PATH_SUFFIX = "0";
 	private static final int N_PATH_SUFFIX = 5;
 	private static final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
+	private static final String RESERVE_PATH_SUFFIX = "yOWBYinGjbilj6HbR3Ya";
 
 	private String pipeServer;	
     private final HttpClient httpClient = HttpClient.newBuilder()
@@ -319,6 +320,38 @@ public class DataPiper {
 		return result;
 	}
 	
+	
+	static public String getUrlParameterPath(String str) {
+		String result;
+		
+		try {
+			StringBuffer buf = new StringBuffer();
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
+			byte md5bytes[] = md5.digest(str.getBytes());
+			
+			for(byte b : md5bytes) {
+				int i = b < 0 ? b + 256 : b;
+				buf.append(Integer.toHexString(i));
+			}
+			result = buf.toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			result = str;
+		}
+		
+		return result;
+	}
+	
+	
+	public PipeMessage reservePath(String path) throws IOException, URISyntaxException, InterruptedException {
+		return getMessage(path+RESERVE_PATH_SUFFIX);
+	}
+	
+	
+	public void releasePath(String path) throws IOException, URISyntaxException, InterruptedException {
+		postMessage(path+RESERVE_PATH_SUFFIX, new PipeMessage());
+	}
+
 	
 	private boolean isErrorResponse(HttpResponse<?> response) {
 		int responseCode = response.statusCode();
