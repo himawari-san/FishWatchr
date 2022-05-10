@@ -484,13 +484,12 @@ public class FileSharingDialog extends JDialog {
 		
 		public ReceiveButton(MemberPanel memberPanel, MessagePanel messagePanel) {
 			setLabels(labels);
-			setLabel(status);
 			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					
-					switch (status) {
+					switch (getStatus()) {
 					case STATUS_SEARCH:
 
 						if(commentFilePath.getParent() == null) {
@@ -503,8 +502,6 @@ public class FileSharingDialog extends JDialog {
 							saveRootPath = commentFilePath.getParent();
 						}
 
-						
-						setLabel(status);
 						
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							@Override
@@ -530,7 +527,7 @@ public class FileSharingDialog extends JDialog {
 
 									dataSize =  memberInfo.getDataSize();
 									newPath = memberInfo.getPath();
-									setLabel(status = STATUS_EXECUTE);
+									setStatus(STATUS_EXECUTE);
 								} catch (URISyntaxException | IOException e) {
 									JOptionPane.showMessageDialog(ReceiveButton.this, e.getMessage());
 									initState();
@@ -545,7 +542,7 @@ public class FileSharingDialog extends JDialog {
 							}
 						});
 						
-						setLabel(status = STATUS_CANCEL);
+						setStatus(STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
 						SwingUtilities.invokeLater(new Runnable() {
@@ -557,7 +554,7 @@ public class FileSharingDialog extends JDialog {
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
-						setLabel(status = STATUS_CANCEL);
+						setStatus(STATUS_CANCEL);
 						
 						String memberName = memberPanel.getMember();
 						savePath = Util.getUniquePath(saveRootPath, memberName);
@@ -598,7 +595,7 @@ public class FileSharingDialog extends JDialog {
 								}
 								messagePanel.append("- 受信が完了しました\n");
 								messagePanel.append("- 保存先：" + savePath + "\n");
-								setLabel(status = STATUS_FINISH);
+								setStatus(STATUS_FINISH);
 							}
 						});
 						
@@ -624,7 +621,6 @@ public class FileSharingDialog extends JDialog {
 		
 		public DistributeButton(MemberListPanel memberListPanel, MessagePanel messagePanel, JProgressBar progressBar) {
 			setLabels(labels);
-			setLabel(status);
 
 			addActionListener(new ActionListener() {
 				Path filePaths[] = (mediaFilePath == null || mediaFilePath.toString().matches("^https?:/.+")) 
@@ -634,7 +630,7 @@ public class FileSharingDialog extends JDialog {
 				public void actionPerformed(ActionEvent arg0) {
 					String basePath = pathField.getText();
 					
-					switch (status) {
+					switch (getStatus()) {
 					case STATUS_SEARCH:
 						if(commentFilePath.getParent() == null) {
 							JOptionPane.showMessageDialog(DistributeButton.this, "配布する観察結果をFishWatchrに読み込んでください。");
@@ -645,8 +641,6 @@ public class FileSharingDialog extends JDialog {
 						if(mediaFilePath.getParent() != null) {
 							messagePanel.append("-- " + mediaFilePath.toString() + "\n");
 						}
-						
-						setLabel(status);
 						
 						messageReceiver = new PipeMessageReceiver(pipe, basePath,
 								(memberMessage) -> {
@@ -665,13 +659,17 @@ public class FileSharingDialog extends JDialog {
 									} catch (InterruptedException e) {
 										initState();
 									}
-									setLabel(status = STATUS_EXECUTE);
+									setStatus(STATUS_EXECUTE);
 								}, 
 								(ex) -> {
 									System.err.println("hey:" + SwingUtilities.isEventDispatchThread());
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
+											if(getStatus() != STATUS_SEARCH) { // for future.cancel in STATUS_EXECUTE
+												return;
+											}
+
 											if(ex == PipeMessageReceiver.ERROR_PATH_ALREADY_USED) {
 												JOptionPane.showMessageDialog(DistributeButton.this, "このパスはすでに使用されています。別のパスを使用してください。");
 												messagePanel.append("- キャンセルしました。\n");
@@ -686,7 +684,7 @@ public class FileSharingDialog extends JDialog {
 						future = Executors.newSingleThreadExecutor().submit(messageReceiver);
 
 						messagePanel.append("- メンバーを探しています。\n");
-						setLabel(status = STATUS_CANCEL);
+						setStatus(STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
 						SwingUtilities.invokeLater(new Runnable() {
@@ -704,7 +702,7 @@ public class FileSharingDialog extends JDialog {
 							return;
 						}
 						
-						setLabel(status = STATUS_CANCEL);
+						setStatus(STATUS_CANCEL);
 
 						// Stop PipeMessageReceiver
 						future.cancel(true);
@@ -761,7 +759,7 @@ public class FileSharingDialog extends JDialog {
 								}
 								
 								messagePanel.append("- 配布が完了しました。\n");
-								setLabel(status=STATUS_SEARCH);
+								setStatus(STATUS_SEARCH);
 								memberListPanel.clear();
 								progressBar.setValue(progressBar.getMinimum());
 							}
@@ -785,12 +783,11 @@ public class FileSharingDialog extends JDialog {
 	
 		public CollectButton(MemberListPanel memberListPanel, MessagePanel messagePanel) {
 			setLabels(labels);
-			setLabel(status);
 			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					switch (status) {
+					switch (getStatus()) {
 					case STATUS_SEARCH:
 						if(commentFilePath.getParent() == null) {
 							JOptionPane.showMessageDialog(CollectButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してみてください。");
@@ -798,8 +795,6 @@ public class FileSharingDialog extends JDialog {
 						} else {
 							saveRootPath = commentFilePath.getParent();
 						}
-						
-						setLabel(status);
 						
 						String basePath = pathField.getText();
 						PipeMessage myInfo = new PipeMessage(user.getUserName(), "");
@@ -814,7 +809,7 @@ public class FileSharingDialog extends JDialog {
 										messageBroadcaster.setMap(senderName, memberInfo);
 										memberListPanel.addMember(memberInfo);
 										messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
-										setLabel(status = STATUS_EXECUTE);
+										setStatus(STATUS_EXECUTE);
 									} catch (URISyntaxException | IOException e) {
 										JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
 										initState();
@@ -828,6 +823,10 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
+											if(getStatus() != STATUS_SEARCH) { // for future.cancel in STATUS_EXECUTE
+												return;
+											}
+											
 											if(ex == PipeMessageBroadcaster.ERROR_PATH_ALREADY_USED) {
 												JOptionPane.showMessageDialog(CollectButton.this, "このパスはすでに使用されています。別のパスを使用してください。");
 												messagePanel.append("- キャンセルしました。\n");
@@ -841,7 +840,7 @@ public class FileSharingDialog extends JDialog {
 								});
 						future = Executors.newSingleThreadExecutor().submit(messageBroadcaster);
 						messagePanel.append("- メンバーを探しています。\n");
-						setLabel(status = STATUS_CANCEL);
+						setStatus(STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
 						SwingUtilities.invokeLater(new Runnable() {
@@ -859,7 +858,7 @@ public class FileSharingDialog extends JDialog {
 							return;
 						}
 						
-						setLabel(status = STATUS_CANCEL);
+						setStatus(STATUS_CANCEL);
 						
 						// Stop MessageBroadcaster
 						future.cancel(true);
@@ -921,7 +920,7 @@ public class FileSharingDialog extends JDialog {
 								}
 								
 								messagePanel.append("- 収集が完了しました。\n");
-								setLabel(status = STATUS_FINISH);
+								setStatus(STATUS_FINISH);
 						}
 						});
 //						memberListPanel.clearMember();
@@ -949,7 +948,6 @@ public class FileSharingDialog extends JDialog {
 		
 		public SendButton(MemberPanel memberPanel, MessagePanel messagePanel) {
 			setLabels(labels);
-			setLabel(status);
 			
 			addActionListener(new ActionListener() {
 				@Override
@@ -958,7 +956,7 @@ public class FileSharingDialog extends JDialog {
 							? new Path[] {commentFilePath} : new Path[] {commentFilePath, mediaFilePath};
 							
 					System.err.println("len:" + filePaths.length + "," + mediaFilePath.toString());
-					switch (status) {
+					switch (getStatus()) {
 					case STATUS_SEARCH:
 						if(commentFilePath.getParent() == null) {
 							JOptionPane.showMessageDialog(SendButton.this, "送信する観察結果をFishWatchrに読み込んでください。");
@@ -969,7 +967,6 @@ public class FileSharingDialog extends JDialog {
 						if(mediaFilePath.getParent() != null) {
 							messagePanel.append("-- " + mediaFilePath.toString() + "\n");
 						}
-						setLabel(status);
 						
 						messagePanel.append("- メンバーを探しています。\n");
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
@@ -999,7 +996,7 @@ public class FileSharingDialog extends JDialog {
 									PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
 									myInfo.setDataSize(dataSize);
 									pipe.postMessage(newPath, myInfo);
-									setLabel(status = STATUS_EXECUTE);
+									setStatus(STATUS_EXECUTE);
 								} catch (URISyntaxException | IOException e) {
 									JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
 									initState();
@@ -1012,7 +1009,7 @@ public class FileSharingDialog extends JDialog {
 							}
 						});
 
-						setLabel(status = STATUS_CANCEL);
+						setStatus(STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
 						SwingUtilities.invokeLater(new Runnable() {
@@ -1024,7 +1021,7 @@ public class FileSharingDialog extends JDialog {
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
-						setLabel(status = STATUS_CANCEL);
+						setStatus(STATUS_CANCEL);
 
 						memberPanel.initBar(0, (int)dataSize);
 
@@ -1057,7 +1054,7 @@ public class FileSharingDialog extends JDialog {
 									return;
 								}
 								messagePanel.append("- 送信が完了しました\n");
-								setLabel(status=STATUS_SEARCH);
+								setStatus(STATUS_SEARCH);
 								memberPanel.clear();
 							}
 						});
@@ -1080,25 +1077,35 @@ public class FileSharingDialog extends JDialog {
 
 		private String[] labels = {"phase_search", "phase_action", "phase_finish"};
 
-		protected int status = STATUS_SEARCH;
+		private int status = STATUS_SEARCH;
 		protected Future<?> future = null;
 	
-
+		public PipeActionButton() {
+			super();
+			setStatus(status);
+		}
+		
 		public void setLabels(String[] labels) {
 			this.labels = labels;
+			setStatus(status);
 		}
 		
 		public void initState() {
 			status = STATUS_SEARCH;
-			setLabel(status);
+			setStatus(status);
 			setEnabled(true);
 		}
 		
 
-		public void setLabel(int status) {
+		public void setStatus(int status) {
+			this.status  = status;
 			setText(labels[status]);
 		}
 		
+		
+		public int getStatus() {
+			return status;
+		}
 		
 		public void cancelAction() {
 			if(future != null && !future.isDone()) {
