@@ -128,7 +128,7 @@ public class DataPiper {
 			}
 		}
 
-		throw new IOException();
+		throw new IOException("通信(postMessage)に失敗しました。");
 	}
 	
 	
