@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -48,6 +50,7 @@ import javax.swing.event.ChangeListener;
 
 
 
+
 public class FileSharingDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final int N_RETRY = 2;
@@ -81,6 +84,8 @@ public class FileSharingDialog extends JDialog {
 		setModal(true);
 		setSize(WIDTH, HEIGHT);
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("ファイル共有");
 
 		
@@ -88,7 +93,7 @@ public class FileSharingDialog extends JDialog {
 		JLabel usernameLabel = new JLabel("ユーザ名");
 		usernameLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, usernameLabel.getFont().getSize()));
 		JLabel usernameBody = new JLabel(user.getUserName());
-		JLabel pathLabel = new JLabel("Path");
+		JLabel pathLabel = new JLabel("パス");
 		pathLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, pathLabel.getFont().getSize()));
 		pathField = new JTextField("a");
 		idPanel.setLayout(new GridLayout(2, 2, 1, 10));
@@ -101,16 +106,21 @@ public class FileSharingDialog extends JDialog {
 
 		JTabbedPane tabbedpane = new JTabbedPane();
 
-		tabbedpane.add(new SendPanel());
+		SendPanel sendPanel = new SendPanel();
+		ReceivePanel receivePanel = new ReceivePanel();
+		CollectPanel collectPanel = new CollectPanel();
+		DistributePanel distributePanel = new DistributePanel();
+		
+		tabbedpane.add(sendPanel);
 		tabbedpane.setTitleAt(nTab++, "送信");
 
-		tabbedpane.add(new ReceivePanel());
+		tabbedpane.add(receivePanel);
 		tabbedpane.setTitleAt(nTab++, "受信");
 		
-		tabbedpane.add(new CollectPanel());
+		tabbedpane.add(collectPanel);
 		tabbedpane.setTitleAt(nTab++, "収集");
 
-		tabbedpane.add(new DistributePanel());
+		tabbedpane.add(distributePanel);
 		tabbedpane.setTitleAt(nTab++, "配布");
 
 		
@@ -128,12 +138,23 @@ public class FileSharingDialog extends JDialog {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				System.err.println("tab number:" + tabbedpane.getSelectedIndex());
-//				if(memberFinder != null) {
-//					memberFinder.pool.shutdownNow();
-//				}
+				sendPanel.cancelAction();
+				receivePanel.cancelAction();
+				distributePanel.cancelAction();
+				collectPanel.cancelAction();
 			}
 		});
 		
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				super.windowClosed(e);
+				sendPanel.cancelAction();
+				receivePanel.cancelAction();
+				distributePanel.cancelAction();
+				collectPanel.cancelAction();
+			}
+		});
 	}
 
 	
@@ -161,7 +182,24 @@ public class FileSharingDialog extends JDialog {
 	}
 
 	
-	private class SendPanel extends JPanel {
+	private class PipeActionPanel extends JPanel {
+		private static final long serialVersionUID = 1L;
+		private PipeActionButton button  = null;
+		
+		public void setButton(PipeActionButton button) {
+			this.button = button;
+		}
+		
+		public void cancelAction() {
+			if(button != null) {
+				button.cancelAction();
+			}
+		}
+	}
+	
+	
+	
+	private class SendPanel extends PipeActionPanel {
 		
 		private static final long serialVersionUID = 1L;
 
@@ -181,7 +219,8 @@ public class FileSharingDialog extends JDialog {
 			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
 
 			JPanel buttonPanel = new JPanel();
-			SendButton sendButton = new SendButton(memberPanel, messagePanel); 
+			SendButton sendButton = new SendButton(memberPanel, messagePanel);
+			setButton(sendButton);
 			buttonPanel.add(sendButton);
 
 			add(Box.createRigidArea(new Dimension(10,10)));
@@ -193,7 +232,7 @@ public class FileSharingDialog extends JDialog {
 	}
 	
 	
-	private class ReceivePanel extends JPanel {
+	private class ReceivePanel extends PipeActionPanel {
 		
 		private static final long serialVersionUID = 1L;
 
@@ -214,6 +253,7 @@ public class FileSharingDialog extends JDialog {
 
 			JPanel buttonPanel = new JPanel();
 			ReceiveButton receiveButton = new ReceiveButton(memberPanel, messagePanel);
+			setButton(receiveButton);
 			buttonPanel.add(receiveButton);
 
 			add(Box.createRigidArea(new Dimension(10,10)));
@@ -225,7 +265,7 @@ public class FileSharingDialog extends JDialog {
 	}
 	
 
-	private class CollectPanel extends JPanel {
+	private class CollectPanel extends PipeActionPanel {
 		
 		private static final long serialVersionUID = 1L;
 
@@ -239,7 +279,9 @@ public class FileSharingDialog extends JDialog {
 			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
 
 			JPanel buttonPanel = new JPanel();
-			buttonPanel.add(new CollectButton(memberListPanel, messagePanel));
+			CollectButton collectButton = new CollectButton(memberListPanel, messagePanel);
+			setButton(collectButton);
+			buttonPanel.add(collectButton);
 
 			add(Box.createRigidArea(new Dimension(10,10)));
 			add(memberListPanel);
@@ -250,7 +292,7 @@ public class FileSharingDialog extends JDialog {
 	}
 
 	
-	private class DistributePanel extends JPanel {
+	private class DistributePanel extends PipeActionPanel {
 		
 		private static final long serialVersionUID = 1L;
 
@@ -271,7 +313,9 @@ public class FileSharingDialog extends JDialog {
 			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
 			
 			JPanel buttonPanel = new JPanel();
-			buttonPanel.add(new DistributeButton(memberListPanel, messagePanel, progressBar));
+			DistributeButton distributeButton = new DistributeButton(memberListPanel, messagePanel, progressBar);
+			setButton(distributeButton);
+			buttonPanel.add(distributeButton);
 
 			add(Box.createRigidArea(new Dimension(10,10)));
 			add(memberListPanel);
@@ -1053,6 +1097,13 @@ public class FileSharingDialog extends JDialog {
 
 		public void setLabel(int status) {
 			setText(labels[status]);
+		}
+		
+		
+		public void cancelAction() {
+			if(future != null && !future.isDone()) {
+				future.cancel(true);
+			}
 		}
 	}
 }
