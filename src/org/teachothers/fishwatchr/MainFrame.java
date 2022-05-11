@@ -2239,7 +2239,11 @@ public class MainFrame extends JFrame {
 										for (Path path : collectionPaths) {
 											try {
 												Path f = Util.findCommentFile(path);
-												Files.copy(f, path.getParent().resolve(f.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+												// cp /path/to/current_dir/membername/comment_file.xml /path/to/current_dir/membername.xml
+												Files.copy(
+														f,
+														f.getParent().getParent().resolve(f.getParent().getFileName().toString() + CommentList.FILE_SUFFIX),
+														StandardCopyOption.REPLACE_EXISTING);
 											} catch (IOException e1) {
 												// TODO Auto-generated catch block
 												e1.printStackTrace();
