@@ -790,7 +790,7 @@ public class FileSharingDialog extends JDialog {
 					switch (getStatus()) {
 					case STATUS_SEARCH:
 						if(commentFilePath.getParent() == null) {
-							JOptionPane.showMessageDialog(CollectButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してみてください。");
+							JOptionPane.showMessageDialog(CollectButton.this, "動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してください。");
 								return;
 						} else {
 							saveRootPath = commentFilePath.getParent();
@@ -872,9 +872,13 @@ public class FileSharingDialog extends JDialog {
 									final int i2 = i;
 									MemberPanel memberPanel = memberListPanel.getMemberPanelAt(i);
 									String memberName = memberPanel.getMember();
-									Path savePath = Util.getUniquePath(saveRootPath, memberName);
+									Path savePath = saveRootPath.resolve(memberName);
 											
 									try {
+										if(savePath.toFile().exists()) {
+											Path bakupPath = Util.getUniquePath(saveRootPath, memberName);
+											Files.move(savePath, bakupPath);
+										}
 										Files.createDirectories(savePath);
 									} catch (IOException e) {
 										messagePanel.append("保存用のフォルダを作成できません。\n" + memberName + "のファイルの保存処理をキャンセルします。\n");
