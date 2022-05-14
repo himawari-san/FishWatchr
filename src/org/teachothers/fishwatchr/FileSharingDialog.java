@@ -527,7 +527,12 @@ public class FileSharingDialog extends JDialog {
 
 									dataSize =  memberInfo.getDataSize();
 									newPath = memberInfo.getPath();
-									setStatus(STATUS_EXECUTE);
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											setStatus(STATUS_EXECUTE);
+										}
+									});
 								} catch (URISyntaxException | IOException e) {
 									JOptionPane.showMessageDialog(ReceiveButton.this, e.getMessage());
 									initState();
@@ -659,7 +664,12 @@ public class FileSharingDialog extends JDialog {
 									} catch (InterruptedException e) {
 										initState();
 									}
-									setStatus(STATUS_EXECUTE);
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											setStatus(STATUS_EXECUTE);
+										}
+									});
 								}, 
 								(ex) -> {
 									System.err.println("hey:" + SwingUtilities.isEventDispatchThread());
@@ -801,24 +811,29 @@ public class FileSharingDialog extends JDialog {
 						
 						messageBroadcaster = new PipeMessageBroadcaster(pipe, basePath, myInfo,
 								(updatedMessage) -> {
-									String newPath = updatedMessage.getPath();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											String newPath = updatedMessage.getPath();
 
-									try {
-										PipeMessage memberInfo = pipe.getMessage(newPath);
-										String senderName = memberInfo.getSenderName();
-										messageBroadcaster.setMap(senderName, memberInfo);
-										memberListPanel.addMember(memberInfo);
-										messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
-										setStatus(STATUS_EXECUTE);
-									} catch (URISyntaxException | IOException e) {
-										JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
-										initState();
-										return;
-									} catch (InterruptedException e) {
-										// getMessage() closes the pipe internally
-										initState();
-										return;
-									}
+											try {
+												PipeMessage memberInfo = pipe.getMessage(newPath);
+												String senderName = memberInfo.getSenderName();
+												messageBroadcaster.setMap(senderName, memberInfo);
+												memberListPanel.addMember(memberInfo);
+												messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
+												setStatus(STATUS_EXECUTE);
+											} catch (URISyntaxException | IOException e) {
+												JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
+												initState();
+												return;
+											} catch (InterruptedException e) {
+												// getMessage() closes the pipe internally
+												initState();
+												return;
+											}
+										}
+									});
 								}, (ex) -> {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
@@ -1000,7 +1015,12 @@ public class FileSharingDialog extends JDialog {
 									PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
 									myInfo.setDataSize(dataSize);
 									pipe.postMessage(newPath, myInfo);
-									setStatus(STATUS_EXECUTE);
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											setStatus(STATUS_EXECUTE);
+										}
+									});
 								} catch (URISyntaxException | IOException e) {
 									JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
 									initState();
