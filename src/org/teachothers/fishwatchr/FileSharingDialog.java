@@ -666,7 +666,7 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											if(getStatus() != STATUS_SEARCH) { // for future.cancel in STATUS_EXECUTE
+											if(getStatus() == STATUS_EXECUTE) { // for future.cancel in STATUS_EXECUTE
 												return;
 											}
 
@@ -823,7 +823,7 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											if(getStatus() != STATUS_SEARCH) { // for future.cancel in STATUS_EXECUTE
+											if(getStatus() == STATUS_EXECUTE) { // for future.cancel in STATUS_EXECUTE
 												return;
 											}
 											
