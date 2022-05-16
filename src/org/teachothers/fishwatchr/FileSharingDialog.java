@@ -474,7 +474,7 @@ public class FileSharingDialog extends JDialog {
 	
 	private class ReceiveButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探索", "キャセル", "受信を実行", "閉じる"};
+		private final String[] labels = {"相手を探索", "キャセル", "受信を実行", "キャセル", "閉じる"};
 		
 		private String newPath = "";
 		private long dataSize = 0;
@@ -550,6 +550,7 @@ public class FileSharingDialog extends JDialog {
 						setStatus(STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
+					case STATUS_CANCEL2:
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
@@ -559,7 +560,7 @@ public class FileSharingDialog extends JDialog {
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
-						setStatus(STATUS_CANCEL);
+						setStatus(STATUS_CANCEL2);
 						
 						String memberName = memberPanel.getMember();
 						savePath = Util.getUniquePath(saveRootPath, memberName);
@@ -621,7 +622,7 @@ public class FileSharingDialog extends JDialog {
 
 	private class DistributeButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探索", "キャンセル", "配布を実行"};
+		private final String[] labels = {"相手を探索", "キャンセル", "配布を実行", "キャンセル"};
 		private PipeMessageReceiver messageReceiver = null;
 		
 		public DistributeButton(MemberListPanel memberListPanel, MessagePanel messagePanel, JProgressBar progressBar) {
@@ -676,7 +677,7 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											if(getStatus() == STATUS_EXECUTE) { // for future.cancel in STATUS_EXECUTE
+											if(getStatus() == STATUS_CANCEL2) { // for future.cancel in STATUS_EXECUTE
 												return;
 											}
 
@@ -697,6 +698,7 @@ public class FileSharingDialog extends JDialog {
 						setStatus(STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
+					case STATUS_CANCEL2:
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
@@ -712,7 +714,7 @@ public class FileSharingDialog extends JDialog {
 							return;
 						}
 						
-						setStatus(STATUS_CANCEL);
+						setStatus(STATUS_CANCEL2);
 
 						// Stop PipeMessageReceiver
 						future.cancel(true);
@@ -786,7 +788,7 @@ public class FileSharingDialog extends JDialog {
 	
 	private class CollectButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探索", "キャンセル", "収集を実行", "閉じる"};
+		private final String[] labels = {"相手を探索", "キャンセル", "収集を実行", "キャンセル", "閉じる"};
 		private PipeMessageBroadcaster messageBroadcaster = null;
 		private Path saveRootPath = null;
 		private ArrayList<Path> savePaths = new ArrayList<Path>();
@@ -838,7 +840,7 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											if(getStatus() == STATUS_EXECUTE) { // for future.cancel in STATUS_EXECUTE
+											if(getStatus() == STATUS_CANCEL2) { // for future.cancel in STATUS_EXECUTE
 												return;
 											}
 											
@@ -858,6 +860,7 @@ public class FileSharingDialog extends JDialog {
 						setStatus(STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
+					case STATUS_CANCEL2:
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
@@ -873,7 +876,7 @@ public class FileSharingDialog extends JDialog {
 							return;
 						}
 						
-						setStatus(STATUS_CANCEL);
+						setStatus(STATUS_CANCEL2);
 						
 						// Stop MessageBroadcaster
 						future.cancel(true);
@@ -960,7 +963,7 @@ public class FileSharingDialog extends JDialog {
 	
 	private class SendButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探索", "キャンセル", "送信を実行"};
+		private final String[] labels = {"相手を探索", "キャンセル", "送信を実行", "キャンセル"};
 		
 		private String newPath = "";
 		private long dataSize = 0;
@@ -1036,6 +1039,7 @@ public class FileSharingDialog extends JDialog {
 						setStatus(STATUS_CANCEL);
 						break;
 					case STATUS_CANCEL:
+					case STATUS_CANCEL2:
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
@@ -1045,7 +1049,7 @@ public class FileSharingDialog extends JDialog {
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
-						setStatus(STATUS_CANCEL);
+						setStatus(STATUS_CANCEL2);
 
 						memberPanel.initBar(0, (int)dataSize);
 
@@ -1097,7 +1101,8 @@ public class FileSharingDialog extends JDialog {
 		protected final static int STATUS_SEARCH = 0;
 		protected final static int STATUS_CANCEL = 1;
 		protected final static int STATUS_EXECUTE = 2;
-		protected final static int STATUS_FINISH = 3;
+		protected final static int STATUS_CANCEL2 = 3;
+		protected final static int STATUS_FINISH = 4;
 
 		private String[] labels = {"phase_search", "phase_action", "phase_finish"};
 
