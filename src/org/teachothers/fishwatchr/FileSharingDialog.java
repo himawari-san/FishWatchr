@@ -551,12 +551,7 @@ public class FileSharingDialog extends JDialog {
 						break;
 					case STATUS_CANCEL:
 					case STATUS_CANCEL2:
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								messagePanel.append("- キャンセルしました。\n");
-							}
-						});
+						messagePanel.append("- キャンセルしました。\n");
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
@@ -699,12 +694,7 @@ public class FileSharingDialog extends JDialog {
 						break;
 					case STATUS_CANCEL:
 					case STATUS_CANCEL2:
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								messagePanel.append("- キャンセルしました。\n");
-							}
-						});
+						messagePanel.append("- キャンセルしました。\n");
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
@@ -861,12 +851,7 @@ public class FileSharingDialog extends JDialog {
 						break;
 					case STATUS_CANCEL:
 					case STATUS_CANCEL2:
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								messagePanel.append("- キャンセルしました。\n");
-							}
-						});
+						messagePanel.append("- キャンセルしました。\n");
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
@@ -1040,12 +1025,7 @@ public class FileSharingDialog extends JDialog {
 						break;
 					case STATUS_CANCEL:
 					case STATUS_CANCEL2:
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								messagePanel.append("- キャンセルしました。\n");
-							}
-						});
+						messagePanel.append("- キャンセルしました。\n");
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
