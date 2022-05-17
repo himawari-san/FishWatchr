@@ -594,9 +594,15 @@ public class FileSharingDialog extends JDialog {
 									initState();
 									return;
 								}
-								messagePanel.append("- 受信が完了しました\n");
-								messagePanel.append("- 保存先：" + savePath + "\n");
-								setStatus(STATUS_FINISH);
+
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										messagePanel.append("- 受信が完了しました\n");
+										messagePanel.append("- 保存先：" + savePath + "\n");
+										setStatus(STATUS_FINISH);
+									}
+								});
 							}
 						});
 						
@@ -760,10 +766,15 @@ public class FileSharingDialog extends JDialog {
 									return;
 								}
 								
-								messagePanel.append("- 配布が完了しました。\n");
-								setStatus(STATUS_SEARCH);
-								memberListPanel.clear();
-								progressBar.setValue(progressBar.getMinimum());
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										messagePanel.append("- 配布が完了しました。\n");
+										setStatus(STATUS_SEARCH);
+										memberListPanel.clear();
+										progressBar.setValue(progressBar.getMinimum());
+									}
+								});
 							}
 						});
 						break;
@@ -926,8 +937,13 @@ public class FileSharingDialog extends JDialog {
 									}
 								}
 								
-								messagePanel.append("- 収集が完了しました。\n");
-								setStatus(STATUS_FINISH);
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										messagePanel.append("- 収集が完了しました。\n");
+										setStatus(STATUS_FINISH);
+									}
+								});
 						}
 						});
 //						memberListPanel.clearMember();
@@ -1061,9 +1077,15 @@ public class FileSharingDialog extends JDialog {
 									initState();
 									return;
 								}
-								messagePanel.append("- 送信が完了しました\n");
-								setStatus(STATUS_SEARCH);
-								memberPanel.clear();
+
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										messagePanel.append("- 送信が完了しました\n");
+										setStatus(STATUS_SEARCH);
+										memberPanel.clear();
+									}
+								});
 							}
 						});
 						break;
