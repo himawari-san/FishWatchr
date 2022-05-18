@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 
@@ -47,35 +50,29 @@ public class PipeMessageBroadcaster implements Runnable {
 	public void run() {
 		BlockingQueue<Future<?>> queue = new ArrayBlockingQueue<>(nSender);
 		
-		var reserver = Executors.newSingleThreadExecutor().submit(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					// Keep reserving the path
+		// Reserve the path
+		var reserver = Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
+				public Void call() throws IOException, URISyntaxException, InterruptedException {
 					pipe.reservePath(path);
-					
 					// reservePath() ends if the path has been already reserved
-					poolMessageAgent.shutdownNow();
 					errorConsumer.accept(ERROR_PATH_ALREADY_USED);
-				} catch (IOException | URISyntaxException  e) {
-					poolMessageAgent.shutdownNow();
-					errorConsumer.accept(ERROR_UNABLE_TO_RESERVE);
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					errorConsumer.accept(ERROR_INTERRUPTED);
+					return null;
 				}
-			}
-		});
+			});
 		
-
-		// Wait to confirm whether the path is reserved 
 		try {
-			Thread.sleep(RESERVER_WAIT);
-		} catch (InterruptedException e1) {
-			errorConsumer.accept(ERROR_INTERRUPTED);
-			reserver.cancel(true);
+			reserver.get(RESERVER_WAIT, TimeUnit.MILLISECONDS);
+			// reservePath() ends if the path has been already reserved
 			return;
+		} catch (InterruptedException | ExecutionException e) {
+			errorConsumer.accept(ERROR_UNABLE_TO_RESERVE);
+			poolMessageAgent.shutdownNow();
+			e.printStackTrace();
+			return;
+		} catch (TimeoutException e) {
+			System.err.println("reserved!!");
 		}
+
 
 
 		for(int i = 0; i < nSender; i++) {
