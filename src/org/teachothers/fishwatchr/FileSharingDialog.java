@@ -678,7 +678,7 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											if(getStatus() == STATUS_CANCEL2) { // for future.cancel in STATUS_EXECUTE
+											if(getStatus() != STATUS_CANCEL) { // for future.cancel in STATUS_EXECUTE
 												return;
 											}
 
@@ -702,6 +702,7 @@ public class FileSharingDialog extends JDialog {
 					case STATUS_CANCEL2:
 						messagePanel.append("- キャンセルしました。\n");
 						future.cancel(true);
+						initState();
 						break;
 					case STATUS_EXECUTE:
 						int nSenders = memberListPanel.getMemberSize();
@@ -841,7 +842,7 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											if(getStatus() == STATUS_CANCEL2) { // for future.cancel in STATUS_EXECUTE
+											if(getStatus()  != STATUS_CANCEL) { // for future.cancel in STATUS_EXECUTE
 												return;
 											}
 											
@@ -864,6 +865,7 @@ public class FileSharingDialog extends JDialog {
 					case STATUS_CANCEL2:
 						messagePanel.append("- キャンセルしました。\n");
 						future.cancel(true);
+						initState();
 						break;
 					case STATUS_EXECUTE:
 						int nSenders = memberListPanel.getMemberSize();
