@@ -62,7 +62,7 @@ public class DataPiper {
 
 
 	public PipeMessage getMessage(String path, int nRetry) throws IOException, URISyntaxException, InterruptedException {
-		PipeMessage message = null;
+		PipeMessage message = new PipeMessage();
 		
 		for(int i = 0; i < nRetry; i++){
 			for(int suffix : getRandamOrderedSuffixes(nPathSuffix)) {

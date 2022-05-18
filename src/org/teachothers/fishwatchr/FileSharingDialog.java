@@ -999,6 +999,9 @@ public class FileSharingDialog extends JDialog {
 								String basePath = pathField.getText();
 								try {
 									PipeMessage memberInfo = pipe.getMessage(basePath, N_RETRY);
+									if(memberInfo.getErrorCode() > 0) {
+										throw new IOException("このパスでは接続できませんでした。");
+									}
 									String memberName = memberInfo.getSenderName();
 									newPath = memberInfo.getPath();
 									memberPanel.setMember(memberName);
