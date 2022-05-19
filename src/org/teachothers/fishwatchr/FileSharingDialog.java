@@ -552,6 +552,7 @@ public class FileSharingDialog extends JDialog {
 					case STATUS_CANCEL:
 					case STATUS_CANCEL2:
 						messagePanel.append("- キャンセルしました。\n");
+						memberPanel.clear();
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
@@ -569,12 +570,12 @@ public class FileSharingDialog extends JDialog {
 							return;
 						}
 
+						memberPanel.initBar(0, (int)dataSize);
+
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							
 							@Override
 							public void run() {
-								memberPanel.initBar(0, (int)dataSize);
-
 								try {
 									pipe.getTarFile(newPath, savePath,
 											(readSize) -> {
@@ -586,12 +587,25 @@ public class FileSharingDialog extends JDialog {
 												});
 											});
 								} catch (URISyntaxException | ExecutionException | IOException e) {
-									JOptionPane.showMessageDialog(ReceiveButton.this, "データ送信が中断されるなどして，受信が完了しませんでした。\n" + e.getMessage());
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											JOptionPane.showMessageDialog(ReceiveButton.this, "データ送信が中断されるなどして，受信が完了しませんでした。\n" + e.getMessage());
+											messagePanel.append("- キャンセルしました。\n");
+											initState();
+											memberPanel.clear();
+										}
+									});
 									return;
 								} catch (InterruptedException e) {
 									// postMessage() closes the pipe internally
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											memberPanel.clear();
+											initState();
+										}
+									});
 									return;
 								}
 
@@ -1072,14 +1086,20 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											JOptionPane.showMessageDialog(SendButton.this, e.getMessage());	
+											JOptionPane.showMessageDialog(SendButton.this, "何らかの理由で送信が完了しませんでした。\n" + e.getMessage());	
 											initState();
 										}
 									});
 									return;
 								} catch (InterruptedException e) {
 									// postMessage() closes the pipe internally
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											initState();
+											memberPanel.clear();
+										}
+									});
 									return;
 								}
 
@@ -1088,7 +1108,6 @@ public class FileSharingDialog extends JDialog {
 									public void run() {
 										messagePanel.append("- 送信が完了しました\n");
 										setStatus(STATUS_SEARCH);
-										memberPanel.clear();
 									}
 								});
 							}

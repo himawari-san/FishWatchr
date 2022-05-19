@@ -84,13 +84,15 @@ public class PipeMessageBroadcaster implements Runnable {
 		for (Future<?> f : queue) {
 			try {
 				f.get();
+				break;
 			} catch (InterruptedException | ExecutionException e) {
-				System.err.println("PipeMessageBroadcaster is shutdown.");
-				poolMessageAgent.shutdown();
-				poolMessageAgent.shutdownNow();
-				reserver.cancel(true);
+				break;
 			}
 		}
+		
+		System.err.println("PipeMessageBroadcaster is shutdown.");
+		poolMessageAgent.shutdownNow();
+		reserver.cancel(true);
 	}
 	
 	
@@ -126,8 +128,13 @@ public class PipeMessageBroadcaster implements Runnable {
 					PipeMessage newMessage = new PipeMessage(
 							message.getSenderName(),
 							DataPiper.generatePath(message.getSenderName()+path));
-					pipe.postMessage(path + suffix, newMessage);
-					messageConsumer.accept(newMessage);
+					int errorCode = pipe.postMessage(path + suffix, newMessage);
+					if(errorCode > 0) {
+						loopFlag = false;
+						errorConsumer.accept(ERROR_PATH_ALREADY_USED);
+					} else {
+						messageConsumer.accept(newMessage);
+					}
 				} catch (IOException | URISyntaxException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {

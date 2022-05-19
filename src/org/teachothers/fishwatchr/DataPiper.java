@@ -119,7 +119,7 @@ public class DataPiper {
 	public void postMessage(String path, PipeMessage message, int nRetry) throws IOException, URISyntaxException, InterruptedException {
 		for(int i = 0; i < nRetry; i++){
 			for(int suffix : getRandamOrderedSuffixes(nPathSuffix)) {
-				if(isErrorResponse(postMessage(path + suffix, message))) {
+				if(postMessage(path + suffix, message) > 0) {
 					continue;
 				} else {
 					System.err.println("postMessage/3: succeeded!");
@@ -132,7 +132,7 @@ public class DataPiper {
 	}
 	
 	
-	public HttpResponse<String> postMessage(String path, PipeMessage message) throws IOException, URISyntaxException, InterruptedException {
+	public int postMessage(String path, PipeMessage message) throws IOException, URISyntaxException, InterruptedException {
 		URI pipeURL = new URI(pipeServer + path);
 
 	    HttpRequest request = HttpRequest.newBuilder()
@@ -153,9 +153,10 @@ public class DataPiper {
 		if(isErrorResponse(response)) {
 			System.err.println("postMessage/2:" + response.statusCode());
 			System.err.println("postMessage/2:" + response.body());
+			return response.statusCode();
+		} else {
+			return 0;
 		}
-
-		return response;
 	}
 
 	
@@ -217,8 +218,8 @@ public class DataPiper {
 			});
 
 			// TODO
-			// Handle response according to status code
-			httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+			// Handle response according to the status code
+			httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
 			// pipe is expected to be disconnected by interruption
 			f.get();
@@ -278,6 +279,7 @@ public class DataPiper {
 		} catch (InterruptedException e) {
 			tarFileReader.stop();
 			response.body().close();
+			throw e;
 		}
 	}
 	
