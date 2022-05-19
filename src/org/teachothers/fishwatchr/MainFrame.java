@@ -2218,6 +2218,15 @@ public class MainFrame extends JFrame {
 			jMenuItemFileShare
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
+							soundPlayer.myStop();
+							try {
+								saveCommentList();
+							} catch (IOException e2) {
+								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.12") + e); //$NON-NLS-1$
+								e2.printStackTrace();
+								return;
+							}
+							
 							String pipeServer = "http://localhost:8080/"; //$NON-NLS-1$
 //							String pipeServer = "https://piping-server-test.herokuapp.com/";
 							FileSharingDialog fsp = new FileSharingDialog(pipeServer, commenter, Paths.get(xf), Paths.get(mf),
