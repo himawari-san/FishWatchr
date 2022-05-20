@@ -602,6 +602,7 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
+											JOptionPane.showMessageDialog(ReceiveButton.this, "受信をキャンセルしました。");
 											memberPanel.clear();
 											initState();
 										}
@@ -772,12 +773,27 @@ public class FileSharingDialog extends JDialog {
 											});
 									setEnabled(true);
 								} catch (URISyntaxException | ExecutionException | IOException e) {
-									JOptionPane.showMessageDialog(DistributeButton.this, "データ送信が中断されるなどして，受信が完了しませんでした。\n" + e.getMessage());
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											JOptionPane.showMessageDialog(DistributeButton.this, "データ送信が中断されるなどして，配布が完了しませんでした。\n" + e.getMessage());
+											initState();
+											memberListPanel.clear();
+											progressBar.setValue(progressBar.getMinimum());
+										}
+									});
 									return;
 								} catch (InterruptedException e) {
-									// postMessage() closes the pipe internally
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											JOptionPane.showMessageDialog(DistributeButton.this, "配布を中止しました。");
+											// postMessage() closes the pipe internally
+											initState();
+											memberListPanel.clear();
+											progressBar.setValue(progressBar.getMinimum());
+										}
+									});
 									return;
 								}
 								
@@ -919,16 +935,20 @@ public class FileSharingDialog extends JDialog {
 									
 									var f = Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
 										@Override
-										public Void call() throws URISyntaxException, IOException, ExecutionException, InterruptedException {
-											pipe.getTarFile(message.getPath(), savePath, (readSize) -> {
-												SwingUtilities.invokeLater(new Runnable() {
-													@Override
-													public void run() {
-														memberPanel.setValue(readSize.intValue());
-														memberListPanel.update(i2);
-													}
+										public Void call() throws URISyntaxException, IOException, InterruptedException, ExecutionException {
+											try {
+												pipe.getTarFile(message.getPath(), savePath, (readSize) -> {
+													SwingUtilities.invokeLater(new Runnable() {
+														@Override
+														public void run() {
+															memberPanel.setValue(readSize.intValue());
+															memberListPanel.update(i2);
+														}
+													});
 												});
-											});
+											} catch (ExecutionException e) {
+												throw new ExecutionException(memberName, e);
+											}
 											messagePanel.append("- 保存完了：" + memberName + ", " + savePath.toString() + "\n");
 
 											return null;
@@ -939,17 +959,29 @@ public class FileSharingDialog extends JDialog {
 									savePaths.add(savePath);
 								}
 								
+
 								for(Future<Void> f : queue) {
 									try {
 										f.get();
 									} catch (InterruptedException e) {
 										f.cancel(true);
-										initState();
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
+												initState();
+												memberListPanel.clear();
+											}
+										});
 										return;
 									} catch (ExecutionException e) {
-										JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
-										initState();
-										return;
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
+												JOptionPane.showMessageDialog(CollectButton.this,
+														// extract memberName
+														e.getMessage().replaceFirst("^.*:", "") + "のデータ収集は途中でキャンセルされました。\n");
+											}
+										});
 									}
 								}
 								
@@ -1086,8 +1118,10 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											JOptionPane.showMessageDialog(SendButton.this, "何らかの理由で送信が完了しませんでした。\n" + e.getMessage());	
+											JOptionPane.showMessageDialog(SendButton.this, "送信が中止されました。\n" + e.getMessage());	
+											messagePanel.append("- 送信が中止されました。\n");
 											initState();
+											memberPanel.clear();
 										}
 									});
 									return;
@@ -1096,6 +1130,8 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
+											JOptionPane.showMessageDialog(SendButton.this, "送信が中止されました。");	
+											messagePanel.append("- 送信が中止されました。\n");
 											initState();
 											memberPanel.clear();
 										}

@@ -178,7 +178,7 @@ public class DataPiper {
 	}
 
 	
-	public void postFile(String path, Path[] filePaths, Consumer<Long> readLenth) throws ExecutionException, URISyntaxException, IOException, InterruptedException {
+	public void postFile(String path, Path[] filePaths, Consumer<Long> readLenth) throws IOException, InterruptedException, URISyntaxException, ExecutionException {
 		URI pipeURL = new URI(pipeServer + path);
 		
 		try (
@@ -219,10 +219,13 @@ public class DataPiper {
 
 			// TODO
 			// Handle response according to the status code
-			httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).get();
 
 			// pipe is expected to be disconnected by interruption
 			f.get();
+		} catch (InterruptedException | ExecutionException e) {
+			//	Execute pipeIn.close(), tarOut.close(), pipeOut.close() automatically
+			throw e;
 		}
 	}
 
