@@ -241,46 +241,35 @@ public class DataPiper {
 		// Handle response according to status code
 		final HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
-		class TarFileReader implements Callable<Void> {
-			volatile Boolean readFlag = true;
-
-			@Override
-			public Void call() throws IOException, InterruptedException, ExecutionException {
-				try (TarArchiveInputStream tarInput = new TarArchiveInputStream(response.body())) {
-					TarArchiveEntry entry;
-					byte buf[] = new byte[READ_BUFFER_SIZE];
-					
-					while((entry = tarInput.getNextTarEntry()) != null && readFlag) {
-						long nr = 0;
-						Path filePath = rootPath.resolve(entry.getName());
-						BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath));
-
-						int readLength;
-						while((readLength = tarInput.read(buf)) != -1  && readFlag) {
-							bos.write(buf, 0, readLength);
-							nr += readLength;
-							readSize.accept(nr);
-						}
-						bos.close();
-					}
-				}
-
-				return null;
-			}
-			
-			public void stop() {
-				readFlag = false;
-			}
-		}
-		
-		TarFileReader tarFileReader = new TarFileReader();
-
 		try {
-			Executors.newSingleThreadExecutor()
-			.submit(tarFileReader)
+			Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
+
+				@Override
+				public Void call() throws IOException, InterruptedException, ExecutionException {
+					try (TarArchiveInputStream tarInput = new TarArchiveInputStream(response.body())) {
+						TarArchiveEntry entry;
+						byte buf[] = new byte[READ_BUFFER_SIZE];
+						
+						while((entry = tarInput.getNextTarEntry()) != null) {
+							long nr = 0;
+							Path filePath = rootPath.resolve(entry.getName());
+							try( BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(filePath))){
+								int readLength;
+								while((readLength = tarInput.read(buf)) != -1) {
+									bos.write(buf, 0, readLength);
+									nr += readLength;
+									readSize.accept(nr);
+								}
+								bos.close();
+							}
+						}
+					}
+
+					return null;
+				}
+			})
 			.get();
 		} catch (InterruptedException e) {
-			tarFileReader.stop();
 			response.body().close();
 			throw e;
 		}
