@@ -106,6 +106,11 @@ public class PipeMessageBroadcaster implements Runnable {
 	}
 	
 	
+	public boolean isMapped(String key) {
+		return messageMap.containsKey(key);
+	}
+	
+	
 	public int getSize() {
 		return messageMap.size();
 	}

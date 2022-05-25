@@ -519,10 +519,15 @@ public class FileSharingDialog extends JDialog {
 									memberPanel.setMember(memberName);
 									messagePanel.append("- " + memberName + "が見つかりました。\n");
 
-									// sender uses Distribute mode
-									if(memberInfo.getStatus() == PipeMessage.STATUS_CONTINUED) {
+									// For Distribute
+									if(memberInfo.getStatus() == PipeMessage.STATUS_CONTINUED) { // will be registered
 										messagePanel.append("- " + memberName + "が送信すると「受信」ボタンが使えるようになります。お待ちください。\n");
 										memberInfo = pipe.getMessage(newPath);
+									} else if(memberInfo.getStatus() == PipeMessage.STATUS_DUPLICATED) { // duplicated
+										messagePanel.append("- 同一メンバー名が登録されていたため，" + memberName + "に接続を拒否されました。\n");
+										initState();
+										memberPanel.clear();
+										return;
 									}
 
 									dataSize =  memberInfo.getDataSize();
@@ -667,12 +672,30 @@ public class FileSharingDialog extends JDialog {
 						messageReceiver = new PipeMessageReceiver(pipe, basePath,
 								(memberMessage) -> {
 									String memberName = memberMessage.getSenderName();
+									String tempPath = memberMessage.getPath();
+									PipeMessage myInfo = new PipeMessage(user.getUserName(), tempPath);
+									
+									if(messageReceiver.isMapped(memberName)) {
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
+												messagePanel.append("- " + memberName + "の接続が再度ありましたが，既登録なので，追加しません。\n");
+												myInfo.setStatus(PipeMessage.STATUS_DUPLICATED);
+												try {
+													pipe.postMessage(tempPath, myInfo);
+												} catch (IOException | URISyntaxException | InterruptedException e) {
+													e.printStackTrace();
+												}
+											}
+										});
+										return;
+									} else {
+										myInfo.setStatus(PipeMessage.STATUS_CONTINUED);
+									}
+
 									messageReceiver.setMap(memberName, memberMessage);
 									memberListPanel.addMember(memberMessage);
 									messagePanel.append("- " + memberName + "をメンバーリストに追加しました。\n");
-									String tempPath = memberMessage.getPath();
-									PipeMessage myInfo = new PipeMessage(user.getUserName(), tempPath);
-									myInfo.setStatus(PipeMessage.STATUS_CONTINUED);
 									try {
 										pipe.postMessage(tempPath, myInfo);
 									} catch (IOException | URISyntaxException e) {
@@ -853,6 +876,10 @@ public class FileSharingDialog extends JDialog {
 											try {
 												PipeMessage memberInfo = pipe.getMessage(newPath);
 												String senderName = memberInfo.getSenderName();
+												if(messageBroadcaster.isMapped(senderName)) {
+													messagePanel.append("- " + senderName + "の接続が再度ありましたが，既登録なので，追加しません。\n");
+													return;
+												}
 												messageBroadcaster.setMap(senderName, memberInfo);
 												memberListPanel.addMember(memberInfo);
 												messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
