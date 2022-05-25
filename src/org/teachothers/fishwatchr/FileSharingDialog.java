@@ -3,6 +3,7 @@ package org.teachothers.fishwatchr;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -213,13 +215,18 @@ public class FileSharingDialog extends JDialog {
 			memberListPanel.setLayout(new BoxLayout(memberListPanel, BoxLayout.PAGE_AXIS));
 			memberListPanel.add(Box.createRigidArea(new Dimension(5, 5)));
 			memberListPanel.add(memberPanel);
-			memberListPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+			memberListPanel.add(Box.createRigidArea(new Dimension(5,5)));
+			JPanel fileOptionPanel = new JPanel();
+			JCheckBox fileOptionCheckBox = new JCheckBox("動画ファイルを含む");
+			fileOptionPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			fileOptionPanel.add(fileOptionCheckBox);
+			memberListPanel.add(fileOptionPanel);
 			memberListPanel.setBorder(new TitledBorder(new EtchedBorder(), "送信の相手"));
 			
 			MessagePanel messagePanel = new MessagePanel("システムメッセージ");
 
 			JPanel buttonPanel = new JPanel();
-			SendButton sendButton = new SendButton(memberPanel, messagePanel);
+			SendButton sendButton = new SendButton(memberPanel, messagePanel, fileOptionCheckBox);
 			setButton(sendButton);
 			buttonPanel.add(sendButton);
 
@@ -1044,13 +1051,13 @@ public class FileSharingDialog extends JDialog {
 		private String newPath = "";
 		private long dataSize = 0;
 		
-		public SendButton(MemberPanel memberPanel, MessagePanel messagePanel) {
+		public SendButton(MemberPanel memberPanel, MessagePanel messagePanel, JCheckBox fileOptionCheckBox) {
 			setLabels(labels);
 			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					Path filePaths[] = (mediaFilePath == null || mediaFilePath.toString().matches("^https?:/.+")) 
+					Path filePaths[] = (mediaFilePath == null || mediaFilePath.toString().matches("^https?:/.+") || !fileOptionCheckBox.isSelected()) 
 							? new Path[] {commentFilePath} : new Path[] {commentFilePath, mediaFilePath};
 							
 					System.err.println("len:" + filePaths.length + "," + mediaFilePath.toString());
