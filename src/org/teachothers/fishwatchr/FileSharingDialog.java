@@ -735,6 +735,7 @@ public class FileSharingDialog extends JDialog {
 												messagePanel.append("- キャンセルしました。\n");
 											}
 											initState();
+											memberListPanel.clear();
 										}
 									});
 								});
