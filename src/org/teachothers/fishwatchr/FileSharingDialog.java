@@ -566,13 +566,16 @@ public class FileSharingDialog extends JDialog {
 
 									// For Distribute
 									if(memberInfo.getStatus() == PipeMessage.STATUS_CONTINUED) { // will be registered
-										messagePanel.append("- " + memberName + "が送信すると「受信」ボタンが使えるようになります。お待ちください。\n");
+										messagePanel.append("- " + memberName + "が送信するまで，お待ちください。\n");
 										memberInfo = pipe.getMessage(newPath);
 									} else if(memberInfo.getStatus() == PipeMessage.STATUS_DUPLICATED) { // duplicated
-										messagePanel.append("- 同一メンバー名が登録されていたため，" + memberName + "に接続を拒否されました。\n");
+										JOptionPane.showMessageDialog(ReceiveButton.this, "同じメンバー名のユーザが登録されていたため，" + memberName + "に接続を拒否されました。");
+										messagePanel.append("- 同じメンバー名のユーザが登録されていたため，" + memberName + "に接続を拒否されました。\n");
 										initState();
 										memberPanel.clear();
 										return;
+									} else {
+										messagePanel.append("- " + memberName + "が送信を開始するまで，お待ちください。\n");
 									}
 
 									dataSize =  memberInfo.getDataSize();
@@ -580,7 +583,18 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
+											int result = JOptionPane.showConfirmDialog(ReceiveButton.this, 
+													memberName + "からファイルを受け取る場合は「OK」ボタンを押してください。",
+													"受信の確認", JOptionPane.OK_CANCEL_OPTION);
 											setStatus(STATUS_EXECUTE);
+											if(result == JOptionPane.OK_OPTION) {
+												ReceiveButton.this.doClick();
+												messagePanel.append("- " + "受信中です。\n");
+											} else {
+												messagePanel.append("- " + "キャンセルしました。\n");
+												initState();
+												return;
+											}
 										}
 									});
 								} catch (URISyntaxException | IOException e) {
@@ -592,8 +606,6 @@ public class FileSharingDialog extends JDialog {
 									initState();
 									return;
 								}
-
-								setEnabled(true);
 							}
 						});
 						
@@ -665,7 +677,11 @@ public class FileSharingDialog extends JDialog {
 									public void run() {
 										messagePanel.append("- 受信が完了しました\n");
 										messagePanel.append("- 保存先：" + savePath + "\n");
+										JOptionPane.showMessageDialog(ReceiveButton.this, 
+												"受信が完了しました。\n「OK」を押すと，再生が開始します。\n"
+												+ "保存先：" + savePath + "\n");
 										setStatus(STATUS_FINISH);
+										ReceiveButton.this.doClick();
 									}
 								});
 							}
