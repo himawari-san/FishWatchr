@@ -184,6 +184,7 @@ public class FileSharingDialog extends JDialog {
 		
 		public void append(String str) {
 			textArea.append(str);
+			textArea.setCaretPosition(textArea.getText().length());
 		}
 		
 		public void clear() {
