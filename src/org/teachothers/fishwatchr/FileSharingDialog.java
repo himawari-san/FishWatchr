@@ -303,8 +303,9 @@ public class FileSharingDialog extends JDialog {
 		public CollectPanel() {
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
-			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 100));
+			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 150));
+			memberListPanel.setMinimumSize(new Dimension(Short.MAX_VALUE, 150));
+			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 150));
 			
 			JPanel buttonPanel = new JPanel();
 			setButton(collectButton);
@@ -337,8 +338,9 @@ public class FileSharingDialog extends JDialog {
 		public DistributePanel() {
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
-			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 100));
+			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 150));
+			memberListPanel.setMinimumSize(new Dimension(Short.MAX_VALUE, 150));
+			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 150));
 
 			JPanel progressPanel = new JPanel();
 			JLabel progressLabel = new JLabel("進行状況：");
