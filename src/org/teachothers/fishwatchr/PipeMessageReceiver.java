@@ -66,6 +66,8 @@ public class PipeMessageReceiver implements Runnable {
 			return;
 		} catch (InterruptedException | ExecutionException e) {
 			errorConsumer.accept(ERROR_UNABLE_TO_RESERVE);
+			pipe.releasePath(path);
+			reserver.cancel(true);
 			poolMessageAgent.shutdownNow();
 			e.printStackTrace();
 			return;
@@ -89,6 +91,7 @@ public class PipeMessageReceiver implements Runnable {
 			}
 		}
 		System.err.println("PipeMessageReceiver is shutdown.");
+		pipe.releasePath(path);
 		poolMessageAgent.shutdownNow();
 		reserver.cancel(true);
 	}

@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -37,6 +38,7 @@ public class DataPiper {
 	private static final int N_PATH_SUFFIX = 5;
 	private static final int READ_BUFFER_SIZE = 1024 * 1024; // 1MB
 	private static final String RESERVE_PATH_SUFFIX = "yOWBYinGjbilj6HbR3Ya";
+	private static ConcurrentSkipListSet<String> reservedPathSet = new ConcurrentSkipListSet<String>();
 
 	private String pipeServer;	
     private final HttpClient httpClient = HttpClient.newBuilder()
@@ -338,12 +340,20 @@ public class DataPiper {
 	
 	
 	public PipeMessage reservePath(String path) throws IOException, URISyntaxException, InterruptedException {
+		if(reservedPathSet.contains(path+RESERVE_PATH_SUFFIX)) {
+			PipeMessage message = new PipeMessage();
+			message.setErrorCode(PipeMessage.STATUS_ERROR);
+			return message;
+		} else {
+			reservedPathSet.add(path+RESERVE_PATH_SUFFIX);
+		}
+		
 		return getMessage(path+RESERVE_PATH_SUFFIX);
 	}
 	
 	
-	public void releasePath(String path) throws IOException, URISyntaxException, InterruptedException {
-		postMessage(path+RESERVE_PATH_SUFFIX, new PipeMessage());
+	public void releasePath(String path) {
+		reservedPathSet.remove(path+RESERVE_PATH_SUFFIX);
 	}
 
 	
