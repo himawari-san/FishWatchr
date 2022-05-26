@@ -57,7 +57,7 @@ public class FileSharingDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static final int N_RETRY = 2;
 	private static final int WIDTH = 450;
-	private static final int HEIGHT = 500;
+	private static final int HEIGHT = 550;
 	private User user;
 	private Path commentFilePath;
 	private Path mediaFilePath;
@@ -296,6 +296,7 @@ public class FileSharingDialog extends JDialog {
 	private class CollectPanel extends PipeActionPanel {
 		
 		private static final long serialVersionUID = 1L;
+		private static final int MemberListPanel_Height = 150;
 		private MemberListPanel memberListPanel = new MemberListPanel();
 		private MessagePanel messagePanel = new MessagePanel("システムメッセージ");
 		private CollectButton collectButton = new CollectButton(memberListPanel, messagePanel);
@@ -303,9 +304,9 @@ public class FileSharingDialog extends JDialog {
 		public CollectPanel() {
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 150));
-			memberListPanel.setMinimumSize(new Dimension(Short.MAX_VALUE, 150));
-			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 150));
+			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, MemberListPanel_Height));
+			memberListPanel.setMinimumSize(new Dimension(Short.MAX_VALUE, MemberListPanel_Height));
+			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, MemberListPanel_Height));
 			
 			JPanel buttonPanel = new JPanel();
 			setButton(collectButton);
@@ -330,6 +331,7 @@ public class FileSharingDialog extends JDialog {
 	private class DistributePanel extends PipeActionPanel {
 		
 		private static final long serialVersionUID = 1L;
+		private static final int MemberListPanel_Height = 150;
 		private MemberListPanel memberListPanel = new MemberListPanel(false);
 		private MessagePanel messagePanel = new MessagePanel("システムメッセージ");
 		private JProgressBar progressBar = new JProgressBar();
@@ -338,9 +340,9 @@ public class FileSharingDialog extends JDialog {
 		public DistributePanel() {
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 150));
-			memberListPanel.setMinimumSize(new Dimension(Short.MAX_VALUE, 150));
-			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, 150));
+			memberListPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, MemberListPanel_Height));
+			memberListPanel.setMinimumSize(new Dimension(Short.MAX_VALUE, MemberListPanel_Height));
+			memberListPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, MemberListPanel_Height));
 
 			JPanel progressPanel = new JPanel();
 			JLabel progressLabel = new JLabel("進行状況：");
