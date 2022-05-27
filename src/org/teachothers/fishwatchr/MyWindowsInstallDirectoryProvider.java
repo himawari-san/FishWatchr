@@ -37,8 +37,8 @@ public class MyWindowsInstallDirectoryProvider extends WindowsInstallDirectoryPr
     public String[] directories() {
 		ArrayList<String> dirs = new ArrayList<String>();
 
-		Path jarPath = Paths.get("./" + System.getProperty("java.class.path")); //$NON-NLS-1$
-    	// Add the directory that includes fishwatchr.jar
+		Path jarPath = Paths.get("./").toAbsolutePath(); //$NON-NLS-1$
+    	// Add VLC directory in the FishWatchr directory
     	dirs.add(jarPath.getParent().resolve(LOCAL_VLC_DIR_WINDOWS).toString());
     	dirs.addAll(Arrays.asList(super.directories()));
     	
