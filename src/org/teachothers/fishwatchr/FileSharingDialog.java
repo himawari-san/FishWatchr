@@ -1080,8 +1080,12 @@ public class FileSharingDialog extends JDialog {
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										messagePanel.append("- 収集が完了しました。\n");
+										messagePanel.append("- 収集が完了しました。読み込み中のデータと収集したデータをマージをします。\n");
+										JOptionPane.showMessageDialog(CollectButton.this,
+												"収集が完了しました。\n"
+												+ "「OK」ボタンを押すと，読み込み中のデータと収集したデータをマージをします。");
 										setStatus(STATUS_FINISH);
+										CollectButton.this.doClick();
 									}
 								});
 						}
