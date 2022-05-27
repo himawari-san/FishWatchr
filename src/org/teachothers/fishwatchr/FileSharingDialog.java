@@ -726,9 +726,8 @@ public class FileSharingDialog extends JDialog {
 							return;
 						}
 						messagePanel.append("- 次のファイルが配布対象です。\n");
-						messagePanel.append("-- " + commentFilePath.toString() + "\n");
-						if(mediaFilePath.getParent() != null) {
-							messagePanel.append("-- " + mediaFilePath.toString() + "\n");
+						for(Path sendFilePath : filePaths) {
+							messagePanel.append("-- " + sendFilePath.toString() + "\n");
 						}
 						
 						messageReceiver = new PipeMessageReceiver(pipe, basePath,
@@ -774,7 +773,6 @@ public class FileSharingDialog extends JDialog {
 									});
 								}, 
 								(ex) -> {
-									System.err.println("hey:" + SwingUtilities.isEventDispatchThread());
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
@@ -892,6 +890,8 @@ public class FileSharingDialog extends JDialog {
 										setStatus(STATUS_SEARCH);
 										memberListPanel.clear();
 										progressBar.setValue(progressBar.getMinimum());
+										
+										JOptionPane.showMessageDialog(DistributeButton.this, "配布が完了しました。");
 									}
 								});
 							}
