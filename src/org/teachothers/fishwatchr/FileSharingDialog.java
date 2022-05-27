@@ -587,8 +587,8 @@ public class FileSharingDialog extends JDialog {
 											int result = JOptionPane.showConfirmDialog(ReceiveButton.this, 
 													memberName + "からファイルを受け取る場合は「OK」ボタンを押してください。",
 													"受信の確認", JOptionPane.OK_CANCEL_OPTION);
-											setStatus(STATUS_EXECUTE);
 											if(result == JOptionPane.OK_OPTION) {
+												setStatus(STATUS_EXECUTE);
 												ReceiveButton.this.doClick();
 												messagePanel.append("- " + "受信中です。\n");
 											} else {
@@ -1118,7 +1118,6 @@ public class FileSharingDialog extends JDialog {
 					Path filePaths[] = (mediaFilePath == null || mediaFilePath.toString().matches("^https?:/.+") || !fileOptionCheckBox.isSelected()) 
 							? new Path[] {commentFilePath} : new Path[] {commentFilePath, mediaFilePath};
 							
-					System.err.println("len:" + filePaths.length + "," + mediaFilePath.toString());
 					switch (getStatus()) {
 					case STATUS_SEARCH:
 						if(commentFilePath.getParent() == null) {
@@ -1126,10 +1125,10 @@ public class FileSharingDialog extends JDialog {
 							return;
 						}
 						messagePanel.append("- 次のファイルが送信対象です。\n");
-						messagePanel.append("-- " + commentFilePath.toString() + "\n");
-						if(mediaFilePath.getParent() != null) {
-							messagePanel.append("-- " + mediaFilePath.toString() + "\n");
+						for(Path sendFilePath : filePaths) {
+							messagePanel.append("-- " + sendFilePath.toString() + "\n");
 						}
+						fileOptionCheckBox.setEnabled(false);
 						
 						messagePanel.append("- メンバーを探しています。\n");
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
@@ -1137,12 +1136,13 @@ public class FileSharingDialog extends JDialog {
 							@Override
 							public void run() {
 								String basePath = pathField.getText();
+								String memberName = "";
 								try {
 									PipeMessage memberInfo = pipe.getMessage(basePath, N_RETRY);
 									if(memberInfo.getErrorCode() > 0) {
 										throw new IOException("このパスでは接続できませんでした。");
 									}
-									String memberName = memberInfo.getSenderName();
+									memberName = memberInfo.getSenderName();
 									newPath = memberInfo.getPath();
 									memberPanel.setMember(memberName);
 									messagePanel.append("- " + memberName + "が見つかりました。\n");
@@ -1157,6 +1157,7 @@ public class FileSharingDialog extends JDialog {
 								}
 
 								try {
+									final String memberName2 = memberName;
 									dataSize = Util.getTotalFilesize(filePaths);
 
 									PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
@@ -1165,7 +1166,18 @@ public class FileSharingDialog extends JDialog {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											setStatus(STATUS_EXECUTE);
+											int result = JOptionPane.showConfirmDialog(SendButton.this, 
+													memberName2 + "へファイルを送る場合は「OK」ボタンを押してください。",
+													"送信の確認", JOptionPane.OK_CANCEL_OPTION);
+											if(result == JOptionPane.OK_OPTION) {
+												setStatus(STATUS_EXECUTE);
+												SendButton.this.doClick();
+												messagePanel.append("- " + "送信中です。\n");
+											} else {
+												messagePanel.append("- " + "キャンセルしました。\n");
+												initState();
+												return;
+											}
 										}
 									});
 								} catch (URISyntaxException | IOException e) {
@@ -1185,6 +1197,7 @@ public class FileSharingDialog extends JDialog {
 					case STATUS_CANCEL:
 					case STATUS_CANCEL2:
 						messagePanel.append("- キャンセルしました。\n");
+						fileOptionCheckBox.setEnabled(true);
 						future.cancel(true);
 						break;
 					case STATUS_EXECUTE:
@@ -1214,6 +1227,7 @@ public class FileSharingDialog extends JDialog {
 											messagePanel.append("- 送信が中止されました。\n");
 											initState();
 											memberPanel.clear();
+											fileOptionCheckBox.setEnabled(true);
 										}
 									});
 									return;
@@ -1226,6 +1240,7 @@ public class FileSharingDialog extends JDialog {
 											messagePanel.append("- 送信が中止されました。\n");
 											initState();
 											memberPanel.clear();
+											fileOptionCheckBox.setEnabled(true);
 										}
 									});
 									return;
@@ -1235,7 +1250,11 @@ public class FileSharingDialog extends JDialog {
 									@Override
 									public void run() {
 										messagePanel.append("- 送信が完了しました\n");
+										
+										JOptionPane.showMessageDialog(SendButton.this, "送信が完了しました。\n");
 										setStatus(STATUS_SEARCH);
+										memberPanel.clear();
+										fileOptionCheckBox.setEnabled(true);
 									}
 								});
 							}
