@@ -553,7 +553,7 @@ public class FileSharingDialog extends JDialog {
 							@Override
 							public void run() {
 								messagePanel.append("- メンバーを探しています。\n");
-								String basePath = pathField.getText();
+								String basePath = getBasePathStr();
 								newPath = DataPiper.generatePath(user.getUserName() + basePath);
 								PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
 								PipeMessage memberInfo = null;
@@ -717,7 +717,7 @@ public class FileSharingDialog extends JDialog {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					String basePath = pathField.getText();
+					String basePath = getBasePathStr();
 					
 					switch (getStatus()) {
 					case STATUS_SEARCH:
@@ -928,7 +928,7 @@ public class FileSharingDialog extends JDialog {
 							saveRootPath = commentFilePath.getParent();
 						}
 						
-						String basePath = pathField.getText();
+						String basePath = getBasePathStr();
 						PipeMessage myInfo = new PipeMessage(user.getUserName(), "");
 						
 						messageBroadcaster = new PipeMessageBroadcaster(pipe, basePath, myInfo,
@@ -1139,7 +1139,7 @@ public class FileSharingDialog extends JDialog {
 							
 							@Override
 							public void run() {
-								String basePath = pathField.getText();
+								String basePath = getBasePathStr();
 								String memberName = "";
 								try {
 									PipeMessage memberInfo = pipe.getMessage(basePath, N_RETRY);
@@ -1317,6 +1317,11 @@ public class FileSharingDialog extends JDialog {
 			if(future != null && !future.isDone()) {
 				future.cancel(true);
 			}
+		}
+		
+		
+		public String getBasePathStr() {
+			return DataPiper.getUrlParameterPath(user.getGroupName() + pathField.getText());
 		}
 	}
 }
