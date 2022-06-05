@@ -68,7 +68,6 @@ public class CommentTable extends JTable {
 	private JMenuItem menuItemDelete = new JMenuItem(Messages.getString("CommentTable.3")); //$NON-NLS-1$
 	private JMenuItem menuItemCellDelete = new JMenuItem(Messages.getString("CommentTable.4")); //$NON-NLS-1$
 	
-	private String currentAnnotator = ""; //$NON-NLS-1$
 	private boolean enableAutoFillAnnotatorName = false;
 
 	public CommentTable(CommentTableModel ctm){
@@ -424,11 +423,6 @@ public class CommentTable extends JTable {
 	}
 	
 	
-	public void setAnnotator(String annotator) {
-		currentAnnotator = annotator;
-	}
-	
-	
 	public void setAutoFillAnnotatorName(boolean flag) {
 		enableAutoFillAnnotatorName = flag;
 	}
@@ -503,9 +497,10 @@ public class CommentTable extends JTable {
 		}
 		
 		public void showTextAreaDialog(){
-			if(currentAnnotator.isEmpty() && enableAutoFillAnnotatorName) {
+			User annotator = getAnnotator();
+			if(annotator.getUserName().isEmpty() && enableAutoFillAnnotatorName) {
 				JOptionPane.showMessageDialog(CommentTable.this, Messages.getString("CommentTable.10")); //$NON-NLS-1$
-				currentAnnotator = MainFrame.USER_NOT_SPECIFIED;
+				annotator.setUserName(MainFrame.USER_NOT_SPECIFIED);
 			}
 			
 			JScrollPane scrollPane = new JScrollPane();
@@ -515,7 +510,7 @@ public class CommentTable extends JTable {
 				if(!cellText.isEmpty()) {
 					cellText += Comment.LINEBREAK;
 				}
-				cellText += ANNOTATOR_MARKER_OPEN + currentAnnotator + ANNOTATOR_MARKER_CLOSE;
+				cellText += ANNOTATOR_MARKER_OPEN + annotator.getUserName() + ANNOTATOR_MARKER_CLOSE;
 			}
 			
 			final JTextArea textArea = new JTextArea(cellText.replaceAll(Comment.LINEBREAK, "\n"), 20, 50); //$NON-NLS-1$
@@ -580,6 +575,11 @@ public class CommentTable extends JTable {
 		}
 	}
 
+	
+	private User getAnnotator() {
+		return ctm.getCommentList().getAnnotator();
+	}
+	
 	
 	public class ListCellEditor<T> extends AbstractCellEditor implements TableCellEditor, ActionListener {
 

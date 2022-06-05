@@ -509,6 +509,7 @@ public class MainFrame extends JFrame {
 		groupName = groupName == null ? "" : groupName.replaceFirst("^\\s+", "").replaceFirst("\\s+$", "");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		
 		commenter = new User(commenterName, groupName);
+		commentList.setAnnotator(commenter);
 
 		ginit();
 	}
@@ -617,7 +618,6 @@ public class MainFrame extends JFrame {
 		getContentPane().add(displayPanel, BorderLayout.CENTER);
 		getContentPane().add(commentPanel, BorderLayout.SOUTH);
 		soundRecordButton.setForeground(Color.red);
-		commentTable.setAnnotator(commenter.getUserName());
 		
 		String strEnableAutoFillAnnotatorName = config.getFirstNodeAsString("/settings/enableAutoFillAnnotatorName/@value"); //$NON-NLS-1$
 		if(strEnableAutoFillAnnotatorName == null
@@ -1179,6 +1179,10 @@ public class MainFrame extends JFrame {
 
 		
 		commentList.setSetName(xf, commenter);
+		String newGroupName = commentList.getAnnotator().getGroupName();
+		if(!newGroupName.isBlank()) {
+			commenter.setGroupName(newGroupName);
+		}
 
 		setWindowTitle(xf);
 		timerStart();
@@ -2786,7 +2790,7 @@ public class MainFrame extends JFrame {
 
 		commenter.setUserName(annotatorName);
 		commenter.setGroupName(groupName);
-		commentTable.setAnnotator(annotatorName);
+		commentList.setAnnotator(commenter);
 	}
 
 	

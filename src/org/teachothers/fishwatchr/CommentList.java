@@ -84,6 +84,7 @@ public class CommentList extends ArrayList<Comment> {
 	// /comment_list/@media_file
 	private String mediaFilenameOriginal = ""; //$NON-NLS-1$
 	private String setName = ""; //$NON-NLS-1$
+	private User annotator = new User("");
 
 	
 	@Override
@@ -199,7 +200,8 @@ public class CommentList extends ArrayList<Comment> {
 		} else if(!mediaFilenameOriginal.isEmpty()){
 			newMediaFilename = mediaFilenameOriginal;
 		}
-		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + newMediaFilename + "\">\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		
+		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + newMediaFilename + "\" group_name=\"" + annotator.getGroupName() + "\">\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 		// commentTypes settings
 		ow.write("  <comment_types>\n"); //$NON-NLS-1$
@@ -451,6 +453,15 @@ public class CommentList extends ArrayList<Comment> {
 			}
 		}
 
+		// group name
+		expr = xpath.compile("/comment_list/@group_name"); //$NON-NLS-1$
+		String groupName = (String) expr.evaluate(doc, XPathConstants.STRING);
+		if(groupName == null){
+			annotator.setGroupName("");
+		} else {
+			annotator.setGroupName(groupName);
+		}
+		
 		System.err.println("load end"); //$NON-NLS-1$
 
 		sortByTime();
@@ -824,6 +835,16 @@ public class CommentList extends ArrayList<Comment> {
 	}
 	
 	
+	public User getAnnotator() {
+		return annotator;
+	}
+	
+	
+	public void setAnnotator(User annotator) {
+		this.annotator = annotator;
+	}
+
+
 	public int getSetSize(){
 		return mapStartTime.size();
 	}
