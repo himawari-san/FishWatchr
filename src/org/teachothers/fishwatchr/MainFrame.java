@@ -493,6 +493,7 @@ public class MainFrame extends JFrame {
 			System.err.println("Warning(mainFrame): commenter's name was modified from " + configValue + " to " + modifiedName); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		commenter = new User(modifiedName);
+		commentList.setAnnotator(commenter);
 
 		ginit();
 	}
@@ -601,7 +602,6 @@ public class MainFrame extends JFrame {
 		getContentPane().add(displayPanel, BorderLayout.CENTER);
 		getContentPane().add(commentPanel, BorderLayout.SOUTH);
 		soundRecordButton.setForeground(Color.red);
-		commentTable.setAnnotator(commenter.getName());
 		
 		String strEnableAutoFillAnnotatorName = config.getFirstNodeAsString("/settings/enableAutoFillAnnotatorName/@value"); //$NON-NLS-1$
 		if(strEnableAutoFillAnnotatorName == null
@@ -2687,7 +2687,7 @@ public class MainFrame extends JFrame {
 								JOptionPane.showMessageDialog(null, inputValue + Messages.getString("MainFrame.105")); //$NON-NLS-1$
 							} else {
 								commenter.setName(inputValue);
-								commentTable.setAnnotator(commenter.getName());
+								commentList.setAnnotator(commenter);
 							}
 						}
 					});

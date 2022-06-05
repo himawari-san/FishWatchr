@@ -84,6 +84,7 @@ public class CommentList extends ArrayList<Comment> {
 	// /comment_list/@media_file
 	private String mediaFilenameOriginal = ""; //$NON-NLS-1$
 	private String setName = ""; //$NON-NLS-1$
+	private User annotator = new User("");
 
 	
 	@Override
@@ -824,6 +825,16 @@ public class CommentList extends ArrayList<Comment> {
 	}
 	
 	
+	public User getAnnotator() {
+		return annotator;
+	}
+	
+	
+	public void setAnnotator(User annotator) {
+		this.annotator = annotator;
+	}
+
+
 	public int getSetSize(){
 		return mapStartTime.size();
 	}
