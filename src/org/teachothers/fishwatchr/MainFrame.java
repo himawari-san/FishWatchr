@@ -2217,6 +2217,8 @@ public class MainFrame extends JFrame {
 	
 
 	private JMenuItem getJMenuItemFileShare() {
+		final String COLLECTOR_FILE_PREFIX = "COLLECTOR_"; // new filename for xf to merge
+		
 		if (jMenuItemFileShare == null) {
 			jMenuItemFileShare = new JMenuItem(Messages.getString("MainFrame.156")); //$NON-NLS-1$
 			jMenuItemFileShare
@@ -2233,7 +2235,11 @@ public class MainFrame extends JFrame {
 							
 //							String pipeServer = "http://localhost:8080/"; //$NON-NLS-1$
 							String pipeServer = "https://piping-server-test.herokuapp.com/";
-							FileSharingDialog fsp = new FileSharingDialog(pipeServer, commenter, Paths.get(xf), Paths.get(mf),
+
+							Path commentFilePath = Paths.get(xf);
+							Path mediaFilePath = Paths.get(mf);
+							
+							FileSharingDialog fsp = new FileSharingDialog(pipeServer, commenter, commentFilePath, mediaFilePath,
 									(receivedPath)-> {
 										xf = Util.findCommentFile(receivedPath).toAbsolutePath().toString();
 										
@@ -2263,8 +2269,23 @@ public class MainFrame extends JFrame {
 												return;
 											}
 										}
-										mergeAnnotationFiles(collectionPaths.get(0).getParent().toFile().getAbsolutePath());
-							});
+										
+										Path collectionRootPath = collectionPaths.get(0).getParent();
+
+										// copy a comment file and a media file to collectionRootPath
+										try {
+											// Use a new filename for commentFilePath because the source file may be a merged file, that will not be merged by mergeAnnotationFiles/1
+											String newCommentFilename = COLLECTOR_FILE_PREFIX + commenter.getUserName() + CommentList.FILE_SUFFIX;
+											Files.copy(commentFilePath, collectionRootPath.resolve(newCommentFilename));
+											if(mf != null && !SoundPlayer.isStream(mf)) {
+												Files.copy(mediaFilePath, collectionRootPath.resolve(mediaFilePath.getFileName()));
+											}
+										} catch (IOException e1) {
+											e1.printStackTrace();
+										}
+										mergeAnnotationFiles(collectionRootPath.toFile().getAbsolutePath());
+									}
+							);
 							fsp.setLocationRelativeTo(MainFrame.this);
 							fsp.setVisible(true);
 //							fsp.shutdownNow();

@@ -908,6 +908,7 @@ public class FileSharingDialog extends JDialog {
 	
 	private class CollectButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
+		private static final String CollectionDir = "_COLLECTION";
 		private final String[] labels = {"相手を探索", "キャンセル", "収集を実行", "キャンセル", "閉じる"};
 		private PipeMessageBroadcaster messageBroadcaster = null;
 		private Path saveRootPath = null;
@@ -925,7 +926,7 @@ public class FileSharingDialog extends JDialog {
 							JOptionPane.showMessageDialog(CollectButton.this, "動作が確認できている観察結果をFishWatrchrに読み込んだ上で，再度実行してください。");
 								return;
 						} else {
-							saveRootPath = commentFilePath.getParent();
+							saveRootPath = Util.getUniquePath(commentFilePath.getParent(), CollectionDir);
 						}
 						
 						String basePath = getBasePathStr();
@@ -995,6 +996,7 @@ public class FileSharingDialog extends JDialog {
 							JOptionPane.showMessageDialog(CollectButton.this, "メンバーが見つかっていません。");
 							return;
 						}
+
 						
 						setStatus(STATUS_CANCEL2);
 						
@@ -1013,10 +1015,6 @@ public class FileSharingDialog extends JDialog {
 									Path savePath = saveRootPath.resolve(memberName);
 											
 									try {
-										if(savePath.toFile().exists()) {
-											Path bakupPath = Util.getUniquePath(saveRootPath, memberName);
-											Files.move(savePath, bakupPath);
-										}
 										Files.createDirectories(savePath);
 									} catch (IOException e) {
 										messagePanel.append("保存用のフォルダを作成できません。\n" + memberName + "のファイルの保存処理をキャンセルします。\n");
