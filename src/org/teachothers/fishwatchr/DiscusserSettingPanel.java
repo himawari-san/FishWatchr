@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,13 +32,13 @@ public class DiscusserSettingPanel extends JPanel {
 	private List<User> discussers;
 	private String newDiscussers[];
 	private int maxDiscussers;
-	private JTextField discusserNames[];
+	private FTextField discusserNames[];
 	
 	public DiscusserSettingPanel(List<User> discussers, int maxDiscussers){
 		super();
 		this.discussers = discussers;
 		this.maxDiscussers = maxDiscussers;
-		discusserNames = new JTextField[maxDiscussers];
+		discusserNames = new FTextField[maxDiscussers];
 		newDiscussers = new String[maxDiscussers];
 		for(int i = 0; i < maxDiscussers; i++){
 			newDiscussers[i] = i < discussers.size() ? discussers.get(i).getUserName() : USER_NOT_DEFINED;
@@ -51,7 +50,7 @@ public class DiscusserSettingPanel extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		for(int i = 0; i < maxDiscussers; i++){
-			discusserNames[i] = new JTextField();
+			discusserNames[i] = new FTextField();
 			if(discussers.size() > i){
 				discusserNames[i].setText(discussers.get(i).getUserName());
 			} else {

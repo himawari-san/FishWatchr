@@ -89,7 +89,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -2812,8 +2811,8 @@ public class MainFrame extends JFrame {
 	private class AnnotatorOptionPane extends JOptionPane {
 
 		private static final long serialVersionUID = 1L;
-		private JTextField userNameField = new JTextField(15);
-		private JTextField groupNameField = new JTextField(15);
+		private FTextField userNameField = new FTextField(15);
+		private FTextField groupNameField = new FTextField(15);
 
 		public AnnotatorOptionPane(User user) {
 			JPanel mainPanel = new JPanel();

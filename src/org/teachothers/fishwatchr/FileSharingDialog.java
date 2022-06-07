@@ -37,7 +37,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -61,7 +60,7 @@ public class FileSharingDialog extends JDialog {
 	private User user;
 	private Path commentFilePath;
 	private Path mediaFilePath;
-	private JTextField pathField;
+	private FTextField pathField;
 	private DataPiper pipe;
 	private Consumer<Path> receiveSuccess;
 	private Consumer<ArrayList<Path>> collectSuccess;
@@ -97,7 +96,7 @@ public class FileSharingDialog extends JDialog {
 		JLabel usernameBody = new JLabel(user.getUserName() + " / " + user.getGroupName());
 		JLabel pathLabel = new JLabel("パス");
 		pathLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, pathLabel.getFont().getSize()));
-		pathField = new JTextField("a");
+		pathField = new FTextField("a");
 		idPanel.setLayout(new GridLayout(2, 2, 1, 10));
 		idPanel.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED), new EmptyBorder(15, 5, 15, 5)));
 		idPanel.add(usernameLabel);

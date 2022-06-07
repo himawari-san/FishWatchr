@@ -31,7 +31,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,13 +40,13 @@ public class AnnotationSettingPanel extends JPanel {
 	public static final String USER_NOT_DEFINED = ""; //$NON-NLS-1$
 	
 	private List<CommentType> commentTypes;
-	private JTextField annotationNames[];
+	private FTextField annotationNames[];
 	private JButton markColors[];
 	private JCheckBox discusserSelections[];
 	
 	public AnnotationSettingPanel(List<CommentType> commentTypes){
 		this.commentTypes = commentTypes;
-		annotationNames = new JTextField[MAX_COMMENT_TYPE];
+		annotationNames = new FTextField[MAX_COMMENT_TYPE];
 		markColors = new ColorButton[MAX_COMMENT_TYPE];
 		discusserSelections = new JCheckBox[MAX_COMMENT_TYPE];
 		ginit();
@@ -63,7 +62,7 @@ public class AnnotationSettingPanel extends JPanel {
 		add(a2);
 		
 		for(int i = 0; i < MAX_COMMENT_TYPE; i++){
-			annotationNames[i] = new JTextField();
+			annotationNames[i] = new FTextField();
 			markColors[i] = new ColorButton();
 			discusserSelections[i] = new JCheckBox();
 			annotationNames[i].setPreferredSize(new Dimension(100, 25));
