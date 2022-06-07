@@ -368,16 +368,10 @@ public class MainFrame extends JFrame {
 				if(soundPlayerState == SoundPlayer.PLAYER_STATE_RECORD || soundPlayerState == SoundPlayer.PLAYER_STATE_READ_VIDEO_INFO) {
 					return;
 				} else if(soundPlayerState == SoundPlayer.PLAYER_STATE_FINISH_RECORDING) {
-//					soundGraphBuf.setPosition(0);
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-					        soundPlayer.setPlayerState(SoundPlayer.PLAYER_STATE_STOP);
-							soundPlayer.setFile(mf, false);
-							annotationGlobalViewPanel.initScaleFactor();
-							soundPlayer.myStop();
-						}
-					});
+			        soundPlayer.setPlayerState(SoundPlayer.PLAYER_STATE_STOP);
+					soundPlayer.setFile(mf, false);
+					annotationGlobalViewPanel.initScaleFactor();
+					soundPlayer.myStop();
 					return;
 				}
 				
