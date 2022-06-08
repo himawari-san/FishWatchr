@@ -20,6 +20,7 @@ package org.teachothers.fishwatchr;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -210,26 +211,18 @@ public class Comment {
 	}
 
 	
-	public boolean mergeContents(Comment comment){
+	public String mergeText(String text1, String text2) {
+		StringBuilder resultText = new StringBuilder(text1);
 
-		String commentBody = getCommentBody();
-		String targetCommentBody = comment.getCommentBody();
-		String commentAux = getAux();
-		String targetCommentAux = comment.getAux();
+		List<String> tempList = Arrays.asList(text1.split(Pattern.quote(COMMENT_DELIMITER)));
 		
-		if(!catCommentInfo().equals(comment.catCommentInfo())){
-			return false;
-		}
-		
-		if(!Arrays.asList(commentBody.split(Pattern.quote(COMMENT_DELIMITER))).contains(targetCommentBody)){
-			setCommentBody(Util.catStrings(commentBody, targetCommentBody, COMMENT_DELIMITER));
+		for(String element : Arrays.asList(text2.split(Pattern.quote(COMMENT_DELIMITER)))) {
+			if(!tempList.contains(element)) {
+				resultText.append(COMMENT_DELIMITER).append(element);
+			}
 		}
 
-		if(!Arrays.asList(commentAux.split(Pattern.quote(COMMENT_DELIMITER))).contains(targetCommentAux)){
-			setAux(Util.catStrings(commentAux, targetCommentAux, COMMENT_DELIMITER));
-		}
-
-		return true;
+		return resultText.toString();
 	}
 	
 	
