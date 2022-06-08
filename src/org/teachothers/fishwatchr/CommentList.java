@@ -672,7 +672,11 @@ public class CommentList extends ArrayList<Comment> {
 			String key = comment.catCommentInfo();
 			if(keyMap.containsKey(key)){
 				Comment storedComment = keyMap.get(key);
-				storedComment.mergeContents(comment);
+				
+				// merge
+				storedComment.setCommentBody(storedComment.mergeText(storedComment.getCommentBody(), comment.getCommentBody()));
+				storedComment.setAux(storedComment.mergeText(storedComment.getAux(), comment.getAux()));
+
 				it.remove();
 				deletedKeys.add(key);
 			} else {
