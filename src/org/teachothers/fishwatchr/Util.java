@@ -59,6 +59,12 @@ public class Util {
 	}
 
 	
+	public static String cleanText(String str) {
+		return str.replaceFirst("^\\s+", "").replaceFirst("\\s+$", "");
+	}
+	
+	
+	
 	public static String getJarDir() throws URISyntaxException{
 		// the directory where fishwatchr.jar is placed
 		return new File(FishWatchr.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();

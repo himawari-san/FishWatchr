@@ -263,6 +263,13 @@ public class CommentList extends ArrayList<Comment> {
 			}
 		}
 
+		// evaluation
+		ow.write("<evaluations>\n");
+		for (Map.Entry<String, OverallEvaluation> entry : evaluations.entrySet()) {
+			ow.write(entry.getValue().toXML());
+		}
+		ow.write("</evaluations>\n");
+		
 		ow.write("</comment_list>\n"); //$NON-NLS-1$
 		ow.close();
 		setModified(false);
@@ -396,7 +403,7 @@ public class CommentList extends ArrayList<Comment> {
 		for (int i = 0; i < evaluationNodes.getLength(); i++) {
 			OverallEvaluation evaluation = new OverallEvaluation((Element)evaluationNodes.item(i));
 			if(evaluation != null) {
-				evaluations.put(evaluation.getEvaluatorName(), evaluation);
+				evaluations.put(evaluation.getEvaluator().getName(), evaluation);
 			}
 		}
 
@@ -447,7 +454,7 @@ public class CommentList extends ArrayList<Comment> {
 				add(comment);
 				
 				OverallEvaluation evaluation = getEvaluation(commenter.getName());
-				evaluation = evaluation == null ? new OverallEvaluation(commenter.getName()) : evaluation;
+				evaluation = evaluation == null ? new OverallEvaluation(commenter) : evaluation;
 				
 			}
 		}

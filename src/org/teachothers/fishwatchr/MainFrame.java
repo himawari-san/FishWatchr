@@ -2189,10 +2189,14 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 
-							OverallEvaluationPane fsp = new OverallEvaluationPane(commentList.getEvaluations(), commentTypes, discussers);
-							JDialog d = fsp.createDialog(Messages.getString("MainFrame.153")); //$NON-NLS-1$
+							OverallEvaluationPane fsp = new OverallEvaluationPane(commentList.getEvaluations(), commenter, commentTypes, discussers);
+							JDialog d = fsp.createDialog(MainFrame.this, Messages.getString("MainFrame.153")); //$NON-NLS-1$
 							d.setVisible(true);
-							Object selectedValue = fsp.getValue();
+							if(fsp.isDirty()) {
+								commentList.setModified(true);
+							}
+							fsp.storeData();
+							d.dispose();
 						}
 
 					});

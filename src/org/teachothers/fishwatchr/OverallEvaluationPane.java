@@ -1,12 +1,13 @@
 package org.teachothers.fishwatchr;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,20 +21,36 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
+import org.teachothers.fishwatchr.OverallEvaluation.Evaluation;
+import org.teachothers.fishwatchr.OverallEvaluation.EvaluationCategory;
 
 
 
 public class OverallEvaluationPane extends JOptionPane {
 	private static final long serialVersionUID = 1L;
+	private static final int WIDTH = 480;
+	private static final int HEIGHT = 550;
+
+	private User evaluator;
 	private ArrayList<CommentType> commentTypes;
 	private ArrayList<User> discussers;
 	private HashMap<String, OverallEvaluation> evaluations;
+	private InputPanel inputPanel;
+	private ResultPanel resultPanel;
 
 
-	public OverallEvaluationPane(HashMap<String, OverallEvaluation> evaluations, ArrayList<CommentType> commentTypes, ArrayList<User> discussers) {
+	public OverallEvaluationPane(HashMap<String, OverallEvaluation> evaluations, User evaluator, ArrayList<CommentType> commentTypes, ArrayList<User> discussers) {
+		this.evaluator = evaluator;
 		this.commentTypes = commentTypes;
 		this.discussers = discussers;
 		this.evaluations = evaluations;
@@ -42,31 +59,56 @@ public class OverallEvaluationPane extends JOptionPane {
 
 	
 	private void ginit(){
-		setOptions(new Object[0]); // remove the default OK button
+//		setOptions(new Object[0]); // remove the default OK button
+		setSize(WIDTH, HEIGHT);
+		setMinimumSize(new Dimension(WIDTH, HEIGHT));
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+
 
 		int nMainTab = 0;
-		JTabbedPane mainTabPane = new JTabbedPane();
+		JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
+		JTabbedPane mainTabPane = new JTabbedPane() {
+			private static final long serialVersionUID = 1L;
 
-		mainTabPane.add(new InputPanel());
+			@Override
+			public void setSelectedIndex(int index) {
+				if(index == 1) {
+					inputPanel.storeData();
+					resultPanel.updateData();
+				}
+				super.setSelectedIndex(index);
+			}
+		};
+		mainPanel.add(mainTabPane, BorderLayout.CENTER);
+
+		inputPanel = new InputPanel();
+		mainTabPane.add(inputPanel);
 		mainTabPane.setTitleAt(nMainTab++, "評価入力");
 
 		
-		JTabbedPane resultTabPane = new JTabbedPane();
-		mainTabPane.add(resultTabPane);
+		resultPanel = new ResultPanel(evaluations);
+		mainTabPane.add(resultPanel);
 		mainTabPane.setTitleAt(nMainTab++, "評価結果");
 		
-		int nResultTabs = 0;
 		for(OverallEvaluation evaluation : evaluations.values()) {
-			resultTabPane.add(new ResultPanel(evaluation));
-			resultTabPane.setTitleAt(nResultTabs++, evaluation.getEvaluatorName());
+			if(evaluation.getEvaluator().getName().equals(evaluator.getName())) {
+				inputPanel.setEvaluation(evaluation);
+			}
 		}
-		resultTabPane.add(new JPanel()); // dummy
-		resultTabPane.setTitleAt(nResultTabs++, "Summary");
-		
-		setMessage(mainTabPane);
-//		setPreferredSize(new Dimension(600, 800));
-		
+
+		setMessage(mainPanel);
 	}
+	
+	
+	public void storeData() {
+		inputPanel.storeData();
+	}
+	
+	
+	public boolean isDirty() {
+		return inputPanel.isDirty();
+	}
+	
 
 	class InputPanel extends JPanel {
 		private static final long serialVersionUID = 1L;
@@ -76,16 +118,16 @@ public class OverallEvaluationPane extends JOptionPane {
 		private JComboBox<Integer> evalScaleCB = new JComboBox<Integer>(EVALUATION_SCALES);
 		private UIEvalElements evalElementsLeft = new UIEvalElements();
 		private UIEvalElements evalElementsRight = new UIEvalElements();
+		private JTextArea commentTextArea = new JTextArea(10, 30);
+		private boolean isCommentDirty = false;
 
 		public InputPanel() {
 			setLayout(new BorderLayout(5, 5));
 			
 			JPanel optionPanel = new JPanel();
 			JPanel evalPanel = new JPanel();
-			JPanel buttonPanel = new JPanel();
 			add(optionPanel, BorderLayout.NORTH);
 			add(evalPanel, BorderLayout.CENTER);
-			add(buttonPanel, BorderLayout.SOUTH);
 
 			optionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 			evalPanel.setLayout(new BorderLayout());
@@ -111,7 +153,9 @@ public class OverallEvaluationPane extends JOptionPane {
 		
 			// evalPanel
 			JPanel evalScorePanel = new JPanel();
+			evalScorePanel.setBorder(new EmptyBorder(4, 4, 2, 2));
 			JPanel evalCommentPanel = new JPanel();
+			evalCommentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 			evalPanel.add(evalScorePanel, BorderLayout.CENTER);
 			evalPanel.add(evalCommentPanel, BorderLayout.SOUTH);
 
@@ -130,18 +174,23 @@ public class OverallEvaluationPane extends JOptionPane {
 			evalFormPanel.add(evalFormPanelRight);
 			evalFormPanel.setLayout(new GridLayout(1, 2));
 
-			int nItemsCommentType = commentTypes.size();
-			for(int i = 0; i < nItemsCommentType; i++) {
-				UIEvalElement uie = new UIEvalElement(commentTypes.get(i).getType(), (Integer)evalScaleCB.getSelectedItem());
-				evalElementsLeft.add(uie);
+			int selectedScale = (Integer)evalScaleCB.getSelectedItem();
+			for(CommentType commentType : commentTypes) {
+				String type = commentType.getType();
+				if(!type.isBlank()) {
+					UIEvalElement uie = new UIEvalElement(type, selectedScale);
+					evalElementsLeft.add(uie);
+				}
 			}
 			GroupLayout gl2 = Util.getGroupLayout(evalElementsLeft.buildUIArray(), evalFormPanelLeft);
 			evalFormPanelLeft.setLayout(gl2);
 
-			int nItemsDiscussor = discussers.size();
-			for(int i = 0; i < nItemsDiscussor; i++) {
-				UIEvalElement uie = new UIEvalElement(discussers.get(i).getName(), (Integer)evalScaleCB.getSelectedItem());
-				evalElementsRight.add(uie);
+			for(User discusser : discussers) {
+				String name = discusser.getName();
+				if(!name.isBlank()) {
+					UIEvalElement uie = new UIEvalElement(name, selectedScale);
+					evalElementsRight.add(uie);
+				}
 			}
 			GroupLayout gl3 = Util.getGroupLayout(evalElementsRight.buildUIArray(), evalFormPanelRight);
 			evalFormPanelRight.setLayout(gl3);
@@ -150,52 +199,150 @@ public class OverallEvaluationPane extends JOptionPane {
 			JScrollPane commentScrollPane = new JScrollPane();
 			evalCommentPanel.add(new JLabel("総合コメント"), BorderLayout.NORTH);
 			evalCommentPanel.add(commentScrollPane, BorderLayout.CENTER);
-			commentScrollPane.setViewportView(new JTextArea(10, 30));
-
-
-			// buttonPanel
-			JButton saveButton = new JButton("保存");
-			saveButton.addActionListener(new ActionListener() {
+			commentScrollPane.setViewportView(commentTextArea);
+			commentTextArea.getDocument().addDocumentListener(new DocumentListener() {
 				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					// TODO Auto-generated method stub
+				public void removeUpdate(DocumentEvent arg0) {
+					isCommentDirty = true;
+				}
+				
+				@Override
+				public void insertUpdate(DocumentEvent arg0) {
+					isCommentDirty = true;
+				}
+				
+				@Override
+				public void changedUpdate(DocumentEvent arg0) {
+					isCommentDirty = true;
 				}
 			});
-			buttonPanel.add(saveButton);
+		}
+
+		
+		private String getComment() {
+			return commentTextArea.getText();
 		}
 		
+		private void setComment(String text) {
+			boolean tempIsDirty = isCommentDirty;
+			commentTextArea.setText(text);
+			isCommentDirty = tempIsDirty;
+		}
+
+		
+		private void setEvaluation(OverallEvaluation overallEvaluation) {
+			for(UIEvalElement element : evalElementsLeft.values()) {
+				Evaluation e = overallEvaluation.getEvaluation(OverallEvaluation.TAG_CATEGORY1, element.getName());
+				if(e != null) {
+					element.setEvaluation(e);
+				}
+			}
+
+			for(UIEvalElement element : evalElementsRight.values()) {
+				Evaluation e = overallEvaluation.getEvaluation(OverallEvaluation.TAG_CATEGORY2, element.getName());
+				if(e != null) {
+					element.setEvaluation(e);
+				}
+			}
+			
+			setComment(overallEvaluation.getComment());
+		}
+		
+		
+		public void storeData() {
+			OverallEvaluation newOverallEvaluation = evaluations.containsKey(evaluator.getName()) ? evaluations.get(evaluator.getName()) : new OverallEvaluation(evaluator);
+			newOverallEvaluation.setTimestamp();
+			newOverallEvaluation.setComment(getComment());
+			for(UIEvalElement element : evalElementsLeft.values()) {
+				newOverallEvaluation.setEvaluation(OverallEvaluation.TAG_CATEGORY1, element.getName(), element.getScore(), element.getComment());
+			}
+			for(UIEvalElement element : evalElementsRight.values()) {
+				newOverallEvaluation.setEvaluation(OverallEvaluation.TAG_CATEGORY2, element.getName(), element.getScore(), element.getComment());
+			}
+			
+			evaluations.put(evaluator.getName(), newOverallEvaluation);
+		}
+		
+		
+		public boolean isDirty() {
+			if(isCommentDirty) {
+				return true;
+			}
+			
+			for(UIEvalElement element : evalElementsLeft.values()) {
+				if(element.isDirty()) {
+					return true;
+				}
+			}
+
+			for(UIEvalElement element : evalElementsRight.values()) {
+				if(element.isDirty()) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 	
 	class UIEvalElement {
 		public static final int N_ELEMENTS = 3;
 		
-		String name;
-		JLabel label;
-		NPointScaleComboBox comboBox;
-		CommentButton button;
+		private String name;
+		private JLabel label;
+		private NPointScaleComboBox comboBox;
+		private CommentButton button;
+		private boolean isDirty = false;
 		
 		public UIEvalElement(String name, int nScalePoints){
 			this.name = name;
 			this.label = new JLabel(name);
 			this.comboBox = new NPointScaleComboBox(nScalePoints);
 			this.button = new CommentButton("コメント");
+			
+			comboBox.addItemListener(new ItemListener() {
+				
+				@Override
+				public void itemStateChanged(ItemEvent arg0) {
+					isDirty = true;
+				}
+			});
+		}
+		
+		public boolean isDirty() {
+			return button.isDirty() ? true : isDirty;
 		}
 		
 		public String getName() {
 			return name;
 		}
 		
+
 		public void setEvaluation(OverallEvaluation.Evaluation evaluation) {
-			comboBox.setFixedValue(evaluation.getScore());
+			boolean tempIsDirty = isDirty;
+			comboBox.setSelectedValue(evaluation.getScore());
 			button.setComment(evaluation.getComment());
+			isDirty = tempIsDirty;
 		}
+
 		
 		
 		public void setScalePoints(int n) {
+			boolean tempIsDirty = isDirty;
 			comboBox.setValues(n);
+			isDirty = tempIsDirty;
 		}
 		
+		
+		public String getScore() {
+			return (String) comboBox.getSelectedItem();
+		}
+		
+		
+		public String getComment() {
+			return button.getComment();
+		}
 		
 		public JComponent[] buildUIArray() {
 			JComponent[] components = new JComponent[N_ELEMENTS];
@@ -235,78 +382,100 @@ public class OverallEvaluationPane extends JOptionPane {
 				element.setScalePoints(nScalePoints);
 			});
 		}
+		
+		
+		public boolean isDirty() {
+			for(UIEvalElement uiEvalElement : values()) {
+				if(uiEvalElement.isDirty()) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
 	}
 	
 	class ResultPanel extends JPanel {
 		private static final long serialVersionUID = 1L;
+		private final String[] COLUMN_NAMES = {"評価者名", "観点", "値", "コメント"};
+		
+		private String[][] data = new String[0][COLUMN_NAMES.length];
+		private HashMap<String, OverallEvaluation> overallEvaluations;
+		private JTable table;
 
-		private UIEvalElements evalElementsLeft = new UIEvalElements();
-		private UIEvalElements evalElementsRight = new UIEvalElements();
+		public ResultPanel(HashMap<String, OverallEvaluation> overallEvaluations) {
+			this.overallEvaluations = overallEvaluations;
 
-		public ResultPanel(OverallEvaluation overallEvaluation) {
-			GridBagLayout gbl = new GridBagLayout();
-			GridBagConstraints gbc = new GridBagConstraints();
-			setLayout(gbl);
+			JPanel infoPanel = new JPanel(new BorderLayout());
+			infoPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+			JTextArea info = new JTextArea(10, 30);
+			infoPanel.add(info, BorderLayout.CENTER);
 			
-			JPanel commentPanel = new JPanel();
-			commentPanel.setLayout(new BorderLayout(2, 4));
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.weightx = 0d;
-			gbc.weighty = 0d;
-			gbc.anchor = GridBagConstraints.NORTHWEST;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			gbl.setConstraints(commentPanel, gbc);
-			add(commentPanel);
-			JLabel commentLabel = new JLabel("総合コメント");
-			commentPanel.add(commentLabel, BorderLayout.NORTH);
-
-			JScrollPane commentScrollPane = new JScrollPane();
-			JTextArea commentArea = new JTextArea(10, 30);
-			commentArea.setText(overallEvaluation.getComment());
-			commentScrollPane.setViewportView(commentArea);
-			commentPanel.add(commentScrollPane, BorderLayout.CENTER);
-			commentPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-
-			JPanel evalPanel = new JPanel();
-			evalPanel.setLayout(new BorderLayout());
-			evalPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
-			gbc.gridx = 0;
-			gbc.gridy = 1;
-			gbc.weightx = 1.0d;
-			gbc.weighty = 1.0d;
-			gbc.anchor = GridBagConstraints.SOUTHWEST;
-			gbc.fill = GridBagConstraints.BOTH;
-			gbl.setConstraints(evalPanel, gbc);
-			add(evalPanel);
+			table = new JTable() {
+				private static final long serialVersionUID = 1L;
+				public boolean isCellEditable(int row, int column) {                
+					return false;
+				}
+			};
+			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					if(e.getValueIsAdjusting()) {
+						return;
+					}
+					
+					int iSelectedRow = table.getSelectedRow();
+					if(iSelectedRow > 0) {
+					info.setText(
+							"評価者: " + 	data[iSelectedRow][0] + "\n" +
+							"観点: " + 	data[iSelectedRow][1] + "\n" +
+							"値: " + data[iSelectedRow][2] + "\n" +
+							"コメント:\n" + data[iSelectedRow][3]
+							);
+					}
+				}
+			});
 			
-			JLabel evalLabel = new JLabel("評価項目");
-			evalPanel.add(evalLabel, BorderLayout.NORTH);
+			
+			setLayout(new BorderLayout(5, 5));
+			add(new JScrollPane(table), BorderLayout.CENTER);
+			add(infoPanel, BorderLayout.SOUTH);
+		
+		}
 
-			JPanel evalFormPanel = new JPanel();
-			evalFormPanel.setLayout(new GridLayout(1, 2));
-			evalPanel.add(evalFormPanel, BorderLayout.CENTER);
-			
-			JPanel evalFormPanelLeft = new JPanel();
-			JPanel evalFormPanelRight = new JPanel();
-			evalFormPanel.add(evalFormPanelLeft);
-			evalFormPanel.add(evalFormPanelRight);
-			
-			for(String evaluationName : overallEvaluation.getEvaluationNames(OverallEvaluation.TAG_CATEGORY1)) {
-				UIEvalElement uie = new UIEvalElement(evaluationName, 0);
-				uie.setEvaluation(overallEvaluation.getEvaluation(OverallEvaluation.TAG_CATEGORY1, evaluationName));
-				evalElementsLeft.add(uie);
+		public void updateData() {
+			int nEvaluation = 0;
+
+			// count the number of evaluations
+			for(OverallEvaluation overallEvaluation : overallEvaluations.values()) {
+				for(String categoryName : OverallEvaluation.TAG_CATEGORIES) {
+					EvaluationCategory category = overallEvaluation.getCategory(categoryName);
+					nEvaluation += category.size();
+				}
+				nEvaluation++; // overall comment
 			}
-			GroupLayout gl2 = Util.getGroupLayout(evalElementsLeft.buildUIArray(), evalFormPanelLeft);
-			evalFormPanelLeft.setLayout(gl2);
 
-			for(String evaluationName : overallEvaluation.getEvaluationNames(OverallEvaluation.TAG_CATEGORY2)) {
-				UIEvalElement uie = new UIEvalElement(evaluationName, 0);
-				uie.setEvaluation(overallEvaluation.getEvaluation(OverallEvaluation.TAG_CATEGORY2, evaluationName));
-				evalElementsRight.add(uie);
+			data = new String[nEvaluation][COLUMN_NAMES.length];
+			int i = 0;
+			for(OverallEvaluation overallEvaluation : overallEvaluations.values()) {
+				String evaluator = overallEvaluation.getEvaluator().getName();
+				for(String categoryName : OverallEvaluation.TAG_CATEGORIES) {
+					EvaluationCategory category = overallEvaluation.getCategory(categoryName);
+					for(Evaluation evaluation : category.values()) {
+						data[i][0] = evaluator;
+						data[i][1] = evaluation.getName();
+						data[i][2] = evaluation.getScore();
+						data[i][3] = evaluation.getComment();
+						i++;
+					}
+				}
+				data[i][0] = evaluator;
+				data[i][1] = "総合評価";
+				data[i][2] = "";
+				data[i][3] = overallEvaluation.getComment();
+				i++;
 			}
-			GroupLayout gl3 = Util.getGroupLayout(evalElementsRight.buildUIArray(), evalFormPanelRight);
-			evalFormPanelRight.setLayout(gl3);
+			table.setModel(new DefaultTableModel(data, COLUMN_NAMES));
 		}
 	}
 
@@ -317,6 +486,7 @@ public class OverallEvaluationPane extends JOptionPane {
 		private static final int TEXT_AREA_ROWS = 8;
 		private static final int TEXT_AREA_COLUMNS = 36;
 		private JTextArea textArea = new JTextArea(TEXT_AREA_ROWS, TEXT_AREA_COLUMNS);
+		private boolean isDirty = false;
 
 		public CommentButton(String text) {
 			super(text);
@@ -324,10 +494,14 @@ public class OverallEvaluationPane extends JOptionPane {
 				
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					String tempText = getComment();
 					JPanel p = new JPanel();
 					p.setLayout(new BorderLayout());
 					p.add(new JScrollPane(textArea), BorderLayout.CENTER);
 					JOptionPane.showMessageDialog(null, p);
+					if(!getComment().contentEquals(tempText)) {
+						isDirty = true;
+					}
 				}
 			});
 		}
@@ -338,7 +512,11 @@ public class OverallEvaluationPane extends JOptionPane {
 		}
 		
 		public String getComment() {
-			return textArea.getText();
+			return Util.cleanText(textArea.getText());
+		}
+		
+		public boolean isDirty() {
+			return isDirty;
 		}
 	}
 	
@@ -367,13 +545,12 @@ public class OverallEvaluationPane extends JOptionPane {
 			model.addAll(scale);
 		}
 		
-		public void setFixedValue(String n) {
-			if(getItemCount() == 1) {
-				DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)getModel();
-				model.removeAllElements();
-				model.addElement(n);
+		public void setSelectedValue(String n) {
+			for(int i = 0; i < getItemCount(); i++) {
+				if(getItemAt(i).equals(n)) {
+					setSelectedIndex(i);
+				}
 			}
-			// TODO
 		}
 	}
 }
