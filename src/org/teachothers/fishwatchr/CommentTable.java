@@ -68,7 +68,6 @@ public class CommentTable extends JTable {
 	private JMenuItem menuItemDelete = new JMenuItem(Messages.getString("CommentTable.3")); //$NON-NLS-1$
 	private JMenuItem menuItemCellDelete = new JMenuItem(Messages.getString("CommentTable.4")); //$NON-NLS-1$
 	
-	private boolean enableAutoFillAnnotatorName = false;
 
 	public CommentTable(CommentTableModel ctm){
 		super(ctm);
@@ -423,11 +422,6 @@ public class CommentTable extends JTable {
 	}
 	
 	
-	public void setAutoFillAnnotatorName(boolean flag) {
-		enableAutoFillAnnotatorName = flag;
-	}
-
-	
 	public class CellRenderer extends DefaultTableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -498,6 +492,8 @@ public class CommentTable extends JTable {
 		
 		public void showTextAreaDialog(){
 			User annotator = getAnnotator();
+			boolean enableAutoFillAnnotatorName = ctm.getCommentList().isAnnotatorNameAutoFillEnabled();
+			
 			if(annotator.getName().isEmpty() && enableAutoFillAnnotatorName) {
 				JOptionPane.showMessageDialog(CommentTable.this, Messages.getString("CommentTable.10")); //$NON-NLS-1$
 				annotator.setName(MainFrame.USER_NOT_SPECIFIED);
