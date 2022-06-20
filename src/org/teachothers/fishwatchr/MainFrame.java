@@ -620,8 +620,8 @@ public class MainFrame extends JFrame {
 		} else {
 			jMenuItemOptionAutoFillAnnotatorName.setSelected(true);
 		}
-		commentTable.setAutoFillAnnotatorName(jMenuItemOptionAutoFillAnnotatorName.isSelected());
-
+		commentList.setAnnotatorNameAutoFillEnabled(jMenuItemOptionAutoFillAnnotatorName.isSelected());
+		
 		String strEnableValidateAnnotations = config.getFirstNodeAsString("/settings/enableValidateAnnotations/@value"); //$NON-NLS-1$
 		if(strEnableValidateAnnotations == null
 				|| strEnableValidateAnnotations.isEmpty()
@@ -1088,6 +1088,7 @@ public class MainFrame extends JFrame {
 							return false;
 						}
 						ctm.refreshFilter();
+						updateGuiSettings();
 						updateButtonPanel(buttonType);
 						checkLockFile(selectedFilename);
 						ctm.fireTableDataChanged();
@@ -1120,6 +1121,7 @@ public class MainFrame extends JFrame {
 					xf = ""; //$NON-NLS-1$
 					JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.23") + mf); //$NON-NLS-1$
 					ctm.refreshFilter();
+					updateGuiSettings();
 					updateButtonPanel(buttonType);
 					ctm.fireTableDataChanged();
 					setWindowTitle(xf);
@@ -1133,6 +1135,7 @@ public class MainFrame extends JFrame {
 				return false;
 			}
 			ctm.refreshFilter();
+			updateGuiSettings();
 			updateButtonPanel(buttonType);
 			checkLockFile(xf);
 			ctm.fireTableDataChanged();
@@ -2611,6 +2614,18 @@ public class MainFrame extends JFrame {
 		return jMenuAnnotation;
 	}
 
+	private void updateGuiSettings() {
+		buttonType = commentList.getButtonType();
+		if (buttonType == CommentButton.BUTTON_TYPE_DISCUSSER) {
+			jMenuItemAnnotationOrderDiscusser.setSelected(true);
+		} else {
+			jMenuItemAnnotationOrderType.setSelected(true);
+		}
+		
+		jMenuItemAnnotationMulti.setSelected(commentList.isMultiAnnotationEnabled());
+		jMenuItemOptionAutoFillAnnotatorName.setSelected(commentList.isAnnotatorNameAutoFillEnabled());
+	}
+	
 	private void updateButtonPanel(int newButtonType) {
 		buttonType = newButtonType;
 		buttonPanel.removeAll();
@@ -2707,6 +2722,7 @@ public class MainFrame extends JFrame {
 							} catch (XPathExpressionException e1) {
 								e1.printStackTrace();
 							}
+							commentList.setButtonType(CommentButton.BUTTON_TYPE_DISCUSSER);
 						}
 					});
 		}
@@ -2725,6 +2741,7 @@ public class MainFrame extends JFrame {
 							} catch (XPathExpressionException e1) {
 								e1.printStackTrace();
 							}
+							commentList.setButtonType(CommentButton.BUTTON_TYPE_COMMENT);
 						}
 					});
 		}
@@ -2743,14 +2760,12 @@ public class MainFrame extends JFrame {
 												.isSelected());
 							}
 							try {
-								if(jMenuItemAnnotationMulti.isSelected()){
-									config.setValue("/settings/isAnnotationMulti", "value", "true"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-								} else {
-									config.setValue("/settings/isAnnotationMulti", "value", "false"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-								}
+								config.setValue("/settings/isAnnotationMulti", "value", 
+										jMenuItemAnnotationMulti.isSelected() ? "true" : "false");
 							} catch (XPathExpressionException e1) {
 								e1.printStackTrace();
 							}
+							commentList.setMultiAnnotationEnabled(jMenuItemAnnotationMulti.isSelected());
 						}
 					});
 		}
@@ -3354,7 +3369,7 @@ public class MainFrame extends JFrame {
 						@Override
 						public void run() {
 							boolean flag = jMenuItemOptionAutoFillAnnotatorName.isSelected();
-							commentTable.setAutoFillAnnotatorName(flag);
+							commentList.setAnnotatorNameAutoFillEnabled(flag);
 							try {
 								config.setValue("/settings/enableAutoFillAnnotatorName", "value", //$NON-NLS-1$ //$NON-NLS-2$
 										flag ? "true" : "false"); //$NON-NLS-1$ //$NON-NLS-2$

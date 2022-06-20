@@ -85,6 +85,12 @@ public class CommentList extends ArrayList<Comment> {
 	private String mediaFilenameOriginal = ""; //$NON-NLS-1$
 	private String setName = ""; //$NON-NLS-1$
 	private User annotator = new User("");
+	
+	// settings
+	private int buttonType = CommentButton.BUTTON_TYPE_COMMENT;
+	private boolean multiAnnotationEnabled = false;
+	private boolean annotatorNameAutoFillEnabled = true;
+
 
 	
 	@Override
@@ -203,6 +209,14 @@ public class CommentList extends ArrayList<Comment> {
 		
 		ow.write("<comment_list" + " start_time=\"" + startTimeStr + "\" media_file=\"" + newMediaFilename + "\" group_name=\"" + annotator.getGroupName() + "\">\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
+		// settings
+		ow.write("  <settings>\n"); //$NON-NLS-1$
+		ow.write("    <button_type value=\"" + buttonType + "\" />\n"); //$NON-NLS-1$
+		ow.write("    <multi_annotation_enabled value=\"" + multiAnnotationEnabled + "\" />\n"); //$NON-NLS-1$
+		ow.write("    <annotator_name_autofill_enabled value=\"" + annotatorNameAutoFillEnabled + "\" />\n"); //$NON-NLS-1$
+		ow.write("  </settings>\n"); //$NON-NLS-1$
+		
+		
 		// commentTypes settings
 		ow.write("  <comment_types>\n"); //$NON-NLS-1$
 		for (int i = 0; i < commentTypes.size(); i++) {
@@ -469,6 +483,32 @@ public class CommentList extends ArrayList<Comment> {
 			annotator.setGroupName(groupName);
 		}
 		
+		// settings
+		expr = xpath.compile("/comment_list/settings/button_type/@value"); //$NON-NLS-1$
+		String tempStr = (String) expr.evaluate(doc, XPathConstants.STRING);
+		if(tempStr == null || tempStr.equals(String.valueOf(CommentButton.BUTTON_TYPE_COMMENT))) {
+			buttonType = CommentButton.BUTTON_TYPE_COMMENT;
+		} else {
+			buttonType = CommentButton.BUTTON_TYPE_DISCUSSER;
+		}
+
+		expr = xpath.compile("/comment_list/settings/multi_annotation_enabled/@value"); //$NON-NLS-1$
+		tempStr = (String) expr.evaluate(doc, XPathConstants.STRING);
+		if(tempStr == null || tempStr.equalsIgnoreCase("false")) {
+			multiAnnotationEnabled = false;
+		} else {
+			multiAnnotationEnabled = true;
+		}
+		
+		expr = xpath.compile("/comment_list/settings/annotator_name_autofill_enabled/@value"); //$NON-NLS-1$
+		tempStr = (String) expr.evaluate(doc, XPathConstants.STRING);
+		if(tempStr == null || tempStr.equalsIgnoreCase("false")) {
+			annotatorNameAutoFillEnabled = false;
+		} else {
+			annotatorNameAutoFillEnabled = true;
+		}
+
+		
 		System.err.println("load end"); //$NON-NLS-1$
 
 		sortByTime();
@@ -491,6 +531,36 @@ public class CommentList extends ArrayList<Comment> {
 	
 	public void setEvaluation(String evaluatorName, OverallEvaluation evaluation) {
 		evaluations.put(evaluatorName, evaluation);
+	}
+	
+	
+	public int getButtonType() {
+		return buttonType;
+	}
+	
+
+	public void setButtonType(int buttonType) {
+		this.buttonType = buttonType;
+	}
+	
+	
+	public boolean isMultiAnnotationEnabled() {
+		return multiAnnotationEnabled;
+	}
+	
+
+	public void setMultiAnnotationEnabled(boolean enabled) {
+		multiAnnotationEnabled = enabled;
+	}
+	
+	
+	public boolean isAnnotatorNameAutoFillEnabled() {
+		return annotatorNameAutoFillEnabled;
+	}
+	
+
+	public void setAnnotatorNameAutoFillEnabled(boolean enabled) {
+		annotatorNameAutoFillEnabled = enabled;
 	}
 	
 	
