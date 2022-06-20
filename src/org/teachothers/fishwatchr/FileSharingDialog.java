@@ -91,10 +91,10 @@ public class FileSharingDialog extends JDialog {
 
 		
 		JPanel idPanel = new JPanel();
-		JLabel usernameLabel = new JLabel("注釈者名 / グループ名");
+		JLabel usernameLabel = new JLabel("注釈者 / セッション");
 		usernameLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, usernameLabel.getFont().getSize()));
 		JLabel usernameBody = new JLabel(user.getUserName() + " / " + user.getGroupName());
-		JLabel pathLabel = new JLabel("パス");
+		JLabel pathLabel = new JLabel("共有名");
 		pathLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, pathLabel.getFont().getSize()));
 		pathField = new FTextField("a");
 		idPanel.setLayout(new GridLayout(2, 2, 1, 10));
