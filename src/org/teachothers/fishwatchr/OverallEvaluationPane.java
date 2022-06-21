@@ -149,6 +149,8 @@ public class OverallEvaluationPane extends JOptionPane {
 					evalElementsRight.updateComboBox(nScalePoints);
 				}
 			});
+			// Disable temporally for KUFS2022 
+			evalScaleCB.setEnabled(false);
 			
 		
 			// evalPanel
