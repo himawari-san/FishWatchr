@@ -519,7 +519,7 @@ public class FileSharingDialog extends JDialog {
 	
 	private class ReceiveButton extends PipeActionButton {
 		private static final long serialVersionUID = 1L;
-		private final String[] labels = {"相手を探索", "キャセル", "受信を実行", "キャセル", "閉じる"};
+		private final String[] labels = {"相手を探索", "キャンセル", "受信を実行", "キャンセル", "閉じる"};
 		
 		private String newPath = "";
 		private long dataSize = 0;
