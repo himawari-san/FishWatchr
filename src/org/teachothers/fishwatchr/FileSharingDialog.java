@@ -1176,6 +1176,7 @@ public class FileSharingDialog extends JDialog {
 												messagePanel.append("- " + "送信中です。\n");
 											} else {
 												messagePanel.append("- " + "キャンセルしました。\n");
+												fileOptionCheckBox.setEnabled(true);
 												initState();
 												return;
 											}
