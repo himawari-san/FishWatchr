@@ -826,10 +826,10 @@ public class FileSharingDialog extends JDialog {
 										myInfo.setStatus(PipeMessage.STATUS_CONTINUED);
 										try {
 											pipe.postMessage(tempPath, myInfo);
-											return;
 										} catch (IOException | URISyntaxException | InterruptedException e) {
 											e.printStackTrace();
 										}
+										return;
 									} else {
 										myInfo.setStatus(PipeMessage.STATUS_CONTINUED);
 									}
@@ -1014,33 +1014,45 @@ public class FileSharingDialog extends JDialog {
 						
 						messageBroadcaster = new PipeMessageBroadcaster(pipe, basePath, myInfo,
 								(updatedMessage) -> {
-									SwingUtilities.invokeLater(new Runnable() {
-										@Override
-										public void run() {
-											String newPath = updatedMessage.getPath();
+									try {
+										String newPath = updatedMessage.getPath();
+										PipeMessage memberInfo = pipe.getMessage(newPath);
+										String senderName = memberInfo.getSenderName();
 
-											try {
-												PipeMessage memberInfo = pipe.getMessage(newPath);
-												String senderName = memberInfo.getSenderName();
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
 												if(messageBroadcaster.isMapped(senderName)) {
 													messagePanel.append("- " + senderName + "の接続が再度ありましたが，既登録なので，追加しません。\n");
+													return;
+												} else if(memberInfo.getStatus() == PipeMessage.STATUS_CANCELED) {
 													return;
 												}
 												messageBroadcaster.setMap(senderName, memberInfo);
 												memberListPanel.addMember(memberInfo);
 												messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
 												setStatus(STATUS_EXECUTE);
-											} catch (URISyntaxException | IOException e) {
+											}
+										});
+									} catch (URISyntaxException | IOException e) {
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
 												JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
 												initState();
-												return;
-											} catch (InterruptedException e) {
+											}
+										});
+										return;
+									} catch (InterruptedException e) {
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
 												// getMessage() closes the pipe internally
 												initState();
-												return;
 											}
-										}
-									});
+										});
+										return;
+									}
 								}, (ex) -> {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
@@ -1214,11 +1226,12 @@ public class FileSharingDialog extends JDialog {
 						
 						messagePanel.append("- メンバーを探しています。\n");
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
+							String memberName = "";
+							int result;
 							
 							@Override
 							public void run() {
 								String basePath = getBasePathStr();
-								String memberName = "";
 								try {
 									PipeMessage memberInfo = pipe.getMessage(basePath, N_RETRY);
 									if(memberInfo.getErrorCode() > 0) {
@@ -1226,50 +1239,95 @@ public class FileSharingDialog extends JDialog {
 									}
 									memberName = memberInfo.getSenderName();
 									newPath = memberInfo.getPath();
-									memberPanel.setMember(memberName);
-									messagePanel.append("- " + memberName + "が見つかりました。\n");
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											memberPanel.setMember(memberName);
+											messagePanel.append("- " + memberName + "が見つかりました。\n");
+										}
+									});
 								} catch (URISyntaxException | IOException e) {
-									JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
+											initState();
+										}
+									});
 									return;
 								} catch (InterruptedException e) {
-									// getMessage() closes the pipe internally
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											// getMessage() closes the pipe internally
+											initState();
+										}
+									});
 									return;
 								}
 
 								try {
 									final String memberName2 = memberName;
-									dataSize = Util.getTotalFilesize(filePaths);
-
+									try {
+										SwingUtilities.invokeAndWait(new Runnable() {
+											@Override
+											public void run() {
+												result = JOptionPane.showConfirmDialog(SendButton.this, 
+														memberName2 + "へファイルを送る場合は「OK」ボタンを押してください。",
+														"送信の確認", JOptionPane.OK_CANCEL_OPTION);
+											}
+										});
+									} catch (InvocationTargetException e) {
+										result = JOptionPane.CANCEL_OPTION;
+										e.printStackTrace();
+									}
+									
 									PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
-									myInfo.setDataSize(dataSize);
-									pipe.postMessage(newPath, myInfo);
-									SwingUtilities.invokeLater(new Runnable() {
-										@Override
-										public void run() {
-											int result = JOptionPane.showConfirmDialog(SendButton.this, 
-													memberName2 + "へファイルを送る場合は「OK」ボタンを押してください。",
-													"送信の確認", JOptionPane.OK_CANCEL_OPTION);
-											if(result == JOptionPane.OK_OPTION) {
+									if(result == JOptionPane.OK_OPTION) {
+										dataSize = Util.getTotalFilesize(filePaths);
+
+										myInfo.setStatus(PipeMessage.STATUS_NORMAL);
+										myInfo.setDataSize(dataSize);
+										pipe.postMessage(newPath, myInfo);
+
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
 												setStatus(STATUS_EXECUTE);
 												SendButton.this.doClick();
 												messagePanel.append("- " + "送信中です。\n");
-											} else {
+											}
+										});
+									} else {
+										myInfo.setStatus(PipeMessage.STATUS_CANCELED);
+										pipe.postMessage(newPath, myInfo);
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
 												messagePanel.append("- " + "キャンセルしました。\n");
 												fileOptionCheckBox.setEnabled(true);
 												initState();
-												return;
 											}
+										});
+										return;
+									}
+								} catch (URISyntaxException | IOException e) {
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
+											initState();
 										}
 									});
-								} catch (URISyntaxException | IOException e) {
-									JOptionPane.showMessageDialog(SendButton.this, e.getMessage());
-									initState();
 									return;
 								} catch (InterruptedException e) {
-									// postMessage() closes the pipe internally
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											// postMessage() closes the pipe internally
+											initState();
+										}
+									});
 									return;
 								}
 							}

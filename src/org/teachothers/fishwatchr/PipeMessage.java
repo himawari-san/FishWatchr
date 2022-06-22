@@ -16,6 +16,7 @@ public class PipeMessage extends ConcurrentHashMap<String, String> {
 	public static final int STATUS_CONTINUED = 2;
 	public static final int STATUS_DUPLICATED = 3;
 	public static final int STATUS_NAME_INQUIRY = 4;
+	public static final int STATUS_CANCELED = 5;
 	public static final int STATUS_ERROR = -1;
 	
 	private static final String MESSAGE_KEY_PATH = SYSTEM_KEY_PREFIX + "path";
