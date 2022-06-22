@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -487,7 +488,6 @@ public class FileSharingDialog extends JDialog {
 
 		
 		public void setMember(String str) {
-			System.err.println("h:" + SwingUtilities.isEventDispatchThread());
 			nameLabel.setText(str);
 		}
 		
@@ -547,8 +547,8 @@ public class FileSharingDialog extends JDialog {
 							saveRootPath = commentFilePath.getParent();
 						}
 
-						
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
+							int result = 0;
 							@Override
 							public void run() {
 								messagePanel.append("- メンバーを探しています。\n");
@@ -557,53 +557,125 @@ public class FileSharingDialog extends JDialog {
 								PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
 								PipeMessage memberInfo = null;
 								try {
+									myInfo.setStatus(PipeMessage.STATUS_NAME_INQUIRY); // for Distribute (no effect for Send)
 									pipe.postMessage(basePath, myInfo, N_RETRY);
 									memberInfo = pipe.getMessage(newPath);
 
 									String memberName = memberInfo.getSenderName();
-									memberPanel.setMember(memberName);
-									messagePanel.append("- " + memberName + "が見つかりました。\n");
-
-									// For Distribute
-									if(memberInfo.getStatus() == PipeMessage.STATUS_CONTINUED) { // will be registered
-										messagePanel.append("- " + memberName + "が送信するまで，お待ちください。\n");
-										memberInfo = pipe.getMessage(newPath);
-									} else if(memberInfo.getStatus() == PipeMessage.STATUS_DUPLICATED) { // duplicated
-										JOptionPane.showMessageDialog(ReceiveButton.this, "同じメンバー名のユーザが登録されていたため，" + memberName + "に接続を拒否されました。");
-										messagePanel.append("- 同じメンバー名のユーザが登録されていたため，" + memberName + "に接続を拒否されました。\n");
-										initState();
-										memberPanel.clear();
-										return;
-									} else {
-										messagePanel.append("- " + memberName + "が送信を開始するまで，お待ちください。\n");
-									}
-
-									dataSize =  memberInfo.getDataSize();
-									newPath = memberInfo.getPath();
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
 										public void run() {
-											int result = JOptionPane.showConfirmDialog(ReceiveButton.this, 
-													memberName + "からファイルを受け取る場合は「OK」ボタンを押してください。",
-													"受信の確認", JOptionPane.OK_CANCEL_OPTION);
-											if(result == JOptionPane.OK_OPTION) {
-												setStatus(STATUS_EXECUTE);
-												ReceiveButton.this.doClick();
-												messagePanel.append("- " + "受信中です。\n");
-											} else {
-												messagePanel.append("- " + "キャンセルしました。\n");
-												initState();
-												return;
-											}
+											memberPanel.setMember(memberName);
+											messagePanel.append("- " + memberName + "が見つかりました。\n");
 										}
 									});
+
+
+									if(memberInfo.getStatus() == PipeMessage.STATUS_CONTINUED) { // Distribute
+										try {
+											SwingUtilities.invokeAndWait(new Runnable() {
+												@Override
+												public void run() {
+													result = JOptionPane.showConfirmDialog(ReceiveButton.this, 
+															memberName + "からファイルを受け取る場合は「OK」ボタンを押してください。",
+															"受信の確認", JOptionPane.OK_CANCEL_OPTION);
+												}
+											});
+										} catch (InvocationTargetException e) {
+											result = JOptionPane.CANCEL_OPTION;
+											e.printStackTrace();
+										}
+										if(result == JOptionPane.OK_OPTION) {
+											myInfo.setStatus(PipeMessage.STATUS_NORMAL);
+											pipe.postMessage(basePath, myInfo, N_RETRY); // start over
+											memberInfo = pipe.getMessage(newPath); // get distributer's name again
+											
+											memberInfo = pipe.getMessage(newPath); // get file info
+											dataSize =  memberInfo.getDataSize();
+											newPath = memberInfo.getPath();
+											SwingUtilities.invokeLater(new Runnable() {
+												@Override
+												public void run() {
+													messagePanel.append("- " + memberName + "が送信するまで，お待ちください。\n");
+													setStatus(STATUS_EXECUTE);
+													ReceiveButton.this.doClick();
+												}
+											});
+										} else {
+											SwingUtilities.invokeLater(new Runnable() {
+												@Override
+												public void run() {
+													messagePanel.append("- " + "キャンセルしました。\n");
+													initState();
+												}
+											});
+											return;
+										}
+									} else if(memberInfo.getStatus() == PipeMessage.STATUS_DUPLICATED) { // Distribute (duplicated member name)
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
+												JOptionPane.showMessageDialog(ReceiveButton.this, "同じメンバー名のユーザが登録されていたため，" + memberName + "に接続を拒否されました。");
+												messagePanel.append("- 同じメンバー名のユーザが登録されていたため，" + memberName + "に接続を拒否されました。\n");
+												initState();
+												memberPanel.clear();
+											}
+										});
+										return;
+									} else { // Send
+										dataSize =  memberInfo.getDataSize();
+										newPath = memberInfo.getPath();
+										try {
+											SwingUtilities.invokeAndWait(new Runnable() {
+												@Override
+												public void run() {
+													result = JOptionPane.showConfirmDialog(ReceiveButton.this, 
+															memberName + "からファイルを受け取る場合は「OK」ボタンを押してください。",
+															"受信の確認", JOptionPane.OK_CANCEL_OPTION);
+												}
+											});
+										} catch (InvocationTargetException e) {
+											result = JOptionPane.CANCEL_OPTION;
+											e.printStackTrace();
+										}
+										if(result == JOptionPane.OK_OPTION) {
+											SwingUtilities.invokeLater(new Runnable() {
+												@Override
+												public void run() {
+													messagePanel.append("- " + memberName + "が送信を開始するまで，お待ちください。\n");
+													setStatus(STATUS_EXECUTE);
+													ReceiveButton.this.doClick();
+													messagePanel.append("- " + "受信中です。\n");
+												}
+											});
+										} else {
+											SwingUtilities.invokeLater(new Runnable() {
+												@Override
+												public void run() {
+													messagePanel.append("- " + "キャンセルしました。\n");
+													initState();
+												}
+											});
+											return;
+										}
+									}
 								} catch (URISyntaxException | IOException e) {
-									JOptionPane.showMessageDialog(ReceiveButton.this, e.getMessage());
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											JOptionPane.showMessageDialog(ReceiveButton.this, e.getMessage());
+											initState();
+										}
+									});
 									return;
 								} catch (InterruptedException e) {
 									// postMessage() closes the pipe internally
-									initState();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											initState();
+										}
+									});
 									return;
 								}
 							}
@@ -733,6 +805,7 @@ public class FileSharingDialog extends JDialog {
 								(memberMessage) -> {
 									String memberName = memberMessage.getSenderName();
 									String tempPath = memberMessage.getPath();
+									int messageStatus = memberMessage.getStatus();
 									PipeMessage myInfo = new PipeMessage(user.getUserName(), tempPath);
 									
 									if(messageReceiver.isMapped(memberName)) {
@@ -749,6 +822,14 @@ public class FileSharingDialog extends JDialog {
 											}
 										});
 										return;
+									} else if(messageStatus == PipeMessage.STATUS_NAME_INQUIRY) {
+										myInfo.setStatus(PipeMessage.STATUS_CONTINUED);
+										try {
+											pipe.postMessage(tempPath, myInfo);
+											return;
+										} catch (IOException | URISyntaxException | InterruptedException e) {
+											e.printStackTrace();
+										}
 									} else {
 										myInfo.setStatus(PipeMessage.STATUS_CONTINUED);
 									}
