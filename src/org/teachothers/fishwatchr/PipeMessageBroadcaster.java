@@ -136,6 +136,8 @@ public class PipeMessageBroadcaster implements Runnable {
 					PipeMessage newMessage = new PipeMessage(
 							message.getSenderName(),
 							DataPiper.generatePath(message.getSenderName()+path));
+					newMessage.setStatus(message.getStatus());
+					
 					int errorCode = pipe.postMessage(path + suffix, newMessage);
 					if(errorCode > 0) {
 						loopFlag = false;

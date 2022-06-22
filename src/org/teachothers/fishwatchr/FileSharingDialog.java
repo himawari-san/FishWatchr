@@ -562,14 +562,6 @@ public class FileSharingDialog extends JDialog {
 									memberInfo = pipe.getMessage(newPath);
 
 									String memberName = memberInfo.getSenderName();
-									SwingUtilities.invokeLater(new Runnable() {
-										@Override
-										public void run() {
-											memberPanel.setMember(memberName);
-											messagePanel.append("- " + memberName + "が見つかりました。\n");
-										}
-									});
-
 
 									if(memberInfo.getStatus() == PipeMessage.STATUS_CONTINUED) { // Distribute
 										try {
@@ -596,6 +588,9 @@ public class FileSharingDialog extends JDialog {
 											SwingUtilities.invokeLater(new Runnable() {
 												@Override
 												public void run() {
+													memberPanel.setMember(memberName);
+													messagePanel.append("- " + memberName + "が見つかりました。\n");
+
 													messagePanel.append("- " + memberName + "が送信するまで，お待ちください。\n");
 													setStatus(STATUS_EXECUTE);
 													ReceiveButton.this.doClick();
@@ -622,8 +617,16 @@ public class FileSharingDialog extends JDialog {
 											}
 										});
 										return;
-									} else { // Send
-										dataSize =  memberInfo.getDataSize();
+									} else if(memberInfo.getStatus() == PipeMessage.STATUS_CANCELED) { // Send (Canceled)
+										SwingUtilities.invokeLater(new Runnable() {
+											@Override
+											public void run() {
+												JOptionPane.showMessageDialog(ReceiveButton.this, memberName + "に接続を拒否されました。");
+												initState();
+											}
+										});
+										return;
+									} else { // Send (Normal)
 										newPath = memberInfo.getPath();
 										try {
 											SwingUtilities.invokeAndWait(new Runnable() {
@@ -639,9 +642,17 @@ public class FileSharingDialog extends JDialog {
 											e.printStackTrace();
 										}
 										if(result == JOptionPane.OK_OPTION) {
+											myInfo.setStatus(PipeMessage.STATUS_NORMAL);
+											pipe.postMessage(newPath, myInfo);
+											memberInfo = pipe.getMessage(newPath);
+											dataSize =  memberInfo.getDataSize();
+											
 											SwingUtilities.invokeLater(new Runnable() {
 												@Override
 												public void run() {
+													memberPanel.setMember(memberName);
+//													messagePanel.append("- " + memberName + "が見つかりました。\n");
+
 													messagePanel.append("- " + memberName + "が送信を開始するまで，お待ちください。\n");
 													setStatus(STATUS_EXECUTE);
 													ReceiveButton.this.doClick();
@@ -649,6 +660,8 @@ public class FileSharingDialog extends JDialog {
 												}
 											});
 										} else {
+											myInfo.setStatus(PipeMessage.STATUS_CANCELED);
+											pipe.postMessage(newPath, myInfo);
 											SwingUtilities.invokeLater(new Runnable() {
 												@Override
 												public void run() {
@@ -1011,6 +1024,7 @@ public class FileSharingDialog extends JDialog {
 						
 						String basePath = getBasePathStr();
 						PipeMessage myInfo = new PipeMessage(user.getUserName(), "");
+						myInfo.setStatus(PipeMessage.STATUS_CONTINUED); // message from Collection
 						
 						messageBroadcaster = new PipeMessageBroadcaster(pipe, basePath, myInfo,
 								(updatedMessage) -> {
@@ -1227,13 +1241,14 @@ public class FileSharingDialog extends JDialog {
 						messagePanel.append("- メンバーを探しています。\n");
 						future = Executors.newSingleThreadExecutor().submit(new Runnable() {
 							String memberName = "";
+							PipeMessage memberInfo;
 							int result;
 							
 							@Override
 							public void run() {
 								String basePath = getBasePathStr();
 								try {
-									PipeMessage memberInfo = pipe.getMessage(basePath, N_RETRY);
+									memberInfo = pipe.getMessage(basePath, N_RETRY);
 									if(memberInfo.getErrorCode() > 0) {
 										throw new IOException("このパスでは接続できませんでした。");
 									}
@@ -1283,10 +1298,26 @@ public class FileSharingDialog extends JDialog {
 									}
 									
 									PipeMessage myInfo = new PipeMessage(user.getUserName(), newPath);
+									myInfo.setStatus(PipeMessage.STATUS_NORMAL);
 									if(result == JOptionPane.OK_OPTION) {
+										if(memberInfo.getStatus() != PipeMessage.STATUS_CONTINUED) { // only Receive
+											pipe.postMessage(newPath, myInfo);
+											memberInfo = pipe.getMessage(newPath);
+											if(memberInfo.getStatus() == PipeMessage.STATUS_CANCELED) {
+												SwingUtilities.invokeLater(new Runnable() {
+													@Override
+													public void run() {
+														JOptionPane.showMessageDialog(SendButton.this, memberName + "が受信をキャンセルしました。");
+														messagePanel.append("- " + memberName + "が受信をキャンセルしました。\n");
+														fileOptionCheckBox.setEnabled(true);
+														initState();
+													}
+												});
+												return;
+											}
+										}
+										
 										dataSize = Util.getTotalFilesize(filePaths);
-
-										myInfo.setStatus(PipeMessage.STATUS_NORMAL);
 										myInfo.setDataSize(dataSize);
 										pipe.postMessage(newPath, myInfo);
 
@@ -1301,6 +1332,7 @@ public class FileSharingDialog extends JDialog {
 									} else {
 										myInfo.setStatus(PipeMessage.STATUS_CANCELED);
 										pipe.postMessage(newPath, myInfo);
+
 										SwingUtilities.invokeLater(new Runnable() {
 											@Override
 											public void run() {
