@@ -1046,45 +1046,50 @@ public class FileSharingDialog extends JDialog {
 						
 						messageBroadcaster = new PipeMessageBroadcaster(pipe, basePath, myInfo,
 								(updatedMessage) -> {
-									try {
-										String newPath = updatedMessage.getPath();
-										PipeMessage memberInfo = pipe.getMessage(newPath);
-										String senderName = memberInfo.getSenderName();
+									Executors.newSingleThreadExecutor().submit(new Runnable() {
+										@Override
+										public void run() {
+											try {
+												String newPath = updatedMessage.getPath();
+												PipeMessage memberInfo = pipe.getMessage(newPath);
+												String senderName = memberInfo.getSenderName();
 
-										SwingUtilities.invokeLater(new Runnable() {
-											@Override
-											public void run() {
-												if(messageBroadcaster.isMapped(senderName)) {
-													messagePanel.append("- " + senderName + "の接続が再度ありましたが，既登録なので，追加しません。\n");
-													return;
-												} else if(memberInfo.getStatus() == PipeMessage.STATUS_CANCELED) {
-													return;
-												}
-												messageBroadcaster.setMap(senderName, memberInfo);
-												memberListPanel.addMember(memberInfo);
-												messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
-												setStatus(STATUS_EXECUTE);
+												SwingUtilities.invokeLater(new Runnable() {
+													@Override
+													public void run() {
+														if(messageBroadcaster.isMapped(senderName)) {
+															messagePanel.append("- " + senderName + "の接続が再度ありましたが，既登録なので，追加しません。\n");
+															return;
+														} else if(memberInfo.getStatus() == PipeMessage.STATUS_CANCELED) {
+															return;
+														}
+														messageBroadcaster.setMap(senderName, memberInfo);
+														memberListPanel.addMember(memberInfo);
+														messagePanel.append("- " + senderName + "をメンバーリストに追加しました。\n");
+														setStatus(STATUS_EXECUTE);
+													}
+												});
+											} catch (URISyntaxException | IOException e) {
+												SwingUtilities.invokeLater(new Runnable() {
+													@Override
+													public void run() {
+														JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
+														initState();
+													}
+												});
+												return;
+											} catch (InterruptedException e) {
+												SwingUtilities.invokeLater(new Runnable() {
+													@Override
+													public void run() {
+														// getMessage() closes the pipe internally
+														initState();
+													}
+												});
+												return;
 											}
-										});
-									} catch (URISyntaxException | IOException e) {
-										SwingUtilities.invokeLater(new Runnable() {
-											@Override
-											public void run() {
-												JOptionPane.showMessageDialog(CollectButton.this, e.getMessage());
-												initState();
-											}
-										});
-										return;
-									} catch (InterruptedException e) {
-										SwingUtilities.invokeLater(new Runnable() {
-											@Override
-											public void run() {
-												// getMessage() closes the pipe internally
-												initState();
-											}
-										});
-										return;
-									}
+										}
+									});
 								}, (ex) -> {
 									SwingUtilities.invokeLater(new Runnable() {
 										@Override
