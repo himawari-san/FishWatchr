@@ -854,6 +854,7 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							try {
+								fixCellEditing();
 								saveCommentList();
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -998,6 +999,7 @@ public class MainFrame extends JFrame {
 		}
 		
 		try {
+			fixCellEditing();
 			saveCommentList();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.12") + e); //$NON-NLS-1$
@@ -1270,9 +1272,7 @@ public class MainFrame extends JFrame {
 				soundPlayer.release();
 				
 				// stop cell editing before exit
-				if(commentTable.getCellEditor() != null){
-					commentTable.getCellEditor().stopCellEditing();
-				}
+				fixCellEditing();
 				try {
 					saveCommentList();
 				} catch (IOException e) {
@@ -1287,7 +1287,12 @@ public class MainFrame extends JFrame {
 		
 	}
 
-
+	public void fixCellEditing() {
+		if(commentTable.getCellEditor() != null){
+			commentTable.getCellEditor().stopCellEditing();
+		}
+	}
+	
 	public void updateMediaLengthUI(int prevState){
 		if(prevState == SoundPlayer.PLAYER_STATE_RECORD){
 			annotationGlobalViewPanel.initScaleFactor();
@@ -1959,6 +1964,7 @@ public class MainFrame extends JFrame {
 							soundPlayer.myStop();
 
 							try {
+								fixCellEditing();
 								saveCommentList();
 							} catch (IOException e1) {
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.50") + e1); //$NON-NLS-1$
@@ -2226,6 +2232,7 @@ public class MainFrame extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 							soundPlayer.myStop();
 							try {
+								fixCellEditing();
 								saveCommentList();
 							} catch (IOException e2) {
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.12") + e); //$NON-NLS-1$
