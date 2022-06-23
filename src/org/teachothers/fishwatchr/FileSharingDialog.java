@@ -568,6 +568,7 @@ public class FileSharingDialog extends JDialog {
 											SwingUtilities.invokeAndWait(new Runnable() {
 												@Override
 												public void run() {
+													messagePanel.append("- " + memberName + "が見つかりました。\n");
 													result = JOptionPane.showConfirmDialog(ReceiveButton.this, 
 															memberName + "からファイルを受け取る場合は「OK」ボタンを押してください。",
 															"受信の確認", JOptionPane.OK_CANCEL_OPTION);
@@ -578,6 +579,12 @@ public class FileSharingDialog extends JDialog {
 											e.printStackTrace();
 										}
 										if(result == JOptionPane.OK_OPTION) {
+											SwingUtilities.invokeLater(new Runnable() {
+												@Override
+												public void run() {
+													messagePanel.append("- " + memberName + "が送信を開始するまで，お待ちください。\n");
+												}
+											});
 											myInfo.setStatus(PipeMessage.STATUS_NORMAL);
 											pipe.postMessage(basePath, myInfo, N_RETRY); // start over
 											memberInfo = pipe.getMessage(newPath); // get distributer's name again
@@ -589,9 +596,6 @@ public class FileSharingDialog extends JDialog {
 												@Override
 												public void run() {
 													memberPanel.setMember(memberName);
-													messagePanel.append("- " + memberName + "が見つかりました。\n");
-
-													messagePanel.append("- " + memberName + "が送信するまで，お待ちください。\n");
 													setStatus(STATUS_EXECUTE);
 													ReceiveButton.this.doClick();
 												}
@@ -632,6 +636,7 @@ public class FileSharingDialog extends JDialog {
 											SwingUtilities.invokeAndWait(new Runnable() {
 												@Override
 												public void run() {
+													messagePanel.append("- " + memberName + "が見つかりました。\n");
 													result = JOptionPane.showConfirmDialog(ReceiveButton.this, 
 															memberName + "からファイルを受け取る場合は「OK」ボタンを押してください。",
 															"受信の確認", JOptionPane.OK_CANCEL_OPTION);
@@ -642,6 +647,12 @@ public class FileSharingDialog extends JDialog {
 											e.printStackTrace();
 										}
 										if(result == JOptionPane.OK_OPTION) {
+											SwingUtilities.invokeLater(new Runnable() {
+												@Override
+												public void run() {
+													messagePanel.append("- " + memberName + "が送信を開始するまで，お待ちください。\n");
+												}
+											});
 											myInfo.setStatus(PipeMessage.STATUS_NORMAL);
 											pipe.postMessage(newPath, myInfo);
 											memberInfo = pipe.getMessage(newPath);
@@ -651,9 +662,7 @@ public class FileSharingDialog extends JDialog {
 												@Override
 												public void run() {
 													memberPanel.setMember(memberName);
-//													messagePanel.append("- " + memberName + "が見つかりました。\n");
 
-													messagePanel.append("- " + memberName + "が送信を開始するまで，お待ちください。\n");
 													setStatus(STATUS_EXECUTE);
 													ReceiveButton.this.doClick();
 													messagePanel.append("- " + "受信中です。\n");
