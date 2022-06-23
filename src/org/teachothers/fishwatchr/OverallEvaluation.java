@@ -105,7 +105,7 @@ public class OverallEvaluation {
 	public String toXML() {
 		StringBuilder result = new StringBuilder();
 
-		result.append("<" + TAG_EVALUATION + " evaluator=\"" + StringEscapeUtils.escapeXml10(evaluator.getUserName()) + "\" timestamp=\"" + timestamp + "\">\n");
+		result.append("<" + TAG_EVALUATION + " evaluator=\"" + StringEscapeUtils.escapeXml10(evaluator.getName()) + "\" timestamp=\"" + timestamp + "\">\n");
 		result.append(getEvaluationCategory(TAG_CATEGORY1).toXML());
 		result.append(getEvaluationCategory(TAG_CATEGORY2).toXML());
 		result.append("<" + TAG_COMMENT + ">");

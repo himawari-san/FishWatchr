@@ -22,6 +22,8 @@ import java.awt.Font;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
@@ -76,7 +78,12 @@ public class Util {
 		return System.getProperty("user.dir");  //$NON-NLS-1$
 	}
 	
+	
+	public static String getTimeStamp(String pattern) {
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern));
+	}
 
+	
 	public static String prettyPrintXML(Node doc){
     	// https://stackoverflow.com/questions/139076/how-to-pretty-print-xml-from-java
     	// answered by Lorenzo Boccaccia

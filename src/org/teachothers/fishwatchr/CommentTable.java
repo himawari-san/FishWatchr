@@ -506,7 +506,13 @@ public class CommentTable extends JTable {
 				if(!cellText.isEmpty()) {
 					cellText += Comment.LINEBREAK;
 				}
-				cellText += ANNOTATOR_MARKER_OPEN + annotator.getName() + ANNOTATOR_MARKER_CLOSE;
+				cellText +=
+						ANNOTATOR_MARKER_OPEN
+						+ annotator.getName()
+						+ " "
+						+ Util.getTimeStamp("yyyyMMdd HH:mm:ss")
+						+ ANNOTATOR_MARKER_CLOSE
+						+ Comment.LINEBREAK;
 			}
 			
 			final JTextArea textArea = new JTextArea(cellText.replaceAll(Comment.LINEBREAK, "\n"), 20, 50); //$NON-NLS-1$
