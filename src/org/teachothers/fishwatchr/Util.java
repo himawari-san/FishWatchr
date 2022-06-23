@@ -54,6 +54,10 @@ import org.w3c.dom.NodeList;
 public class Util {
 
 	static DocumentBuilderFactory documentBuilderFactory = null;
+	static final String OS_MACOS = "mac"; 
+	static final String OS_WINDOWS = "windows"; 
+	static final String OS_LINUX = "linux"; 
+
 
 	public static String catStrings(String str1, String str2, String delimiter){
 		if(str1.isEmpty()){
@@ -150,6 +154,26 @@ public class Util {
 	}
 	
 	
+    public static String getOSNameLowerCase() {
+    	return System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
+    }
+    
+    
+    public static String getCannonicalOSName() {
+    	String osName = getOSNameLowerCase();
+    	
+    	if(osName.startsWith(OS_WINDOWS)) {
+    		return OS_WINDOWS;
+    	} else if(osName.startsWith(OS_MACOS)){
+    		return OS_MACOS;
+    	} else if(osName.startsWith(OS_LINUX)){
+    		return OS_LINUX;
+    	} else {
+    		return osName;
+    	}
+    }
+
+    
 	public static String prettyPrintXML(Node doc){
     	// https://stackoverflow.com/questions/139076/how-to-pretty-print-xml-from-java
     	// answered by Lorenzo Boccaccia

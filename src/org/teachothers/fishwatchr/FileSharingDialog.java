@@ -542,7 +542,16 @@ public class FileSharingDialog extends JDialog {
 								JOptionPane.showMessageDialog(ReceiveButton.this, "保存用のフォルダを作成できません。\n動作が確認できている観察結果をFishWatchrに読み込んだ上で，再度実行してみてください。");
 								return;
 							}
-							saveRootPath = Util.getDefaultDirPath();
+							saveRootPath = Util.getDefaultDirPath(); // Documents folder in Windows
+							
+							// for other OSs
+							if(!Util.getCannonicalOSName().equals(Util.OS_WINDOWS)) {
+								Path alternativePath = saveRootPath.resolve("Documents");
+								if(alternativePath.toFile().exists()) {
+									saveRootPath = alternativePath;
+								}
+								System.err.println("dr:" + savePath);
+							}
 						} else {
 							saveRootPath = commentFilePath.getParent();
 						}
