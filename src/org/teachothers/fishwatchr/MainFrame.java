@@ -189,7 +189,6 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemFileSaveConfigAs;
 	private JMenuItem jMenuItemFileLoadConfig;
 	private JMenuItem jMenuItemFileShare;
-	private JMenuItem jMenuItemFileEval;
 	private JMenuItem jMenuItemFileExit;
 	private JMenu jMenuControl;
 	private JMenuItem jMenuItemControlPlayPause;
@@ -216,6 +215,7 @@ public class MainFrame extends JFrame {
 	private JMenu jMenuAnalysisLabel;
 	private JMenu jMenuAnalysisEval;
 	private JMenu jMenuAnalysisFreq;
+	private JMenuItem jMenuItemAnalysisEval;
 	private JMenu jMenuOption;
 	private JMenuItem jMenuItemOptionTextOverlay;
 	private JMenuItem jMenuItemOptionVideoRatio;
@@ -1701,12 +1701,12 @@ public class MainFrame extends JFrame {
 			jMenuFile.add(getJMenuItemFileExport());
 			jMenuFile.add(getJMenuItemFileMerge());
 			jMenuFile.addSeparator();
+			jMenuFile.add(getJMenuItemFileShare());
+			jMenuFile.addSeparator();
 			jMenuFile.add(getJMenuItemFileSaveConfig());
 			jMenuFile.add(getJMenuItemFileSaveConfigAs());
 			jMenuFile.add(getJMenuItemFileLoadConfig());
 			jMenuFile.addSeparator();
-			jMenuFile.add(getJMenuItemFileShare());
-			jMenuFile.add(getJMenuItemFileEval());
 			jMenuFile.add(getJMenuItemFileExit());
 		}
 		return jMenuFile;
@@ -2197,12 +2197,12 @@ public class MainFrame extends JFrame {
 	}
 
 	
-	private JMenuItem getJMenuItemFileEval() {
-		if (jMenuItemFileEval == null) {
-			jMenuItemFileEval = new JMenuItem(Messages.getString("MainFrame.152")); //$NON-NLS-1$
-			jMenuItemFileEval.setAccelerator(KeyStroke.getKeyStroke('A',
+	private JMenuItem getJMenuItemAnalysisEval() {
+		if (jMenuItemAnalysisEval == null) {
+			jMenuItemAnalysisEval = new JMenuItem(Messages.getString("MainFrame.152")); //$NON-NLS-1$
+			jMenuItemAnalysisEval.setAccelerator(KeyStroke.getKeyStroke('A',
 					KeyEvent.CTRL_DOWN_MASK, false));
-			jMenuItemFileEval
+			jMenuItemAnalysisEval
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 
@@ -2218,7 +2218,7 @@ public class MainFrame extends JFrame {
 
 					});
 		}
-		return jMenuItemFileEval;
+		return jMenuItemAnalysisEval;
 	}
 	
 
@@ -2242,7 +2242,7 @@ public class MainFrame extends JFrame {
 							
 //							String pipeServer = "http://localhost:8080/"; //$NON-NLS-1$
 							String pipeServer = "https://piping-server-test.herokuapp.com/";
-
+							
 							Path commentFilePath = Paths.get(xf);
 							Path mediaFilePath = Paths.get(mf);
 							
@@ -2958,6 +2958,8 @@ public class MainFrame extends JFrame {
 			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_SELF));
 			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_ALL_COMPARE));
 //			jMenuAnalysisFreq.add(getJMenuItemAnalysis(StatFrame.CHART_STYLE_UNIQ, DataCounter.SUMMARY_MODE_SELF_COMPARE));
+			jMenuAnalysis.add(getJMenuItemAnalysisEval());
+
 		}
 		return jMenuAnalysis;
 	}
