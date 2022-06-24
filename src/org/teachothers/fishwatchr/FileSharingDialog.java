@@ -781,7 +781,7 @@ public class FileSharingDialog extends JDialog {
 										messagePanel.append("- 受信が完了しました\n");
 										messagePanel.append("- 保存先：" + savePath + "\n");
 										JOptionPane.showMessageDialog(ReceiveButton.this, 
-												"受信が完了しました。\n「OK」を押すと，再生が開始します。\n"
+												"受信が完了しました。\n「OK」を押すと，再生を開始します。\n"
 												+ "保存先：" + savePath + "\n");
 										setStatus(STATUS_FINISH);
 										ReceiveButton.this.doClick();
