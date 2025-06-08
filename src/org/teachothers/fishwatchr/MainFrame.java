@@ -283,6 +283,8 @@ public class MainFrame extends JFrame {
 	
 	private SysConfig config = new SysConfig();
 	
+	private RemoteControlServer rcs;
+	
 	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0"; //$NON-NLS-1$
 	
 	private ImageIcon iconPlay = new ImageIcon(getClass().getResource("resources/images/play.png")); //$NON-NLS-1$
@@ -381,6 +383,18 @@ public class MainFrame extends JFrame {
 		});
 
 		ctm = new CommentTableModel(commentList, discussers, commentTypes);
+		
+		try {
+			rcs = new RemoteControlServer(8080, (commentTime) -> {
+				commentTime = commentTime < 0 ? 0 : commentTime + adjustmentTimeAtJump;
+				play(commentTime);
+			});
+			rcs.start();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Warning(RemoteControlServer):\n" + e.getMessage());
+			e.printStackTrace();
+			System.err.println("kk");
+		}
 		
 		userHomeDir = System.getProperty("user.home"); //$NON-NLS-1$
 		if(userHomeDir == null) {
@@ -694,6 +708,48 @@ public class MainFrame extends JFrame {
 		});
 	}
 	
+	
+	public void play(long msec) {
+		msec = msec < 0 ? 0 : msec;
+
+		if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
+			if (!SoundPlayer.isPlayable(mf)) {
+				JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.3") + mf); //$NON-NLS-1$
+				return;
+			}
+
+			if (!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())) {
+//		JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
+				return;
+			}
+
+			if (msec / 1000 > soundPlayer.getSoundLength()) {
+				JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.4")); //$NON-NLS-1$
+			}
+
+			isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
+
+			timeSlider.setEnabled(true);
+
+			changeStatePlay();
+			soundPlayer.myPlay();
+			soundPlayer.setPlayPoint(msec);
+			timerStart();
+		} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
+			changeStatePlay();
+			soundPlayer.myPlay();
+			soundPlayer.setPlayPoint(msec);
+		} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
+			if (msec / 1000 > soundPlayer.getSoundLength() || msec < 0) {
+				JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.5")); //$NON-NLS-1$
+				return;
+			}
+			soundPlayer.setPlayPoint(msec);
+		}
+		System.err.println("Jumping to " + msec + " msec"); //$NON-NLS-1$ //$NON-NLS-2$
+
+	}	
+	
 
 	private JPanel getCommentPanel() {
 		if (commentPanel == null) {
@@ -720,42 +776,7 @@ public class MainFrame extends JFrame {
 						long commentTime = commentList.unifiedCommentTime(selectedComment)
 								+ adjustmentTimeAtJump; // msec
 						commentTime = commentTime < 0 ? 0 : commentTime;
-
-						if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_STOP) {
-							if(!SoundPlayer.isPlayable(mf)) {
-								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.3") + mf); //$NON-NLS-1$
-								return;
-							}
-
-							if(!soundPlayer.setFile(mf, jMenuItemOptionWaveform.isSelected())){
-//								JOptionPane.showMessageDialog(MainFrame.this, "再生が開始できません。\n" + mf);
-								return;
-							}
-							
-							if(commentTime / 1000 > soundPlayer.getSoundLength()){
-								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.4")); //$NON-NLS-1$
-							}
-							
-							isSoundPanelEnable = soundPlayer.getSoundBufferEnable();
-
-							timeSlider.setEnabled(true);
-
-							changeStatePlay();
-							soundPlayer.myPlay();
-							soundPlayer.setPlayPoint(commentTime);
-							timerStart();
-						} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PAUSE) {
-							changeStatePlay();
-							soundPlayer.myPlay();
-							soundPlayer.setPlayPoint(commentTime);
-						} else if (soundPlayer.getPlayerState() == SoundPlayer.PLAYER_STATE_PLAY) {
-							if(commentTime / 1000 > soundPlayer.getSoundLength() || commentTime < 0){
-								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.5")); //$NON-NLS-1$
-								return;
-							}
-							soundPlayer.setPlayPoint(commentTime);
-						}
-						System.err.println("Jumping to " + commentTime + " msec");  //$NON-NLS-1$  //$NON-NLS-2$
+						play(commentTime);
 					}
 				}
 			});
