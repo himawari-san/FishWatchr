@@ -230,6 +230,7 @@ public class MainFrame extends JFrame {
 	private JMenuItem jMenuItemOptionValidateAnnotations;
 	private JMenuItem jMenuItemOptionPauseAfterAnnotation;
 	private JMenuItem jMenuItemOptionWaveform;
+	private JMenuItem jMenuItemOptionRemoteControl;
 	private JMenu jMenuHelp;
 	private JMenuItem jMenuItemHelpVersion;
 	private JMenuItem jMenuItemHelpURL;
@@ -284,6 +285,7 @@ public class MainFrame extends JFrame {
 	private SysConfig config = new SysConfig();
 	
 	private RemoteControlServer rcs;
+	private int remoteControlPort = 8080;
 	
 	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0"; //$NON-NLS-1$
 	
@@ -383,18 +385,6 @@ public class MainFrame extends JFrame {
 		});
 
 		ctm = new CommentTableModel(commentList, discussers, commentTypes);
-		
-		try {
-			rcs = new RemoteControlServer(8080, (commentTime) -> {
-				commentTime = commentTime < 0 ? 0 : commentTime + adjustmentTimeAtJump;
-				play(commentTime);
-			});
-			rcs.start();
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this, "Warning(RemoteControlServer):\n" + e.getMessage());
-			e.printStackTrace();
-			System.err.println("kk");
-		}
 		
 		userHomeDir = System.getProperty("user.home"); //$NON-NLS-1$
 		if(userHomeDir == null) {
@@ -2693,8 +2683,8 @@ public class MainFrame extends JFrame {
 												.isSelected());
 							}
 							try {
-								config.setValue("/settings/isAnnotationMulti", "value", 
-										jMenuItemAnnotationMulti.isSelected() ? "true" : "false");
+								config.setValue("/settings/isAnnotationMulti", "value",  //$NON-NLS-1$ //$NON-NLS-2$
+										jMenuItemAnnotationMulti.isSelected() ? "true" : "false"); //$NON-NLS-1$ //$NON-NLS-2$
 							} catch (XPathExpressionException e1) {
 								e1.printStackTrace();
 							}
@@ -2924,6 +2914,7 @@ public class MainFrame extends JFrame {
 			jMenuOption.add(getJMenuItemOptionValidateAnnotations());
 			jMenuOption.add(getJMenuItemOptionPauseAfterAnnotation());
 			jMenuOption.add(getJMenuItemOptionWaveform());
+			jMenuOption.add(getJMenuItemOptionRemoteControl());
 		}
 		return jMenuOption;
 	}
@@ -3138,7 +3129,7 @@ public class MainFrame extends JFrame {
 		return jMenuItemOptionFocusRange;
 	}
 
-	
+
 	private JMenuItem getJMenuItemOptionChangeFontSize() {
 		if (jMenuItemOptionFontSize == null) {
 			jMenuItemOptionFontSize = new JMenuItem(Messages.getString("MainFrame.134")); //$NON-NLS-1$
@@ -3326,6 +3317,51 @@ public class MainFrame extends JFrame {
 	}
 
 	
+	private JMenuItem getJMenuItemOptionRemoteControl() {
+		if (jMenuItemOptionRemoteControl == null) {
+			jMenuItemOptionRemoteControl = new JCheckBoxMenuItem(Messages.getString("MainFrame.156")); //$NON-NLS-1$
+			jMenuItemOptionRemoteControl
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							if(jMenuItemOptionRemoteControl.isSelected()) {
+								System.err.println("a:"); //$NON-NLS-1$
+								String inputValue = JOptionPane.showInputDialog(
+										MainFrame.this,
+										Messages.getString("MainFrame.163"), //$NON-NLS-1$
+										remoteControlPort);
+								if (inputValue != null) {
+									int a;
+									try {
+										remoteControlPort = Integer.parseInt(inputValue);
+										
+										try {
+											rcs = new RemoteControlServer(remoteControlPort, (commentTime) -> {
+												commentTime = commentTime < 0 ? 0 : commentTime + adjustmentTimeAtJump;
+												play(commentTime);
+											});
+											rcs.start();
+										} catch (IOException ex) {
+											JOptionPane.showMessageDialog(MainFrame.this, "Warning(RemoteControlServer):\n" + ex.getMessage()); //$NON-NLS-1$
+											jMenuItemOptionRemoteControl.setSelected(false);
+											ex.printStackTrace();
+										}
+									} catch (NumberFormatException ex) {
+										JOptionPane.showMessageDialog(null, Messages.getString("MainFrame.166")); //$NON-NLS-1$
+										jMenuItemOptionRemoteControl.setSelected(false);
+									}
+								} else {
+									jMenuItemOptionRemoteControl.setSelected(false);
+								}
+							} else {
+								rcs.stop();
+								rcs = null;
+							}
+						}
+					});
+		}
+		return jMenuItemOptionRemoteControl;
+	}
+
 	
 	// 仕様が確定してから使用する
 	private JMenuItem getJMenuItemAnnotationTimeCorrection() {
