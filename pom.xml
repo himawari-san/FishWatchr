@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>uk.co.caprica</groupId>
 			<artifactId>vlcj</artifactId>
-			<version>4.7.1</version>
+			<version>4.7.3</version>
 			<!-- https://mvnrepository.com/artifact/uk.co.caprica/vlcj -->
 		</dependency>
 		<dependency>
@@ -44,37 +44,27 @@
 	<name>FishWatchr</name>
 	<description>Video Annotation System for Observing Educational Activities</description>
 	<build>
-		<resources>
-			<resource>
-				<directory>resources</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.3.0</version>
+				<groupId>org.apache.maven.plugins</groupId>
+			 	<artifactId>maven-shade-plugin</artifactId>
+			 	<version>3.5.0</version>
 				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
+			    	<execution>
+			      		<phase>package</phase>
+			      		<goals>
+			        		<goal>shade</goal>
+			      		</goals>
+			      		<configuration>
+			        		<transformers>
+			          			<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+			            			<mainClass>org.teachothers.fishwatchr.FishWatchr</mainClass>
+			          			</transformer>
+		          			    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+			        		</transformers>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>org.teachothers.fishwatchr.FishWatchr</mainClass>
-						</manifest>
-					</archive>
-					<descriptors>
-						<descriptor>maven_plugin_conf.xml</descriptor>
-					</descriptors>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

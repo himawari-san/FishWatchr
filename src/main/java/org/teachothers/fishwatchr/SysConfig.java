@@ -80,7 +80,7 @@ public class SysConfig {
 		File configFile = configPath.toFile();
 
 		if(!configFile.exists()) {
-			Files.copy(getClass().getResourceAsStream("resources/config/" + CONFIG_FILENAME), configFile.toPath()); //$NON-NLS-1$
+			Files.copy(getClass().getResourceAsStream("config/" + CONFIG_FILENAME), configFile.toPath()); //$NON-NLS-1$
 			System.err.println("Warning(SysConfig): Generate the default " + CONFIG_FILENAME + ", because " //$NON-NLS-1$ //$NON-NLS-2$
 					+ CONFIG_FILENAME + " is not found."); //$NON-NLS-1$
 		} else {

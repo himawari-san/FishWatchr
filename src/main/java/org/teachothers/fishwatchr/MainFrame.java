@@ -290,13 +290,13 @@ public class MainFrame extends JFrame {
 	
 	private String manualURLStr = "http://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%F8%CD%D1%BC%D4%A5%DE%A5%CB%A5%E5%A5%A2%A5%EB%2F1_0"; //$NON-NLS-1$
 	
-	private ImageIcon iconPlay = new ImageIcon(getClass().getResource("resources/images/play.png")); //$NON-NLS-1$
-	private ImageIcon iconForward = new ImageIcon(getClass().getResource("resources/images/forward.png")); //$NON-NLS-1$
-	private ImageIcon iconBackward = new ImageIcon(getClass().getResource("resources/images/backward.png")); //$NON-NLS-1$
-	private ImageIcon iconStop = new ImageIcon(getClass().getResource("resources/images/stop.png")); //$NON-NLS-1$
-	private ImageIcon iconPause = new ImageIcon(getClass().getResource("resources/images/pause.png")); //$NON-NLS-1$
-	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("resources/images/recordSound.png")); //$NON-NLS-1$
-	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("resources/images/recordNoSound.png")); //$NON-NLS-1$
+	private ImageIcon iconPlay = new ImageIcon(getClass().getResource("images/play.png")); //$NON-NLS-1$
+	private ImageIcon iconForward = new ImageIcon(getClass().getResource("images/forward.png")); //$NON-NLS-1$
+	private ImageIcon iconBackward = new ImageIcon(getClass().getResource("images/backward.png")); //$NON-NLS-1$
+	private ImageIcon iconStop = new ImageIcon(getClass().getResource("images/stop.png")); //$NON-NLS-1$
+	private ImageIcon iconPause = new ImageIcon(getClass().getResource("images/pause.png")); //$NON-NLS-1$
+	private ImageIcon iconRecordSound = new ImageIcon(getClass().getResource("images/recordSound.png")); //$NON-NLS-1$
+	private ImageIcon iconRecordNoSound = new ImageIcon(getClass().getResource("images/recordNoSound.png")); //$NON-NLS-1$
 	private String iconSizes[] = {"16", "32", "64", "128", "256"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
 	private List<CaptureDevice> videoDeviceList = null;
@@ -516,7 +516,7 @@ public class MainFrame extends JFrame {
 		ArrayList<Image> iconList = new ArrayList<Image>();
 		for(String size: iconSizes){
 			try{
-				ImageIcon icon = new ImageIcon(getClass().getResource("resources/images/fw_icon" + size + ".png")); //$NON-NLS-1$ //$NON-NLS-2$
+				ImageIcon icon = new ImageIcon(getClass().getResource("images/fw_icon" + size + ".png")); //$NON-NLS-1$ //$NON-NLS-2$
 				iconList.add(icon.getImage());
 			}catch(Exception e){
 				
