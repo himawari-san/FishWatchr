@@ -50,11 +50,14 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class CommentList extends ArrayList<Comment> {
 
@@ -68,6 +71,8 @@ public class CommentList extends ArrayList<Comment> {
 	public static final String BACKUP_DIR = "BAK"; //$NON-NLS-1$
 	public static final String BASE_TIME_FILE_PREFIX = "_sys_basetime"; //$NON-NLS-1$
 	public static final String LOCKFILE_SUFFIX =".lock"; //$NON-NLS-1$
+	public static final String FILENAME_SUFFIX_TSV =".tsv"; //$NON-NLS-1$
+	public static final String FILENAME_SUFFIX_KM =".km"; //$NON-NLS-1$
 	
 	private HashMap<String, OverallEvaluation> evaluations = new HashMap<String, OverallEvaluation>();
 	
@@ -775,27 +780,80 @@ public class CommentList extends ArrayList<Comment> {
 		
 		return flagSyncCondition;
 	}
-	
-	
-	public void export(String filename) throws IOException{
 
+	
+	public void export(String filename, String type, int port) throws IOException{
 		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
-		
-		for(Comment comment: this){
-			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < Comment.N_Field; i++){
-				String value;
-				
-				if(i == Comment.F_COMMENT_TIME){
-					value = formatTime(unifiedCommentTime(comment));
-				} else {
-					value = comment.getAt(i).toString();
-				}
-				sb.append(value + "\t"); //$NON-NLS-1$
-			}
-			pw.println(sb.toString().replaceFirst("\t$", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		String result = "";
+
+		if(type == FILENAME_SUFFIX_TSV) {
+			result = toTSV();
+		} else if(type == FILENAME_SUFFIX_KM) {
+			result = toKM(port);
+		} else {
+			pw.close();
+			throw new IOException("Invalid File Type");
 		}
+		pw.print(result);
 		pw.close();
+	}
+
+	
+	public String toTSV() {
+
+		StringBuilder sb = new StringBuilder();
+
+		for(Comment comment: this){
+			for(int i = 0; i < Comment.N_Field; i++){
+
+				if(i == Comment.F_COMMENT_TIME){
+					sb.append(formatTime(unifiedCommentTime(comment)));
+				} else {
+					sb.append(comment.getAt(i).toString());
+				}
+				
+				if(i == Comment.N_Field - 1) {
+					sb.append("\n");
+				} else {
+					sb.append("\t");
+				}
+			}
+		}
+		
+		return sb.toString();
+	}
+	
+	
+	public String toKM(int port) {
+
+		JSONObject j0 = new JSONObject();
+		JSONObject j1 = new JSONObject();
+		JSONObject j1Data = new JSONObject();
+		JSONArray j1Children = new JSONArray();
+		j0.put("root",  j1);
+		j0.put("template", "default");
+		j0.put("theme", "fresh-blue");
+		j0.put("version", "1.4.43");
+		j1.put("data", j1Data);
+		j1.put("children", j1Children);
+		
+		j1Data.put("text", "Root Label");
+
+		this.stream()
+		.filter(comment -> !StringUtils.isEmpty(comment.getCommentBody()))
+		.forEach(comment -> {
+			JSONObject j2 = new JSONObject();
+			JSONObject j2Data = new JSONObject();
+			j2.put("data", j2Data);
+			j2Data.put("text", comment.getCommentBody());
+			j2Data.put(
+					"hyperlink",
+					String.format("http://localhost:%d/play?time=%d", port, comment.getCommentTime())
+			);
+			j1Children.put(j2);
+		});
+		
+		return j0.toString(2);
 	}
 	
 	// time ミリ秒

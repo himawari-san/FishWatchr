@@ -33,6 +33,12 @@
 			<version>1.5.3</version>
 			<!-- https://jfree.org/jfreechart/ -->
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+    		<groupId>org.json</groupId>
+    		<artifactId>json</artifactId>
+    		<version>20250107</version>
+		</dependency>
 	</dependencies>
 	<groupId>org.teachothers.fishwatchr</groupId>
 	<name>FishWatchr</name>

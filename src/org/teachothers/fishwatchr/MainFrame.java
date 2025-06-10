@@ -94,6 +94,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -1919,12 +1920,23 @@ public class MainFrame extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							try {
-								String saveFilename = chooseFile(null, JFileChooser.FILES_ONLY, true);
+					            FileNameExtensionFilter fileFilter = new FileNameExtensionFilter(
+					            		String.format("(*%s, *%s)", CommentList.FILENAME_SUFFIX_TSV, CommentList.FILENAME_SUFFIX_KM), //$NON-NLS-1$
+					            		CommentList.FILENAME_SUFFIX_TSV, CommentList.FILENAME_SUFFIX_KM
+					            );
+
+								String saveFilename = chooseFile(fileFilter, JFileChooser.FILES_ONLY, true);
+								String fileType;
 								if(saveFilename.isEmpty()){
 									JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.42")); //$NON-NLS-1$
 									return;
-								} else if(!saveFilename.endsWith(".tsv")){ //$NON-NLS-1$
-									saveFilename += ".tsv"; //$NON-NLS-1$
+								} else if(saveFilename.endsWith(CommentList.FILENAME_SUFFIX_TSV)){
+									fileType = CommentList.FILENAME_SUFFIX_TSV;
+								} else if(saveFilename.endsWith(CommentList.FILENAME_SUFFIX_KM)){
+									fileType = CommentList.FILENAME_SUFFIX_KM;
+								} else {
+									JOptionPane.showMessageDialog(MainFrame.this, String.format(Messages.getString("MainFrame.160"), CommentList.FILENAME_SUFFIX_TSV, CommentList.FILENAME_SUFFIX_KM)); //$NON-NLS-1$
+									return;
 								}
 								File saveFile = new File(saveFilename);
 								if(saveFile.exists()){
@@ -1935,7 +1947,9 @@ public class MainFrame extends JFrame {
 									}
 								}
 								
-								commentList.export(saveFilename);
+								CommentList cl = new CommentList();
+								cl.addAll(ctm.getFilteredCommentList());
+								cl.export(saveFilename, fileType, remoteControlPort);
 								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.46") + saveFile.getName()); //$NON-NLS-1$
 							} catch (IOException e1) {
 								e1.printStackTrace();
