@@ -1934,6 +1934,8 @@ public class MainFrame extends JFrame {
 									fileType = CommentList.FILENAME_SUFFIX_TSV;
 								} else if(saveFilename.endsWith(CommentList.FILENAME_SUFFIX_KM)){
 									fileType = CommentList.FILENAME_SUFFIX_KM;
+								} else if(saveFilename.endsWith(CommentList.FILENAME_SUFFIX_KM + "2")){
+									fileType = CommentList.FILENAME_SUFFIX_KM + "2";
 								} else {
 									JOptionPane.showMessageDialog(MainFrame.this, String.format(Messages.getString("MainFrame.160"), CommentList.FILENAME_SUFFIX_TSV, CommentList.FILENAME_SUFFIX_KM)); //$NON-NLS-1$
 									return;

@@ -790,6 +790,8 @@ public class CommentList extends ArrayList<Comment> {
 			result = toTSV();
 		} else if(type == FILENAME_SUFFIX_KM) {
 			result = toKM(port);
+		} else if(type == FILENAME_SUFFIX_KM + "2") {
+			result = toKM2(port);
 		} else {
 			pw.close();
 			throw new IOException("Invalid File Type");
@@ -851,6 +853,57 @@ public class CommentList extends ArrayList<Comment> {
 					String.format("http://localhost:%d/play?time=%d", port, comment.getCommentTime())
 			);
 			j1Children.put(j2);
+		});
+		
+		return j0.toString(2);
+	}
+	
+	
+	public String toKM2(int port) {
+
+		JSONObject j0 = new JSONObject();
+		JSONObject j1 = new JSONObject();
+		JSONObject j1Data = new JSONObject();
+		JSONArray j1Children = new JSONArray();
+		j0.put("root",  j1);
+		j0.put("template", "default");
+		j0.put("theme", "fresh-blue");
+		j0.put("version", "1.4.43");
+		j1.put("data", j1Data);
+		j1.put("children", j1Children);
+		
+		j1Data.put("text", "Root Label");
+		
+		HashMap<String, JSONArray> j2NodeMap = new HashMap<>();
+
+		this.stream()
+		.filter(comment -> !StringUtils.isEmpty(comment.getCommentBody()))
+		.map(comment -> {
+			String label = comment.getDiscusser().toString();
+			JSONObject j2 = new JSONObject();
+			JSONObject j2Data = new JSONObject();
+			JSONArray j2Children = new JSONArray();
+			j2.put("data", j2Data);
+			j2.put("children", j2Children);
+			j2Data.put("text", label);
+			if(!j2NodeMap.containsKey(label)) {
+				j2NodeMap.put(label, j2Children);
+				j1Children.put(j2);
+			}
+			
+			
+			return comment;
+		})
+		.forEach(comment -> {
+			JSONObject j3 = new JSONObject();
+			JSONObject j3Data = new JSONObject();
+			j3.put("data", j3Data);
+			j3Data.put("text", comment.getCommentBody());
+			j3Data.put(
+					"hyperlink",
+					String.format("http://localhost:%d/play?time=%d", port, comment.getCommentTime())
+			);
+			j2NodeMap.get(comment.getDiscusser().toString()).put(j3);
 		});
 		
 		return j0.toString(2);
