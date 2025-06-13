@@ -19,13 +19,15 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>1.8</version>
-			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+			<!--
+			https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		</dependency>
 		<dependency>
-		<groupId>org.apache.commons</groupId>
-  			<artifactId>commons-compress</artifactId>
-  			<version>1.20</version>
-  			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress  -->
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.20</version>
+			<!--
+			https://mvnrepository.com/artifact/org.apache.commons/commons-compress  -->
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>
@@ -35,9 +37,9 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.json/json -->
 		<dependency>
-    		<groupId>org.json</groupId>
-    		<artifactId>json</artifactId>
-    		<version>20250107</version>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20250107</version>
 		</dependency>
 	</dependencies>
 	<groupId>org.teachothers.fishwatchr</groupId>
@@ -47,21 +49,21 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-			 	<artifactId>maven-shade-plugin</artifactId>
-			 	<version>3.5.0</version>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.5.0</version>
 				<executions>
-			    	<execution>
-			      		<phase>package</phase>
-			      		<goals>
-			        		<goal>shade</goal>
-			      		</goals>
-			      		<configuration>
-			        		<transformers>
-			          			<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-			            			<mainClass>org.teachothers.fishwatchr.FishWatchr</mainClass>
-			          			</transformer>
-		          			    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-			        		</transformers>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>org.teachothers.fishwatchr.FishWatchr</mainClass>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+							</transformers>
 						</configuration>
 					</execution>
 				</executions>
