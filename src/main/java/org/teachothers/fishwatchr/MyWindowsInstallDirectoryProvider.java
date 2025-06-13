@@ -17,6 +17,7 @@
 
 package org.teachothers.fishwatchr;
 
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,8 +38,16 @@ public class MyWindowsInstallDirectoryProvider extends WindowsInstallDirectoryPr
     public String[] directories() {
 		ArrayList<String> dirs = new ArrayList<String>();
 
-		Path jarPath = Paths.get("./").toAbsolutePath(); //$NON-NLS-1$
-    	// Add VLC directory in the FishWatchr directory
+		Path jarPath = null;
+		try {
+			jarPath = Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		System.err.println("L:" + jarPath.getParent().resolve(LOCAL_VLC_DIR_WINDOWS).toAbsolutePath());
+		// Add VLC directory in the FishWatchr directory
     	dirs.add(jarPath.getParent().resolve(LOCAL_VLC_DIR_WINDOWS).toString());
     	dirs.addAll(Arrays.asList(super.directories()));
     	
