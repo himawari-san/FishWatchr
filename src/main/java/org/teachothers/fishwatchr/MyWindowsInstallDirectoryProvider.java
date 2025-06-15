@@ -46,7 +46,6 @@ public class MyWindowsInstallDirectoryProvider extends WindowsInstallDirectoryPr
 			e.printStackTrace();
 		}
 
-		System.err.println("L:" + jarPath.getParent().resolve(LOCAL_VLC_DIR_WINDOWS).toAbsolutePath());
 		// Add VLC directory in the FishWatchr directory
     	dirs.add(jarPath.getParent().resolve(LOCAL_VLC_DIR_WINDOWS).toString());
     	dirs.addAll(Arrays.asList(super.directories()));

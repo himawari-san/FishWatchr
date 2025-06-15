@@ -52,7 +52,6 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1577,7 +1576,6 @@ public class MainFrame extends JFrame {
 		if (moviePanel == null) {
 			moviePanel = new JPanel();
 			moviePanel.setLayout(new BorderLayout());
-			int a;
 			moviePanel.add(soundPlayer.getMediaplayerComponent(), BorderLayout.CENTER);
 //			soundPlayer.getMediaplayerComponent().setOpaque(false); // これがないと背景がおかしくなる
 			moviePanel.addComponentListener(new ComponentAdapter() {
@@ -3346,7 +3344,6 @@ public class MainFrame extends JFrame {
 										Messages.getString("MainFrame.163"), //$NON-NLS-1$
 										remoteControlPort);
 								if (inputValue != null) {
-									int a;
 									try {
 										remoteControlPort = Integer.parseInt(inputValue);
 										
