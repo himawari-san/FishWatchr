@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>FishWatchr</artifactId>
-	<version>0.9.5</version>
+	<version>1.2a</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -58,6 +58,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<finalName>fishwatchr</finalName> 
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>org.teachothers.fishwatchr.FishWatchr</mainClass>
