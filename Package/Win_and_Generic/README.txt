@@ -1,4 +1,4 @@
-観察支援ツール『FishWatchr』 ver.1.2a20250616 (2025-06-16)
+観察支援ツール『FishWatchr』 ver.1.2a20250616 (2025-06-17)
 Copyright 2014-2025 山口昌也
 (大学共同利用機関法人 人間文化研究機構 国立国語研究所)
 
@@ -33,23 +33,37 @@ Copyright 2014-2025 山口昌也
     されている Windows 版 JRE が含まれています。
 
 　- 本パッケージの vlc フォルダには，VLC media player のライブラリ，お
-    よび，プラグインが含まれています。これらのフォルダ中のファイルの著
-    作権は，VLC authors and VideoLAN が保持しています。詳しくは，vlc
-    フォルダ 中の COPYING.txt などをご覧ください。
+    よび，プラグインが含まれています。
 
 　- 本パッケージの作成にあたっては，次のソフトウェア，および，助成金
     の支援を受けました。関係者の方々に深く感謝いたします。
 
-    -- FishWatchr は以下のフリーソフトウェアを内部的に利用させていた
-       だいています。
+    -- 内部的に利用させていただいているソフトウェアのライセンス
+      * Eclipse Temurin (https://adoptopenjdk.net/)
+        GPL 2 
+        (https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
       * VLC media player (http://www.videolan.org/)
-        ライセンス: GPL 2
-	(https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+        GPL 2
+        (https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
       * vlcj (https://github.com/caprica/vlcj)
-        ライセンス: GPL 3
-	(https://www.gnu.org/licenses/gpl-3.0.txt)
-    -- JSPS科研費（17K01105，「ビデオアノテーションを利用した協同型実
-       習活動支援システムに関する研究」）
+        GPL 3
+        (https://www.gnu.org/licenses/gpl-3.0.txt)
+      * Apache Commons Text
+        (https://commons.apache.org/proper/commons-text/)
+        Apache 2.0
+        (https://www.apache.org/licenses/LICENSE-2.0.html)
+      * Apache Commons Compress
+        (https://commons.apache.org/proper/commons-compress/)
+        Apache 2.0
+        (https://www.apache.org/licenses/LICENSE-2.0.html)
+      * JFreeChart (https://www.jfree.org/jfreechart/)
+        LGPL
+        (http://www.gnu.org/licenses/lgpl.html)
+     
+    -- JSPS科研費 (20K03116，「多段階の振り返りに対応した協同型教育活動
+       支援システムに関する研究」)
+    -- JSPS科研費（17K01105，「ビデオアノテーションを利用した協同型実習
+       活動支援システムに関する研究」）
     -- JSPS科研費（26560135，「即時性と教育効果を考慮した協調学習過程の
        構造化手法に関する研究」）
     -- JSPS科研費（25560123，「協同による知識の体系化・視覚化システムを
@@ -58,5 +72,4 @@ Copyright 2014-2025 山口昌也
 
 ４．履歴
 　下記，ページを参照して下さい。既知のバグも掲載されます。
-
-https://www2.ninjal.ac.jp/lrc/index.php?%B4%D1%BB%A1%BB%D9%B1%E7%A5%C4%A1%BC%A5%EB%20FishWatchr%2F%CD%FA%CE%F2
+　https://csd.ninjal.ac.jp/lrc/index.php?fw
