@@ -852,7 +852,7 @@ public class CommentList extends ArrayList<Comment> {
 			JSONObject j2 = new JSONObject();
 			JSONObject j2Data = new JSONObject();
 			j2.put("data", j2Data);
-			j2Data.put("text", comment.getCommentBody());
+			j2Data.put("text", cleanUpComment(comment.getCommentBody()));
 			j2Data.put(
 					"hyperlink",
 					String.format("http://localhost:%d/play?time=%d", port, comment.getCommentTime())
@@ -906,7 +906,7 @@ public class CommentList extends ArrayList<Comment> {
 			JSONObject j3 = new JSONObject();
 			JSONObject j3Data = new JSONObject();
 			j3.put("data", j3Data);
-			j3Data.put("text", comment.getCommentBody());
+			j3Data.put("text", cleanUpComment(comment.getCommentBody()));
 			j3Data.put(
 					"hyperlink",
 					String.format("http://localhost:%d/play?time=%d", port, comment.getCommentTime())
@@ -918,6 +918,13 @@ public class CommentList extends ArrayList<Comment> {
 		});
 		
 		return j0.toString(2);
+	}
+	
+	private String cleanUpComment(String text) {
+		text = text.replaceAll("\\|\\| +\\|\\|", "");
+		text = text.replaceAll("^ \\|\\| ", "");
+		text = text.replaceAll(" +\\|\\| +$", "");
+		return text;
 	}
 	
 	// time ミリ秒
