@@ -1917,30 +1917,17 @@ public class MainFrame extends JFrame {
 			jMenuItemFileExport
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							try {
-					            FileNameExtensionFilter fileFilter = new FileNameExtensionFilter(
-					            		String.format("(*%s, *%s)", CommentList.FILENAME_SUFFIX_TSV, CommentList.FILENAME_SUFFIX_KM), //$NON-NLS-1$
-					            		CommentList.FILENAME_SUFFIX_TSV, CommentList.FILENAME_SUFFIX_KM
-					            );
-
-								String saveFilename = chooseFile(fileFilter, JFileChooser.FILES_ONLY, true);
-								String fileType;
-								if(saveFilename.isEmpty()){
-									JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.42")); //$NON-NLS-1$
-									return;
-								} else if(saveFilename.endsWith(CommentList.FILENAME_SUFFIX_TSV)){
-									fileType = CommentList.FILENAME_SUFFIX_TSV;
-								} else if(saveFilename.endsWith(CommentList.FILENAME_SUFFIX_KM)){
-									fileType = CommentList.FILENAME_SUFFIX_KM;
-								} else if(saveFilename.endsWith(CommentList.FILENAME_SUFFIX_KM + "2")){
-									fileType = CommentList.FILENAME_SUFFIX_KM + "2";
-								} else {
-									JOptionPane.showMessageDialog(MainFrame.this, String.format(Messages.getString("MainFrame.160"), CommentList.FILENAME_SUFFIX_TSV, CommentList.FILENAME_SUFFIX_KM)); //$NON-NLS-1$
-									return;
-								}
-								File saveFile = new File(saveFilename);
-								if(saveFile.exists()){
-									int response = JOptionPane.showConfirmDialog(MainFrame.this, saveFile.getName() + Messages.getString("MainFrame.43"), Messages.getString("MainFrame.44"), JOptionPane.OK_CANCEL_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
+					        ExportDialog dialog = new ExportDialog();
+					        dialog.showDialog(MainFrame.this);
+					        
+					        File exportedFile = dialog.getExportFile();
+					        if (exportedFile != null) {
+								if(exportedFile.exists()){
+									int response = JOptionPane.showConfirmDialog(
+											MainFrame.this,
+											exportedFile.getName() + Messages.getString("MainFrame.43"), //$NON-NLS-2$
+											Messages.getString("MainFrame.44"), //$NON-NLS-1$
+											JOptionPane.OK_CANCEL_OPTION);
 									if(response != JOptionPane.OK_OPTION){
 										JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.45")); //$NON-NLS-1$
 										return;
@@ -1949,13 +1936,23 @@ public class MainFrame extends JFrame {
 								
 								CommentList cl = new CommentList();
 								cl.addAll(ctm.getFilteredCommentList());
-								cl.export(saveFilename, fileType, remoteControlPort);
-								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.46") + saveFile.getName()); //$NON-NLS-1$
-							} catch (IOException e1) {
-								e1.printStackTrace();
-								JOptionPane.showMessageDialog(MainFrame.this,
-										Messages.getString("MainFrame.48") + e1.toString()); //$NON-NLS-1$
-							}
+								try {
+									cl.export(exportedFile,
+											dialog.getSelectedFormat(),
+											remoteControlPort,
+											dialog.isKmOptionLabelOutput(),
+											dialog.isKmOptionTargetNodeOutput());
+								} catch (IOException e1) {
+									e1.printStackTrace();
+									JOptionPane.showMessageDialog(MainFrame.this,
+											Messages.getString("MainFrame.48") + e1.toString()); //$NON-NLS-1$
+									return;
+								}
+								JOptionPane.showMessageDialog(MainFrame.this, Messages.getString("MainFrame.46") + exportedFile.getName()); //$NON-NLS-1$
+					        } else {
+					        	return;
+					        }
+					        
 						}
 					});
 		}

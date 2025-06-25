@@ -73,6 +73,10 @@ public class CommentList extends ArrayList<Comment> {
 	public static final String LOCKFILE_SUFFIX =".lock"; //$NON-NLS-1$
 	public static final String FILENAME_SUFFIX_TSV =".tsv"; //$NON-NLS-1$
 	public static final String FILENAME_SUFFIX_KM =".km"; //$NON-NLS-1$
+    public static final String FORMAT_TSV = "TSV";
+    public static final String FORMAT_KM = "KM";
+    
+
 	
 	private HashMap<String, OverallEvaluation> evaluations = new HashMap<String, OverallEvaluation>();
 	
@@ -781,17 +785,18 @@ public class CommentList extends ArrayList<Comment> {
 		return flagSyncCondition;
 	}
 
-	
-	public void export(String filename, String type, int port) throws IOException{
-		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
+	public void export(File file, String fileFormat, int port, boolean isOptionLabelOutput, boolean isOptionTargetNodeOutput) throws IOException{
+		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 		String result = "";
-
-		if(type == FILENAME_SUFFIX_TSV) {
+		
+		if(fileFormat == FORMAT_TSV) {
 			result = toTSV();
-		} else if(type == FILENAME_SUFFIX_KM) {
-			result = toKM(port);
-		} else if(type == FILENAME_SUFFIX_KM + "2") {
-			result = toKM2(port);
+		} else if(fileFormat == FORMAT_KM) {
+			if(isOptionTargetNodeOutput) {
+				result = toKMwithTargetNodes(port, isOptionLabelOutput);
+			} else {
+				result = toKM(port, isOptionLabelOutput);
+			}
 		} else {
 			pw.close();
 			throw new IOException("Invalid File Type");
@@ -826,7 +831,7 @@ public class CommentList extends ArrayList<Comment> {
 	}
 	
 	
-	public String toKM(int port) {
+	public String toKM(int port, boolean isOptionLabelOutput) {
 
 		JSONObject j0 = new JSONObject();
 		JSONObject j1 = new JSONObject();
@@ -852,6 +857,9 @@ public class CommentList extends ArrayList<Comment> {
 					"hyperlink",
 					String.format("http://localhost:%d/play?time=%d", port, comment.getCommentTime())
 			);
+			if(isOptionLabelOutput) {
+				j2Data.put("resource", (new JSONArray()).put(comment.getCommentType().toString()));
+			}
 			j1Children.put(j2);
 		});
 		
@@ -859,7 +867,7 @@ public class CommentList extends ArrayList<Comment> {
 	}
 	
 	
-	public String toKM2(int port) {
+	public String toKMwithTargetNodes(int port, boolean isOptionLabelOutput) {
 
 		JSONObject j0 = new JSONObject();
 		JSONObject j1 = new JSONObject();
@@ -903,6 +911,9 @@ public class CommentList extends ArrayList<Comment> {
 					"hyperlink",
 					String.format("http://localhost:%d/play?time=%d", port, comment.getCommentTime())
 			);
+			if(isOptionLabelOutput) {
+				j3Data.put("resource", (new JSONArray()).put(comment.getCommentType().toString()));
+			}
 			j2NodeMap.get(comment.getDiscusser().toString()).put(j3);
 		});
 		
