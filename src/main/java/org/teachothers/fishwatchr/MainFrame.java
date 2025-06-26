@@ -1925,7 +1925,7 @@ public class MainFrame extends JFrame {
 								if(exportedFile.exists()){
 									int response = JOptionPane.showConfirmDialog(
 											MainFrame.this,
-											exportedFile.getName() + Messages.getString("MainFrame.43"), //$NON-NLS-2$
+											exportedFile.getName() + Messages.getString("MainFrame.43"), //$NON-NLS-1$
 											Messages.getString("MainFrame.44"), //$NON-NLS-1$
 											JOptionPane.OK_CANCEL_OPTION);
 									if(response != JOptionPane.OK_OPTION){

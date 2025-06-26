@@ -21,8 +21,8 @@ public class ExportDialog {
 
     private String selectedFormat;
     private File exportFile;
-    private JCheckBox checkLabelOutput = new JCheckBox("「ラベル」を出力");
-    private JCheckBox checkTargetNodeOutput = new JCheckBox("「観察対象」ノードを出力");
+    private JCheckBox checkLabelOutput = new JCheckBox(Messages.getString("ExportDialog.0")); //$NON-NLS-1$
+    private JCheckBox checkTargetNodeOutput = new JCheckBox(Messages.getString("ExportDialog.1")); //$NON-NLS-1$
 
 
     public void showDialog(Component parent) {
@@ -48,12 +48,12 @@ public class ExportDialog {
         checkboxPanel.setEnabled(false);
         
 
-        JLabel fileLabel = new JLabel("エクスポート先: 未選択");
-        JButton fileButton = new JButton("保存先の指定");
+        JLabel fileLabel = new JLabel(Messages.getString("ExportDialog.2")); //$NON-NLS-1$
+        JButton fileButton = new JButton(Messages.getString("ExportDialog.3")); //$NON-NLS-1$
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel("出力形式："));
+        panel.add(new JLabel(Messages.getString("ExportDialog.4"))); //$NON-NLS-1$
         panel.add(formatPanel);
         panel.add(checkboxPanel);
         panel.add(Box.createVerticalStrut(10));
@@ -61,9 +61,9 @@ public class ExportDialog {
         panel.add(fileLabel);
         panel.add(Box.createVerticalStrut(10));
 
-        JButton okButton = new JButton("OK");
+        JButton okButton = new JButton(Messages.getString("ExportDialog.5")); //$NON-NLS-1$
         okButton.setEnabled(false);
-        JButton cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton(Messages.getString("ExportDialog.6")); //$NON-NLS-1$
         Object[] options = {okButton, cancelButton};
         JOptionPane optionPane = new JOptionPane(
         		panel,
@@ -73,7 +73,7 @@ public class ExportDialog {
         		options,
         		okButton);
 
-        JDialog dialog = optionPane.createDialog(parent, "Export Settings");
+        JDialog dialog = optionPane.createDialog(parent, Messages.getString("ExportDialog.7")); //$NON-NLS-1$
         exportFile = null;
 
         kmOption.addActionListener(e -> {
@@ -81,7 +81,7 @@ public class ExportDialog {
                 c.setEnabled(true);
             }
             exportFile = null;
-            fileLabel.setText("エクスポート先: 未選択");
+            fileLabel.setText(Messages.getString("ExportDialog.8")); //$NON-NLS-1$
             okButton.setEnabled(false);
         });
         tsvOption.addActionListener(e -> {
@@ -89,7 +89,7 @@ public class ExportDialog {
                 c.setEnabled(false);
             }
             exportFile = null;
-            fileLabel.setText("エクスポート先: 未選択");
+            fileLabel.setText(Messages.getString("ExportDialog.9")); //$NON-NLS-1$
             okButton.setEnabled(false);
         });
         tsvOption.doClick();
@@ -113,16 +113,16 @@ public class ExportDialog {
         
         fileButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
-            chooser.setDialogTitle("エクスポート先のファイルを指定");
+            chooser.setDialogTitle(Messages.getString("ExportDialog.10")); //$NON-NLS-1$
             int ret = chooser.showSaveDialog(parent);
             if (ret == JFileChooser.APPROVE_OPTION) {
                 exportFile = chooser.getSelectedFile();
                 selectedFormat = tsvOption.isSelected() ? CommentList.FORMAT_TSV : CommentList.FORMAT_KM;
-                String suffix = "." + selectedFormat.toLowerCase();
+                String suffix = "." + selectedFormat.toLowerCase(); //$NON-NLS-1$
                 if (!exportFile.getName().endsWith(suffix)) {
                 	exportFile = new File(exportFile.getAbsolutePath() + suffix);
                 }
-                fileLabel.setText("エクスポート先: " + exportFile.getAbsolutePath());
+                fileLabel.setText(Messages.getString("ExportDialog.12") + exportFile.getAbsolutePath()); //$NON-NLS-1$
                 okButton.setEnabled(true);
 
             }
